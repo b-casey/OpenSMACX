@@ -1,6 +1,8 @@
 # OpenSMACX
 A project to decompile SMAC/X to C++ with the long term goal of creating a full open source clone.
 
+Source tested and compiled with Visual Studio 2017.
+
 v0.1
 * Parsing in alpha/x.txt and faction text files complete
 
