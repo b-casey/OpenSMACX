@@ -1,0 +1,307 @@
+/*
+ * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
+ * Copyright (C) 2013-2019 Brendan Casey
+ *
+ * OpenSMACX is free software: you can redistribute it and / or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenSMACX is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenSMACX. If not, see <http://www.gnu.org/licenses/>.
+ */
+#pragma once
+#include "buttongroup.h"
+#include "flatbutton.h"
+#include "flic.h"
+#include "graphicwin.h"
+#include "stringbox.h"
+#include "time.h"
+
+ /*
+  * MainInterface class
+  */
+class OPENSMACX_API MainInterface: GraphicWin {
+
+	public: // narrow down what can be private vs protected vs public
+		DWORD field_A14;
+		DWORD field_A18;
+		DWORD field_A1C;
+		DWORD field_A20;
+		DWORD field_A24;
+		DWORD field_A28;
+		DWORD field_A2C;
+		DWORD field_A30;
+		DWORD field_A34;
+		DWORD field_A38;
+		DWORD field_A3C;
+		DWORD field_A40;
+		DWORD field_A44;
+		DWORD field_A48;
+		DWORD field_A4C;
+		DWORD field_A50;
+		DWORD field_A54;
+		DWORD field_A58;
+		DWORD field_A5C;
+		DWORD field_A60;
+		DWORD field_A64;
+		DWORD field_A68;
+		DWORD field_A6C;
+		DWORD field_A70;
+		DWORD field_A74;
+		DWORD field_A78;
+		DWORD field_A7C;
+		DWORD field_A80;
+		DWORD field_A84;
+		DWORD field_A88;
+		RECT rect2;
+		RECT rect3;
+		DWORD field_AAC;
+		DWORD field_AB0;
+		DWORD field_AB4;
+		DWORD field_AB8;
+		DWORD field_ABC;
+		DWORD field_AC0;
+		DWORD field_AC4;
+		DWORD field_AC8;
+		DWORD field_ACC;
+		DWORD field_AD0;
+		DWORD field_AD4;
+		DWORD field_AD8;
+		DWORD field_ADC;
+		DWORD field_AE0;
+		DWORD field_AE4;
+		DWORD field_AE8;
+		DWORD field_AEC;
+		DWORD field_AF0;
+		DWORD field_AF4;
+		DWORD field_AF8;
+		DWORD field_AFC;
+		DWORD field_B00;
+		DWORD field_B04;
+		DWORD field_B08;
+		DWORD field_B0C;
+		DWORD field_B10;
+		DWORD field_B14;
+		DWORD field_B18;
+		DWORD field_B1C;
+		DWORD field_B20;
+		DWORD field_B24;
+		DWORD field_B28;
+		DWORD field_B2C;
+		DWORD field_B30;
+		DWORD field_B34;
+		DWORD field_B38;
+		DWORD field_B3C;
+		DWORD field_B40;
+		DWORD field_B44;
+		DWORD field_B48;
+		DWORD field_B4C;
+		DWORD field_B50;
+		DWORD field_B54;
+		DWORD field_B58;
+		DWORD field_B5C;
+		DWORD field_B60;
+		DWORD field_B64;
+		DWORD field_B68;
+		DWORD field_B6C;
+		DWORD field_B70;
+		DWORD field_B74;
+		DWORD field_B78;
+		DWORD field_B7C;
+		DWORD field_B80;
+		DWORD field_B84;
+		DWORD field_B88;
+		DWORD field_B8C;
+		DWORD field_B90;
+		DWORD field_B94;
+		DWORD field_B98;
+		DWORD field_B9C;
+		DWORD field_BA0;
+		DWORD field_BA4;
+		DWORD field_BA8;
+		DWORD field_BAC;
+		DWORD field_BB0;
+		DWORD field_BB4;
+		DWORD field_BB8;
+		DWORD field_BBC;
+		DWORD field_BC0;
+		DWORD field_BC4;
+		DWORD field_BC8;
+		DWORD field_BCC;
+		DWORD field_BD0;
+		DWORD field_BD4;
+		DWORD field_BD8;
+		DWORD field_BDC;
+		DWORD field_BE0;
+		DWORD field_BE4;
+		DWORD field_BE8;
+		DWORD field_BEC;
+		DWORD field_BF0;
+		DWORD field_BF4;
+		DWORD field_BF8;
+		DWORD field_BFC;
+		DWORD field_C00;
+		DWORD field_C04;
+		DWORD field_C08;
+		DWORD field_C0C;
+		DWORD field_C10;
+		DWORD field_C14;
+		DWORD field_C18;
+		DWORD field_C1C;
+		DWORD field_C20;
+		DWORD field_C24;
+		DWORD field_C28;
+		DWORD field_C2C;
+		DWORD field_C30;
+		DWORD field_C34;
+		DWORD field_C38;
+		DWORD field_C3C;
+		DWORD field_C40;
+		DWORD field_C44;
+		DWORD field_C48;
+		DWORD field_C4C;
+		DWORD field_C50;
+		DWORD field_C54;
+		DWORD field_C58;
+		DWORD field_C5C;
+		DWORD field_C60;
+		DWORD field_C64;
+		DWORD field_C68;
+		DWORD field_C6C;
+		DWORD field_C70;
+		DWORD field_C74;
+		DWORD field_C78;
+		DWORD field_C7C;
+		DWORD field_C80;
+		DWORD field_C84;
+		DWORD field_C88;
+		DWORD field_C8C;
+		DWORD field_C90;
+		DWORD field_C94;
+		DWORD field_C98;
+		DWORD field_C9C;
+		DWORD field_CA0;
+		DWORD field_CA4;
+		DWORD field_CA8;
+		DWORD field_CAC;
+		DWORD field_CB0;
+		DWORD field_CB4;
+		DWORD field_CB8;
+		DWORD field_CBC;
+		DWORD field_CC0;
+		DWORD field_CC4;
+		DWORD field_CC8;
+		DWORD field_CCC;
+		DWORD field_CD0;
+		DWORD field_CD4;
+		DWORD field_CD8;
+		DWORD field_CDC;
+		DWORD field_CE0;
+		DWORD field_CE4;
+		DWORD field_CE8;
+		DWORD field_CEC;
+		DWORD field_CF0;
+		DWORD field_CF4;
+		DWORD field_CF8;
+		DWORD field_CFC;
+		DWORD field_D00;
+		DWORD field_D04;
+		DWORD field_D08;
+		DWORD field_D0C;
+		DWORD field_D10;
+		DWORD field_D14;
+		DWORD field_D18;
+		DWORD field_D1C;
+		DWORD field_D20;
+		DWORD field_D24;
+		DWORD field_D28;
+		DWORD field_D2C;
+		DWORD field_D30;
+		DWORD field_D34;
+		DWORD field_D38;
+		DWORD field_D3C;
+		DWORD field_D40;
+		DWORD field_D44;
+		DWORD field_D48;
+		DWORD field_D4C;
+		DWORD field_D50;
+		DWORD field_D54;
+		DWORD field_D58;
+		DWORD field_D5C;
+		DWORD field_D60;
+		DWORD field_D64;
+		DWORD field_D68;
+		DWORD field_D6C;
+		DWORD field_D70;
+		DWORD field_D74;
+		DWORD field_D78;
+		DWORD field_D7C;
+		DWORD field_D80;
+		DWORD field_D84;
+		DWORD field_D88;
+		DWORD field_D8C;
+		DWORD field_D90;
+		DWORD field_D94;
+		DWORD field_D98;
+		DWORD field_D9C;
+		DWORD field_DA0;
+		DWORD field_DA4;
+		DWORD field_DA8;
+		DWORD field_DAC;
+		DWORD field_DB0;
+		DWORD field_DB4;
+		DWORD field_DB8;
+		DWORD field_DBC;
+		RECT rect1;
+		DWORD field_DD0;
+		DWORD field_DD4;
+		DWORD field_DD8;
+		DWORD field_DDC;
+		DWORD field_DE0;
+		DWORD field_DE4;
+		DWORD field_DE8;
+		DWORD field_DEC;
+		DWORD field_DF0;
+		DWORD field_DF4;
+		DWORD field_DF8;
+		DWORD field_DFC;
+		FlatButton flatButton[42];
+		ButtonGroup buttonGroup[4];
+		DWORD field_1EAC8;
+		StringBox stringBox;
+		Font font1;
+		Font font2;
+		Font font3;
+		DWORD field_216E4;
+		DWORD field_216E8;
+		DWORD field_216EC;
+		DWORD field_216F0;
+		Sprite sprites1[4];
+		Sprite sprites2[4];
+		Sprite sprites3[2];
+		Sprite sprites4[2];
+		Sprite sprites5[10];
+		Sprite sprites6[10];
+		Sprite sprites7[6];
+		Sprite sprites8[3];
+		Sprite sprites9[75];
+		Sprite sprites10[18];
+		Sprite sprite11;
+		Sprite sprites12[6];
+		Sprite sprites13[2];
+		Flic flics1[2];
+		Flic flic2;
+		Spot spot;
+		Time time1;
+		Time time2;
+
+	public:
+		MainInterface() { ; }
+		~MainInterface() { ; }
+};
