@@ -48,7 +48,7 @@ BOOL __cdecl has_abil(int protoID, int abilityID) {
 	}
 	DWORD factionID = protoID / MaxVehProtoFactionNum;
 	if (!factionID) {
-		return FALSE; // skip Native life faction
+		return FALSE; // skip Native life faction / base prototypes from #UNITS
 	}
 	if (Players[factionID].ruleFlags & FLAG_ALIEN && abilityID == ABL_DEEP_RADAR) {
 		return TRUE; // Caretakers + Usurpers > "Deep Radar" ability for all units
