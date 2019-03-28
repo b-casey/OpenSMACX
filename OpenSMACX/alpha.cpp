@@ -823,7 +823,7 @@ void __cdecl read_faction(player *Player, int toggle) {
 
 /*
 Purpose: Read faction filenames and search keys from ini file (SMACX only). Has added effect of 
-         forcing Player searchKey to be set to filename value. Rewrote almost the entire function 
+		 forcing Player searchKey to be set to filename value. Rewrote almost the entire function
 		 because of how terrible the original code logic was.
 Original Offset: 0059DBD0
 Return Value: n/a

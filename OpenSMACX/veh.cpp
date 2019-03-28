@@ -41,7 +41,7 @@ LPSTR *Triad = (LPSTR *)0x0094F1A8; // [3]
 Purpose: Calculate base speed of prototype on roads
 Original Offset: 005C13B0
 Return Value: Prototype's speed
-Status: WIP
+Status: Complete
 */
 DWORD __cdecl speed_proto(int protoID) {
 	if (protoID == BSC_FUNGAL_TOWER) {
