@@ -50,7 +50,7 @@ enum faction_special_rules {
 	RULE_OFFSENSE = 0x12,
 };
 
-enum player_rule_flags {
+enum player_rule_flag_bitfield {
 	FLAG_TECHSTEAL = 0x10,
 	FLAG_TECHSHARE = 0x20,
 	FLAG_WORMPOLICE = 0x40,
@@ -107,7 +107,7 @@ struct rules_bonusname {
 	char key[24];
 };
 
-struct Player {
+struct player {
 	BOOL isLeaderFemale;
 	CHAR filename[24];
 	CHAR searchKey[24];
@@ -190,5 +190,5 @@ extern LPSTR *Repute;
 extern rules_might *Might;
 extern rules_proposal *Proposal;
 extern rules_bonusname *BonusName;
-extern Player *Players; // Players[0] is AI native life faction
+extern player *Players; // Players[0] is AI native life faction
 extern faction_art *FactionArt;

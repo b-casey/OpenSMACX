@@ -30,13 +30,16 @@
 #include "textindex.h"
 #include "veh.h"
 
-Label *Labels = (Label *)0x009B90F8;
+LPCSTR AlphaxFileID = "ALPHAX";
+LPSTR *Compass = (LPSTR *)0x00945D48;
+LPSTR *Difficulty = (LPSTR *)0x0096C85C;
+label *Label = (label *)0x009B90F8;
 rules_resourceinfo *ResourceInfo = (rules_resourceinfo *)0x00945F50;
 rules_time_control *TimeControl = (rules_time_control *)0x0094F1B8;
-LPSTR *Compass = (LPSTR *)0x00945D48;
 rules_resource *Resource = (rules_resource *)0x00946158;
 rules_energy *Energy = (rules_energy *)0x0094A318;
-LPSTR *Difficulty = (LPSTR *)0x0096C85C;
+rules_basic *Rules = (rules_basic *)0x00949738;
+rules_worldbuilder *WorldBuilder = (rules_worldbuilder *)0x009502A8;
 
 /*
 Purpose: Parse #LABELS section inside labels.txt
@@ -50,13 +53,13 @@ BOOL __cdecl labels_init() {
 		return TRUE;
 	}
 	text_get();
-	Labels->count = text_item_number();
-	Labels->stringsPtr = (LPSTR)mem_get(Labels->count * 4);
-	if (!Labels->stringsPtr) {
+	Label->count = text_item_number();
+	Label->stringsPtr = (LPSTR)mem_get(Label->count * 4);
+	if (!Label->stringsPtr) {
 		return TRUE;
 	}
-	for (int i = 0; i < Labels->count; i++) {
-		*((LPSTR *)Labels->stringsPtr + i) = text_string();
+	for (int i = 0; i < Label->count; i++) {
+		*((LPSTR *)Label->stringsPtr + i) = text_string();
 	}
 	text_close();
 	return FALSE;
@@ -69,11 +72,11 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl labels_shutdown() {
-	if (Labels->stringsPtr) {
-		free(Labels->stringsPtr);
-		Labels->stringsPtr = 0;
+	if (Label->stringsPtr) {
+		free(Label->stringsPtr);
+		Label->stringsPtr = 0;
 	}
-	Labels->count = 0;
+	Label->count = 0;
 }
 
 /*
@@ -225,124 +228,124 @@ BOOL __cdecl read_basic_rules() {
 	if (text_open(AlphaxFileID, "RULES")) {
 		return TRUE;
 	}
-	*RulesMoveRateRoads = text_get_number(1, 100);
-	*RulesNutrientReqCitizen = text_get_number(0, 100);
+	Rules->MoveRateRoads = text_get_number(1, 100);
+	Rules->NutrientReqCitizen = text_get_number(0, 100);
 	text_get();
-	*RulesArtilleryDmgNum = range(text_item_number(), 1, 1000);
-	*RulesArtilleryDmgDenom = range(text_item_number(), 1, 1000);
-	*RulesArtilleryMaxRng = text_get_number(1, 8);
-	*RulesMaxAirdropSansOrbInsert = text_get_number(1, 500);
-	*RulesNutrientCostMulti = text_get_number(1, 100);
-	*RulesMineralCostMulti = text_get_number(1, 100);
-	*RulesTechDiscovRatePctStd = text_get_number(0, 1000);
-	*RulesLimitMineralMineSansRoad = text_get_number(0, 100);
-	*RulesTglNutrientEffectWithMine = text_get_number(-1, 0); // Some weird logic behind -1/0 value
-	*RulesMinBaseSizeSpecialists = text_get_number(0, 100);
-	*RulesDronesGenejackFactory = text_get_number(0, 100);
-	*RulesPopLimitSansHabComplex = text_get_number(1, 100);
-	*RulesPopLimitSansHabDome = text_get_number(1, 100);
-	*RulesExtraPctCostProtoLand = text_get_number(0, 500);
-	*RulesExtraPctCostProtoSea = text_get_number(0, 500);
-	*RulesExtraPctCostProtoAir = text_get_number(0, 500);
+	Rules->ArtilleryDmgNum = range(text_item_number(), 1, 1000);
+	Rules->ArtilleryDmgDenom = range(text_item_number(), 1, 1000);
+	Rules->ArtilleryMaxRng = text_get_number(1, 8);
+	Rules->MaxAirdropSansOrbInsert = text_get_number(1, 500);
+	Rules->NutrientCostMulti = text_get_number(1, 100);
+	Rules->MineralCostMulti = text_get_number(1, 100);
+	Rules->TechDiscovRatePctStd = text_get_number(0, 1000);
+	Rules->LimitMineralMineSansRoad = text_get_number(0, 100);
+	Rules->TglNutrientEffectWithMine = text_get_number(-1, 0); // Weird logic behind -1/0 value
+	Rules->MinBaseSizeSpecialists = text_get_number(0, 100);
+	Rules->DronesGenejackFactory = text_get_number(0, 100);
+	Rules->PopLimitSansHabComplex = text_get_number(1, 100);
+	Rules->PopLimitSansHabDome = text_get_number(1, 100);
+	Rules->ExtraPctCostProtoLand = text_get_number(0, 500);
+	Rules->ExtraPctCostProtoSea = text_get_number(0, 500);
+	Rules->ExtraPctCostProtoAir = text_get_number(0, 500);
 	text_get();
-	*RulesPsiCombatRatioLandAtk = range(text_item_number(), 1, 1000);
-	*RulesPsiCombatRatioLandDef = range(text_item_number(), 1, 1000);
+	Rules->PsiCombatRatioLandAtk = range(text_item_number(), 1, 1000);
+	Rules->PsiCombatRatioLandDef = range(text_item_number(), 1, 1000);
 	text_get();
-	*RulesPsiCombatRatioSeaAtk = range(text_item_number(), 1, 1000);
-	*RulesPsiCombatRatioSeaDef = range(text_item_number(), 1, 1000);
+	Rules->PsiCombatRatioSeaAtk = range(text_item_number(), 1, 1000);
+	Rules->PsiCombatRatioSeaDef = range(text_item_number(), 1, 1000);
 	text_get();
-	*RulesPsiCombatRatioAirAtk = range(text_item_number(), 1, 1000);
-	*RulesPsiCombatRatioAirDef = range(text_item_number(), 1, 1000);
-	*RulesPlayerStartEnergyReserve = text_get_number(0, 1000);
-	*RulesCombatPctBaseDef = text_get_number(-100, 1000);
-	*RulesCombatPctAtkRoad = text_get_number(-100, 1000);
-	*RulesCombatPctAtkHigherElev = text_get_number(-100, 1000);
-	*RulesCombatPenPctAtkLwrElev = text_get_number(-100, 1000);
-	*RulesCombatPctMobileOpenGround = text_get_number(-100, 1000);
-	*RulesCombatPctDefVsMobileRough = text_get_number(-100, 1000);
-	*RulesCombatPctInfantryVsBase = text_get_number(-100, 1000);
-	*RulesCombatPenPctAtkAirdrop = text_get_number(-100, 1000);
-	*RulesCombatPctFanaticAtkBonus = text_get_number(-100, 1000);
-	*RulesCombatPctLandGunVsShipArt = text_get_number(-100, 1000);
-	*RulesCombatPctArtBonusLvlAlt = text_get_number(-100, 1000);
-	*RulesCombatPctTranceDefVsPsi = text_get_number(-100, 1000);
-	*RulesCombatPctEmpSongAtkVsPsi = text_get_number(-100, 1000);
-	*RulesCombatPenPctAirSuprVsGrnd = text_get_number(-100, 1000);
-	*RulesCombatPctAirSuprVsAir = text_get_number(-100, 1000);
-	*RulesCombatPenPctNonCbtDefVsCbt = text_get_number(-100, 1000);
-	*RulesCombatPctComJamDefVsMobl = text_get_number(-100, 1000);
-	*RulesCombatPctBonusVsShipPort = text_get_number(-100, 1000);
-	*RulesCombatPctAAABonusVsAir = text_get_number(-100, 1000);
-	*RulesCombatPctDefRangeSensor = text_get_number(-100, 1000);
-	*RulesCombatPctPsiAtkBonusPLANET = text_get_number(-100, 1000);
-	*RulesRetoolPctPenProdChg = text_get_number(0, 100);
-	*RulesRetoolStrictness = text_get_number(0, 3); // Bug fix: increased max param to 3
-	*RulesRetoolExemption = text_get_number(0, 1000);
-	*RulesMinTurnsCouncils = text_get_number(0, 1000);
-	*RulesMineralsHarvestingForest = text_get_number(0, 100);
-	*RulesTerritoryMaxDistBase = text_get_number(0, 100);
-	*RulesTurnsCornerGblEnergyMrkt = text_get_number(1, 100);
-	*RulesTechImproveFungusSqr = tech_item();
-	*RulesTechEaseFungusMovement = tech_item();
-	*RulesTechBuildRoadsFungus = tech_item();
-	*RulesTechTwoSpecAbilities = tech_item();
-	*RulesTechThreeNutrientsSqr = tech_item();
-	*RulesTechThreeMineralsSqr = tech_item();
-	*RulesTechThreeEnergySqr = tech_item();
-	*RulesTechOrbInsertSansSpcElev = tech_item();
-	*RulesTechMiningPlatformBonus = tech_item();
-	*RulesTechEconomicVictory = tech_item();
-	*RulesTglProbeCanStealTech = text_get_number(0, 1); // Fix: set min param to 0
-	*RulesTglHumanAlwaysContactNet = text_get_number(0, 1); // Fix: set min param to 0
-	*RulesTglHumansAlwaysContactPbem = text_get_number(0, 1); // Fix: set min param to 0
-	*RulesMaxPctDmgArtVsUnitBaseBnkr = text_get_number(10, 100);
-	*RulesMaxPctDmgArtVsUnitsOpen = text_get_number(10, 100);
-	*RulesMaxPctDmgArtVsUnitsSea = text_get_number(10, 100);
+	Rules->PsiCombatRatioAirAtk = range(text_item_number(), 1, 1000);
+	Rules->PsiCombatRatioAirDef = range(text_item_number(), 1, 1000);
+	Rules->PlayerStartEnergyReserve = text_get_number(0, 1000);
+	Rules->CombatPctBaseDef = text_get_number(-100, 1000);
+	Rules->CombatPctAtkRoad = text_get_number(-100, 1000);
+	Rules->CombatPctAtkHigherElev = text_get_number(-100, 1000);
+	Rules->CombatPenPctAtkLwrElev = text_get_number(-100, 1000);
+	Rules->CombatPctMobileOpenGround = text_get_number(-100, 1000);
+	Rules->CombatPctDefVsMobileRough = text_get_number(-100, 1000);
+	Rules->CombatPctInfantryVsBase = text_get_number(-100, 1000);
+	Rules->CombatPenPctAtkAirdrop = text_get_number(-100, 1000);
+	Rules->CombatPctFanaticAtkBonus = text_get_number(-100, 1000);
+	Rules->CombatPctLandGunVsShipArt = text_get_number(-100, 1000);
+	Rules->CombatPctArtBonusLvlAlt = text_get_number(-100, 1000);
+	Rules->CombatPctTranceDefVsPsi = text_get_number(-100, 1000);
+	Rules->CombatPctEmpSongAtkVsPsi = text_get_number(-100, 1000);
+	Rules->CombatPenPctAirSuprVsGrnd = text_get_number(-100, 1000);
+	Rules->CombatPctAirSuprVsAir = text_get_number(-100, 1000);
+	Rules->CombatPenPctNonCbtDefVsCbt = text_get_number(-100, 1000);
+	Rules->CombatPctComJamDefVsMobl = text_get_number(-100, 1000);
+	Rules->CombatPctBonusVsShipPort = text_get_number(-100, 1000);
+	Rules->CombatPctAAABonusVsAir = text_get_number(-100, 1000);
+	Rules->CombatPctDefRangeSensor = text_get_number(-100, 1000);
+	Rules->CombatPctPsiAtkBonusPLANET = text_get_number(-100, 1000);
+	Rules->RetoolPctPenProdChg = text_get_number(0, 100);
+	Rules->RetoolStrictness = text_get_number(0, 3); // Bug fix: increased max param to 3
+	Rules->RetoolExemption = text_get_number(0, 1000);
+	Rules->MinTurnsCouncils = text_get_number(0, 1000);
+	Rules->MineralsHarvestingForest = text_get_number(0, 100);
+	Rules->TerritoryMaxDistBase = text_get_number(0, 100);
+	Rules->TurnsCornerGblEnergyMrkt = text_get_number(1, 100);
+	Rules->TechImproveFungusSqr = tech_item();
+	Rules->TechEaseFungusMovement = tech_item();
+	Rules->TechBuildRoadsFungus = tech_item();
+	Rules->TechTwoSpecAbilities = tech_item();
+	Rules->TechThreeNutrientsSqr = tech_item();
+	Rules->TechThreeMineralsSqr = tech_item();
+	Rules->TechThreeEnergySqr = tech_item();
+	Rules->TechOrbInsertSansSpcElev = tech_item();
+	Rules->TechMiningPlatformBonus = tech_item();
+	Rules->TechEconomicVictory = tech_item();
+	Rules->TglProbeCanStealTech = text_get_number(0, 1); // Fix: set min param to 0
+	Rules->TglHumanAlwaysContactNet = text_get_number(0, 1); // Fix: set min param to 0
+	Rules->TglHumansAlwaysContactPbem = text_get_number(0, 1); // Fix: set min param to 0
+	Rules->MaxPctDmgArtVsUnitBaseBnkr = text_get_number(10, 100);
+	Rules->MaxPctDmgArtVsUnitsOpen = text_get_number(10, 100);
+	Rules->MaxPctDmgArtVsUnitsSea = text_get_number(10, 100);
 	text_get();
-	*RulesFreqGlobalWarmingNum = range(text_item_number(), 0, 1000);
-	*RulesFreqGlobalWarmingDenom = range(text_item_number(), 1, 1000);
-	*RulesNormalStartingYear = text_get_number(0, 999999);
-	*RulesNormalEndYearLowThreeDiff = text_get_number(0, 999999);
-	*RulesNormalEndYearHighThreeDiff = text_get_number(0, 999999);
-	*RulesTglOblitBaseAtrocity = text_get_number(0, 1); // Fix: set min param to 0
-	*RulesSizeBaseSubspaceGen = text_get_number(1, 999); // SMACX only
-	*RulesSubspaceGeneratorsNeeded = text_get_number(1, 999); // SMACX only
+	Rules->FreqGlobalWarmingNum = range(text_item_number(), 0, 1000);
+	Rules->FreqGlobalWarmingDenom = range(text_item_number(), 1, 1000);
+	Rules->NormalStartingYear = text_get_number(0, 999999);
+	Rules->NormalEndYearLowThreeDiff = text_get_number(0, 999999);
+	Rules->NormalEndYearHighThreeDiff = text_get_number(0, 999999);
+	Rules->TglOblitBaseAtrocity = text_get_number(0, 1); // Fix: set min param to 0
+	Rules->SizeBaseSubspaceGen = text_get_number(1, 999); // SMACX only
+	Rules->SubspaceGeneratorsNeeded = text_get_number(1, 999); // SMACX only
 	// World Builder
 	if (text_open(AlphaxFileID, "WORLDBUILDER")) {
 		return 1;
 	}
-	*WorldBuilderLandBase = text_get_number(50, 4000);
-	*WorldBuilderLandMod = text_get_number(0, 2000);
-	*WorldBuilderContinentBase = text_get_number(5, 1000);
-	*WorldBuilderContinentMod = text_get_number(5, 1000);
-	*WorldBuilderHillsBase = text_get_number(0, 100);
-	*WorldBuilderHillsMod = text_get_number(0, 100);
-	*WorldBuilderPlateauBase = text_get_number(0, 500);
-	*WorldBuilderPlateauMod = text_get_number(0, 500);
-	*WorldBuilderRiversBase = text_get_number(0, 100);
-	*WorldBuilderRiversRainMod = text_get_number(0, 100);
-	*WorldBuilderSolarEnergy = text_get_number(1, 64);
-	*WorldBuilderThermalBand = text_get_number(1, 64);
-	*WorldBuilderThermalDeviance = text_get_number(1, 64);
-	*WorldBuilderGlobalWarming = text_get_number(1, 64);
-	*WorldBuilderSeaLevelRises = text_get_number(1, 100);
-	*WorldBuilderCloudmassPeaks = text_get_number(0, 20);
-	*WorldBuilderCloudmassHills = text_get_number(0, 20);
-	*WorldBuilderRainfallCoeff = text_get_number(0, 8);
-	*WorldBuilderDeepWater = text_get_number(-100, 100);
-	*WorldBuilderShelf = text_get_number(-100, 100);
-	*WorldBuilderPlains = text_get_number(-100, 100);
-	*WorldBuilderBeach = text_get_number(-100, 100);
-	*WorldBuilderHills = text_get_number(0, 100);
-	*WorldBuilderPeaks = text_get_number(-100, 100);
-	*WorldBuilderFungus = text_get_number(0, 5);
+	WorldBuilder->LandBase = text_get_number(50, 4000);
+	WorldBuilder->LandMod = text_get_number(0, 2000);
+	WorldBuilder->ContinentBase = text_get_number(5, 1000);
+	WorldBuilder->ContinentMod = text_get_number(5, 1000);
+	WorldBuilder->HillsBase = text_get_number(0, 100);
+	WorldBuilder->HillsMod = text_get_number(0, 100);
+	WorldBuilder->PlateauBase = text_get_number(0, 500);
+	WorldBuilder->PlateauMod = text_get_number(0, 500);
+	WorldBuilder->RiversBase = text_get_number(0, 100);
+	WorldBuilder->RiversRainMod = text_get_number(0, 100);
+	WorldBuilder->SolarEnergy = text_get_number(1, 64);
+	WorldBuilder->ThermalBand = text_get_number(1, 64);
+	WorldBuilder->ThermalDeviance = text_get_number(1, 64);
+	WorldBuilder->GlobalWarming = text_get_number(1, 64);
+	WorldBuilder->SeaLevelRises = text_get_number(1, 100);
+	WorldBuilder->CloudmassPeaks = text_get_number(0, 20);
+	WorldBuilder->CloudmassHills = text_get_number(0, 20);
+	WorldBuilder->RainfallCoeff = text_get_number(0, 8);
+	WorldBuilder->DeepWater = text_get_number(-100, 100);
+	WorldBuilder->Shelf = text_get_number(-100, 100);
+	WorldBuilder->Plains = text_get_number(-100, 100);
+	WorldBuilder->Beach = text_get_number(-100, 100);
+	WorldBuilder->Hills = text_get_number(0, 100);
+	WorldBuilder->Peaks = text_get_number(-100, 100);
+	WorldBuilder->Fungus = text_get_number(0, 5);
 	text_get();
-	*WorldBuilderContSizeRatio1 = text_item_number();
-	*WorldBuilderContSizeRatio2 = text_item_number();
-	*WorldBuilderContSizeRatio3 = text_item_number();
-	*WorldBuilderContSizeRatio4 = text_item_number();
-	*WorldBuilderContSizeRatio5 = text_item_number();
-	*WorldBuilderIslands = text_get_number(1, 500);
+	WorldBuilder->ContSizeRatio1 = text_item_number();
+	WorldBuilder->ContSizeRatio2 = text_item_number();
+	WorldBuilder->ContSizeRatio3 = text_item_number();
+	WorldBuilder->ContSizeRatio4 = text_item_number();
+	WorldBuilder->ContSizeRatio5 = text_item_number();
+	WorldBuilder->Islands = text_get_number(1, 500);
 	return FALSE;
 }
 
@@ -461,22 +464,22 @@ Original Offset: 00585FE0
 Return Value: n/a
 Status: Complete
 */
-void __cdecl clear_faction(Player *player) {
-	player->ruleTechSelected = 0;
-	player->ruleMorale = 0;
-	player->ruleResearch = 0;
-	player->ruleDrone = 0;
-	player->ruleTalent = 0;
-	player->ruleEnergy = 0;
-	player->ruleInterest = 0;
-	player->rulePopulation = 0;
-	player->ruleHurry = 100;
-	player->ruleTechcost = 100;
-	player->rulePsi = 0;
-	player->ruleSharetech = 0;
-	player->ruleCommerce = 0;
-	player->ruleFlags = 0;
-	player->factionBonusCount = 0;
+void __cdecl clear_faction(player *Player) {
+	Player->ruleTechSelected = 0;
+	Player->ruleMorale = 0;
+	Player->ruleResearch = 0;
+	Player->ruleDrone = 0;
+	Player->ruleTalent = 0;
+	Player->ruleEnergy = 0;
+	Player->ruleInterest = 0;
+	Player->rulePopulation = 0;
+	Player->ruleHurry = 100;
+	Player->ruleTechcost = 100;
+	Player->rulePsi = 0;
+	Player->ruleSharetech = 0;
+	Player->ruleCommerce = 0;
+	Player->ruleFlags = 0;
+	Player->factionBonusCount = 0;
 }
 
 /*
@@ -499,43 +502,43 @@ Original Offset: 00586090
 Return Value: n/a
 Status: Complete
 */
-void __cdecl read_faction(Player *player, int toggle) {
-	clear_faction(player);
-	if (text_open(player->filename, player->searchKey) 
-		&& text_open(player->filename, player->filename)) {
-		parse_says(0, player->searchKey, -1, -1);
-		parse_says(1, player->filename, -1, -1);
+void __cdecl read_faction(player *Player, int toggle) {
+	clear_faction(Player);
+	if (text_open(Player->filename, Player->searchKey) 
+		&& text_open(Player->filename, Player->filename)) {
+		parse_says(0, Player->searchKey, -1, -1);
+		parse_says(1, Player->filename, -1, -1);
 		X_pop("PLAYERFILE", 0);
 		return;
 	}
 	text_get();
-	strcpy_s(player->nameFaction, 40, text_item());
-	player->nameFaction[39];
-	strcpy_s(player->descNameFaction, 24, text_item());
-	player->descNameFaction[23] = 0;
-	strcpy_s(player->nounFaction, 24, text_item());
-	player->nounFaction[23] = 0;
+	strcpy_s(Player->nameFaction, 40, text_item());
+	Player->nameFaction[39];
+	strcpy_s(Player->descNameFaction, 24, text_item());
+	Player->descNameFaction[23] = 0;
+	strcpy_s(Player->nounFaction, 24, text_item());
+	Player->nounFaction[23] = 0;
 	LPSTR gender = text_item();
-	player->nounGender = MALE_GENDER;
+	Player->nounGender = MALE_GENDER;
 	if (gender[0] == 'F' || gender[0] == 'f') {
-		player->nounGender = FEMALE_GENDER;
+		Player->nounGender = FEMALE_GENDER;
 	}
 	else if (gender[0] == 'N' || gender[0] == 'n') {
-		player->nounGender = NEUTRAL_GENDER;
+		Player->nounGender = NEUTRAL_GENDER;
 	}
-	player->isNounPlural = range(text_item_number() - 1, FALSE, TRUE); // original value: 1 or 2
-	strcpy_s(player->nameLeader, 24, text_item());
-	player->nameLeader[23] = 0;
+	Player->isNounPlural = range(text_item_number() - 1, FALSE, TRUE); // original value: 1 or 2
+	strcpy_s(Player->nameLeader, 24, text_item());
+	Player->nameLeader[23] = 0;
 	gender = text_item();
-	player->isLeaderFemale = (gender[0] == 'F' || gender[0] == 'f') ? TRUE : FALSE;
+	Player->isLeaderFemale = (gender[0] == 'F' || gender[0] == 'f') ? TRUE : FALSE;
 	if (toggle == 2) {
 		return;
 	}
-	player->AI_IntrestFight = text_item_number(); // -1, 0, 1
-	player->AI_IntrestPower = text_item_number();
-	player->AI_IntrestTech = text_item_number();
-	player->AI_IntrestWealth = text_item_number();
-	player->AI_IntrestGrowth = text_item_number();
+	Player->AI_IntrestFight = text_item_number(); // -1, 0, 1
+	Player->AI_IntrestPower = text_item_number();
+	Player->AI_IntrestTech = text_item_number();
+	Player->AI_IntrestWealth = text_item_number();
+	Player->AI_IntrestGrowth = text_item_number();
 	text_get();
 	LPSTR parseRuleCheck = text_item();
 	int len = strlen(parseRuleCheck);
@@ -546,76 +549,76 @@ void __cdecl read_faction(Player *player, int toggle) {
 		if (!_strcmpi(parseRule, BonusName[0].key)) { // TECH
 			// will have issues if custom tech abbreviations starting with numbers are used
 			int playerSelected = atoi(parseParameter);
-			if (!playerSelected && player->factionBonusCount < 8) {
-				player->factionBonusID[player->factionBonusCount] = RULE_TECH;
-				player->factionBonusVal1[player->factionBonusCount] = tech_name(parseParameter);
-				player->factionBonusCount++;
+			if (!playerSelected && Player->factionBonusCount < 8) {
+				Player->factionBonusID[Player->factionBonusCount] = RULE_TECH;
+				Player->factionBonusVal1[Player->factionBonusCount] = tech_name(parseParameter);
+				Player->factionBonusCount++;
 			}
 			else {
-				player->ruleTechSelected = playerSelected;
+				Player->ruleTechSelected = playerSelected;
 			}
 		}
 		else if (!_strcmpi(parseRule, BonusName[1].key)) { // MORALE
 			if (parseParameter[0] == '+') {
 				parseParameter++;
 			}
-			player->ruleMorale = atoi(parseParameter);
+			Player->ruleMorale = atoi(parseParameter);
 			// 0 indicates an exemption from negative modifiers from other sources
-			if (!player->ruleMorale) {
-				player->ruleFlags |= FLAG_MORALE;
+			if (!Player->ruleMorale) {
+				Player->ruleFlags |= FLAG_MORALE;
 			}
 		}
 		// FACILITY
-		else if (!_strcmpi(parseRule, BonusName[3].key) && player->factionBonusCount < 8) {
-			player->factionBonusID[player->factionBonusCount] = RULE_FACILITY;
-			player->factionBonusVal1[player->factionBonusCount] = atoi(parseParameter);
-			player->factionBonusCount++;
+		else if (!_strcmpi(parseRule, BonusName[3].key) && Player->factionBonusCount < 8) {
+			Player->factionBonusID[Player->factionBonusCount] = RULE_FACILITY;
+			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
+			Player->factionBonusCount++;
 		}
 		else if (!_strcmpi(parseRule, BonusName[4].key)) { // RESEARCH
-			player->ruleResearch = atoi(parseParameter);
+			Player->ruleResearch = atoi(parseParameter);
 		}
 		else if (!_strcmpi(parseRule, BonusName[5].key)) { // DRONE
-			player->ruleDrone = atoi(parseParameter);
+			Player->ruleDrone = atoi(parseParameter);
 		}
 		else if (!_strcmpi(parseRule, BonusName[6].key)) { // TALENT
-			player->ruleTalent = atoi(parseParameter);
+			Player->ruleTalent = atoi(parseParameter);
 		}
 		else if (!_strcmpi(parseRule, BonusName[7].key)) { // ENERGY
-			player->ruleEnergy = atoi(parseParameter);
+			Player->ruleEnergy = atoi(parseParameter);
 		}
 		else if (!_strcmpi(parseRule, BonusName[8].key)) { // INTEREST
-			player->ruleFlags |= FLAG_INTEREST;
-			player->ruleInterest = atoi(parseParameter);
+			Player->ruleFlags |= FLAG_INTEREST;
+			Player->ruleInterest = atoi(parseParameter);
 		}
 		else if (!_strcmpi(parseRule, BonusName[9].key)) { // COMMERCE
-			player->ruleCommerce = atoi(parseParameter);
+			Player->ruleCommerce = atoi(parseParameter);
 		}
 		else if (!_strcmpi(parseRule, BonusName[10].key)) { // POPULATION
-			player->rulePopulation = atoi(parseParameter);
+			Player->rulePopulation = atoi(parseParameter);
 		}
 		else if (!_strcmpi(parseRule, BonusName[11].key)) { // HURRY
-			player->ruleHurry = range(atoi(parseParameter), 1, 1000);
+			Player->ruleHurry = range(atoi(parseParameter), 1, 1000);
 		}
 		else if (!_strcmpi(parseRule, BonusName[13].key)) { // TECHCOST
-			player->ruleTechcost = atoi(parseParameter);
+			Player->ruleTechcost = atoi(parseParameter);
 		}
-		else if (!_strcmpi(parseRule, BonusName[12].key) && player->factionBonusCount < 8) { // UNIT
-			player->factionBonusID[player->factionBonusCount] = RULE_UNIT;
-			player->factionBonusVal1[player->factionBonusCount] = atoi(parseParameter);
-			player->factionBonusCount++;
+		else if (!_strcmpi(parseRule, BonusName[12].key) && Player->factionBonusCount < 8) { // UNIT
+			Player->factionBonusID[Player->factionBonusCount] = RULE_UNIT;
+			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
+			Player->factionBonusCount++;
 		}
 		else if (!_strcmpi(parseRule, BonusName[2].key)) { // PSI
-			player->rulePsi = atoi(parseParameter);
+			Player->rulePsi = atoi(parseParameter);
 		}
 		else if (!_strcmpi(parseRule, BonusName[14].key)) { // SHARETECH
-			player->ruleSharetech = atoi(parseParameter);
+			Player->ruleSharetech = atoi(parseParameter);
 		}
 		else if (!_strcmpi(parseRule, BonusName[15].key)) { // TERRAFORM
-			player->ruleFlags |= FLAG_TERRAFORM;
+			Player->ruleFlags |= FLAG_TERRAFORM;
 		}
 		// SOCIAL, ROBUST, IMMUNITY; Moved factionBonusCount check to start rather than inner loop
 		else if ((!_strcmpi(parseRule, BonusName[16].key) || !_strcmpi(parseRule, BonusName[17].key) 
-			|| !_strcmpi(parseRule, BonusName[18].key)) && player->factionBonusCount < 8) {
+			|| !_strcmpi(parseRule, BonusName[18].key)) && Player->factionBonusCount < 8) {
 			int value = 0;
 			while (parseParameter[0] == '+' || parseParameter[0] == '-') {
 				(parseParameter[0] == '+') ? value++ : value--;
@@ -627,128 +630,128 @@ void __cdecl read_faction(Player *player, int toggle) {
 			for (int j = 0; j < MaxSocialEffectNum; j++) {
 				if (!_strcmpi(SocialEffect[j].set1, parseParameter)) {
 					if (!_strcmpi(parseRule, BonusName[17].key)) {
-						player->factionBonusID[player->factionBonusCount] = RULE_ROBUST;
+						Player->factionBonusID[Player->factionBonusCount] = RULE_ROBUST;
 					}
 					else {
-						player->factionBonusID[player->factionBonusCount] =
+						Player->factionBonusID[Player->factionBonusCount] =
 							!_strcmpi(parseRule, BonusName[16].key) ? RULE_SOCIAL : RULE_IMMUNITY;
 					}
-					player->factionBonusVal1[player->factionBonusCount] = j; // Social Effect id
-					player->factionBonusVal2[player->factionBonusCount] = value; // value modifier
-					player->factionBonusCount++;
+					Player->factionBonusVal1[Player->factionBonusCount] = j; // Social Effect id
+					Player->factionBonusVal2[Player->factionBonusCount] = value; // value modifier
+					Player->factionBonusCount++;
 					break;
 				}
 			}
 		}
 		// IMPUNITY, PENALTY; Moved factionBonusCount check to start rather than inner loop
 		else if ((!_strcmpi(parseRule, BonusName[19].key) 
-			|| !_strcmpi(parseRule, BonusName[20].key)) && player->factionBonusCount < 8) {
+			|| !_strcmpi(parseRule, BonusName[20].key)) && Player->factionBonusCount < 8) {
 			for (int j = 0; j < MaxSocialCatNum; j++) {
 				for (int k = 0; k < MaxSocialModelNum; k++) {
 					if (!_stricmp(parseParameter, 
 						StringTable->get((int)SocialCategory[j].name[k]))) {
-						player->factionBonusID[player->factionBonusCount] = 
+						Player->factionBonusID[Player->factionBonusCount] = 
 							!_strcmpi(parseRule, BonusName[19].key) ? RULE_IMPUNITY : RULE_PENALTY;
-						player->factionBonusVal1[player->factionBonusCount] = j; // category id
-						player->factionBonusVal2[player->factionBonusCount] = k; // model id
-						player->factionBonusCount++;
+						Player->factionBonusVal1[Player->factionBonusCount] = j; // category id
+						Player->factionBonusVal2[Player->factionBonusCount] = k; // model id
+						Player->factionBonusCount++;
 					}
 				}
 			}
 		}
 		// FUNGNUTRIENT
-		else if (!_strcmpi(parseRule, BonusName[21].key) && player->factionBonusCount < 8) {
-			player->factionBonusID[player->factionBonusCount] = RULE_FUNGNUTRIENT;
-			player->factionBonusVal1[player->factionBonusCount] = atoi(parseParameter);
-			player->factionBonusCount++;
+		else if (!_strcmpi(parseRule, BonusName[21].key) && Player->factionBonusCount < 8) {
+			Player->factionBonusID[Player->factionBonusCount] = RULE_FUNGNUTRIENT;
+			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
+			Player->factionBonusCount++;
 		}
 		// FUNGMINERALS
-		else if (!_strcmpi(parseRule, BonusName[22].key) && player->factionBonusCount < 8) {
-			player->factionBonusID[player->factionBonusCount] = RULE_FUNGMINERALS;
-			player->factionBonusVal1[player->factionBonusCount] = atoi(parseParameter);
-			player->factionBonusCount++;
+		else if (!_strcmpi(parseRule, BonusName[22].key) && Player->factionBonusCount < 8) {
+			Player->factionBonusID[Player->factionBonusCount] = RULE_FUNGMINERALS;
+			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
+			Player->factionBonusCount++;
 		}
 		// FUNGENERGY
-		else if (!_strcmpi(parseRule, BonusName[23].key) && player->factionBonusCount < 8) {
-			player->factionBonusID[player->factionBonusCount] = RULE_FUNGENERGY;
-			player->factionBonusVal1[player->factionBonusCount] = atoi(parseParameter);
-			player->factionBonusCount++;
+		else if (!_strcmpi(parseRule, BonusName[23].key) && Player->factionBonusCount < 8) {
+			Player->factionBonusID[Player->factionBonusCount] = RULE_FUNGENERGY;
+			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
+			Player->factionBonusCount++;
 		}
 		else if (!_strcmpi(parseRule, BonusName[24].key)) { // COMMFREQ
-			player->ruleFlags |= FLAG_COMMFREQ;
+			Player->ruleFlags |= FLAG_COMMFREQ;
 		}
 		else if (!_strcmpi(parseRule, BonusName[25].key)) { // MINDCONTROL
-			player->ruleFlags |= FLAG_MINDCONTROL;
+			Player->ruleFlags |= FLAG_MINDCONTROL;
 		}
 		else if (!_strcmpi(parseRule, BonusName[26].key)) { // FANATIC
-			player->ruleFlags |= FLAG_FANATIC;
+			Player->ruleFlags |= FLAG_FANATIC;
 		}
 		// VOTES
-		else if (!_strcmpi(parseRule, BonusName[27].key) && player->factionBonusCount < 8) {
-			player->factionBonusID[player->factionBonusCount] = RULE_VOTES;
-			player->factionBonusVal1[player->factionBonusCount] = atoi(parseParameter);
-			player->factionBonusCount++;
+		else if (!_strcmpi(parseRule, BonusName[27].key) && Player->factionBonusCount < 8) {
+			Player->factionBonusID[Player->factionBonusCount] = RULE_VOTES;
+			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
+			Player->factionBonusCount++;
 		}
 		else if (!_strcmpi(parseRule, BonusName[28].key)) { // FREEPROTO
-			player->ruleFlags |= FLAG_FREEPROTO;
+			Player->ruleFlags |= FLAG_FREEPROTO;
 		}
 		else if (!_strcmpi(parseRule, BonusName[29].key)) { // AQUATIC
-			player->ruleFlags |= FLAG_AQUATIC;
+			Player->ruleFlags |= FLAG_AQUATIC;
 		}
 		else if (!_strcmpi(parseRule, BonusName[30].key)) { // ALIEN
-			player->ruleFlags |= FLAG_ALIEN;
+			Player->ruleFlags |= FLAG_ALIEN;
 		}
 		// FREEFAC
-		else if (!_strcmpi(parseRule, BonusName[31].key) && player->factionBonusCount < 8) {
-			player->factionBonusID[player->factionBonusCount] = RULE_FREEFAC;
-			player->factionBonusVal1[player->factionBonusCount] = atoi(parseParameter);
-			player->factionBonusCount++;
+		else if (!_strcmpi(parseRule, BonusName[31].key) && Player->factionBonusCount < 8) {
+			Player->factionBonusID[Player->factionBonusCount] = RULE_FREEFAC;
+			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
+			Player->factionBonusCount++;
 		}
 		// REVOLT
-		else if (!_strcmpi(parseRule, BonusName[32].key) && player->factionBonusCount < 8) {
-			player->factionBonusID[player->factionBonusCount] = RULE_REVOLT;
-			player->factionBonusVal1[player->factionBonusCount] = atoi(parseParameter);
-			player->factionBonusCount++;
+		else if (!_strcmpi(parseRule, BonusName[32].key) && Player->factionBonusCount < 8) {
+			Player->factionBonusID[Player->factionBonusCount] = RULE_REVOLT;
+			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
+			Player->factionBonusCount++;
 		}
 		// NODRONE
-		else if (!_strcmpi(parseRule, BonusName[33].key) && player->factionBonusCount < 8) {
-			player->factionBonusID[player->factionBonusCount] = RULE_NODRONE;
-			player->factionBonusVal1[player->factionBonusCount] = atoi(parseParameter);
-			player->factionBonusCount++;
+		else if (!_strcmpi(parseRule, BonusName[33].key) && Player->factionBonusCount < 8) {
+			Player->factionBonusID[Player->factionBonusCount] = RULE_NODRONE;
+			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
+			Player->factionBonusCount++;
 		}
 		else if (!_strcmpi(parseRule, BonusName[34].key)) { // WORMPOLICE
-			player->ruleFlags |= FLAG_WORMPOLICE;
+			Player->ruleFlags |= FLAG_WORMPOLICE;
 		}
 		// FREEABIL
-		else if (!_strcmpi(parseRule, BonusName[35].key) && player->factionBonusCount < 8) {
-			player->factionBonusID[player->factionBonusCount] = RULE_FREEABIL;
-			player->factionBonusVal1[player->factionBonusCount] = atoi(parseParameter);
-			player->factionBonusCount++;
+		else if (!_strcmpi(parseRule, BonusName[35].key) && Player->factionBonusCount < 8) {
+			Player->factionBonusID[Player->factionBonusCount] = RULE_FREEABIL;
+			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
+			Player->factionBonusCount++;
 		}
 		// PROBECOST
-		else if (!_strcmpi(parseRule, BonusName[36].key) && player->factionBonusCount < 8) {
-			player->factionBonusID[player->factionBonusCount] = RULE_PROBECOST;
-			player->factionBonusVal1[player->factionBonusCount] = atoi(parseParameter);
-			player->factionBonusCount++;
+		else if (!_strcmpi(parseRule, BonusName[36].key) && Player->factionBonusCount < 8) {
+			Player->factionBonusID[Player->factionBonusCount] = RULE_PROBECOST;
+			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
+			Player->factionBonusCount++;
 		}
 		// DEFENSE
-		else if (!_strcmpi(parseRule, BonusName[37].key) && player->factionBonusCount < 8) {
-			player->factionBonusID[player->factionBonusCount] = RULE_DEFENSE;
-			player->factionBonusVal1[player->factionBonusCount] = atoi(parseParameter);
-			player->factionBonusCount++;
+		else if (!_strcmpi(parseRule, BonusName[37].key) && Player->factionBonusCount < 8) {
+			Player->factionBonusID[Player->factionBonusCount] = RULE_DEFENSE;
+			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
+			Player->factionBonusCount++;
 		}
 		// OFFENSE
-		else if (!_strcmpi(parseRule, BonusName[38].key) && player->factionBonusCount < 8) {
-			player->factionBonusID[player->factionBonusCount] = RULE_OFFSENSE;
-			player->factionBonusVal1[player->factionBonusCount] = atoi(parseParameter);
-			player->factionBonusCount++;
+		else if (!_strcmpi(parseRule, BonusName[38].key) && Player->factionBonusCount < 8) {
+			Player->factionBonusID[Player->factionBonusCount] = RULE_OFFSENSE;
+			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
+			Player->factionBonusCount++;
 		}
 		else if (!_strcmpi(parseRule, BonusName[39].key)) { // TECHSHARE
-			player->ruleFlags |= FLAG_TECHSHARE;
-			player->ruleSharetech = atoi(parseParameter);
+			Player->ruleFlags |= FLAG_TECHSHARE;
+			Player->ruleSharetech = atoi(parseParameter);
 		}
 		else if (!_strcmpi(parseRule, BonusName[40].key)) { // TECHSTEAL
-			player->ruleFlags |= FLAG_TECHSTEAL;
+			Player->ruleFlags |= FLAG_TECHSTEAL;
 		}
 		parseRuleCheck = text_item();
 		len = strlen(parseRuleCheck);
@@ -756,27 +759,27 @@ void __cdecl read_faction(Player *player, int toggle) {
 	}
 	// Societal Ideology + Anti-Ideology
 	for (int i = 0; i < 2; i++) {
-		*(&player->socIdeologyCategory + i) = -1;
-		*(&player->socIdeologyModel + i) = 0;
-		*(&player->socIdeologyEffect + i) = -1;
+		*(&Player->socIdeologyCategory + i) = -1;
+		*(&Player->socIdeologyModel + i) = 0;
+		*(&Player->socIdeologyEffect + i) = -1;
 		text_get();
 		LPSTR socCategory = text_item();
 		for (int j = 0; j < MaxSocialCatNum; j++) {
 			LPSTR checkCatType = StringTable->get((int)SocialCategory[j].type);
 			if (*Language ? 
 				!_strnicmp(socCategory, checkCatType, 4) : !_stricmp(socCategory, checkCatType)) {
-				*(&player->socIdeologyCategory + i) = j;
+				*(&Player->socIdeologyCategory + i) = j;
 				break;
 			}
 		}
 		LPSTR socModel = text_item();
-		int socCatNum = *(&player->socIdeologyCategory + i);
+		int socCatNum = *(&Player->socIdeologyCategory + i);
 		if (socCatNum >= 0) {
 			for (int j = 0; j < MaxSocialModelNum; j++) {
 				LPSTR checkModel = StringTable->get((int)SocialCategory[socCatNum].name[j]);
 				if (*Language ? 
 					!_strnicmp(socModel, checkModel, 4) : !_stricmp(socModel, checkModel)) {
-					*(&player->socIdeologyModel + i) = j;
+					*(&Player->socIdeologyModel + i) = j;
 					break;
 				}
 			}
@@ -786,36 +789,36 @@ void __cdecl read_faction(Player *player, int toggle) {
 			if (!_strcmpi(SocialEffect[j].set1, socEffect)) {
 				// Bug fix: Original code sets this value to -1, disabling AI faction "Emphasis" 
 				// value. No indication this was intentional.
-				*(&player->socIdeologyEffect + i) = j;
+				*(&Player->socIdeologyEffect + i) = j;
 				break;
 			}
 		}
 	}
 	// Faction and Leader related strings
 	text_get(); // skips 2nd value in this line, abbreviation unused?
-	strcpy_s(player->nameAdjFaction, 128, text_item()); 
-	player->nameAdjFaction[127] = 0;
+	strcpy_s(Player->nameAdjFaction, 128, text_item()); 
+	Player->nameAdjFaction[127] = 0;
 	text_get();
-	strcpy_s(player->assistantName, 24, text_item());
-	player->assistantName[23] = 0;
-	strcpy_s(player->scientistName, 24, text_item());
-	player->scientistName[23] = 0;
-	strcpy_s(player->assistantCity, 24, text_item());
-	player->assistantCity[23] = 0;
+	strcpy_s(Player->assistantName, 24, text_item());
+	Player->assistantName[23] = 0;
+	strcpy_s(Player->scientistName, 24, text_item());
+	Player->scientistName[23] = 0;
+	strcpy_s(Player->assistantCity, 24, text_item());
+	Player->assistantCity[23] = 0;
 	text_get();
-	strcpy_s(player->titleLeader, 24, text_item());
-	player->titleLeader[23] = 0;
-	strcpy_s(player->adjLeader, 128, text_item());
-	player->adjLeader[127] = 0;
-	strcpy_s(player->adjInsultLeader, 128, text_item());
-	player->adjInsultLeader[127] = 0;
-	strcpy_s(player->adjFaction, 128, text_item());
-	player->adjFaction[127] = 0;
-	strcpy_s(player->adjInsultFaction, 128, text_item());
-	player->adjInsultFaction[127] = 0;
+	strcpy_s(Player->titleLeader, 24, text_item());
+	Player->titleLeader[23] = 0;
+	strcpy_s(Player->adjLeader, 128, text_item());
+	Player->adjLeader[127] = 0;
+	strcpy_s(Player->adjInsultLeader, 128, text_item());
+	Player->adjInsultLeader[127] = 0;
+	strcpy_s(Player->adjFaction, 128, text_item());
+	Player->adjFaction[127] = 0;
+	strcpy_s(Player->adjInsultFaction, 128, text_item());
+	Player->adjInsultFaction[127] = 0;
 	text_get();
-	strcpy_s(player->insultLeader, 24, text_item());
-	player->insultLeader[23] = 0;
+	strcpy_s(Player->insultLeader, 24, text_item());
+	Player->insultLeader[23] = 0;
 }
 
 /*
@@ -1077,7 +1080,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		for (int i = 0; i < MaxVehProtoNum; i++) {
 			VehPrototype[i].vehName[0] = 0;
 			VehPrototype[i].unk1 = 0;
-			VehPrototype[i].unk4 = 0;
+			VehPrototype[i].flags = 0;
 		}
 		if (read_units()) {
 			return TRUE;

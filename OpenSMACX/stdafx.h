@@ -29,9 +29,4 @@
   */
 
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
-
-#ifdef OPENSMACX_EXPORTS
 #define OPENSMACX_API __declspec(dllexport)
-#else
-#define OPENSMACX_API __declspec(dllimport)
-#endif

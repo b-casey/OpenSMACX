@@ -17,6 +17,7 @@
  */
 #include "stdafx.h"
 #include "veh.h"
+#include "alpha.h"
 #include "base.h"
 #include "general.h" // range
 #include "technology.h"
@@ -35,6 +36,50 @@ rules_order *Order = (rules_order *)0x0096C878; // [9]
 LPSTR *PlansShortName = (LPSTR *)0x00945FE0; // [15]
 LPSTR *PlansFullName = (LPSTR *)0x00952360; // [15]
 LPSTR *Triad = (LPSTR *)0x0094F1A8; // [3]
+
+/*
+Purpose: Calculate base speed of prototype on roads
+Original Offset: 005C13B0
+Return Value: Prototype's speed
+Status: WIP
+*/
+DWORD __cdecl speed_proto(int protoID) {
+	if (protoID == BSC_FUNGAL_TOWER) {
+		return 0;
+	}
+	int chasID = VehPrototype[protoID].chassisType;
+	DWORD speed = Chassis[chasID].speed;
+	BYTE triad = Chassis[chasID].triad;
+	char weapID = VehPrototype[protoID].weaponType;
+	if (triad == TRIAD_AIR) {
+		speed += VehPrototype[protoID].reactorType * 2;
+	}
+	if (Weapon[weapID].mode == WPN_MODE_Transport) {
+		speed--;
+	}
+	if (has_abil(protoID, ABL_SLOW)) {
+		speed--;
+	}
+	if (has_abil(protoID, ABL_ANTIGRAV_STRUTS)) {
+		speed += (triad == TRIAD_AIR) ? VehPrototype[protoID].reactorType * 2 : 1;
+	}
+	if (triad == TRIAD_AIR) {
+		if (has_abil(protoID, ABL_FUEL_NANOCELLS)) {
+			speed += 2;
+		}
+		int baseID = SecretProject->CloudbaseAcademy;
+		if (baseID >= 0 && Base[baseID].factionIDCurrent == (protoID / MaxVehProtoFactionNum)) {
+			speed += 2;
+		}
+		if (has_abil(protoID, ABL_AIR_SUPERIORITY)) {
+			speed = (speed * 4) / 5;
+		}
+		if (Weapon[weapID].mode == WPN_MODE_Transport) {
+			speed /= 2;
+		}
+	}
+	return range(speed, 1, 99) * Rules->MoveRateRoads;
+}
 
 /*
 Purpose: Check whether prototype has a specific ability
@@ -64,7 +109,8 @@ BOOL __cdecl has_abil(int protoID, int abilityID) {
 		}
 	}
 	if (VehPrototype[protoID].weaponType == WPN_Probe_Team && abilityID == ABL_ALGO_ENHANCEMENT 
-		&& *SP_NethackTerminus >= 0 && Bases[*SP_NethackTerminus].factionIDCurrent == factionID) {
+		&& SecretProject->NethackTerminus >= 0 
+		&& Base[SecretProject->NethackTerminus].factionIDCurrent == factionID) {
 		return TRUE; // All Probe Teams act as though they have the "Algorithmic Enhancement"
 	}
 	return FALSE;
@@ -243,11 +289,11 @@ void __cdecl make_proto(int protoID, int chassisType, int weapType,
 			if ((i % MaxVehProtoFactionNum) != i) {
 				protoIDLoop += protoID - protoID % MaxVehProtoFactionNum;
 			}
-			int unk4Local = VehPrototype[protoIDLoop].unk4;
-			if (unk4Local & 1) {
+			int flagsCheck = VehPrototype[protoIDLoop].flags;
+			if (flagsCheck & PROTO_ACTIVE) {
 				if ((protoIDLoop <= MaxVehProtoFactionNum && 
 					has_tech(VehPrototype[protoIDLoop].preqTech, protoID / MaxVehProtoFactionNum)) 
-					|| (protoIDLoop > MaxVehProtoFactionNum && (unk4Local & 4))) {
+					|| (protoIDLoop > MaxVehProtoFactionNum && (flagsCheck & 4))) {
 					int loopWeapType = VehPrototype[protoIDLoop].weaponType;
 					if (loopWeapType == weapType) {
 						cond1 = TRUE;
@@ -277,7 +323,7 @@ void __cdecl make_proto(int protoID, int chassisType, int weapType,
 		}
 		if (cond1 && cond2 && cond3) {
 			unkLocal1 = (protoIDLoop >= MaxVehProtoFactionNum 
-				&& VehPrototype[protoIDLoop].unk4 & 0x10) ? 3 : 1;
+				&& VehPrototype[protoIDLoop].flags & 0x10) ? 3 : 1;
 		}
 	}
 	VehPrototype[protoID].chassisType = chassisType;
@@ -373,6 +419,6 @@ void __cdecl make_proto(int protoID, int chassisType, int weapType,
 	VehPrototype[protoID].unk2 = 0;
 	VehPrototype[protoID].unk3 = (protoID >= MaxVehProtoFactionNum) ? 
 		1 << (protoID / MaxVehProtoFactionNum) : -1;
-	VehPrototype[protoID].unk4 = unkLocal1 ? ((unkLocal1 & 2) ? 0x115 : 0x105) : 1;
+	VehPrototype[protoID].flags = unkLocal1 ? ((unkLocal1 & 2) ? 0x115 : 0x105) : PROTO_ACTIVE;
 	VehPrototype[protoID].iconOffset = -1;
 }

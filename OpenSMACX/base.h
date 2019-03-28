@@ -156,7 +156,7 @@ enum facility_id {
 	FAC_EMPTY_SP_64 = 0x85,
 };
 
-struct Base {
+struct base {
 	__int16 xCoord;
 	__int16 yCoord;
 	char factionIDCurrent;
@@ -253,51 +253,84 @@ struct rules_citizen {
 	int researchBonus;
 };
 
+// Secret Projects > stores BaseID that built SP
+struct base_secret_project {
+	int HumanGenomeProject;
+	int CommandNexus;
+	int WeatherParadigm;
+	int MerchantExchange;
+	int EmpathGuild;
+	int CitizensDefenseForce;
+	int VirtualWorld;
+	int PlanetaryTransitSystem;
+	int XenoempathyDome;
+	int NeuralAmplifier;
+	int MaritimeControlCenter;
+	int PlanetaryDatalinks;
+	int Supercollider;
+	int AsceticVirtues;
+	int LongevityVaccine;
+	int HunterSeekerAlgorithm;
+	int PholusMutagen;
+	int CyborgFactory;
+	int TheoryOfEverything;
+	int DreamTwister;
+	int UniversalTranslator;
+	int NetworkBackbone;
+	int NanoFactory;
+	int LivingRefinery;
+	int CloningVats;
+	int SelfAwareColony;
+	int ClinicalImmortality;
+	int SpaceElevator;
+	int SingularityInductor;
+	int BulkMatterTransmitter;
+	int TelepathicMatrix;
+	int VoiceOfPlanet;
+	int AscentToTranscendence;
+	int ManifoldHarmonics; // SMACX Only
+	int NethackTerminus; // SMACX Only
+	int CloudbaseAcademy; // SMACX Only
+	int PlanetaryEnergyGrid; // SMACX Only
+	int UserDefined38; // no direct ref in code logic?
+	int UserDefined39;
+	int UserDefined40;
+	int UserDefined41;
+	int UserDefined42;
+	int UserDefined43;
+	int UserDefined44;
+	int UserDefined45;
+	int UserDefined46;
+	int UserDefined47;
+	int UserDefined48;
+	int UserDefined49;
+	int UserDefined50;
+	int UserDefined51;
+	int UserDefined52;
+	int UserDefined53;
+	int UserDefined54;
+	int UserDefined55;
+	int UserDefined56;
+	int UserDefined57;
+	int UserDefined58;
+	int UserDefined59;
+	int UserDefined60;
+	int UserDefined61;
+	int UserDefined62;
+	int UserDefined63;
+	int UserDefined64;
+};
+
 constexpr int MaxBaseNum = 512;
 constexpr int MaxFacilityNum = 134;
 constexpr int FacilitySPStart = 70; // Special Project start offset
 constexpr int MaxCitizenNum = 10;
+constexpr int SP_Unbuilt = -1;
+constexpr int SP_Destroyed = -2;
 
 extern rules_facility *Facility;
 extern rules_citizen *Citizen;
-extern Base *Bases;
+extern base *Base;
+extern base_secret_project *SecretProject;
 
-// Secret Projects > stores BaseID that built SP
-extern int *SP_HumanGenomeProject;
-extern int *SP_CommandNexus;
-extern int *SP_WeatherParadigm;
-extern int *SP_MerchantExchange;
-extern int *SP_EmpathGuild;
-extern int *SP_CitizensDefenseForce;
-extern int *SP_VirtualWorld;
-extern int *SP_PlanetaryTransitSystem;
-extern int *SP_XenoempathyDome;
-extern int *SP_NeuralAmplifier;
-extern int *SP_MaritimeControlCenter;
-extern int *SP_PlanetaryDatalinks;
-extern int *SP_Supercollider;
-extern int *SP_AsceticVirtues;
-extern int *SP_LongevityVaccine;
-extern int *SP_HunterSeekerAlgorithm;
-extern int *SP_PholusMutagen;
-extern int *SP_CyborgFactory;
-extern int *SP_TheoryOfEverything;
-extern int *SP_DreamTwister;
-extern int *SP_UniversalTranslator;
-extern int *SP_NetworkBackbone;
-extern int *SP_NanoFactory;
-extern int *SP_LivingRefinery;
-extern int *SP_CloningVats;
-extern int *SP_SelfAwareColony;
-extern int *SP_ClinicalImmortality;
-extern int *SP_SpaceElevator;
-extern int *SP_SingularityInductor;
-extern int *SP_BulkMatterTransmitter;
-extern int *SP_TelepathicMatrix;
-extern int *SP_VoiceOfPlanet;
-extern int *SP_AscentToTranscendence;
-extern int *SP_ManifoldHarmonics;
-extern int *SP_NethackTerminus;
-extern int *SP_CloudbaseAcademy;
-extern int *SP_PlanetaryEnergyGrid;
-extern int *SP_UserDefined;
+OPENSMACX_API BOOL __cdecl has_project(DWORD projectID, DWORD factionID);

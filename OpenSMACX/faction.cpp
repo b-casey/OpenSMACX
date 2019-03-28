@@ -18,6 +18,8 @@
 #include "stdafx.h"
 #include "faction.h"
 
+player *Players = (player *)0x00946A50;
+faction_art *FactionArt = (faction_art*)0x0078E978;
 rules_social_category *SocialCategory = (rules_social_category *)0x0094B000;
 rules_social_effect *SocialEffect = (rules_social_effect *)0x00946580;
 LPSTR *Mood = (LPSTR *)0x0094C9E4;
@@ -25,5 +27,3 @@ LPSTR *Repute = (LPSTR *)0x00946A30;
 rules_might *Might = (rules_might *)0x0094C558;
 rules_proposal *Proposal = (rules_proposal *)0x009A6828;
 rules_bonusname *BonusName = (rules_bonusname *)0x009461A8;
-Player *Players = (Player *)0x00946A50;
-faction_art *FactionArt = (faction_art*)0x0078E978;

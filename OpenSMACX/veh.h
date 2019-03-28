@@ -52,7 +52,7 @@ enum veh_triad {
 	TRIAD_AIR = 0x2,
 };
 
-enum veh_abilities {
+enum veh_abilities_bitfield {
 	ABL_SUPER_TERRAFORMER = 0x1,
 	ABL_DEEP_RADAR = 0x2,
 	ABL_CLOAKED = 0x4,
@@ -84,7 +84,7 @@ enum veh_abilities {
 	ABL_ALGO_ENHANCEMENT = 0x10000000,
 };
 
-enum veh_ability_flags {
+enum veh_ability_flag_bitfield {
 	ALLOWED_LAND_UNIT = 0x1,
 	ALLOWED_SEA_UNIT = 0x2,
 	ALLOWED_AIR_UNIT = 0x4,
@@ -97,6 +97,10 @@ enum veh_ability_flags {
 	NOT_ALLOWED_FAST_UNIT = 0x200,
 	COST_INC_LAND_UNIT = 0x400,
 	ONLY_PROBE_TEAM = 0x800,
+};
+
+enum veh_prototype_flag_bitfield {
+	PROTO_ACTIVE = 0x1, // if this bit is zero, prototype has been retired
 };
 
 enum veh_weapon_mode {
@@ -228,12 +232,12 @@ struct veh_prototype {
 	BYTE cost;
 	char plan;
 	char unk1; // some kind of internal prototype category?
-	char unk2; // faction id bitfield? which faction created prototype? (1 << factionID)
+	char unk2; // factions that have created prototype?
 	char unk3; // which faction "knows" about unit prototype? seemed to only be used by battle_fight
 			   // to set it after initial value in make_proto()
 	char iconOffset;
 	char padding; // unused
-	__int16 unk4; // internal bitfield
+	WORD flags;
 	__int16 preqTech; // only set by read_units() for predefined units
 };
 
@@ -308,3 +312,4 @@ OPENSMACX_API DWORD __cdecl proto_cost(int chassisType, int weapType,
 OPENSMACX_API DWORD __cdecl base_cost(int protoID);
 OPENSMACX_API void __cdecl make_proto(int protoID, int chassisType, int weapType, 
 													int armorType, int ability, int reactorType);
+OPENSMACX_API DWORD __cdecl speed_proto(int protoID);

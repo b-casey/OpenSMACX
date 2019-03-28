@@ -20,7 +20,7 @@
  /*
   * Technology related objects, variables and functions.
   */
-enum technology_flags {
+enum technology_flag_bitfield {
 	SECRETS = 0x1,
 	IMPROVED_PROBES = 0x2,
 	INC_COMMERCE = 0x4,
