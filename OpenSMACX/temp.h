@@ -46,6 +46,8 @@ typedef void *func5(int);
 extern func5 *load_faction_art;
 typedef void *func6(char const *, int(*)(void));
 extern func6 *X_pop;
+typedef int func7(int, int, int);
+extern func7 *morale_veh;
 
 // string
 typedef int *func8(LPSTR, LPSTR);

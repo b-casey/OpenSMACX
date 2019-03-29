@@ -221,6 +221,42 @@ struct rules_armor {
 	__int16 padding2;
 };
 
+struct veh {
+	__int16 xCoord;
+	__int16 yCoord;
+	DWORD currentState;
+	WORD status;
+	WORD protoID;
+	WORD unknown1;
+	char factionID;
+	char yearEndLurking;
+	char dmgIncurred;
+	char currentStatus;
+	char waypointCount;
+	char patrolCurrentPoint;
+	__int16 waypoint1xCoord;
+	__int16 waypoint2xCoord;
+	__int16 waypoint3xCoord;
+	__int16 waypoint4xCoord;
+	__int16 waypoint1yCoord;
+	__int16 waypoint2yCoord;
+	__int16 waypoint3yCoord;
+	__int16 waypoint4yCoord;
+	char morale;
+	char terraformingTurns;
+	char typeCrawling;
+	char unknown4;
+	char movesExpended;
+	char unknown5;
+	char unknown6;
+	char unknown7;
+	char unknown8;
+	char unknown9;
+	__int16 homeBaseID;
+	__int16 nextVehIDSquare;
+	__int16 prevVehIDSquare;
+};
+
 struct veh_prototype {
 	char vehName[32];
 	int abilityFlags;
@@ -292,6 +328,7 @@ constexpr int MaxPlanNum = 15;
 constexpr int MaxTriadNum = 3;
 
 extern veh_prototype *VehPrototype;
+extern veh *Veh;
 extern rules_chassis *Chassis;
 extern rules_weapon *Weapon;
 extern rules_armor *Armor;
@@ -313,3 +350,5 @@ OPENSMACX_API DWORD __cdecl base_cost(int protoID);
 OPENSMACX_API void __cdecl make_proto(int protoID, int chassisType, int weapType, 
 													int armorType, int ability, int reactorType);
 OPENSMACX_API DWORD __cdecl speed_proto(int protoID);
+OPENSMACX_API DWORD __cdecl speed(int vehID, BOOL toggle);
+OPENSMACX_API BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn);

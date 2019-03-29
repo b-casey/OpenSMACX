@@ -24,6 +24,7 @@
 #include "temp.h"
 
 veh_prototype *VehPrototype = (veh_prototype *)0x009AB868; // [512]
+veh *Veh = (veh *)0x00952828; // [2049]
 rules_chassis *Chassis = (rules_chassis *)0x0094A330; // [9]
 rules_weapon *Weapon = (rules_weapon *)0x0094AE60; // [26]
 rules_armor *Armor = (rules_armor *)0x0094F278; // [14]
@@ -38,47 +39,109 @@ LPSTR *PlansFullName = (LPSTR *)0x00952360; // [15]
 LPSTR *Triad = (LPSTR *)0x0094F1A8; // [3]
 
 /*
-Purpose: Calculate base speed of prototype on roads
+Purpose: Check if unit can perform artillery combat. The 2nd parameter determines how sea units
+         are treated.
+Original Offset: 005C0DB0
+Return Value: Has artillery ability? True/False
+Status: Complete
+*/
+BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn) {
+	if ((Weapon[VehPrototype[protoID].weaponType].offenseRating <= 0 // PSI + non-combat
+		|| Armor[VehPrototype[protoID].armorType].defenseRating < 0) // PSI
+		&& protoID != BSC_SPORE_LAUNCHER) { // Spore Launcher exception
+		return FALSE;
+	}
+	BYTE triad = Chassis[VehPrototype[protoID].chassisType].triad;
+	if (triad == TRIAD_SEA) {
+		return seaTriadRetn; // cursory check shows this value always being set to TRUE
+	}
+	if (triad == TRIAD_AIR) {
+		return FALSE;
+	}
+	return has_abil(protoID, ABL_ARTILLERY); // TRIAD_LAND
+}
+
+/*
+Purpose: 
+Original Offset: 005C13B0
+Return Value: speed
+Status: WIP
+*/
+DWORD __cdecl speed(int vehID, BOOL toggle) {
+	int protoID = Veh[vehID].protoID;
+	DWORD speedVal = speed_proto(protoID);
+	BYTE triad = Chassis[VehPrototype[protoID].chassisType].triad;
+	if (triad == TRIAD_SEA && has_project(SP_MARITIME_CONTROL_CENTER, Veh[vehID].factionID)) {
+		speedVal += Rules->MoveRateRoads * 2;
+	}
+	if (morale_veh(vehID, 1, 0) == 6 && !toggle && (protoID >= MaxVehProtoFactionNum 
+		|| Weapon[VehPrototype[protoID].weaponType].offenseRating >= 0)) {
+		speedVal += Rules->MoveRateRoads;
+	}
+	if (Veh[vehID].dmgIncurred && triad != TRIAD_AIR) {
+		DWORD speedVal2 = speedVal / Rules->MoveRateRoads;
+		if (VehPrototype[protoID].plan == PLAN_ALIEN_ARTIFACT) {
+			speedVal = 1;
+		}
+		else {
+			speedVal = range(range(VehPrototype[protoID].reactorType, 1, 100) * 10, 1, 99);
+		}
+		//
+		DWORD tempVal1;
+		if (VehPrototype[protoID].plan == PLAN_ALIEN_ARTIFACT) {
+			tempVal1 = 1;
+		}
+		else {
+			tempVal1 = range(VehPrototype[protoID].reactorType, 1, 100) * 10;
+		}
+		int x = tempVal1 - Veh[vehID].dmgIncurred;
+		x = range(tempVal1, 0, 9999);
+		int v13 = (speedVal2 * x + speedVal - 1) / speedVal;
+	}
+	return (Veh[vehID].protoID == BSC_FUNGAL_TOWER) ? 0 : speedVal;
+}
+
+/*
+Purpose: Calculate speed of prototype on roads
 Original Offset: 005C13B0
 Return Value: Prototype's speed
 Status: Complete
 */
 DWORD __cdecl speed_proto(int protoID) {
 	if (protoID == BSC_FUNGAL_TOWER) {
-		return 0;
+		return 0; // cannot move
 	}
 	int chasID = VehPrototype[protoID].chassisType;
-	DWORD speed = Chassis[chasID].speed;
+	int speedVal = Chassis[chasID].speed;
 	BYTE triad = Chassis[chasID].triad;
 	char weapID = VehPrototype[protoID].weaponType;
 	if (triad == TRIAD_AIR) {
-		speed += VehPrototype[protoID].reactorType * 2;
+		speedVal += VehPrototype[protoID].reactorType * 2;
 	}
 	if (Weapon[weapID].mode == WPN_MODE_Transport) {
-		speed--;
+		speedVal--;
 	}
 	if (has_abil(protoID, ABL_SLOW)) {
-		speed--;
+		speedVal--;
 	}
 	if (has_abil(protoID, ABL_ANTIGRAV_STRUTS)) {
-		speed += (triad == TRIAD_AIR) ? VehPrototype[protoID].reactorType * 2 : 1;
+		speedVal += (triad == TRIAD_AIR) ? VehPrototype[protoID].reactorType * 2 : 1;
 	}
 	if (triad == TRIAD_AIR) {
 		if (has_abil(protoID, ABL_FUEL_NANOCELLS)) {
-			speed += 2;
+			speedVal += 2;
 		}
-		int baseID = SecretProject->CloudbaseAcademy;
-		if (baseID >= 0 && Base[baseID].factionIDCurrent == (protoID / MaxVehProtoFactionNum)) {
-			speed += 2;
+		if (has_project(SP_CLOUDBASE_ACADEMY, protoID / MaxVehProtoFactionNum)) {
+			speedVal += 2; // bonus from Aerospace Complex
 		}
 		if (has_abil(protoID, ABL_AIR_SUPERIORITY)) {
-			speed = (speed * 4) / 5;
+			speedVal = (speedVal * 4) / 5; // generally -20% to -25%, in some cases higher due to rounding
 		}
 		if (Weapon[weapID].mode == WPN_MODE_Transport) {
-			speed /= 2;
+			speedVal /= 2; // 2nd penalty for air transports: -50%
 		}
 	}
-	return range(speed, 1, 99) * Rules->MoveRateRoads;
+	return range(speedVal, 1, 99) * Rules->MoveRateRoads;
 }
 
 /*
@@ -93,7 +156,7 @@ BOOL __cdecl has_abil(int protoID, int abilityID) {
 	}
 	DWORD factionID = protoID / MaxVehProtoFactionNum;
 	if (!factionID) {
-		return FALSE; // skip Native life faction / base prototypes from #UNITS
+		return FALSE; // skip basic prototypes from #UNITS
 	}
 	if (Players[factionID].ruleFlags & FLAG_ALIEN && abilityID == ABL_DEEP_RADAR) {
 		return TRUE; // Caretakers + Usurpers > "Deep Radar" ability for all units
@@ -109,8 +172,7 @@ BOOL __cdecl has_abil(int protoID, int abilityID) {
 		}
 	}
 	if (VehPrototype[protoID].weaponType == WPN_Probe_Team && abilityID == ABL_ALGO_ENHANCEMENT 
-		&& SecretProject->NethackTerminus >= 0 
-		&& Base[SecretProject->NethackTerminus].factionIDCurrent == factionID) {
+		&& has_project(SP_NETHACK_TERMINUS, factionID)) {
 		return TRUE; // All Probe Teams act as though they have the "Algorithmic Enhancement"
 	}
 	return FALSE;

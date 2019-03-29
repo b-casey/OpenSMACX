@@ -38,11 +38,12 @@ func3 *_fopen = (func3 *)0x00645646;
 // other
 typedef void *func5(int);
 func5 *load_faction_art = (func5 *)0x00453710;
-
 // TODO: crash bug; X_pop > ... > BasePop::start > text_close > NULLs 009B7CF4 (FILE *Txt.textFile)
 // Next call to text_get() tries to access 009B7CF4 and the game crashes.
 typedef void *func6(char const *, int(*)(void));
 func6 *X_pop = (func6 *)0x005BF310;
+typedef int func7(int, int, int);
+func7 *morale_veh = (func7 *)0x005C0E40;
 
 // string
 typedef int *func8(LPSTR, LPSTR);

@@ -36,3 +36,14 @@ BOOL __cdecl has_project(DWORD projectID, DWORD factionID) {
 	}
 	return FALSE; // Not built or destroyed
 }
+
+/*
+Purpose: Calculate offset & bitmask from facilityID.
+Original Offset: 0050BA00
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl bitmask(DWORD facilityID, DWORD *offset, DWORD *mask) {
+	*offset = facilityID / 8;
+	*mask = 1 << (facilityID & 7);
+}
