@@ -1,4 +1,4 @@
-/*
+﻿/*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
  * Copyright (C) 2013-2019 Brendan Casey
  *
@@ -53,6 +53,11 @@ extern func7 *morale_veh;
 typedef int *func8(LPSTR, LPSTR);
 extern func8 *parse_string;
 
+// testing
+OPENSMACX_API void __cdecl tester();
+typedef int func9(int, int);
+extern func9 *speed_;
+
 ///
 extern LPSTR *ParseTempPtr1_1;
 extern LPSTR *ParseTempPtr2_1;
@@ -69,6 +74,12 @@ extern int *TechValidCount;
 extern int *TechCommerceCount;
 extern BOOL *SMACX_Enabled;
 extern BOOL *IsLoggingDisabled; // global toggle for logging on/off? debug vs release?
+extern DWORD *GameRules; // bitfield
+extern int *DiffLevelCurrent;
+extern int *VehCurrentCount;
+extern int *BaseCurrentCount;
+extern int *TurnCurrentNum;
+extern int *MissionYearCurrent;
 
 extern Filefind *FilefindPath;
 extern MainInterface *MainInterfaceVar;

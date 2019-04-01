@@ -24,7 +24,7 @@ base *Base = (base *)0x0097D040; // 512
 base_secret_project *SecretProject = (base_secret_project *)0x009A6514; // 64
 
 /*
-Purpose: Check if faction has secret project in a base they control
+Purpose: Check if faction has secret project in a base they control.
 Original Offset: 004F80D0
 Return Value: Does faction have Secret Project? TRUE/FALSE
 Status: Complete

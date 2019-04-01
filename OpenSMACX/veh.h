@@ -20,36 +20,46 @@
  /*
   * Vehicle/unit related objects, variables and functions.
   */
+enum veh_morale {
+	MORALE_VERY_GREEN = 0,
+	MORALE_GREEN = 1,
+	MORALE_DISCIPLINED = 2,
+	MORALE_HARDENED = 3,
+	MORALE_VETERAN = 4,
+	MORALE_COMMANDO = 5,
+	MORALE_ELITE = 6,
+};
+
 enum veh_basic_id {
-	BSC_COLONY_POD = 0x0,
-	BSC_FORMERS = 0x1,
-	BSC_SCOUT_PATROL = 0x2,
-	BSC_TRANSPORT_FOIL = 0x3,
-	BSC_SEA_FORMERS = 0x4,
-	BSC_SUPPLY_CRAWLER = 0x5,
-	BSC_PROBE_TEAM = 0x6,
-	BSC_ALIEN_ARTIFACT = 0x7,
-	BSC_MIND_WORMS = 0x8,
-	BSC_ISLE_OF_THE_DEEP = 0x9,
-	BSC_LOCUSTS_OF_CHIRON = 0xA,
-	BSC_UNITY_ROVER = 0xB,
-	BSC_UNITY_SCOUT_CHOPPER = 0xC,
-	BSC_UNITY_FOIL = 0xD,
-	BSC_SEALURK = 0xE,
-	BSC_SPORE_LAUNCHER = 0xF,
-	BSC_BATTLE_OGRE_MK1 = 0x10,
-	BSC_BATTLE_OGRE_MK2 = 0x11,
-	BSC_BATTLE_OGRE_MK3 = 0x12,
-	BSC_FUNGAL_TOWER = 0x13,
-	BSC_UNITY_MINING_LASER = 0x14,
-	BSC_SEA_ESCAPE_POD = 0x15,
-	BSC_UNITY_GUNSHIP = 0x16,
+	BSC_COLONY_POD = 0,
+	BSC_FORMERS = 1,
+	BSC_SCOUT_PATROL = 2,
+	BSC_TRANSPORT_FOIL = 3,
+	BSC_SEA_FORMERS = 4,
+	BSC_SUPPLY_CRAWLER = 5,
+	BSC_PROBE_TEAM = 6,
+	BSC_ALIEN_ARTIFACT = 7,
+	BSC_MIND_WORMS = 8,
+	BSC_ISLE_OF_THE_DEEP = 9,
+	BSC_LOCUSTS_OF_CHIRON = 10,
+	BSC_UNITY_ROVER = 11,
+	BSC_UNITY_SCOUT_CHOPPER = 12,
+	BSC_UNITY_FOIL = 13,
+	BSC_SEALURK = 14,
+	BSC_SPORE_LAUNCHER = 15,
+	BSC_BATTLE_OGRE_MK1 = 16,
+	BSC_BATTLE_OGRE_MK2 = 17,
+	BSC_BATTLE_OGRE_MK3 = 18,
+	BSC_FUNGAL_TOWER = 19,
+	BSC_UNITY_MINING_LASER = 20,
+	BSC_SEA_ESCAPE_POD = 21,
+	BSC_UNITY_GUNSHIP = 22,
 };
 
 enum veh_triad {
-	TRIAD_LAND = 0x0,
-	TRIAD_SEA = 0x1,
-	TRIAD_AIR = 0x2,
+	TRIAD_LAND = 0,
+	TRIAD_SEA = 1,
+	TRIAD_AIR = 2,
 };
 
 enum veh_abilities_bitfield {
@@ -104,15 +114,15 @@ enum veh_prototype_flag_bitfield {
 };
 
 enum veh_weapon_mode {
-	WPN_MODE_Projectile = 0x0,
-	WPN_MODE_Energy = 0x1,
-	WPN_MODE_Missile = 0x2,
-	WPN_MODE_Transport = 0x7,
-	WPN_MODE_Colonist = 0x8,
-	WPN_MODE_Terraformer = 0x9,
-	WPN_MODE_Convoy = 0xA,
-	WPN_MODE_InfoWar = 0xB,
-	WPN_MODE_Artifact = 0xC,
+	WPN_MODE_PROJECTILE = 0,
+	WPN_MODE_ENERGY = 1,
+	WPN_MODE_MISSILE = 2,
+	WPN_MODE_TRANSPORT = 7,
+	WPN_MODE_COLONIST = 8,
+	WPN_MODE_TERRAFORMER = 9,
+	WPN_MODE_CONVOY = 10,
+	WPN_MODE_INFOWAR = 11,
+	WPN_MODE_ARTIFACT = 12,
 };
 
 enum veh_plan {
@@ -135,32 +145,32 @@ enum veh_plan {
 };
 
 enum veh_weapon_id {
-	WPN_Hand_Weapons = 0x0,
-	WPN_Laser = 0x1,
-	WPN_Particle_Impactor = 0x2,
-	WPN_Gatling_Laser = 0x3,
-	WPN_Missile_Launcher = 0x4,
-	WPN_Chaos_Gun = 0x5,
-	WPN_Fusion_Laser = 0x6,
-	WPN_Tachyon_Bolt = 0x7,
-	WPN_Plasma_Shard = 0x8,
-	WPN_Quantum_Laser = 0x9,
-	WPN_Graviton_Gun = 0xA,
-	WPN_Singularity_Laser = 0xB,
-	WPN_Resonance_Laser = 0xC,
-	WPN_Resonance_Bolt = 0xD,
-	WPN_String_Disruptor = 0xE,
-	WPN_Psi_Attack = 0xF,
-	WPN_Planet_Buster = 0x10,
-	WPN_Colony_Module = 0x11,
-	WPN_Terraforming_Unit = 0x12,
-	WPN_Troop_Transport = 0x13,
-	WPN_Supply_Transport = 0x14,
-	WPN_Probe_Team = 0x15,
-	WPN_Alien_Artifact = 0x16,
-	WPN_Conventional_Payload = 0x17,
-	WPN_Tectonic_Payload = 0x18,
-	WPN_Fungal_Payload = 0x19,
+	WPN_HAND_WEAPONS = 0,
+	WPN_LASER = 1,
+	WPN_PARTICLE_IMPACTOR = 2,
+	WPN_GATLING_LASER = 3,
+	WPN_MISSILE_LAUNCHER = 4,
+	WPN_CHAOS_GUN = 5,
+	WPN_FUSION_LASER = 6,
+	WPN_TACHYON_BOLT = 7,
+	WPN_PLASMA_SHARD = 8,
+	WPN_QUANTUM_LASER = 9,
+	WPN_GRAVITON_GUN = 10,
+	WPN_SINGULARITY_LASER = 11,
+	WPN_RESONANCE_LASER = 12,
+	WPN_RESONANCE_BOLT = 13,
+	WPN_STRING_DISRUPTOR = 14,
+	WPN_PSI_ATTACK = 15,
+	WPN_PLANET_BUSTER = 16,
+	WPN_COLONY_MODULE = 17,
+	WPN_TERRAFORMING_UNIT = 18,
+	WPN_TROOP_TRANSPORT = 19,
+	WPN_SUPPLY_TRANSPORT = 20,
+	WPN_PROBE_TEAM = 21,
+	WPN_ALIEN_ARTIFACT = 22,
+	WPN_CONVENTIONAL_PAYLOAD = 23,
+	WPN_TECTONIC_PAYLOAD = 24,
+	WPN_FUNGAL_PAYLOAD = 25,
 };
 
 struct rules_chassis {
@@ -228,9 +238,9 @@ struct veh {
 	WORD status;
 	WORD protoID;
 	WORD unknown1;
-	char factionID;
+	BYTE factionID;
 	char yearEndLurking;
-	char dmgIncurred;
+	BYTE dmgIncurred;
 	char currentStatus;
 	char waypointCount;
 	char patrolCurrentPoint;
@@ -260,13 +270,13 @@ struct veh {
 struct veh_prototype {
 	char vehName[32];
 	int abilityFlags;
-	char chassisType;
-	char weaponType;
-	char armorType;
-	char reactorType;
+	BYTE chassisType;
+	char weaponType; // PSI can be negative
+	char armorType; // PSI is negative
+	BYTE reactorType;
 	BYTE carryCapacity;
 	BYTE cost;
-	char plan;
+	char plan; // -1 auto-calculate
 	char unk1; // some kind of internal prototype category?
 	char unk2; // factions that have created prototype?
 	char unk3; // which faction "knows" about unit prototype? seemed to only be used by battle_fight
@@ -342,6 +352,9 @@ extern LPSTR *PlansShortName;
 extern LPSTR *PlansFullName;
 extern LPSTR *Triad;
 
+OPENSMACX_API BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn);
+OPENSMACX_API DWORD __cdecl speed(int vehID, BOOL toggle);
+OPENSMACX_API DWORD __cdecl speed_proto(int protoID);
 OPENSMACX_API BOOL __cdecl has_abil(int protoID, int abilityID);
 OPENSMACX_API DWORD __cdecl transport_val(int chassisID, int ability, int reactorID);
 OPENSMACX_API DWORD __cdecl proto_cost(int chassisType, int weapType, 
@@ -349,6 +362,3 @@ OPENSMACX_API DWORD __cdecl proto_cost(int chassisType, int weapType,
 OPENSMACX_API DWORD __cdecl base_cost(int protoID);
 OPENSMACX_API void __cdecl make_proto(int protoID, int chassisType, int weapType, 
 													int armorType, int ability, int reactorType);
-OPENSMACX_API DWORD __cdecl speed_proto(int protoID);
-OPENSMACX_API DWORD __cdecl speed(int vehID, BOOL toggle);
-OPENSMACX_API BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn);

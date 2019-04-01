@@ -62,43 +62,42 @@ BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn) {
 }
 
 /*
-Purpose: 
-Original Offset: 005C13B0
+Purpose: Calculate speed of unit on roads taking into consideration prototype speed, elite morale, 
+         if unit is damaged and other factors. The skipMorale parameter seems to only be set to TRUE 
+		 for certain combat calculations in battle_fight().
+Original Offset: 005C1540
 Return Value: speed
-Status: WIP
+Status: Complete
 */
-DWORD __cdecl speed(int vehID, BOOL toggle) {
+DWORD __cdecl speed(int vehID, BOOL skipMorale) {
 	int protoID = Veh[vehID].protoID;
+	if (protoID == BSC_FUNGAL_TOWER) { // moved this check to top vs bottom, same logic
+		return 0; // cannot move
+	}
 	DWORD speedVal = speed_proto(protoID);
 	BYTE triad = Chassis[VehPrototype[protoID].chassisType].triad;
 	if (triad == TRIAD_SEA && has_project(SP_MARITIME_CONTROL_CENTER, Veh[vehID].factionID)) {
 		speedVal += Rules->MoveRateRoads * 2;
 	}
-	if (morale_veh(vehID, 1, 0) == 6 && !toggle && (protoID >= MaxVehProtoFactionNum 
+	if (!skipMorale && morale_veh(vehID, 1, 0) == MORALE_ELITE && (protoID >= MaxVehProtoFactionNum
 		|| Weapon[VehPrototype[protoID].weaponType].offenseRating >= 0)) {
 		speedVal += Rules->MoveRateRoads;
 	}
 	if (Veh[vehID].dmgIncurred && triad != TRIAD_AIR) {
-		DWORD speedVal2 = speedVal / Rules->MoveRateRoads;
+		// optimized code without changes to logic
+		DWORD moves = speedVal / Rules->MoveRateRoads, reactorFac;
 		if (VehPrototype[protoID].plan == PLAN_ALIEN_ARTIFACT) {
-			speedVal = 1;
+			speedVal = reactorFac = 1;
 		}
 		else {
-			speedVal = range(range(VehPrototype[protoID].reactorType, 1, 100) * 10, 1, 99);
+			reactorFac = range(VehPrototype[protoID].reactorType, 1, 100) * 10;
+			speedVal = range(reactorFac, 1, 99);
 		}
-		//
-		DWORD tempVal1;
-		if (VehPrototype[protoID].plan == PLAN_ALIEN_ARTIFACT) {
-			tempVal1 = 1;
-		}
-		else {
-			tempVal1 = range(VehPrototype[protoID].reactorType, 1, 100) * 10;
-		}
-		int x = tempVal1 - Veh[vehID].dmgIncurred;
-		x = range(tempVal1, 0, 9999);
-		int v13 = (speedVal2 * x + speedVal - 1) / speedVal;
+		speedVal = 
+			(moves * range(reactorFac - Veh[vehID].dmgIncurred, 0, 9999) + speedVal - 1) / speedVal;
+		speedVal = range(speedVal, (triad == TRIAD_SEA) ? 2 : 1, 999) * Rules->MoveRateRoads;
 	}
-	return (Veh[vehID].protoID == BSC_FUNGAL_TOWER) ? 0 : speedVal;
+	return speedVal;
 }
 
 /*
@@ -118,7 +117,7 @@ DWORD __cdecl speed_proto(int protoID) {
 	if (triad == TRIAD_AIR) {
 		speedVal += VehPrototype[protoID].reactorType * 2;
 	}
-	if (Weapon[weapID].mode == WPN_MODE_Transport) {
+	if (Weapon[weapID].mode == WPN_MODE_TRANSPORT) {
 		speedVal--;
 	}
 	if (has_abil(protoID, ABL_SLOW)) {
@@ -137,7 +136,7 @@ DWORD __cdecl speed_proto(int protoID) {
 		if (has_abil(protoID, ABL_AIR_SUPERIORITY)) {
 			speedVal = (speedVal * 4) / 5; // generally -20% to -25%, in some cases higher due to rounding
 		}
-		if (Weapon[weapID].mode == WPN_MODE_Transport) {
+		if (Weapon[weapID].mode == WPN_MODE_TRANSPORT) {
 			speedVal /= 2; // 2nd penalty for air transports: -50%
 		}
 	}
@@ -171,7 +170,7 @@ BOOL __cdecl has_abil(int protoID, int abilityID) {
 			}
 		}
 	}
-	if (VehPrototype[protoID].weaponType == WPN_Probe_Team && abilityID == ABL_ALGO_ENHANCEMENT 
+	if (VehPrototype[protoID].weaponType == WPN_PROBE_TEAM && abilityID == ABL_ALGO_ENHANCEMENT 
 		&& has_project(SP_NETHACK_TERMINUS, factionID)) {
 		return TRUE; // All Probe Teams act as though they have the "Algorithmic Enhancement"
 	}
@@ -309,11 +308,11 @@ DWORD __cdecl proto_cost(int chassisType, int weapType,
 			}
 		}
 		// excludes sea probes
-		if (triad == TRIAD_SEA && Weapon[weapType].mode != WPN_MODE_InfoWar) {
+		if (triad == TRIAD_SEA && Weapon[weapType].mode != WPN_MODE_INFOWAR) {
 			protoMod = (protoMod + 1) / 2;
 		}
 		else if (triad == TRIAD_AIR) {
-			protoMod /= (Weapon[weapType].mode > WPN_MODE_Missile) ? 2 : 4; // Non-combat : Combat
+			protoMod /= (Weapon[weapType].mode > WPN_MODE_MISSILE) ? 2 : 4; // Non-combat : Combat
 		}
 		int reactorMod = (reactorType * 3 + 1) / 2;
 		if (protoMod < reactorMod) { // which ever is greater
@@ -395,16 +394,16 @@ void __cdecl make_proto(int protoID, int chassisType, int weapType,
 	VehPrototype[protoID].reactorType = reactorType;
 	VehPrototype[protoID].cost = (BYTE)proto_cost(chassisType, weapType, 
 		armorType, ability, reactorType);
-	VehPrototype[protoID].carryCapacity = (Weapon[weapType].mode == WPN_MODE_Transport) ? 
+	VehPrototype[protoID].carryCapacity = (Weapon[weapType].mode == WPN_MODE_TRANSPORT) ?
 		(BYTE)transport_val(chassisType, ability, reactorType) : 0;
 	// set plan & unk1
 	if (Chassis[chassisType].missile) {
 		if (Weapon[weapType].offenseRating < 99) { // non-PB missiles
-			if (weapType == WPN_Tectonic_Payload) {
+			if (weapType == WPN_TECTONIC_PAYLOAD) {
 				VehPrototype[protoID].plan = PLAN_TECTONIC_MISSILE;
 				VehPrototype[protoID].unk1 = 22;
 			}
-			else if (weapType == WPN_Fungal_Payload) {
+			else if (weapType == WPN_FUNGAL_PAYLOAD) {
 				VehPrototype[protoID].plan = PLAN_FUNGAL_MISSILE;
 				VehPrototype[protoID].unk1 = 23;
 			}
@@ -418,7 +417,7 @@ void __cdecl make_proto(int protoID, int chassisType, int weapType,
 			VehPrototype[protoID].unk1 = 14;
 		}
 	}
-	else if (Weapon[weapType].mode >= WPN_MODE_Transport) { // Non-combat
+	else if (Weapon[weapType].mode >= WPN_MODE_TRANSPORT) { // Non-combat
 		VehPrototype[protoID].plan = Weapon[weapType].mode;
 		VehPrototype[protoID].unk1 = Weapon[weapType].mode + 0x20;
 	}

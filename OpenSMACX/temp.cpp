@@ -19,6 +19,7 @@
 #include "temp.h"
 #include "faction.h"
 #include "general.h"
+#include "veh.h"
 #include "maininterface.h"
 
 // built-in functions > used to prevent crash from mixed alloc/free SDKs
@@ -49,6 +50,19 @@ func7 *morale_veh = (func7 *)0x005C0E40;
 typedef int *func8(LPSTR, LPSTR);
 func8 *parse_string = (func8 *)0x00625880;
 
+// testing
+void __cdecl tester() {
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < *VehCurrentCount; j++) {
+			if (speed(j, i) != speed_(j, i)) {
+				printf("error");
+			}
+		}
+	}
+}
+typedef int func9(int, int);
+func9 *speed_ = (func9 *)0x005C1540;
+
 ///
 LPSTR *ParseTempPtr1_1 = (LPSTR *)0x009B7D00;
 LPSTR *ParseTempPtr2_1 = (LPSTR *)0x009B7D04;
@@ -65,6 +79,12 @@ int *TechValidCount = (int *)0x00949730;
 int *TechCommerceCount = (int *)0x00949734;
 BOOL *SMACX_Enabled = (BOOL *)0x009A6488;
 BOOL *IsLoggingDisabled = (BOOL *)0x009BC004;
+DWORD *GameRules = (DWORD *)0x009A64C0;
+int *DiffLevelCurrent = (int *)0x009A64C4;
+int *VehCurrentCount = (int *)0x009A64C8;
+int *BaseCurrentCount = (int *)0x009A64CC;
+int *TurnCurrentNum = (int *)0x009A64D4;
+int *MissionYearCurrent = (int *)0x009A64D8;
 
 Filefind *FilefindPath = (Filefind *)0x009B8198;
 MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
