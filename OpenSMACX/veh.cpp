@@ -70,7 +70,7 @@ Return Value: speed
 Status: Complete
 */
 DWORD __cdecl speed(int vehID, BOOL skipMorale) {
-	int protoID = Veh[vehID].protoID;
+	DWORD protoID = Veh[vehID].protoID;
 	if (protoID == BSC_FUNGAL_TOWER) { // moved this check to top vs bottom, same logic
 		return 0; // cannot move
 	}
@@ -101,7 +101,35 @@ DWORD __cdecl speed(int vehID, BOOL skipMorale) {
 }
 
 /*
-Purpose: Calculate speed of prototype on roads
+Purpose: Calculate armor of prototype. Optional parameter if unit is being attacked as well as 
+         artillery or missile combat.
+Original Offset: 005C1290
+Return Value: Prototype's armor
+Status: WIP
+*/
+DWORD __cdecl armor_proto(int protoID, int vehIDAtk, BOOL isBombardment) {
+	if (Weapon[VehPrototype[protoID].weaponType].mode == WPN_MODE_INFOWAR && vehIDAtk > 0
+		&& VehPrototype[Veh[vehIDAtk].protoID].plan == PLAN_INFO_WARFARE) {
+		return 16;
+	}
+	if (!isBombardment && Veh[vehIDAtk].protoID == BSC_SPORE_LAUNCHER) {
+		DWORD defRate = range(Armor[VehPrototype[protoID].armorType].defenseRating, 1, 9999);
+		if (vehIDAtk >= 0) {
+			defRate *= 8;
+		}
+		return defRate;
+	}
+	else if (vehIDAtk >= 0) {
+		return
+			*(&Rules->PsiCombatRatioLandDef + Chassis[VehPrototype[protoID].chassisType].triad) * 8;
+	}
+	else {
+		return Rules->PsiCombatRatioLandDef;
+	}
+}
+
+/*
+Purpose: Calculate speed of prototype on roads.
 Original Offset: 005C13B0
 Return Value: Prototype's speed
 Status: Complete
@@ -141,6 +169,21 @@ DWORD __cdecl speed_proto(int protoID) {
 		}
 	}
 	return range(speedVal, 1, 99) * Rules->MoveRateRoads;
+}
+
+/*
+Purpose: Calculate cargo capacity of unit. Looks like Spore Launchers were considered to have cargo
+         capacity at one time.
+Original Offset: 005C1760
+Return Value: Cargo value
+Status: Complete
+*/
+DWORD __cdecl veh_cargo(int vehID) {
+	DWORD protoID = Veh[vehID].protoID;
+	DWORD cargo = VehPrototype[protoID].carryCapacity;
+	return (cargo && protoID < MaxVehProtoFactionNum 
+		&& (Weapon[VehPrototype[protoID].weaponType].offenseRating < 0 // Isle of the Deep
+			|| protoID == BSC_SPORE_LAUNCHER)) ? Veh[vehID].morale + 1 : cargo;
 }
 
 /*

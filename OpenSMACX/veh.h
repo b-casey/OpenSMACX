@@ -252,7 +252,7 @@ struct veh {
 	__int16 waypoint2yCoord;
 	__int16 waypoint3yCoord;
 	__int16 waypoint4yCoord;
-	char morale;
+	BYTE morale;
 	char terraformingTurns;
 	char typeCrawling;
 	char unknown4;
@@ -354,7 +354,9 @@ extern LPSTR *Triad;
 
 OPENSMACX_API BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn);
 OPENSMACX_API DWORD __cdecl speed(int vehID, BOOL toggle);
+OPENSMACX_API DWORD __cdecl armor_proto(int protoID, int vehIDAtk, BOOL isBombardment);
 OPENSMACX_API DWORD __cdecl speed_proto(int protoID);
+OPENSMACX_API DWORD __cdecl veh_cargo(int vehID);
 OPENSMACX_API BOOL __cdecl has_abil(int protoID, int abilityID);
 OPENSMACX_API DWORD __cdecl transport_val(int chassisID, int ability, int reactorID);
 OPENSMACX_API DWORD __cdecl proto_cost(int chassisType, int weapType, 
