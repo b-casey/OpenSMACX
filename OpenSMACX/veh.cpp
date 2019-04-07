@@ -40,6 +40,44 @@ LPSTR *PlansFullName = (LPSTR *)0x00952360; // [15]
 LPSTR *Triad = (LPSTR *)0x0094F1A8; // [3]
 
 /*
+Purpose: Clear specified Veh.
+Original Offset: 005C02D0
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl veh_clear(int vehID, int protoID, int factionID) {
+	Veh[vehID].xCoord = -4;
+	Veh[vehID].yCoord = -4;
+	Veh[vehID].yearEndLurking = 0;
+	Veh[vehID].unknown1 = 0;
+	Veh[vehID].status = 0;
+	Veh[vehID].factionID = factionID;
+	Veh[vehID].protoID = protoID;
+	Veh[vehID].nextVehIDSquare = -1;
+	Veh[vehID].prevVehIDSquare = -1;
+	Veh[vehID].waypointCount = 0;
+	Veh[vehID].patrolCurrentPoint = 0;
+	Veh[vehID].currentStatus = 0;
+	for (int i = 0; i < 4; i++) {
+		Veh[vehID].waypoint_xCoord[i] = -1;
+		Veh[vehID].waypoint_yCoord[i] = -1;
+	}
+	Veh[vehID].currentState = 0;
+	Veh[vehID].movesExpended = 0;
+	Veh[vehID].dmgIncurred = 0;
+	Veh[vehID].typeCrawling = 0;
+	Veh[vehID].terraformingTurns = 0;
+	Veh[vehID].unknown6 = 0;
+	Veh[vehID].unknown7 = 0;
+	Veh[vehID].unknown4 = 0;
+	Veh[vehID].homeBaseID = -1;
+	Veh[vehID].morale = Players[factionID].ruleMorale + 1;
+	Veh[vehID].unknown5 = 0;
+	Veh[vehID].unknown8 = 0;
+	Veh[vehID].unknown9 = 0;
+}
+
+/*
 Purpose: Check if unit can perform artillery combat. The 2nd parameter determines how sea units
          are treated.
 Original Offset: 005C0DB0
@@ -60,45 +98,6 @@ BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn) {
 		return FALSE;
 	}
 	return has_abil(protoID, ABL_ARTILLERY); // TRIAD_LAND
-}
-
-/*
-Purpose: Calculate speed of unit on roads taking into consideration prototype speed, elite morale, 
-         if unit is damaged and other factors. The skipMorale parameter seems to only be set to TRUE 
-		 for certain combat calculations in battle_fight().
-Original Offset: 005C1540
-Return Value: speed
-Status: Complete
-*/
-DWORD __cdecl speed(int vehID, BOOL skipMorale) {
-	DWORD protoID = Veh[vehID].protoID;
-	if (protoID == BSC_FUNGAL_TOWER) { // moved this check to top vs bottom, same logic
-		return 0; // cannot move
-	}
-	DWORD speedVal = speed_proto(protoID);
-	BYTE triad = Chassis[VehPrototype[protoID].chassisID].triad;
-	if (triad == TRIAD_SEA && has_project(SP_MARITIME_CONTROL_CENTER, Veh[vehID].factionID)) {
-		speedVal += Rules->MoveRateRoads * 2;
-	}
-	if (!skipMorale && morale_veh(vehID, 1, 0) == MORALE_ELITE && (protoID >= MaxVehProtoFactionNum
-		|| Weapon[VehPrototype[protoID].weaponID].offenseRating >= 0)) {
-		speedVal += Rules->MoveRateRoads;
-	}
-	if (Veh[vehID].dmgIncurred && triad != TRIAD_AIR) {
-		// optimized code without changes to logic
-		DWORD moves = speedVal / Rules->MoveRateRoads, reactorFac;
-		if (VehPrototype[protoID].plan == PLAN_ALIEN_ARTIFACT) {
-			speedVal = reactorFac = 1;
-		}
-		else {
-			reactorFac = range(VehPrototype[protoID].reactorID, 1, 100) * 10;
-			speedVal = range(reactorFac, 1, 99);
-		}
-		speedVal = 
-			(moves * range(reactorFac - Veh[vehID].dmgIncurred, 0, 9999) + speedVal - 1) / speedVal;
-		speedVal = range(speedVal, (triad == TRIAD_SEA) ? 2 : 1, 999) * Rules->MoveRateRoads;
-	}
-	return speedVal;
 }
 
 /*
@@ -204,6 +203,45 @@ DWORD __cdecl speed_proto(int protoID) {
 }
 
 /*
+Purpose: Calculate speed of unit on roads taking into consideration prototype speed, elite morale,
+		 if unit is damaged and other factors. The skipMorale parameter seems to only be set to TRUE
+		 for certain combat calculations in battle_fight().
+Original Offset: 005C1540
+Return Value: speed
+Status: Complete
+*/
+DWORD __cdecl speed(int vehID, BOOL skipMorale) {
+	DWORD protoID = Veh[vehID].protoID;
+	if (protoID == BSC_FUNGAL_TOWER) { // moved this check to top vs bottom, same logic
+		return 0; // cannot move
+	}
+	DWORD speedVal = speed_proto(protoID);
+	BYTE triad = Chassis[VehPrototype[protoID].chassisID].triad;
+	if (triad == TRIAD_SEA && has_project(SP_MARITIME_CONTROL_CENTER, Veh[vehID].factionID)) {
+		speedVal += Rules->MoveRateRoads * 2;
+	}
+	if (!skipMorale && morale_veh(vehID, 1, 0) == MORALE_ELITE && (protoID >= MaxVehProtoFactionNum
+		|| Weapon[VehPrototype[protoID].weaponID].offenseRating >= 0)) {
+		speedVal += Rules->MoveRateRoads;
+	}
+	if (Veh[vehID].dmgIncurred && triad != TRIAD_AIR) {
+		// optimized code without changes to logic
+		DWORD moves = speedVal / Rules->MoveRateRoads, reactorFac;
+		if (VehPrototype[protoID].plan == PLAN_ALIEN_ARTIFACT) {
+			speedVal = reactorFac = 1;
+		}
+		else {
+			reactorFac = range(VehPrototype[protoID].reactorID, 1, 100) * 10;
+			speedVal = range(reactorFac, 1, 99);
+		}
+		speedVal =
+			(moves * range(reactorFac - Veh[vehID].dmgIncurred, 0, 9999) + speedVal - 1) / speedVal;
+		speedVal = range(speedVal, (triad == TRIAD_SEA) ? 2 : 1, 999) * Rules->MoveRateRoads;
+	}
+	return speedVal;
+}
+
+/*
 Purpose: Calculate cargo capacity of unit. Looks like Spore Launchers were considered to have cargo
          capacity at one time.
 Original Offset: 005C1760
@@ -216,6 +254,27 @@ DWORD __cdecl veh_cargo(int vehID) {
 	return (cargo && protoID < MaxVehProtoFactionNum 
 		&& (Weapon[VehPrototype[protoID].weaponID].offenseRating < 0 // Isle of the Deep
 			|| protoID == BSC_SPORE_LAUNCHER)) ? Veh[vehID].morale + 1 : cargo;
+}
+
+/*
+Purpose: Reset moves/speed of Veh back to original value.
+Original Offset: 005C1D20
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl veh_skip(int vehID) {
+	Veh[vehID].movesExpended = (BYTE)speed(vehID, FALSE);
+}
+
+/*
+Purpose: Fake creating a Veh for fixed VehID 2048.
+Original Offset: 005C1D50
+Return Value: Fixed vehID (2048)
+Status: Complete
+*/
+int __cdecl veh_fake(int protoID, int factionID) {
+	veh_clear(2048, protoID, factionID);
+	return 2048;
 }
 
 /*
@@ -505,7 +564,7 @@ Original Offset: 005A5A60
 Return Value: Cost of prototype
 Status: Complete
 */
-DWORD __cdecl proto_cost(DWORD chassisID, DWORD weaponID, DWORD armorID, int ability, 
+DWORD __cdecl proto_cost(DWORD chassisID, DWORD weaponID, DWORD armorID, DWORD ability, 
 	DWORD reactorID) {
 	BYTE weapCost = Weapon[weaponID].cost;
 	// PB check: moved to start vs after 1st triad checks in original > no difference in logic
@@ -640,7 +699,7 @@ Original Offset: 005A5D40
 Return Value: n/a
 Status: Complete
 */
-void __cdecl make_proto(int protoID, DWORD chassisID, DWORD weaponID, DWORD armorID, int ability,
+void __cdecl make_proto(int protoID, DWORD chassisID, DWORD weaponID, DWORD armorID, DWORD ability,
 	DWORD reactorID) {
 	int unkLocal1 = 0;
 	if (protoID >= MaxVehProtoFactionNum) {
