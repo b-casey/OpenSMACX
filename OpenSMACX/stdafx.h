@@ -16,10 +16,18 @@
  * along with OpenSMACX. If not, see <http://www.gnu.org/licenses/>.
  */
 #pragma once
+
+//#ifdef _CRT_SECURE_NO_WARNINGS
+//#undef _CRT_SECURE_NO_WARNINGS
+//#endif
+//#define _CRT_SECURE_NO_WARNINGS 1 // eventually remove
+#define WIN32_LEAN_AND_MEAN       // Exclude rarely-used stuff from Windows headers
+#define OPENSMACX_API __declspec(dllexport)
 #include <SDKDDKVer.h>
 #include <random>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 #include <windows.h>
 #include <vector>
 
@@ -27,6 +35,3 @@
   * Include file for standard system include files, or project specific include files that are used 
   * frequently, but are changed infrequently
   */
-
-#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
-#define OPENSMACX_API __declspec(dllexport)

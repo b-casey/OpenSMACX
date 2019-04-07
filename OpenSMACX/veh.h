@@ -126,22 +126,21 @@ enum veh_weapon_mode {
 };
 
 enum veh_plan {
-	PLAN_OFFENSIVE = 0x0,
-	PLAN_COMBAT = 0x1,
-	PLAN_DEFENSIVE = 0x2,
-	PLAN_RECONNAISANCE = 0x3,
-	PLAN_AIR_SUPERIORITY = 0x4,
-	PLAN_PLANET_BUSTER = 0x5,
-	PLAN_NAVAL_SUPERIORITY = 0x6,
-	PLAN_NAVAL_TRANSPORT = 0x7,
-	PLAN_COLONIZATION = 0x8,
-	PLAN_TERRAFORMING = 0x9,
-	PLAN_SUPPLY_CONVOY = 0xA,
-	PLAN_INFO_WARFARE = 0xB,
-	PLAN_ALIEN_ARTIFACT = 0xC,
-	PLAN_TECTONIC_MISSILE = 0xD,
-	PLAN_FUNGAL_MISSILE = 0xE,
-	PLAN_AUTO_CALCULATE = 0xFFFFFFFF,
+	PLAN_OFFENSIVE = 0,
+	PLAN_COMBAT = 1,
+	PLAN_DEFENSIVE = 2,
+	PLAN_RECONNAISANCE = 3,
+	PLAN_AIR_SUPERIORITY = 4,
+	PLAN_PLANET_BUSTER = 5,
+	PLAN_NAVAL_SUPERIORITY = 6,
+	PLAN_NAVAL_TRANSPORT = 7,
+	PLAN_COLONIZATION = 8,
+	PLAN_TERRAFORMING = 9,
+	PLAN_SUPPLY_CONVOY = 10,
+	PLAN_INFO_WARFARE = 11,
+	PLAN_ALIEN_ARTIFACT = 12,
+	PLAN_TECTONIC_MISSILE = 13,
+	PLAN_FUNGAL_MISSILE = 14,
 };
 
 enum veh_weapon_id {
@@ -171,6 +170,35 @@ enum veh_weapon_id {
 	WPN_CONVENTIONAL_PAYLOAD = 23,
 	WPN_TECTONIC_PAYLOAD = 24,
 	WPN_FUNGAL_PAYLOAD = 25,
+};
+
+enum veh_armor_id {
+	ARM_NO_ARMOR = 0,
+	ARM_SYNTHMETAL_ARMOR = 1,
+	ARM_PLASMA_STEEL_ARMOR = 2,
+	ARM_SILKSTEEL_ARMOR = 3,
+	ARM_PHOTON_WALL = 4,
+	ARM_PROBABILITY_SHEATH = 5,
+	ARM_NEUTRONIUM_ARMOR = 6,
+	ARM_ANTIMATTER_PLATE = 7,
+	ARM_STASIS_GENERATOR = 8,
+	ARM_PSI_DEFENSE = 9,
+	ARM_PULSE_3_ARMOR = 10,
+	ARM_RESONANCE_3_ARMOR = 11,
+	ARM_PULSE_8_ARMOR = 12,
+	ARM_RESONANCE_8_ARMOR = 13,
+};
+
+enum veh_chassis_type {
+	CHSI_INFANTRY = 0,
+	CHSI_SPEEDER = 1,
+	CHSI_HOVERTANK = 2,
+	CHSI_FOIL = 3,
+	CHSI_CRUISER = 4,
+	CHSI_NEEDLEJET = 5,
+	CHSI_COPTER = 6,
+	CHSI_GRAVSHIP = 7,
+	CHSI_MISSILE = 8,
 };
 
 struct rules_chassis {
@@ -270,13 +298,13 @@ struct veh {
 struct veh_prototype {
 	char vehName[32];
 	int abilityFlags;
-	BYTE chassisType;
-	char weaponType; // PSI can be negative
-	char armorType; // PSI is negative
-	BYTE reactorType;
+	BYTE chassisID;
+	BYTE weaponID;
+	BYTE armorID;
+	BYTE reactorID;
 	BYTE carryCapacity;
 	BYTE cost;
-	char plan; // -1 auto-calculate
+	BYTE plan;
 	char unk1; // some kind of internal prototype category?
 	char unk2; // factions that have created prototype?
 	char unk3; // which faction "knows" about unit prototype? seemed to only be used by battle_fight
@@ -354,13 +382,20 @@ extern LPSTR *Triad;
 
 OPENSMACX_API BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn);
 OPENSMACX_API DWORD __cdecl speed(int vehID, BOOL toggle);
-OPENSMACX_API DWORD __cdecl armor_proto(int protoID, int vehIDAtk, BOOL isBombardment);
+OPENSMACX_API DWORD __cdecl offense_proto(int protoID, int vehIDDef, BOOL isArtyMissile);
+OPENSMACX_API DWORD __cdecl armor_proto(int protoID, int vehIDAtk, BOOL isArtyMissile);
 OPENSMACX_API DWORD __cdecl speed_proto(int protoID);
 OPENSMACX_API DWORD __cdecl veh_cargo(int vehID);
 OPENSMACX_API BOOL __cdecl has_abil(int protoID, int abilityID);
-OPENSMACX_API DWORD __cdecl transport_val(int chassisID, int ability, int reactorID);
-OPENSMACX_API DWORD __cdecl proto_cost(int chassisType, int weapType, 
-													int armorType, int ability, int reactorType);
+OPENSMACX_API std::string __cdecl say_offense(int protoID);
+OPENSMACX_API std::string __cdecl say_defense(int protoID);
+OPENSMACX_API void __cdecl say_stats_3(LPSTR stat, int protoID);
+OPENSMACX_API void __cdecl say_stats_3(int protoID);
+OPENSMACX_API void __cdecl say_stats_2(LPSTR stat, int protoID);
+OPENSMACX_API void __cdecl say_stats(LPSTR output, int protoID, LPSTR customSpacer);
+OPENSMACX_API DWORD __cdecl transport_val(DWORD chassisID, int ability, DWORD reactorID);
+OPENSMACX_API DWORD __cdecl proto_cost(DWORD chassisID, DWORD weaponID, DWORD armorID,
+	int ability, DWORD reactorID);
 OPENSMACX_API DWORD __cdecl base_cost(int protoID);
-OPENSMACX_API void __cdecl make_proto(int protoID, int chassisType, int weapType, 
-													int armorType, int ability, int reactorType);
+OPENSMACX_API void __cdecl make_proto(int protoID, DWORD chassisID, DWORD weaponID, DWORD armorID,
+	int ability, DWORD reactorID);

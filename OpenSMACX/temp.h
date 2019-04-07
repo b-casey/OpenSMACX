@@ -53,11 +53,6 @@ extern func7 *morale_veh;
 typedef int *func8(LPSTR, LPSTR);
 extern func8 *parse_string;
 
-// testing
-OPENSMACX_API void __cdecl tester();
-typedef int func9(int, int);
-extern func9 *speed_;
-
 ///
 extern LPSTR *ParseTempPtr1_1;
 extern LPSTR *ParseTempPtr2_1;

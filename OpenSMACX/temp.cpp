@@ -50,19 +50,6 @@ func7 *morale_veh = (func7 *)0x005C0E40;
 typedef int *func8(LPSTR, LPSTR);
 func8 *parse_string = (func8 *)0x00625880;
 
-// testing
-void __cdecl tester() {
-	for (int i = 0; i < 2; i++) {
-		for (int j = 0; j < *VehCurrentCount; j++) {
-			if (speed(j, i) != speed_(j, i)) {
-				printf("error");
-			}
-		}
-	}
-}
-typedef int func9(int, int);
-func9 *speed_ = (func9 *)0x005C1540;
-
 ///
 LPSTR *ParseTempPtr1_1 = (LPSTR *)0x009B7D00;
 LPSTR *ParseTempPtr2_1 = (LPSTR *)0x009B7D04;

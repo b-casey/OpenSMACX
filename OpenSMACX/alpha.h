@@ -173,35 +173,17 @@ struct rules_basic {
 	// Default value: 50
 	int ExtraPctCostProtoAir;
 
-	// Alpha(x).txt #RULES: Psi combat offense-to-defense ratio (LAND unit defending) Numerator
+	// Alpha(x).txt #RULES: Psi combat offense-to-defense ratio (unit defending) Numerator
 	// Original bounds: 1 to 1000
-	// Default value: 3
-	int PsiCombatRatioLandAtk;
+	// Default value: 3 (LAND)
+	// Default value: 1 (SEA/AIR)
+	int PsiCombatRatioAtk[3]; // LAND, SEA, AIR
 	
-	// Alpha(x).txt #RULES: Psi combat offense-to-defense ratio (SEA unit defending) Numerator
+	// Alpha(x).txt #RULES: Psi combat offense-to-defense ratio (unit defending) Denominator
 	// Original bounds: 1 to 1000
-	// Default value: 1
-	int PsiCombatRatioSeaAtk;
-	
-	// Alpha(x).txt #RULES: Psi combat offense-to-defense ratio (AIR unit defending) Numerator
-	// Original bounds: 1 to 1000
-	// Default value: 1
-	int PsiCombatRatioAirAtk;
-
-	// Alpha(x).txt #RULES: Psi combat offense-to-defense ratio (LAND unit defending) Denominator
-	// Original bounds: 1 to 1000
-	// Default value: 2
-	int PsiCombatRatioLandDef;
-	
-	// Alpha(x).txt #RULES: Psi combat offense-to-defense ratio (SEA unit defending) Denominator
-	// Original bounds: 1 to 1000
-	// Default value: 1
-	int PsiCombatRatioSeaDef;
-	
-	// Alpha(x).txt #RULES: Psi combat offense-to-defense ratio (AIR unit defending) Denominator
-	// Original bounds: 1 to 1000
-	// Default value: 1
-	int PsiCombatRatioAirDef;
+	// Default value: 2 (LAND)
+	// Default value: 1 (SEA/AIR)
+	int PsiCombatRatioDef[3]; // LAND, SEA, AIR
 
 	// Alpha(x).txt #RULES: Players' starting energy reserves
 	// Original bounds: 0 to 1000
