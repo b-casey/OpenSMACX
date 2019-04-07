@@ -503,7 +503,7 @@ Purpose: Calculates cost of prototype based on various factors. Optimized logic 
          without any difference to final calculation.
 Original Offset: 005A5A60
 Return Value: Cost of prototype
-Status: Completes
+Status: Complete
 */
 DWORD __cdecl proto_cost(DWORD chassisID, DWORD weaponID, DWORD armorID, int ability, 
 	DWORD reactorID) {
