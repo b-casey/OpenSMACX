@@ -113,6 +113,69 @@ enum veh_prototype_flag_bitfield {
 	PROTO_ACTIVE = 0x1, // if this bit is zero, prototype has been retired
 };
 
+enum veh_orders {
+	ORDER_NONE = 0,              //  -
+	ORDER_SENTRY_BOARD = 1,      // (L)
+	ORDER_HOLD = 2,              // (H); Hold (set 1st waypoint (-1, 0)), Hold 10 (-1, 10), On Alert
+	ORDER_CONVOY = 3,            // (O); tied to typeCrawling
+	ORDER_FARM = 4,              // (f)
+	ORDER_SOIL_ENRICHER = 5,     // (f)
+	ORDER_MINE = 6,              // (M)
+	ORDER_SOLAR_COLLECTOR = 7,   // (S)
+	ORDER_PLANT_FOREST = 8,      // (F)
+	ORDER_ROAD = 9,              // (R)
+	ORDER_MAGTUBE = 10,          // (R)
+	ORDER_BUNKER = 11,           // (K)
+	ORDER_AIRBASE = 12,          // (.)
+	ORDER_SENSOR_ARRAY = 13,     // (O)
+	ORDER_REMOVE_FUNGUS = 14,    // (F)
+	ORDER_PLANT_FUNGUS = 15,     // (F)
+	ORDER_CONDENSER = 16,        // (N)
+	ORDER_ECHELON_MIRROR = 17,   // (E)
+	ORDER_THERMAL_BOREHOLE = 18, // (B)
+	ORDER_DRILL_AQUIFIER = 19,   // (Q)
+	ORDER_TERRAFORM_UP = 20,     // (])
+	ORDER_TERRAFORM_DOWN = 21,   // ([)
+	ORDER_TERRAFORM_LEVEL = 22,  // (_)
+	ORDER_PLACE_MONOLITH = 23,   // (?)
+	ORDER_GO_TO = 24,            // (G); Go to Base, Group go to, Patrol
+	ORDER_MOVE = 25,             // (>); how does this differ compared to ORDER_GO_TO?
+	ORDER_EXPLORE = 26,          // (/); not set via shortcut, AI related?
+	ORDER_ROADS_TO = 27,         // (r)
+	ORDER_MAGTUBE_TO = 28,       // (t)
+	ORDER_AI_GO_TO = 88,         //  - ; ORDER_GO_TO (0x18) | 0x40 > 0x58 ? only used by AI funcs
+};
+
+enum veh_orders_auto_type {
+	ORDERF_CONVOY_NUTRIENTS = 0,
+	ORDERF_TERRA_AUTO_FULL = 0,
+	ORDERF_CONVOY_MINERALS = 1,
+	ORDERF_TERRA_AUTO_ROAD = 1,
+	ORDERF_CONVOY_ENERGY = 2,
+	ORDERF_TERRA_AUTO_MAGTUBE = 2,
+	ORDERF_CONVOY_PSI = 3,
+	ORDERF_TERRA_AUTOIMPROVE_BASE = 3,
+	ORDERF_TERRA_FARM_SOLAR_ROAD = 4,
+	ORDERF_TERRA_MINE_SOLAR_ROAD = 5,
+	ORDERF_TERRA_AUTO_FUNGUS_REM = 6,
+	ORDERF_TERRA_AUTOMATIC_SENSOR = 7,
+	// 8 unused?
+	// 9 unused?
+	ORDERF_BOMBING_RUN = 10, // air units only
+	ORDERF_ON_ALERT = 11,
+	ORDERF_AUTOMATE_AIR_DEFENSE = 12,
+};
+
+enum veh_flags_bitfield {
+	FLAG_PROBE_PACT_OPERATIONS = 0x4,
+	FLAG_IS_OBJECTIVE = 0x20,
+	FLAG_LURKER = 0x40,
+	FLAG_START_RAND_LOCATION = 0x80,
+	FLAG_START_RAND_MONOLITH = 0x100,
+	FLAG_START_RAND_FUNGUS = 0x200,
+	FLAG_INVISIBLE = 0x400,
+};
+
 enum veh_weapon_mode {
 	WPN_MODE_PROJECTILE = 0,
 	WPN_MODE_ENERGY = 1,
@@ -263,20 +326,20 @@ struct veh {
 	__int16 xCoord;
 	__int16 yCoord;
 	DWORD currentState;
-	WORD status;
+	WORD flags;
 	__int16 protoID;
 	WORD unknown1;
 	BYTE factionID;
 	BYTE yearEndLurking;
 	BYTE dmgIncurred;
-	char currentStatus;
+	char orders; // see veh_orders enum
 	BYTE waypointCount;
 	BYTE patrolCurrentPoint;
 	__int16 waypoint_xCoord[4];
 	__int16 waypoint_yCoord[4];
 	BYTE morale;
 	BYTE terraformingTurns;
-	BYTE typeCrawling;
+	BYTE orderAutoType; // see veh_orders_auto_type enum
 	BYTE unknown4;
 	BYTE movesExpended;
 	char unknown5;
@@ -383,6 +446,7 @@ OPENSMACX_API DWORD __cdecl speed(int vehID, BOOL toggle);
 OPENSMACX_API DWORD __cdecl veh_cargo(int vehID);
 OPENSMACX_API void __cdecl veh_skip(int vehID);
 OPENSMACX_API int __cdecl veh_fake(int protoID, int factionID);
+OPENSMACX_API int __cdecl veh_wake(int vehID);
 OPENSMACX_API BOOL __cdecl has_abil(int protoID, int abilityID);
 OPENSMACX_API void __cdecl say_stats_3(LPSTR stat, int protoID);
 OPENSMACX_API void __cdecl say_stats_3(int protoID);

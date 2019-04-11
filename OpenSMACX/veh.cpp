@@ -40,24 +40,43 @@ LPSTR *PlansFullName = (LPSTR *)0x00952360; // [15]
 LPSTR *Triad = (LPSTR *)0x0094F1A8; // [3]
 
 /*
+Purpose: Calculate Terraformer contribution rate to building terrain enhancements.
+Original Offset: 004C9A50
+Return Value: Terraforming speed
+Status: WIP - test
+*/
+DWORD __cdecl contribution(int vehID, DWORD terraformID) {
+	DWORD rate = has_abil(Veh[vehID].protoID, ABL_SUPER_TERRAFORMER) ? 4 : 2;
+	if (terraformID == (ORDER_REMOVE_FUNGUS - 4) || terraformID == (ORDER_PLANT_FUNGUS - 4)) {
+		if (has_project(SP_XENOEMPATYH_DOME, Veh[vehID].factionID)) {
+			rate *= 2; // Doubled
+		}
+	}
+	else if (has_project(SP_WEATHER_PARADIGM, Veh[vehID].factionID)) {
+		rate = (rate * 3) / 2; // +50%
+	}
+	return rate;
+}
+
+/*
 Purpose: Clear specified Veh.
 Original Offset: 005C02D0
 Return Value: n/a
-Status: Complete
+Status: WIP - test
 */
 void __cdecl veh_clear(int vehID, int protoID, int factionID) {
 	Veh[vehID].xCoord = -4;
 	Veh[vehID].yCoord = -4;
 	Veh[vehID].yearEndLurking = 0;
 	Veh[vehID].unknown1 = 0;
-	Veh[vehID].status = 0;
+	Veh[vehID].flags = 0;
 	Veh[vehID].factionID = factionID;
 	Veh[vehID].protoID = protoID;
 	Veh[vehID].nextVehIDSquare = -1;
 	Veh[vehID].prevVehIDSquare = -1;
 	Veh[vehID].waypointCount = 0;
 	Veh[vehID].patrolCurrentPoint = 0;
-	Veh[vehID].currentStatus = 0;
+	Veh[vehID].orders = 0;
 	for (int i = 0; i < 4; i++) {
 		Veh[vehID].waypoint_xCoord[i] = -1;
 		Veh[vehID].waypoint_yCoord[i] = -1;
@@ -65,7 +84,7 @@ void __cdecl veh_clear(int vehID, int protoID, int factionID) {
 	Veh[vehID].currentState = 0;
 	Veh[vehID].movesExpended = 0;
 	Veh[vehID].dmgIncurred = 0;
-	Veh[vehID].typeCrawling = 0;
+	Veh[vehID].orderAutoType = 0;
 	Veh[vehID].terraformingTurns = 0;
 	Veh[vehID].unknown6 = 0;
 	Veh[vehID].unknown7 = 0;
@@ -260,7 +279,7 @@ DWORD __cdecl veh_cargo(int vehID) {
 Purpose: Reset moves/speed of Veh back to original value.
 Original Offset: 005C1D20
 Return Value: n/a
-Status: Complete
+Status: WIP - test
 */
 void __cdecl veh_skip(int vehID) {
 	Veh[vehID].movesExpended = (BYTE)speed(vehID, FALSE);
@@ -270,11 +289,39 @@ void __cdecl veh_skip(int vehID) {
 Purpose: Fake creating a Veh for fixed VehID 2048.
 Original Offset: 005C1D50
 Return Value: Fixed vehID (2048)
-Status: Complete
+Status: WIP - test
 */
 int __cdecl veh_fake(int protoID, int factionID) {
 	veh_clear(2048, protoID, factionID);
 	return 2048;
+}
+
+/*
+Purpose: 
+Original Offset: 005C1D70
+Return Value: vehID (doesn't look to be used on return)
+Status: WIP - test, incomplete flags/enums
+*/
+int __cdecl veh_wake(int vehID) {
+	char orders = Veh[vehID].orders;
+	int state = Veh[vehID].currentState;
+	if (orders >= ORDER_FARM && orders < ORDER_GO_TO && !(state & 0x4000000)) {
+		Veh[vehID].movesExpended = (BYTE)speed(vehID, FALSE) - Rules->MoveRateRoads;
+		int terraTurns = Veh[vehID].terraformingTurns;
+		if (terraTurns) {
+			terraTurns -= contribution(vehID, orders - 4);
+			if (terraTurns < 0) {
+				terraTurns = 0;
+			}
+			Veh[vehID].terraformingTurns = (BYTE)terraTurns;
+		}
+	}
+	if (state & 0x200 && Veh[vehID].orderAutoType == ORDERF_ON_ALERT && !(state & 4)) {
+		Veh[vehID].movesExpended = 0;
+	}
+	Veh[vehID].orders = ORDER_NONE;
+	Veh[vehID].currentState &= 0xF4FFBDFF;
+	return vehID;
 }
 
 /*

@@ -54,6 +54,7 @@ OPENSMACX_API void prefs_put(LPCSTR keyName, int value, BOOL binaryTgl);
 OPENSMACX_API CHAR filefind_cd_drive_letter();
 OPENSMACX_API void filefind_set_alternative(LPCSTR path);
 OPENSMACX_API LPSTR filefind_get(LPCSTR fileName);
+OPENSMACX_API DWORD __cdecl bit_count(DWORD bitfield);
 
 // WIP
 int filefind_init(LPCSTR path, BOOL isComplete); 

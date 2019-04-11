@@ -739,3 +739,17 @@ LPSTR filefind_get(LPCSTR fileName) {
 	}
 	return 0;
 }
+
+/*
+Purpose: Count number of bits set. Replaced existing code with Brian Kernighan's Algorithm.
+Original Offset: 0050BA30
+Return Value: Bit count
+Status: Complete
+*/
+DWORD __cdecl bit_count(DWORD bitfield) {
+	DWORD count;
+	for (count = 0; bitfield; count++) {
+		bitfield &= bitfield - 1; // clear the least significant bit set
+	}
+	return count;
+}
