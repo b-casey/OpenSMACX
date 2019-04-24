@@ -18,8 +18,7 @@
 #include "stdafx.h"
 #include "time.h"
 
-void Time::JACKAL_MsgClearQueue()
-{
+void Time::JACKAL_MsgClearQueue() {
 	LPMSG lpMsg = 0;
 	//g_MsgStatus |= 0x3F; // ?
 
@@ -32,9 +31,8 @@ void Time::JACKAL_MsgClearQueue()
 	}else{
 		//g_MsgStatus = 0; // no messages
 	}
-};
+}
 
-void Time::close()
-{
+void Time::close() {
 	Time::JACKAL_MsgClearQueue();
 }

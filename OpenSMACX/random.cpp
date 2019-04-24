@@ -51,7 +51,7 @@ Status: Complete
 */
 double Random::get() {
 	seed = seed * 0x19660D + 0x3C6EF35F;
-	DWORD temp = seed & 0x7FFFFF | 0x3F800000; // FPU logic?
+	DWORD temp = (seed & 0x7FFFFF) | 0x3F800000; // FPU logic?
 	return *reinterpret_cast<double *>(&temp) - 1.0;
 }
 

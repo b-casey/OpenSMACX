@@ -58,7 +58,7 @@ void Text::shutdown() {
 		free(bufferItem);
 		bufferItem = 0;
 	}
-};
+}
 
 /*
 Purpose: Close only file handle
@@ -187,7 +187,7 @@ LPSTR Text::item() {
 	}
 	purge_spaces(bufferItem);
 	return bufferItem;
-};
+}
 
 /*
 Purpose: Parse string into buffer and add it to string table
@@ -207,7 +207,7 @@ Status: Complete
 */
 int Text::item_number() {
 	return stoi(item());
-};
+}
 
 /*
 Purpose: Parse binary string into buffer and return integer value
@@ -217,7 +217,7 @@ Status: Complete
 */
 int Text::item_binary() {
 	return btoi(item());
-};
+}
 
 /*
 Purpose: Parse hex string into buffer and return integer value
@@ -227,7 +227,7 @@ Status: Complete
 */
 int Text::item_hex() {
 	return htoi(item());
-};
+}
 
 // global
 Text *Txt = (Text *)0x009B7BA0;

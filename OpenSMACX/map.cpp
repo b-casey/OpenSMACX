@@ -19,3 +19,5 @@
 #include "map.h"
 
 rules_natural *Natural = (rules_natural *)0x0094ADE0;
+DWORD *MapHorizontalBounds = (DWORD *)0x00949870;
+DWORD *MapVerticalBounds = (DWORD *)0x00949874;

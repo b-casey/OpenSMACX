@@ -45,6 +45,8 @@ typedef void *func6(char const *, int(*)(void));
 func6 *X_pop = (func6 *)0x005BF310;
 typedef int func7(int, int, int);
 func7 *morale_veh = (func7 *)0x005C0E40;
+typedef void func10(int, int, int, int);
+func10 *bit_set = (func10 *)0x00591D60;
 
 // string
 typedef int *func8(LPSTR, LPSTR);
@@ -69,9 +71,21 @@ BOOL *IsLoggingDisabled = (BOOL *)0x009BC004;
 DWORD *GameRules = (DWORD *)0x009A64C0;
 int *DiffLevelCurrent = (int *)0x009A64C4;
 int *VehCurrentCount = (int *)0x009A64C8;
+int *VehDropLiftVehID = (int *)0x009B2280;
+int *VehLift_xCoord = (int *)0x009B2278;
+int *VehLift_yCoord = (int *)0x009B2284;
 int *BaseCurrentCount = (int *)0x009A64CC;
 int *TurnCurrentNum = (int *)0x009A64D4;
 int *MissionYearCurrent = (int *)0x009A64D8;
 
 Filefind *FilefindPath = (Filefind *)0x009B8198;
 MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
+
+/*
+void __cdecl tester() {
+	for (int j = 0; j < *VehCurrentCount; j++) {
+		sleep(j);
+		veh_skip(j);
+	}
+}
+*/

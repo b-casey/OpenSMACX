@@ -117,7 +117,7 @@ enum veh_orders {
 	ORDER_NONE = 0,              //  -
 	ORDER_SENTRY_BOARD = 1,      // (L)
 	ORDER_HOLD = 2,              // (H); Hold (set 1st waypoint (-1, 0)), Hold 10 (-1, 10), On Alert
-	ORDER_CONVOY = 3,            // (O); tied to typeCrawling
+	ORDER_CONVOY = 3,            // (O)
 	ORDER_FARM = 4,              // (f)
 	ORDER_SOIL_ENRICHER = 5,     // (f)
 	ORDER_MINE = 6,              // (M)
@@ -139,41 +139,42 @@ enum veh_orders {
 	ORDER_TERRAFORM_LEVEL = 22,  // (_)
 	ORDER_PLACE_MONOLITH = 23,   // (?)
 	ORDER_GO_TO = 24,            // (G); Go to Base, Group go to, Patrol
-	ORDER_MOVE = 25,             // (>); how does this differ compared to ORDER_GO_TO?
+	ORDER_MOVE = 25,             // (>); Only used in a few places, seems to be buggy mechanic
 	ORDER_EXPLORE = 26,          // (/); not set via shortcut, AI related?
 	ORDER_ROADS_TO = 27,         // (r)
 	ORDER_MAGTUBE_TO = 28,       // (t)
+	// 29                        // max value, seems to be unused
 	ORDER_AI_GO_TO = 88,         //  - ; ORDER_GO_TO (0x18) | 0x40 > 0x58 ? only used by AI funcs
 };
 
 enum veh_orders_auto_type {
-	ORDERF_CONVOY_NUTRIENTS = 0,
-	ORDERF_TERRA_AUTO_FULL = 0,
-	ORDERF_CONVOY_MINERALS = 1,
-	ORDERF_TERRA_AUTO_ROAD = 1,
-	ORDERF_CONVOY_ENERGY = 2,
-	ORDERF_TERRA_AUTO_MAGTUBE = 2,
-	ORDERF_CONVOY_PSI = 3,
-	ORDERF_TERRA_AUTOIMPROVE_BASE = 3,
-	ORDERF_TERRA_FARM_SOLAR_ROAD = 4,
-	ORDERF_TERRA_MINE_SOLAR_ROAD = 5,
-	ORDERF_TERRA_AUTO_FUNGUS_REM = 6,
-	ORDERF_TERRA_AUTOMATIC_SENSOR = 7,
+	ORDERA_CONVOY_NUTRIENTS = 0,
+	ORDERA_TERRA_AUTO_FULL = 0,
+	ORDERA_CONVOY_MINERALS = 1,
+	ORDERA_TERRA_AUTO_ROAD = 1,
+	ORDERA_CONVOY_ENERGY = 2,
+	ORDERA_TERRA_AUTO_MAGTUBE = 2,
+	ORDERA_CONVOY_PSI = 3,
+	ORDERA_TERRA_AUTOIMPROVE_BASE = 3,
+	ORDERA_TERRA_FARM_SOLAR_ROAD = 4,
+	ORDERA_TERRA_MINE_SOLAR_ROAD = 5,
+	ORDERA_TERRA_AUTO_FUNGUS_REM = 6,
+	ORDERA_TERRA_AUTOMATIC_SENSOR = 7,
 	// 8 unused?
 	// 9 unused?
-	ORDERF_BOMBING_RUN = 10, // air units only
-	ORDERF_ON_ALERT = 11,
-	ORDERF_AUTOMATE_AIR_DEFENSE = 12,
+	ORDERA_BOMBING_RUN = 10, // air units only
+	ORDERA_ON_ALERT = 11,
+	ORDERA_AUTOMATE_AIR_DEFENSE = 12,
 };
 
 enum veh_flags_bitfield {
-	FLAG_PROBE_PACT_OPERATIONS = 0x4,
-	FLAG_IS_OBJECTIVE = 0x20,
-	FLAG_LURKER = 0x40,
-	FLAG_START_RAND_LOCATION = 0x80,
-	FLAG_START_RAND_MONOLITH = 0x100,
-	FLAG_START_RAND_FUNGUS = 0x200,
-	FLAG_INVISIBLE = 0x400,
+	VFLAG_PROBE_PACT_OPERATIONS = 0x4,
+	VFLAG_IS_OBJECTIVE = 0x20,
+	VFLAG_LURKER = 0x40,
+	VFLAG_START_RAND_LOCATION = 0x80,
+	VFLAG_START_RAND_MONOLITH = 0x100,
+	VFLAG_START_RAND_FUNGUS = 0x200,
+	VFLAG_INVISIBLE = 0x400,
 };
 
 enum veh_weapon_mode {
@@ -325,7 +326,7 @@ struct rules_armor {
 struct veh {
 	__int16 xCoord;
 	__int16 yCoord;
-	DWORD currentState;
+	DWORD state;
 	WORD flags;
 	__int16 protoID;
 	WORD unknown1;
@@ -340,7 +341,7 @@ struct veh {
 	BYTE morale;
 	BYTE terraformingTurns;
 	BYTE orderAutoType; // see veh_orders_auto_type enum
-	BYTE unknown4;
+	BYTE visibleToFaction; // bitfield (1 << (1 to 7))
 	BYTE movesExpended;
 	char unknown5;
 	BYTE unknown6;
@@ -348,8 +349,8 @@ struct veh {
 	BYTE unknown8;
 	char unknown9;
 	__int16 homeBaseID;
-	__int16 nextVehIDSquare;
-	__int16 prevVehIDSquare;
+	__int16 nextVehIDStack;
+	__int16 prevVehIDStack;
 };
 
 struct veh_prototype {
@@ -437,6 +438,11 @@ extern LPSTR *PlansShortName;
 extern LPSTR *PlansFullName;
 extern LPSTR *Triad;
 
+OPENSMACX_API int __cdecl veh_top(int vehID);
+OPENSMACX_API DWORD __cdecl veh_moves(int vehID);
+OPENSMACX_API DWORD __cdecl proto_power(int vehID);
+OPENSMACX_API int __cdecl veh_lift(int vehID);
+OPENSMACX_API void __cdecl sleep(int vehID);
 OPENSMACX_API void __cdecl veh_clear(int vehID, int protoID, int factionID);
 OPENSMACX_API BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn);
 OPENSMACX_API DWORD __cdecl offense_proto(int protoID, int vehIDDef, BOOL isArtyMissile);

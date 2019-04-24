@@ -4,6 +4,8 @@ A project to decompile SMAC/X to C++ with the long term goal of creating a full 
 Source tested and compiled as an x86 DLL with Visual Studio 2017 using Visual C++ with default 
 settings. Source was also tested using Visual Studio 2015 Visual C++.
 
+Tested with CodeBlocks using GCC 8.1.0 compiler. Added project file (cbp) courtesy of induktio.
+
 v0.1
 * Parsing in alpha/x.txt and faction text files complete
 

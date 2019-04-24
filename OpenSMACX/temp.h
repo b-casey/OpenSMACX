@@ -48,6 +48,8 @@ typedef void *func6(char const *, int(*)(void));
 extern func6 *X_pop;
 typedef int func7(int, int, int);
 extern func7 *morale_veh;
+typedef void func10(int, int, int, int);
+extern func10 *bit_set;
 
 // string
 typedef int *func8(LPSTR, LPSTR);
@@ -72,9 +74,14 @@ extern BOOL *IsLoggingDisabled; // global toggle for logging on/off? debug vs re
 extern DWORD *GameRules; // bitfield
 extern int *DiffLevelCurrent;
 extern int *VehCurrentCount;
+extern int *VehDropLiftVehID;
+extern int *VehLift_xCoord;
+extern int *VehLift_yCoord;
 extern int *BaseCurrentCount;
 extern int *TurnCurrentNum;
 extern int *MissionYearCurrent;
 
 extern Filefind *FilefindPath;
 extern MainInterface *MainInterfaceVar;
+
+//OPENSMACX_API void __cdecl tester();

@@ -226,14 +226,14 @@ enum  secret_project_id {
 struct base {
 	__int16 xCoord;
 	__int16 yCoord;
-	char factionIDCurrent;
-	char factionIDFormer;
+	BYTE factionIDCurrent;
+	BYTE factionIDFormer;
 	char populationSize;
-	char assimilationTurnsLeft;
-	char nerveStapleTurnsLeft;
-	char unk1;
-	char unk2;
-	char factionPopulationSizeIntel[8];
+	BYTE assimilationTurnsLeft;
+	BYTE nerveStapleTurnsLeft;
+	BYTE unk1;
+	BYTE unk2;
+	BYTE factionPopulationSizeIntel[8];
 	char nameString[25];
 	__int16 unkX;
 	__int16 unkY;

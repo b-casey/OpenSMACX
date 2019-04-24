@@ -20,6 +20,7 @@
 #include "alpha.h"
 #include "base.h"
 #include "general.h" // range
+#include "map.h"
 #include "strings.h"
 #include "technology.h"
 #include "temp.h"
@@ -40,10 +41,10 @@ LPSTR *PlansFullName = (LPSTR *)0x00952360; // [15]
 LPSTR *Triad = (LPSTR *)0x0094F1A8; // [3]
 
 /*
-Purpose: Calculate Terraformer contribution rate to building terrain enhancements.
+Purpose: Calculate Former rate to perform terrain enhancements.
 Original Offset: 004C9A50
 Return Value: Terraforming speed
-Status: WIP - test
+Status: Complete
 */
 DWORD __cdecl contribution(int vehID, DWORD terraformID) {
 	DWORD rate = has_abil(Veh[vehID].protoID, ABL_SUPER_TERRAFORMER) ? 4 : 2;
@@ -59,10 +60,94 @@ DWORD __cdecl contribution(int vehID, DWORD terraformID) {
 }
 
 /*
+Purpose: Get Veh on top of stack.
+Original Offset: 00579920
+Return Value: vehID if found, otherwise -1
+Status: Complete
+*/
+int __cdecl veh_top(int vehID) {
+	if (vehID < 0) {
+		return -1;
+	}
+	int topVehID = vehID;
+	for (int i = Veh[topVehID].prevVehIDStack; i >= 0; i = Veh[i].prevVehIDStack) {
+		topVehID = i;
+	}
+	return topVehID;
+}
+
+/*
+Purpose: Get Veh current moves left.
+Original Offset: 00579960
+Return Value: Moves left
+Status: Complete
+*/
+DWORD __cdecl veh_moves(int vehID) {
+	return range(speed(vehID, FALSE) - Veh[vehID].movesExpended, 0, 999);
+}
+
+/*
+Purpose: Get Veh power value from prototype.
+Original Offset: 005799A0
+Return Value: power
+Status: Complete
+*/
+DWORD __cdecl proto_power(int vehID) {
+	int protoID = Veh[vehID].protoID;
+	if (VehPrototype[protoID].plan == PLAN_ALIEN_ARTIFACT) {
+		return 1;
+	}
+	return range(VehPrototype[protoID].reactorID, 1, 100) * 10;
+}
+
+/*
+Purpose: Remove Veh from game in preparation to move it somewhere else or completely kill it.
+Original Offset: 005BFFA0
+Return Value: vehID
+Status: Complete
+*/
+int __cdecl veh_lift(int vehID) {
+	BOOL prevStackExists = FALSE;
+	int prevVehID = Veh[vehID].prevVehIDStack, nextVehID = Veh[vehID].nextVehIDStack;
+	if (prevVehID >= 0) {
+		prevStackExists = TRUE;
+		Veh[prevVehID].nextVehIDStack = nextVehID;
+	}
+	int xCoord = Veh[vehID].xCoord, yCoord = Veh[vehID].yCoord;
+	if (nextVehID >= 0) {
+		Veh[nextVehID].prevVehIDStack = prevVehID;
+	}
+	else if(!prevStackExists && yCoord >= 0 && yCoord < *MapVerticalBounds && xCoord >= 0
+		&& xCoord < *MapHorizontalBounds) {
+		bit_set(xCoord, yCoord, 2, 0);
+	}
+	*VehDropLiftVehID = vehID;
+	*VehLift_xCoord = xCoord;
+	*VehLift_yCoord = yCoord;
+	Veh[vehID].xCoord = -1;
+	Veh[vehID].yCoord = -1;
+	Veh[vehID].nextVehIDStack = -1;
+	Veh[vehID].prevVehIDStack = -1;
+	return vehID;
+}
+
+/*
+Purpose: Set Veh status to sentry/board.
+Original Offset: 005C01A0
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl sleep(int vehID) {
+	Veh[vehID].orders = ORDER_SENTRY_BOARD;
+	Veh[vehID].waypoint_xCoord[0] = -1;
+	Veh[vehID].waypoint_yCoord[0] = 0;
+}
+
+/*
 Purpose: Clear specified Veh.
 Original Offset: 005C02D0
 Return Value: n/a
-Status: WIP - test
+Status: Complete
 */
 void __cdecl veh_clear(int vehID, int protoID, int factionID) {
 	Veh[vehID].xCoord = -4;
@@ -72,8 +157,8 @@ void __cdecl veh_clear(int vehID, int protoID, int factionID) {
 	Veh[vehID].flags = 0;
 	Veh[vehID].factionID = factionID;
 	Veh[vehID].protoID = protoID;
-	Veh[vehID].nextVehIDSquare = -1;
-	Veh[vehID].prevVehIDSquare = -1;
+	Veh[vehID].nextVehIDStack = -1;
+	Veh[vehID].prevVehIDStack = -1;
 	Veh[vehID].waypointCount = 0;
 	Veh[vehID].patrolCurrentPoint = 0;
 	Veh[vehID].orders = 0;
@@ -81,17 +166,17 @@ void __cdecl veh_clear(int vehID, int protoID, int factionID) {
 		Veh[vehID].waypoint_xCoord[i] = -1;
 		Veh[vehID].waypoint_yCoord[i] = -1;
 	}
-	Veh[vehID].currentState = 0;
+	Veh[vehID].state = 0;
 	Veh[vehID].movesExpended = 0;
 	Veh[vehID].dmgIncurred = 0;
 	Veh[vehID].orderAutoType = 0;
 	Veh[vehID].terraformingTurns = 0;
 	Veh[vehID].unknown6 = 0;
 	Veh[vehID].unknown7 = 0;
-	Veh[vehID].unknown4 = 0;
+	Veh[vehID].visibleToFaction = 0;
 	Veh[vehID].homeBaseID = -1;
 	Veh[vehID].morale = Players[factionID].ruleMorale + 1;
-	Veh[vehID].unknown5 = 0;
+	Veh[vehID].unknown5 = 2;
 	Veh[vehID].unknown8 = 0;
 	Veh[vehID].unknown9 = 0;
 }
@@ -134,8 +219,8 @@ DWORD __cdecl offense_proto(int protoID, int vehIDDef, BOOL isArtyMissile) {
 	}
 	// Bug fix: Veh[].protoID with vehIDDef -1 could cause arbitrary memory read (Reactor struct)
 	// due to lack of bounds checking when comparing vehIDDef protoID to Spore Launcher
-	if ((isArtyMissile || Weapon[weaponID].offenseRating >= 0
-		&& (vehIDDef < 0 || Armor[VehPrototype[Veh[vehIDDef].protoID].armorID].defenseRating >= 0))
+	if ((isArtyMissile || (Weapon[weaponID].offenseRating >= 0
+		&& (vehIDDef < 0 || Armor[VehPrototype[Veh[vehIDDef].protoID].armorID].defenseRating >= 0)))
 		&& (vehIDDef < 0 || Veh[vehIDDef].protoID != BSC_SPORE_LAUNCHER)
 		&& protoID != BSC_SPORE_LAUNCHER) {
 		int offRating = Weapon[VehPrototype[protoID].weaponID].offenseRating;
@@ -167,9 +252,9 @@ DWORD __cdecl armor_proto(int protoID, int vehIDAtk, BOOL isArtyMissile) {
 	// due to lack of bounds checking when comparing vehIDAtk protoID to Spore Launcher
 	if (isArtyMissile && (vehIDAtk < 0 || Veh[vehIDAtk].protoID != BSC_SPORE_LAUNCHER)
 		&& protoID != BSC_SPORE_LAUNCHER 
-		|| Armor[VehPrototype[protoID].armorID].defenseRating >= 0 
+		|| (Armor[VehPrototype[protoID].armorID].defenseRating >= 0 
 		&& (vehIDAtk < 0 
-			|| Weapon[VehPrototype[Veh[vehIDAtk].protoID].weaponID].offenseRating >= 0)) {
+			|| Weapon[VehPrototype[Veh[vehIDAtk].protoID].weaponID].offenseRating >= 0))) {
 		DWORD defRating = range(Armor[VehPrototype[protoID].armorID].defenseRating, 1, 9999);
 		return (vehIDAtk < 0) ? defRating : defRating * 8; // conventional
 	}
@@ -276,20 +361,22 @@ DWORD __cdecl veh_cargo(int vehID) {
 }
 
 /*
-Purpose: Reset moves/speed of Veh back to original value.
+Purpose: Sets all moves as expended.
 Original Offset: 005C1D20
 Return Value: n/a
-Status: WIP - test
+Status: Complete
 */
 void __cdecl veh_skip(int vehID) {
+	// TODO Bug: Due to size of movesExpended, speeds over 255 will be incorrect. The speed() 
+	//           function can return a value from 1-999. Eventually increase size to 16 bits.
 	Veh[vehID].movesExpended = (BYTE)speed(vehID, FALSE);
 }
 
 /*
-Purpose: Fake creating a Veh for fixed VehID 2048.
+Purpose: Fake start of Veh init for fixed VehID 2048.
 Original Offset: 005C1D50
 Return Value: Fixed vehID (2048)
-Status: WIP - test
+Status: Complete
 */
 int __cdecl veh_fake(int protoID, int factionID) {
 	veh_clear(2048, protoID, factionID);
@@ -297,15 +384,16 @@ int __cdecl veh_fake(int protoID, int factionID) {
 }
 
 /*
-Purpose: 
+Purpose: Activate unit and clear current action.
 Original Offset: 005C1D70
 Return Value: vehID (doesn't look to be used on return)
 Status: WIP - test, incomplete flags/enums
 */
 int __cdecl veh_wake(int vehID) {
 	char orders = Veh[vehID].orders;
-	int state = Veh[vehID].currentState;
+	int state = Veh[vehID].state;
 	if (orders >= ORDER_FARM && orders < ORDER_GO_TO && !(state & 0x4000000)) {
+		// TODO Bug: Issue with movesExpended size / speed return, see veh_skip()
 		Veh[vehID].movesExpended = (BYTE)speed(vehID, FALSE) - Rules->MoveRateRoads;
 		int terraTurns = Veh[vehID].terraformingTurns;
 		if (terraTurns) {
@@ -316,11 +404,11 @@ int __cdecl veh_wake(int vehID) {
 			Veh[vehID].terraformingTurns = (BYTE)terraTurns;
 		}
 	}
-	if (state & 0x200 && Veh[vehID].orderAutoType == ORDERF_ON_ALERT && !(state & 4)) {
+	if (state & 0x200 && Veh[vehID].orderAutoType == ORDERA_ON_ALERT && !(state & 4)) {
 		Veh[vehID].movesExpended = 0;
 	}
 	Veh[vehID].orders = ORDER_NONE;
-	Veh[vehID].currentState &= 0xF4FFBDFF;
+	Veh[vehID].state &= 0xF4FFBDFF;
 	return vehID;
 }
 
@@ -527,7 +615,7 @@ void __cdecl say_stats(LPSTR stat, int protoID, LPSTR customSpacer) {
 		output += ", ";
 	}
 	else if (mode < 3) { // Projectile, energy, missile
-		LPSTR temp = (plan != PLAN_DEFENSIVE || offRating >= 0 && offRating <= defRating) 
+		LPSTR temp = (plan != PLAN_DEFENSIVE || (offRating >= 0 && offRating <= defRating)) 
 			? PlansShortName[plan] : *((LPSTR *)Label->stringsPtr + 0x138); // 'Combat'
 		output = StringTable->get((int)temp);
 		output += ", ";
@@ -541,8 +629,8 @@ void __cdecl say_stats(LPSTR stat, int protoID, LPSTR customSpacer) {
 		output += customSpacer ? customSpacer : "/";
 		output += std::to_string(speed_proto(protoID) / Rules->MoveRateRoads);
 	}
-	else if (defRating != 1 || VehPrototype[protoID].abilityFlags || Chassis[chas].speed != 1
-		&& (mode != WPN_MODE_TRANSPORT || chas != CHSI_FOIL)) {
+	else if (defRating != 1 || VehPrototype[protoID].abilityFlags || (Chassis[chas].speed != 1
+		&& (mode != WPN_MODE_TRANSPORT || chas != CHSI_FOIL))) {
 		output += StringTable->get(int(PlansShortName[mode]));
 		if (plan == PLAN_NAVAL_TRANSPORT) {
 			output += "(";

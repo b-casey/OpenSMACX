@@ -83,7 +83,7 @@ int TextIndex::search_index(LPCSTR sourceTxt, LPCSTR sectionTxt) {
 			if (!_stricmp(cmpAddr, sectionTxt)) {
 				return *LPDWORD(cmpAddr - 4);
 			}
-			while (*(LPSTR)cmpAddr++);
+			while (*cmpAddr++);
 			cmpAddr += 4;
 		}
 	}

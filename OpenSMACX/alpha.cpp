@@ -513,7 +513,7 @@ void __cdecl read_faction(player *Player, int toggle) {
 	}
 	text_get();
 	strcpy_s(Player->nameFaction, 40, text_item());
-	Player->nameFaction[39];
+	Player->nameFaction[39] = 0;
 	strcpy_s(Player->descNameFaction, 24, text_item());
 	Player->descNameFaction[23] = 0;
 	strcpy_s(Player->nounFaction, 24, text_item());
@@ -925,7 +925,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 			parse_say(0, (int)*(&Terraforming[i].name + j), -1, -1);
 			stringTemp->str[0] = 0;
 			parse_string(orderStr, stringTemp->str);
-			*(&Order[i + 4].order + j) = (LPSTR)StringTable->put(stringTemp->str);
+			*(&Order[i + 4].order + j) = StringTable->put(stringTemp->str);
 		}
 		Order[i + 4].letter = text_item_string();
 		Terraforming[i].shortcuts = text_item_string();	

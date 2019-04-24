@@ -28,3 +28,5 @@ struct rules_natural {
 constexpr int MaxNaturalNum = 16;
 
 extern rules_natural *Natural;
+extern DWORD *MapVerticalBounds;
+extern DWORD *MapHorizontalBounds;

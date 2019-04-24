@@ -292,6 +292,7 @@ int __cdecl stoi(LPCSTR str) {
 			case 'd':
 			{
 				*str++;
+				return atoi(str);
 			}
 			default:
 			{
@@ -613,7 +614,7 @@ Original Offset: 06003A0
 Return Value: Drive letter
 Status: Complete
 */
-CHAR filefind_cd_drive_letter() { return FilefindPath->cdPath[0]; };
+CHAR filefind_cd_drive_letter() { return FilefindPath->cdPath[0]; }
 
 /*
 Purpose: Sets an alternative path for filefind checks
