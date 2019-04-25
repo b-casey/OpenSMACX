@@ -2,13 +2,13 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="opensmacx" />
+		<Option title="OpenSMACX" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="output/opensmacx" prefix_auto="1" extension_auto="1" />
-				<Option object_output="build/obj/debug/" />
+				<Option output="bin/opensmacx" prefix_auto="1" extension_auto="1" />
+				<Option object_output="bld/debug/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -23,8 +23,8 @@
 				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="output/opensmacx" prefix_auto="1" extension_auto="1" />
-				<Option object_output="build/obj/release/" />
+				<Option output="bin/opensmacx" prefix_auto="1" extension_auto="1" />
+				<Option object_output="bld/release/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -41,81 +41,81 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-std=c++11 -pedantic -Wall -Wextra -Wshadow -Wcast-align -Wpointer-arith -Wfloat-conversion -Wuseless-cast" />
+			<Add option="-std=c++11 -pedantic -Wall -Wextra -Wshadow -Wcast-align -Wfloat-conversion -Wuseless-cast" />
 		</Compiler>
-		<Unit filename="alpha.cpp" />
-		<Unit filename="alpha.h" />
-		<Unit filename="autosound.cpp" />
-		<Unit filename="autosound.h" />
-		<Unit filename="base.cpp" />
-		<Unit filename="base.h" />
-		<Unit filename="basebutton.cpp" />
-		<Unit filename="basebutton.h" />
-		<Unit filename="basepop.cpp" />
-		<Unit filename="basepop.h" />
-		<Unit filename="buffer.cpp" />
-		<Unit filename="buffer.h" />
-		<Unit filename="buttongroup.cpp" />
-		<Unit filename="buttongroup.h" />
-		<Unit filename="dialog.cpp" />
-		<Unit filename="dialog.h" />
-		<Unit filename="dllmain.cpp" />
-		<Unit filename="faction.cpp" />
-		<Unit filename="faction.h" />
-		<Unit filename="filemap.cpp" />
-		<Unit filename="filemap.h" />
-		<Unit filename="flatbutton.cpp" />
-		<Unit filename="flatbutton.h" />
-		<Unit filename="flic.cpp" />
-		<Unit filename="flic.h" />
-		<Unit filename="font.cpp" />
-		<Unit filename="font.h" />
-		<Unit filename="general.cpp" />
-		<Unit filename="general.h" />
-		<Unit filename="graphicwin.cpp" />
-		<Unit filename="graphicwin.h" />
-		<Unit filename="heap.cpp" />
-		<Unit filename="heap.h" />
-		<Unit filename="log.cpp" />
-		<Unit filename="log.h" />
-		<Unit filename="maininterface.cpp" />
-		<Unit filename="maininterface.h" />
-		<Unit filename="map.cpp" />
-		<Unit filename="map.h" />
-		<Unit filename="menu.cpp" />
-		<Unit filename="menu.h" />
-		<Unit filename="palette.cpp" />
-		<Unit filename="palette.h" />
-		<Unit filename="random.cpp" />
-		<Unit filename="random.h" />
-		<Unit filename="scroll.cpp" />
-		<Unit filename="scroll.h" />
-		<Unit filename="spot.cpp" />
-		<Unit filename="spot.h" />
-		<Unit filename="sprite.cpp" />
-		<Unit filename="sprite.h" />
-		<Unit filename="stdafx.cpp" />
-		<Unit filename="stdafx.h" />
-		<Unit filename="stringbox.cpp" />
-		<Unit filename="stringbox.h" />
-		<Unit filename="strings.cpp" />
-		<Unit filename="strings.h" />
-		<Unit filename="technology.cpp" />
-		<Unit filename="technology.h" />
-		<Unit filename="temp.cpp" />
-		<Unit filename="temp.h" />
-		<Unit filename="terraforming.cpp" />
-		<Unit filename="terraforming.h" />
-		<Unit filename="text.cpp" />
-		<Unit filename="text.h" />
-		<Unit filename="textindex.cpp" />
-		<Unit filename="textindex.h" />
-		<Unit filename="time.cpp" />
-		<Unit filename="time.h" />
-		<Unit filename="veh.cpp" />
-		<Unit filename="veh.h" />
-		<Unit filename="win.cpp" />
-		<Unit filename="win.h" />
+		<Unit filename="src/alpha.cpp" />
+		<Unit filename="src/alpha.h" />
+		<Unit filename="src/autosound.cpp" />
+		<Unit filename="src/autosound.h" />
+		<Unit filename="src/base.cpp" />
+		<Unit filename="src/base.h" />
+		<Unit filename="src/basebutton.cpp" />
+		<Unit filename="src/basebutton.h" />
+		<Unit filename="src/basepop.cpp" />
+		<Unit filename="src/basepop.h" />
+		<Unit filename="src/buffer.cpp" />
+		<Unit filename="src/buffer.h" />
+		<Unit filename="src/buttongroup.cpp" />
+		<Unit filename="src/buttongroup.h" />
+		<Unit filename="src/dialog.cpp" />
+		<Unit filename="src/dialog.h" />
+		<Unit filename="src/dllmain.cpp" />
+		<Unit filename="src/faction.cpp" />
+		<Unit filename="src/faction.h" />
+		<Unit filename="src/filemap.cpp" />
+		<Unit filename="src/filemap.h" />
+		<Unit filename="src/flatbutton.cpp" />
+		<Unit filename="src/flatbutton.h" />
+		<Unit filename="src/flic.cpp" />
+		<Unit filename="src/flic.h" />
+		<Unit filename="src/font.cpp" />
+		<Unit filename="src/font.h" />
+		<Unit filename="src/general.cpp" />
+		<Unit filename="src/general.h" />
+		<Unit filename="src/graphicwin.cpp" />
+		<Unit filename="src/graphicwin.h" />
+		<Unit filename="src/heap.cpp" />
+		<Unit filename="src/heap.h" />
+		<Unit filename="src/log.cpp" />
+		<Unit filename="src/log.h" />
+		<Unit filename="src/maininterface.cpp" />
+		<Unit filename="src/maininterface.h" />
+		<Unit filename="src/map.cpp" />
+		<Unit filename="src/map.h" />
+		<Unit filename="src/menu.cpp" />
+		<Unit filename="src/menu.h" />
+		<Unit filename="src/palette.cpp" />
+		<Unit filename="src/palette.h" />
+		<Unit filename="src/random.cpp" />
+		<Unit filename="src/random.h" />
+		<Unit filename="src/scroll.cpp" />
+		<Unit filename="src/scroll.h" />
+		<Unit filename="src/spot.cpp" />
+		<Unit filename="src/spot.h" />
+		<Unit filename="src/sprite.cpp" />
+		<Unit filename="src/sprite.h" />
+		<Unit filename="src/stdafx.cpp" />
+		<Unit filename="src/stdafx.h" />
+		<Unit filename="src/stringbox.cpp" />
+		<Unit filename="src/stringbox.h" />
+		<Unit filename="src/strings.cpp" />
+		<Unit filename="src/strings.h" />
+		<Unit filename="src/technology.cpp" />
+		<Unit filename="src/technology.h" />
+		<Unit filename="src/temp.cpp" />
+		<Unit filename="src/temp.h" />
+		<Unit filename="src/terraforming.cpp" />
+		<Unit filename="src/terraforming.h" />
+		<Unit filename="src/text.cpp" />
+		<Unit filename="src/text.h" />
+		<Unit filename="src/textindex.cpp" />
+		<Unit filename="src/textindex.h" />
+		<Unit filename="src/time.cpp" />
+		<Unit filename="src/time.h" />
+		<Unit filename="src/veh.cpp" />
+		<Unit filename="src/veh.h" />
+		<Unit filename="src/win.cpp" />
+		<Unit filename="src/win.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />
