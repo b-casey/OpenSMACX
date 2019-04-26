@@ -439,6 +439,9 @@ extern LPSTR *PlansFullName;
 extern LPSTR *Triad;
 
 OPENSMACX_API int __cdecl veh_top(int vehID);
+OPENSMACX_API DWORD __cdecl drop_range(int factionID);
+OPENSMACX_API int __cdecl psi_factor(int combatRatio, int factionID, BOOL isAttack, 
+	BOOL isFungalTower);
 OPENSMACX_API DWORD __cdecl veh_moves(int vehID);
 OPENSMACX_API DWORD __cdecl proto_power(int vehID);
 OPENSMACX_API int __cdecl veh_lift(int vehID);
@@ -458,6 +461,11 @@ OPENSMACX_API void __cdecl say_stats_3(LPSTR stat, int protoID);
 OPENSMACX_API void __cdecl say_stats_3(int protoID);
 OPENSMACX_API void __cdecl say_stats_2(LPSTR stat, int protoID);
 OPENSMACX_API void __cdecl say_stats(LPSTR output, int protoID, LPSTR customSpacer);
+OPENSMACX_API int __cdecl arm_strat(int armorID, int factionID);
+OPENSMACX_API int __cdecl weap_strat(int weaponID, int factionID);
+OPENSMACX_API int __cdecl weap_val(int protoID, int factionID);
+OPENSMACX_API int __cdecl arm_val(int armorID, int factionID);
+OPENSMACX_API int __cdecl armor_val(int protoID, int factionID);
 OPENSMACX_API DWORD __cdecl transport_val(DWORD chassisID, int ability, DWORD reactorID);
 OPENSMACX_API DWORD __cdecl proto_cost(DWORD chassisID, DWORD weaponID, DWORD armorID,
 	DWORD ability, DWORD reactorID);

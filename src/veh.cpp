@@ -60,6 +60,46 @@ DWORD __cdecl contribution(int vehID, DWORD terraformID) {
 }
 
 /*
+Purpose: Calculate maximum range for Veh drops (air drops, Drop Pods)
+Original Offset: 00500320
+Return Value: Max range
+Status: WIP - test
+*/
+DWORD __cdecl drop_range(int factionID) {
+	if (!has_tech(Rules->TechOrbInsertSansSpcElev, factionID) 
+		&& !has_project(SP_SPACE_ELEVATOR, factionID)) {
+		return Rules->MaxAirdropSansOrbInsert;
+	}
+	if (*MapHorizontalBounds > *MapVerticalBounds) { // Orbital Insertion / Space Elevator?
+		return *MapHorizontalBounds;
+	}
+	return *MapVerticalBounds;
+}
+
+/*
+Purpose:
+Original Offset: 00501500
+Return Value: PSI combat factor
+Status: WIP
+*/
+int __cdecl psi_factor(int combatRatio, int factionID, BOOL isAttack, BOOL isFungalTower) {
+	int rulePsi = Players[factionID].rulePsi;
+	int factor = rulePsi ? ((rulePsi + 100) * combatRatio) / 100 : combatRatio;
+	if (isAttack && has_project(SP_DREAM_TWISTER, factionID)) {
+		factor += factor / 2; // Psi Attack +50%
+	}
+	else {
+		if (has_project(SP_NEURAL_AMPLIFIER, factionID)) {
+			factor += factor / 2; // Psi Defense +50%s
+		}
+		if (isFungalTower) {
+			factor += factor / 2; // SMACX only, never used: likely +50% Fungal Tower defense bonus
+		}
+	}
+	return factor;
+}
+
+/*
 Purpose: Get Veh on top of stack.
 Original Offset: 00579920
 Return Value: vehID if found, otherwise -1
@@ -101,10 +141,11 @@ DWORD __cdecl proto_power(int vehID) {
 }
 
 /*
-Purpose: Remove Veh from game in preparation to move it somewhere else or completely kill it.
+Purpose: Temporarily remove Veh from current square and stack in preparation for another action such 
+         as interacting with stack, moving or killing.
 Original Offset: 005BFFA0
 Return Value: vehID
-Status: Complete
+Status: Complete - further tests
 */
 int __cdecl veh_lift(int vehID) {
 	BOOL prevStackExists = FALSE;
@@ -117,8 +158,8 @@ int __cdecl veh_lift(int vehID) {
 	if (nextVehID >= 0) {
 		Veh[nextVehID].prevVehIDStack = prevVehID;
 	}
-	else if(!prevStackExists && yCoord >= 0 && yCoord < *MapVerticalBounds && xCoord >= 0
-		&& xCoord < *MapHorizontalBounds) {
+	else if(!prevStackExists && yCoord >= 0 && yCoord < (int)*MapVerticalBounds && xCoord >= 0
+		&& xCoord < (int)*MapHorizontalBounds) {
 		bit_set(xCoord, yCoord, 2, 0);
 	}
 	*VehDropLiftVehID = vehID;
@@ -670,6 +711,75 @@ void __cdecl say_stats(LPSTR stat, int protoID, LPSTR customSpacer) {
 	}
 	// assumes at least 1032 char buffer (stringTemp), eventually remove
 	strcat_s(stat, 1032, output.c_str());
+}
+
+/*
+Purpose: Calculate armor value from armorID
+Original Offset: 0057D270
+Return Value: Armor value / factor
+Status: Complete - test
+*/
+int __cdecl arm_strat(int armorID, int factionID) {
+	if (!SMACX_Enabled && armorID > ARM_PSI_DEFENSE) {
+		return 1;
+	}
+	int defenseRating = Armor[armorID].defenseRating;
+	if (defenseRating < 0) {
+		return psi_factor((Rules->PsiCombatRatioDef[TRIAD_LAND] * PlayersData[factionID].unk_59)
+			/ Rules->PsiCombatRatioAtk[TRIAD_LAND], factionID, FALSE, FALSE);
+	}
+	return defenseRating;
+}
+
+/*
+Purpose: Calculate weapon value from weaponID
+Original Offset: 0057D2E0
+Return Value: Weapon value / factor
+Status: Complete - test
+*/
+int __cdecl weap_strat(int weaponID, int factionID) {
+	if (!SMACX_Enabled && (weaponID == WPN_RESONANCE_LASER || weaponID == WPN_RESONANCE_BOLT
+		|| weaponID == WPN_STRING_DISRUPTOR))
+		return 1;
+	int offenseRating = Weapon[weaponID].offenseRating;
+	if (offenseRating < 0) {
+		return psi_factor((Rules->PsiCombatRatioAtk[TRIAD_LAND] * PlayersData[factionID].unk_60)
+			/ Rules->PsiCombatRatioDef[TRIAD_LAND], factionID, TRUE, FALSE);
+	}
+	return offenseRating;
+}
+
+/*
+Purpose: Calculate weapon value from protoID
+Original Offset: 0057D360
+Return Value: Weapon value
+Status: Complete - test
+*/
+int __cdecl weap_val(int protoID, int factionID) {
+	return weap_strat(VehPrototype[protoID].weaponID, factionID);
+}
+
+/*
+Purpose: Calculate armor value from armorID
+Original Offset: 0057D3F0
+Return Value: Armor value
+Status: Complete - test
+*/
+int __cdecl arm_val(int armorID, int factionID) {
+	if (factionID < 0) {
+		return Armor[armorID].defenseRating * 2;
+	}
+	return arm_strat(armorID, factionID) * 2;
+}
+
+/*
+Purpose: Calculate armor value from protoID
+Original Offset: 0057D480
+Return Value: Armor value
+Status: Complete - test
+*/
+int __cdecl armor_val(int protoID, int factionID) {
+	return arm_val(VehPrototype[protoID].armorID, factionID);
 }
 
 /*

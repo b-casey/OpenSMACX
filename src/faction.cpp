@@ -19,6 +19,7 @@
 #include "faction.h"
 
 player *Players = (player *)0x00946A50;
+player_data *PlayersData = (player_data *)0x0096C9E0;
 faction_art *FactionArt = (faction_art*)0x0078E978;
 rules_social_category *SocialCategory = (rules_social_category *)0x0094B000;
 rules_social_effect *SocialEffect = (rules_social_effect *)0x00946580;
