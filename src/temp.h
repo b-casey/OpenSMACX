@@ -83,5 +83,3 @@ extern int *MissionYearCurrent;
 
 extern Filefind *FilefindPath;
 extern MainInterface *MainInterfaceVar;
-
-//OPENSMACX_API void __cdecl tester();

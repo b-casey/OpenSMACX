@@ -80,12 +80,3 @@ int *MissionYearCurrent = (int *)0x009A64D8;
 
 Filefind *FilefindPath = (Filefind *)0x009B8198;
 MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
-
-/*
-void __cdecl tester() {
-	for (int j = 0; j < *VehCurrentCount; j++) {
-		sleep(j);
-		veh_skip(j);
-	}
-}
-*/

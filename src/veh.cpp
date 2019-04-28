@@ -19,6 +19,7 @@
 #include "veh.h"
 #include "alpha.h"
 #include "base.h"
+#include "faction.h"
 #include "general.h" // range
 #include "map.h"
 #include "strings.h"
@@ -60,33 +61,35 @@ DWORD __cdecl contribution(int vehID, DWORD terraformID) {
 }
 
 /*
-Purpose: Calculate maximum range for Veh drops (air drops, Drop Pods)
+Purpose: Calculate maximum range for Veh drops (air drops, Drop Pods).
 Original Offset: 00500320
 Return Value: Max range
-Status: WIP - test
+Status: Complete
 */
 DWORD __cdecl drop_range(int factionID) {
-	if (!has_tech(Rules->TechOrbInsertSansSpcElev, factionID) 
+	if (!has_tech(Rules->TechOrbInsertSansSpcElev, factionID) // default 'Graviton Theory'
 		&& !has_project(SP_SPACE_ELEVATOR, factionID)) {
 		return Rules->MaxAirdropSansOrbInsert;
 	}
-	if (*MapHorizontalBounds > *MapVerticalBounds) { // Orbital Insertion / Space Elevator?
+	if (*MapHorizontalBounds > *MapVerticalBounds) {
 		return *MapHorizontalBounds;
 	}
 	return *MapVerticalBounds;
 }
 
 /*
-Purpose:
+Purpose: Calculate psi combat factor for attacking or defending units.
 Original Offset: 00501500
-Return Value: PSI combat factor
-Status: WIP
+Return Value: Psi factor
+Status: Complete
 */
 int __cdecl psi_factor(int combatRatio, int factionID, BOOL isAttack, BOOL isFungalTower) {
 	int rulePsi = Players[factionID].rulePsi;
 	int factor = rulePsi ? ((rulePsi + 100) * combatRatio) / 100 : combatRatio;
-	if (isAttack && has_project(SP_DREAM_TWISTER, factionID)) {
-		factor += factor / 2; // Psi Attack +50%
+	if (isAttack) {
+		if (has_project(SP_DREAM_TWISTER, factionID)) {
+			factor += factor / 2; // Psi Attack +50%
+		}
 	}
 	else {
 		if (has_project(SP_NEURAL_AMPLIFIER, factionID)) {
@@ -717,7 +720,7 @@ void __cdecl say_stats(LPSTR stat, int protoID, LPSTR customSpacer) {
 Purpose: Calculate armor value from armorID
 Original Offset: 0057D270
 Return Value: Armor value / factor
-Status: Complete - test
+Status: Complete
 */
 int __cdecl arm_strat(int armorID, int factionID) {
 	if (!SMACX_Enabled && armorID > ARM_PSI_DEFENSE) {
@@ -735,7 +738,7 @@ int __cdecl arm_strat(int armorID, int factionID) {
 Purpose: Calculate weapon value from weaponID
 Original Offset: 0057D2E0
 Return Value: Weapon value / factor
-Status: Complete - test
+Status: Complete
 */
 int __cdecl weap_strat(int weaponID, int factionID) {
 	if (!SMACX_Enabled && (weaponID == WPN_RESONANCE_LASER || weaponID == WPN_RESONANCE_BOLT
@@ -753,7 +756,7 @@ int __cdecl weap_strat(int weaponID, int factionID) {
 Purpose: Calculate weapon value from protoID
 Original Offset: 0057D360
 Return Value: Weapon value
-Status: Complete - test
+Status: Complete
 */
 int __cdecl weap_val(int protoID, int factionID) {
 	return weap_strat(VehPrototype[protoID].weaponID, factionID);
@@ -763,7 +766,7 @@ int __cdecl weap_val(int protoID, int factionID) {
 Purpose: Calculate armor value from armorID
 Original Offset: 0057D3F0
 Return Value: Armor value
-Status: Complete - test
+Status: Complete
 */
 int __cdecl arm_val(int armorID, int factionID) {
 	if (factionID < 0) {
@@ -776,7 +779,7 @@ int __cdecl arm_val(int armorID, int factionID) {
 Purpose: Calculate armor value from protoID
 Original Offset: 0057D480
 Return Value: Armor value
-Status: Complete - test
+Status: Complete
 */
 int __cdecl armor_val(int protoID, int factionID) {
 	return arm_val(VehPrototype[protoID].armorID, factionID);
