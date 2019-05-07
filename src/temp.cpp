@@ -43,10 +43,10 @@ func5 *load_faction_art = (func5 *)0x00453710;
 // Next call to text_get() tries to access 009B7CF4 and the game crashes.
 typedef void *func6(char const *, int(*)(void));
 func6 *X_pop = (func6 *)0x005BF310;
-typedef int func7(int, int, int);
-func7 *morale_veh = (func7 *)0x005C0E40;
-typedef void func10(int, int, int, int);
-func10 *bit_set = (func10 *)0x00591D60;
+typedef DWORD func7(int, int);
+func7 *morale_alien = (func7 *)0x00501350;
+//typedef void func10(int, int, int, int);
+//func10 *bit_set = (func10 *)0x00591D60;
 
 // string
 typedef int *func8(LPSTR, LPSTR);
@@ -77,6 +77,8 @@ int *VehLift_yCoord = (int *)0x009B2284;
 int *BaseCurrentCount = (int *)0x009A64CC;
 int *TurnCurrentNum = (int *)0x009A64D4;
 int *MissionYearCurrent = (int *)0x009A64D8;
+
+DWORD *UnkBitfield1 = (DWORD *)0x0090D91C;
 
 Filefind *FilefindPath = (Filefind *)0x009B8198;
 MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;

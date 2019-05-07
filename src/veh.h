@@ -448,6 +448,7 @@ OPENSMACX_API int __cdecl veh_lift(int vehID);
 OPENSMACX_API void __cdecl sleep(int vehID);
 OPENSMACX_API void __cdecl veh_clear(int vehID, int protoID, int factionID);
 OPENSMACX_API BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn);
+OPENSMACX_API DWORD __cdecl morale_veh(int vehID, BOOL checkDroneRiot, int factionIDvsNative);
 OPENSMACX_API DWORD __cdecl offense_proto(int protoID, int vehIDDef, BOOL isArtyMissile);
 OPENSMACX_API DWORD __cdecl armor_proto(int protoID, int vehIDAtk, BOOL isArtyMissile);
 OPENSMACX_API DWORD __cdecl speed_proto(int protoID);

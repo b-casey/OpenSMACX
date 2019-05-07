@@ -148,7 +148,7 @@ Purpose: Temporarily remove Veh from current square and stack in preparation for
          as interacting with stack, moving or killing.
 Original Offset: 005BFFA0
 Return Value: vehID
-Status: Complete - further tests
+Status: WIP - further tests
 */
 int __cdecl veh_lift(int vehID) {
 	BOOL prevStackExists = FALSE;
@@ -246,6 +246,74 @@ BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn) {
 		return FALSE;
 	}
 	return has_abil(protoID, ABL_ARTILLERY); // TRIAD_LAND
+}
+
+/*
+Purpose: Calculate Veh morale.
+Original Offset: 005C0E40
+Return Value: Morale value
+Status: WIP
+*/
+DWORD __cdecl morale_veh(int vehID, BOOL checkDroneRiot, int factionIDvsNative) {
+	DWORD factionID = Veh[vehID].factionID;
+	if (!factionID) {
+		return morale_alien(vehID, factionIDvsNative); // Native life
+	}
+	SHORT protoID = Veh[vehID].protoID;
+	if (VehPrototype[protoID].plan == PLAN_INFO_WARFARE) {
+		int probeMorale = range(PlayersData[factionID].SE_Probe, 0, 3);
+		probeMorale += has_project(SP_TELEPATHIC_MATRIX, factionID) ? 2 : 0;
+		for (int i = 0; i < MaxTechnologyNum; i++) {
+			if (Technology[i].flags & IMPROVED_PROBES && has_tech(i, factionID)) {
+				probeMorale++;
+			}
+		}
+		probeMorale += Veh[vehID].morale;
+		return range(probeMorale, 2, 6);
+	}
+	char offenseRating = Weapon[VehPrototype[protoID].weaponID].offenseRating;
+	if (protoID < MaxVehProtoFactionNum && offenseRating < 0) {
+		return range(Veh[vehID].morale, 0, 6); // Basic Psi Veh
+	}
+	int morale = 0;
+	//
+	int ruleMorale = Players[factionID].ruleMorale;
+	if (ruleMorale < 0) {
+		morale += ruleMorale;
+	}
+	int homeBaseID = Veh[vehID].homeBaseID;
+	if (homeBaseID >= 0) {
+		DWORD offset, mask;
+		bitmask(FAC_CHILDREN_CRECHE, &offset, &mask);
+		if (Base[homeBaseID].facilitiesPresentTable[offset] & mask) {
+			if (morale < 0) {
+				morale /= 2;
+			}
+		}
+		bitmask(FAC_BROOD_PIT, &offset, &mask);
+		if (Base[homeBaseID].facilitiesPresentTable[offset] & mask) {
+			if (protoID <= MaxVehProtoFactionNum 
+				&& (offenseRating < 0 || protoID == BSC_SPORE_LAUNCHER) && morale < 0) {
+				morale /= 2;
+			}
+		}
+	}
+	if (ruleMorale > 0) {
+		morale += ruleMorale;
+	}
+	BOOL moraleFlag = Players[factionID].ruleFlags & FLAG_MORALE;
+	if (moraleFlag && morale < 0) {
+		morale = 0;
+	}
+	if (checkDroneRiot) {
+		if (homeBaseID >= 0) {
+			if (Base[homeBaseID].status & BSTATUS_DRONE_RIOTS_ACTIVE && !moraleFlag) {
+				morale = range(morale--, 0, 6);
+			}
+		}
+	}
+	morale += Veh[vehID].morale;
+	return range(morale, 0, 6);
 }
 
 /*

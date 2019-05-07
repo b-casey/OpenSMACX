@@ -46,10 +46,10 @@ typedef void *func5(int);
 extern func5 *load_faction_art;
 typedef void *func6(char const *, int(*)(void));
 extern func6 *X_pop;
-typedef int func7(int, int, int);
-extern func7 *morale_veh;
-typedef void func10(int, int, int, int);
-extern func10 *bit_set;
+typedef DWORD func7(int, int);
+extern func7 *morale_alien;
+//typedef void func10(int, int, int, int);
+//extern func10 *bit_set;
 
 // string
 typedef int *func8(LPSTR, LPSTR);
@@ -80,6 +80,8 @@ extern int *VehLift_yCoord;
 extern int *BaseCurrentCount;
 extern int *TurnCurrentNum;
 extern int *MissionYearCurrent;
+
+extern DWORD *UnkBitfield1;
 
 extern Filefind *FilefindPath;
 extern MainInterface *MainInterfaceVar;

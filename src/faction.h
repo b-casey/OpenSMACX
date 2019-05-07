@@ -356,8 +356,8 @@ struct player_data {
 	int unk_56;
 	int bestArmorValue;
 	int unk_58;
-	int unk_59;
-	int unk_60;
+	int unk_59; // see enemy_capabilities()
+	int unk_60; // see enemy_capabilities()
 	int unk_61;
 	int unk_62;
 	int unk_63;

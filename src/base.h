@@ -223,6 +223,16 @@ enum  secret_project_id {
 	SP_EMPTY_64 = 63,
 };
 
+enum base_status_bitfield {
+	BSTATUS_DRONE_RIOTS_ACTIVE = 0x2,
+	BSTATUS_GOLDEN_AGE_ACTIVE = 0x4,
+	BSTATUS_RESEARCH_DATA_STOLEN = 0x40,
+	BSTATUS_GENETIC_PLAGUE_INTRO = 0x20000,
+	BSTATUS_ENERGY_RESERVES_DRAINED = 0x400000,
+	BSTATUS_PRODUCTION_DONE = 0x800000,
+	BSTATUS_PRODUCTION_HURRIED = 0x40000000,
+};
+
 struct base {
 	__int16 xCoord;
 	__int16 yCoord;
@@ -237,16 +247,16 @@ struct base {
 	char nameString[25];
 	__int16 unkX;
 	__int16 unkY;
-	int statusBitfield;
-	int eventBitfield;
-	int governorBitfield;
+	DWORD status;
+	int event;
+	int governor;
 	int nutrientsAccumulated;
 	int mineralsAccumulated;
 	int productionIDLast;
 	int ecoDamage;
 	int queueSize;
 	int queueProductionID[10];
-	int resourceSquaresBitfield;
+	int resourceSquares;
 	int specialistTotal;
 	int unk3;
 	int unk4;
