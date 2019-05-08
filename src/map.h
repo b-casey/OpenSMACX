@@ -165,7 +165,7 @@ void __cdecl bit_set(int xCoord, int yCoord, DWORD bit, BOOL set);
 DWORD __cdecl bit2_at(int xCoord, int yCoord);
 void __cdecl bit2_set(int xCoord, int yCoord, DWORD bit2, BOOL set);
 DWORD __cdecl code_at(int xCoord, int yCoord);
-DWORD __cdecl code_set(int xCoord, int yCoord, DWORD code);
+void __cdecl code_set(int xCoord, int yCoord, DWORD code);
 void __cdecl synch_bit(int xCoord, int yCoord, int factionID);
 BOOL __cdecl is_ocean(int xCoord, int yCoord);
 int __cdecl veh_who(int xCoord, int yCoord);

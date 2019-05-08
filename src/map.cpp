@@ -171,8 +171,6 @@ void __cdecl region_set(int xCoord, int yCoord, BYTE region) {
 	map_loc(xCoord, yCoord)->region = region;
 }
 
-// BYTE visibility; // (1 << factionID)
-
 /*
 Purpose: Get faction using tile at coordinates.
 Original Offset: n/a
@@ -199,7 +197,7 @@ void __cdecl using_set(int xCoord, int yCoord, int factionID) {
 Purpose: Get factionID lock of tile at coordinates.
 Original Offset: n/a
 Return Value: factionID
-Status: WIP
+Status: WIP - test
 */
 DWORD __cdecl lock_at(int xCoord, int yCoord) {
 	return (map_loc(xCoord, yCoord)->val3 >> 3) & 7;
@@ -301,7 +299,7 @@ void __cdecl bit_set(int xCoord, int yCoord, DWORD bit, BOOL set) {
 		map_loc(xCoord, yCoord)->bit |= bit;
 	}
 	else {
-		map_loc(xCoord, yCoord)->bit &= !bit;
+		map_loc(xCoord, yCoord)->bit &= ~bit;
 	}
 }
 
@@ -326,36 +324,40 @@ void __cdecl bit2_set(int xCoord, int yCoord, DWORD bit2, BOOL set) {
 		map_loc(xCoord, yCoord)->bit |= bit2;
 	}
 	else {
-		map_loc(xCoord, yCoord)->bit &= !bit2;
+		map_loc(xCoord, yCoord)->bit &= ~bit2;
 	}
 }
 
 /*
-Purpose: Landmarks?
+Purpose: Get code of tile at coordinates. This is the upper byte section of bit2. 
+         This value keeps track of tile sequence order for landmarks.
 Original Offset: n/a
-Return Value:
-Status:
+Return Value: Code
+Status: WIP - test
 */
 DWORD __cdecl code_at(int xCoord, int yCoord) {
 	return map_loc(xCoord, yCoord)->bit2 >> 24;
 }
 
 /*
-Purpose: Landmarks?
+Purpose: Set code of tile at coordinates. This is the upper byte section of bit2.
+		 This value keeps track of tile sequence order for landmarks.
 Original Offset: 00591E00
-Return Value:
-Status:
+Return Value: n/a
+Status: WIP - test
 */
-DWORD __cdecl code_set(int xCoord, int yCoord, DWORD code) {
-	return (map_loc(xCoord, yCoord)->bit2 & 0xFFFFFF) | (code << 24);
+void __cdecl code_set(int xCoord, int yCoord, DWORD code) {
+	map *tile = map_loc(xCoord, yCoord);
+	tile->bit2 &= 0xFFFFFF;
+	tile->bit2 |= code << 24;
 	*UnkBitfield1 |= 4; // TODO: identify variable + value
 }
 
 /*
-Purpose: 
+Purpose: Synchronize actual tile bit with faction visible bit.
 Original Offset: 00591E50
-Return Value:
-Status:
+Return Value: n/a
+Status: WIP - test
 */
 void __cdecl synch_bit(int xCoord, int yCoord, int factionID) {
 	if (factionID) {
@@ -367,7 +369,7 @@ void __cdecl synch_bit(int xCoord, int yCoord, int factionID) {
 Purpose: Check whether tile is ocean or not.
 Original Offset: 005001E0
 Return Value: Is tile ocean? TRUE/FALSE
-Status: WIP
+Status: WIP - test
 */
 BOOL __cdecl is_ocean(int xCoord, int yCoord) {
 	return (map_loc(xCoord, yCoord)->val1 & 0xE0) < ALT_SHORE_LINE;
@@ -377,7 +379,7 @@ BOOL __cdecl is_ocean(int xCoord, int yCoord) {
 Purpose: Get owner of tile if there is a Veh in it.
 Original Offset: 00500250
 Return Value: Owner/factionID or -1
-Status: WIP
+Status: WIP - test
 */
 int __cdecl veh_who(int xCoord, int yCoord) {
 	map *tile = map_loc(xCoord, yCoord);
@@ -394,7 +396,7 @@ int __cdecl veh_who(int xCoord, int yCoord) {
 Purpose: Get owner of tile if there is a Veh or Base in it.
 Original Offset: 005798E0
 Return Value: Owner/factionID or -1
-Status: WIP
+Status: WIP - test
 */
 int __cdecl anything_at(int xCoord, int yCoord) {
 	map *tile = map_loc(xCoord, yCoord);
