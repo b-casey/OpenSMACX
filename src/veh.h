@@ -438,13 +438,24 @@ extern LPSTR *PlansShortName;
 extern LPSTR *PlansFullName;
 extern LPSTR *Triad;
 
+extern int *VehCurrentCount;
+extern int *VehDropLiftVehID;
+extern int *VehLift_xCoord;
+extern int *VehLift_yCoord;
+extern BOOL *VehBitError;
+
 OPENSMACX_API int __cdecl veh_top(int vehID);
 OPENSMACX_API DWORD __cdecl drop_range(int factionID);
 OPENSMACX_API int __cdecl psi_factor(int combatRatio, int factionID, BOOL isAttack, 
 	BOOL isFungalTower);
+OPENSMACX_API void __cdecl rebuild_vehicle_bits();
 OPENSMACX_API DWORD __cdecl veh_moves(int vehID);
 OPENSMACX_API DWORD __cdecl proto_power(int vehID);
+OPENSMACX_API int __cdecl veh_at(int xCoord, int yCoord);
 OPENSMACX_API int __cdecl veh_lift(int vehID);
+OPENSMACX_API int __cdecl veh_drop(int vehID, int xCoord, int yCoord);
+OPENSMACX_API void __cdecl veh_demote(int vehID);
+OPENSMACX_API void __cdecl veh_promote(int vehID);
 OPENSMACX_API void __cdecl sleep(int vehID);
 OPENSMACX_API void __cdecl veh_clear(int vehID, int protoID, int factionID);
 OPENSMACX_API BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn);

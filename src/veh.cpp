@@ -21,6 +21,7 @@
 #include "base.h"
 #include "faction.h"
 #include "general.h" // range
+#include "log.h"
 #include "map.h"
 #include "strings.h"
 #include "technology.h"
@@ -40,6 +41,12 @@ rules_order *Order = (rules_order *)0x0096C878; // [9]
 LPSTR *PlansShortName = (LPSTR *)0x00945FE0; // [15]
 LPSTR *PlansFullName = (LPSTR *)0x00952360; // [15]
 LPSTR *Triad = (LPSTR *)0x0094F1A8; // [3]
+
+int *VehCurrentCount = (int *)0x009A64C8;
+int *VehDropLiftVehID = (int *)0x009B2280;
+int *VehLift_xCoord = (int *)0x009B2278;
+int *VehLift_yCoord = (int *)0x009B2284;
+BOOL *VehBitError = (BOOL *)0x009B228C;
 
 /*
 Purpose: Calculate Former rate to perform terrain enhancements.
@@ -103,6 +110,36 @@ int __cdecl psi_factor(int combatRatio, int factionID, BOOL isAttack, BOOL isFun
 }
 
 /*
+Purpose: 
+Original Offset: 00532A90
+Return Value: n/a
+Status: WIP
+*/
+void __cdecl rebuild_vehicle_bits() {
+	if (MapVerticalBounds <= 0) {
+		return;
+	}
+	for (DWORD y = 0, z = 0; y < *MapVerticalBounds; y++) {
+		DWORD val = (y & 1);
+		if (val < *MapHorizontalBounds) {
+			for (DWORD x = 0; x < *MapHorizontalBounds; x += 2, z++) {
+				Map[z]->bit &= ~BIT_VEH_IN_TILE;
+				for (int vehID = 0; vehID < *VehCurrentCount; vehID++) {
+					if (Veh[vehID].xCoord == x && Veh[vehID].yCoord == y) {
+						Map[z]->bit |= BIT_VEH_IN_TILE;
+					}
+					if (Map[z]->bit & BIT_BASE_IN_TILE) {
+						//owner_set
+						Map[z]->val2 &= 0xF0;
+						Map[z]->val2 |= Veh[vehID].factionID & 0xF;
+					}
+				}
+			}
+		}
+	}
+}
+
+/*
 Purpose: Get Veh on top of stack.
 Original Offset: 00579920
 Return Value: vehID if found, otherwise -1
@@ -144,6 +181,40 @@ DWORD __cdecl proto_power(int vehID) {
 }
 
 /*
+Purpose:
+Original Offset: 005BFE90
+Return Value: vehID or -1 if nothing found
+Status: WIP
+*/
+int __cdecl veh_at(int xCoord, int yCoord) {
+	if (yCoord >= 0 && yCoord < (int)*MapVerticalBounds && xCoord >= 0 
+		&& xCoord < (int)*MapHorizontalBounds && !(bit_at(xCoord, yCoord) & BIT_VEH_IN_TILE)) {
+		return -1;
+	}
+	int vehID = 0;
+	while (vehID < *VehCurrentCount) {
+		if (Veh[vehID].xCoord == xCoord && Veh[vehID].yCoord == yCoord) {
+			return veh_top(vehID);
+		}
+	}
+	if (yCoord < 0 || yCoord >= (int)*MapVerticalBounds || xCoord < 0
+		|| xCoord >= (int)*MapHorizontalBounds) {
+		return -1;
+	}
+	if (!*VehBitError) {
+		log_say("Vehicle Bit Error  (x, y)", xCoord, yCoord, 0);
+	}
+	if (*GameRules & TGL_SCENARIO_EDITOR || *GameRules & TGL_DEBUG_MODE || *MultiplayerToggle) {
+		if (*VehBitError) {
+			return -1;
+		}
+		*VehBitError = TRUE;
+	}
+	rebuild_vehicle_bits();
+	return -1;
+}
+
+/*
 Purpose: Temporarily remove Veh from current square and stack in preparation for another action such 
          as interacting with stack, moving or killing.
 Original Offset: 005BFFA0
@@ -175,6 +246,43 @@ int __cdecl veh_lift(int vehID) {
 	return vehID;
 }
 
+
+/*
+Purpose:
+Original Offset: 005C0080
+Return Value: vehID (param1), doesn't seem to be used
+Status: WIP
+*/
+int __cdecl veh_drop(int vehID, int xCoord, int yCoord) {
+	int vehIDAt = veh_at(xCoord, yCoord);
+	Veh[vehID].nextVehIDStack = vehIDAt;
+	Veh[vehID].prevVehIDStack = -1;
+	Veh[vehID].xCoord = xCoord;
+	Veh[vehID].yCoord = yCoord;
+	*VehDropLiftVehID = -1;
+	if (vehIDAt < 0) {
+		if (yCoord < 0) {
+			return vehID;
+		}
+		if (yCoord < (int)*MapVerticalBounds && xCoord >= 0 && xCoord < (int)*MapHorizontalBounds
+			&& !(bit_at(xCoord, yCoord) & BIT_BASE_IN_TILE)) {
+			owner_set(xCoord, yCoord, Veh[vehID].factionID);
+		}
+	}
+	else {
+		Veh[vehIDAt].prevVehIDStack = vehID;
+	}
+	if (yCoord >= 0 && yCoord < (int)*MapVerticalBounds && xCoord >= 0
+		&& xCoord < (int)*MapHorizontalBounds) {
+		DWORD flags = (Veh[vehID].factionID
+			&& Chassis[VehPrototype[Veh[vehID].protoID].chassisID].triad == TRIAD_AIR)
+			? BIT_SUPPLY_REMOVE | BIT_VEH_IN_TILE : BIT_VEH_IN_TILE;
+		bit_set(xCoord, yCoord, flags, TRUE);
+	}
+	return vehID;
+}
+
+
 /*
 Purpose: Set Veh status to sentry/board.
 Original Offset: 005C01A0
@@ -185,6 +293,48 @@ void __cdecl sleep(int vehID) {
 	Veh[vehID].orders = ORDER_SENTRY_BOARD;
 	Veh[vehID].waypoint_xCoord[0] = -1;
 	Veh[vehID].waypoint_yCoord[0] = 0;
+}
+
+/*
+Purpose: Move vehID down in stack. (?)
+Original Offset: 005C01D0
+Return Value: n/a
+Status: WIP
+*/
+void __cdecl veh_demote(int vehID) {
+	if (vehID >= 0) {
+		short nextVehID = Veh[vehID].nextVehIDStack;
+		while (nextVehID >= 0) {
+			nextVehID = Veh[nextVehID].nextVehIDStack;
+		}
+		if (nextVehID != vehID) {
+			veh_lift(vehID);
+			Veh[nextVehID].nextVehIDStack = vehID;
+			Veh[vehID].prevVehIDStack = nextVehID;
+			Veh[vehID].nextVehIDStack = -1;
+			Veh[vehID].xCoord = Veh[nextVehID].xCoord;
+			Veh[vehID].yCoord = Veh[nextVehID].yCoord;
+		}
+	}
+}
+
+/*
+Purpose:
+Original Offset: 005C0260
+Return Value: n/a
+Status: WIP
+*/
+void __cdecl veh_promote(int vehID) {
+	if (vehID >= 0) {
+		short prevVehID = Veh[vehID].prevVehIDStack;
+		while (prevVehID >= 0) {
+			prevVehID = Veh[prevVehID].prevVehIDStack;
+		}
+		if (prevVehID != vehID) {
+			veh_lift(vehID);
+			veh_drop(vehID, Veh[prevVehID].xCoord, Veh[prevVehID].yCoord);
+		}
+	}
 }
 
 /*

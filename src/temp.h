@@ -24,6 +24,26 @@
   * Temp functions and offset pointers. This allows interfacing with parts of the exe not yet 
   * decompiled. Eventually, this will be removed.
   */
+
+enum game_rules_general_set1 {
+	TGL_SCENARIO_CHEATED_FLAG = 0x20,
+	TGL_SCENARIO_EDITOR = 0x40,
+	TGL_OMNISCIENT_VIEW = 0x80,
+	TGL_DEBUG_MODE = 0x1000,
+	SCN_VICT_TERRITORY_COUNT_OBJ = 0x8000,
+	SCN_VICT_ALL_ARTIFACTS_OBJ_UNIT = 0x40000,
+	SCN_VICT_HIGHEST_AC_SCORE_WINS = 0x80000,
+	TGL_PERIHELION_ACTIVE = 0x100000,
+	RAND_FAC_LEADER_PERSONALITIES = 0x800000,
+	RAND_FAC_LEADER_SOCIAL_AGENDA = 0x1000000,
+	SCN_VICT_TERRAIN_ENH_COUNT_OBJ = 0x2000000,
+	SCN_VICT_BASE_FACIL_COUNT_OBJ = 0x4000000,
+	SCN_VICT_POPULATION_COUNT_OBJ = 0x20000000,
+	SCN_VICT_TECH_COUNT_OBJ = 0x40000000,
+	SCN_VICT_CREDITS_COUNT_OBJ = 0x80000000,
+};
+
+
 typedef struct char256 { char str[256]; } char256;
 typedef struct char1032 { char str[1032]; } char1032;
 
@@ -48,8 +68,6 @@ typedef void *func6(char const *, int(*)(void));
 extern func6 *X_pop;
 typedef DWORD func7(int, int);
 extern func7 *morale_alien;
-//typedef void func10(int, int, int, int);
-//extern func10 *bit_set;
 
 // string
 typedef int *func8(LPSTR, LPSTR);
@@ -73,13 +91,10 @@ extern BOOL *SMACX_Enabled;
 extern BOOL *IsLoggingDisabled; // global toggle for logging on/off? debug vs release?
 extern DWORD *GameRules; // bitfield
 extern int *DiffLevelCurrent;
-extern int *VehCurrentCount;
-extern int *VehDropLiftVehID;
-extern int *VehLift_xCoord;
-extern int *VehLift_yCoord;
 extern int *BaseCurrentCount;
 extern int *TurnCurrentNum;
 extern int *MissionYearCurrent;
+extern BOOL *MultiplayerToggle;
 
 extern DWORD *UnkBitfield1;
 

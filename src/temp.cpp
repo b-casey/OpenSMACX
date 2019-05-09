@@ -70,13 +70,10 @@ BOOL *SMACX_Enabled = (BOOL *)0x009A6488;
 BOOL *IsLoggingDisabled = (BOOL *)0x009BC004;
 DWORD *GameRules = (DWORD *)0x009A64C0;
 int *DiffLevelCurrent = (int *)0x009A64C4;
-int *VehCurrentCount = (int *)0x009A64C8;
-int *VehDropLiftVehID = (int *)0x009B2280;
-int *VehLift_xCoord = (int *)0x009B2278;
-int *VehLift_yCoord = (int *)0x009B2284;
 int *BaseCurrentCount = (int *)0x009A64CC;
 int *TurnCurrentNum = (int *)0x009A64D4;
 int *MissionYearCurrent = (int *)0x009A64D8;
+BOOL *MultiplayerToggle = (BOOL *)0x0093F660;
 
 DWORD *UnkBitfield1 = (DWORD *)0x0090D91C;
 
