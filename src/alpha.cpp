@@ -42,78 +42,6 @@ rules_basic *Rules = (rules_basic *)0x00949738;
 rules_worldbuilder *WorldBuilder = (rules_worldbuilder *)0x009502A8;
 
 /*
-Purpose: Parse #LABELS section inside labels.txt
-Original Offset: 00616A00
-Return Value: Was there an error? TRUE/FALSE
-Status: Complete
-*/
-BOOL __cdecl labels_init() {
-	labels_shutdown();
-	if (text_open("labels", "labels")) {
-		return TRUE;
-	}
-	text_get();
-	Label->count = text_item_number();
-	Label->stringsPtr = (LPSTR)mem_get(Label->count * 4);
-	if (!Label->stringsPtr) {
-		return TRUE;
-	}
-	for (int i = 0; i < Label->count; i++) {
-		*((LPSTR *)Label->stringsPtr + i) = text_string();
-	}
-	text_close();
-	return FALSE;
-}
-
-/*
-Purpose: Clean up labels global variable
-Original Offset: 006169D0
-Return Value: n/a
-Status: Complete
-*/
-void __cdecl labels_shutdown() {
-	if (Label->stringsPtr) {
-		free(Label->stringsPtr);
-		Label->stringsPtr = 0;
-	}
-	Label->count = 0;
-}
-
-/*
-Purpose: Get tech id value by parsing tech name from Txt item buffer. Optimized out of vanilla code,
-         useful for readability.
-Original Offset: 00585150
-Return Value: Tech id
-Status: Complete
-*/
-int __cdecl tech_item() { 
-	text_get(); 
-	return tech_name(text_item()); 
-}
-
-/*
-Purpose: Parse and set noun item's gender and plurality from Txt buffer. Optimized out of vanilla 
-         code, useful for readability.
-Original Offset: 005871D0
-Return Value: n/a
-Status: Complete
-*/
-void __cdecl noun_item(int *gender, BOOL *plurality) {
-	LPSTR noun = text_item();
-	*gender = 0; // defaults to male ('m' || 'M')
-	*plurality = FALSE; // defaults to singular ('1')
-	if (noun[0] == 'f' || noun[0] == 'F') {
-		*gender = 1;
-	}
-	else if (noun[0] == 'n' || noun[0] == 'N') {
-		*gender = 2;
-	}
-	if (noun[1] == '2') {
-		*plurality = TRUE;
-	}
-}
-
-/*
 Purpose: Convert tech name string to number offset id
 Original Offset: 00584D60
 Return Value: -1: 'None'; -2: 'Disabled' or error; Otherwise, tech id offset
@@ -215,6 +143,18 @@ int __cdecl arm_name(LPSTR armName) {
 	parse_says(2, *ParseTempPtr1_1, -1, -1);
 	X_pop("BADARMKEY", 0);
 	return DisabledValue;
+}
+
+/*
+Purpose: Get tech id value by parsing tech name from Txt item buffer. Optimized out of vanilla code,
+		 useful for readability.
+Original Offset: 00585150
+Return Value: Tech id
+Status: Complete
+*/
+int __cdecl tech_item() {
+	text_get();
+	return tech_name(text_item());
 }
 
 /*
@@ -404,61 +344,6 @@ BOOL __cdecl read_tech() {
 }
 
 /*
-Purpose: Parse #UNITS section inside alpha(x).txt
-Original Offset: 00587240
-Return Value: Was there an error? TRUE/FALSE
-Status: Complete
-*/
-BOOL __cdecl read_units() {
-	if (text_open(AlphaxFileID, "UNITS")) {
-		return TRUE;
-	}
-	int totalUnits = text_get_number(0, MaxVehProtoFactionNum);
-	for (int protoID = 0; protoID < totalUnits; protoID++) {
-		text_get();
-		LPSTR name = text_item();
-		strncpy_s(VehPrototype[protoID].vehName, 32, name, strlen(name));
-		int chasID = chas_name(text_item());
-		int weapID = weap_name(text_item());
-		int armorID = arm_name(text_item());
-		int plan = text_item_number();
-		int cost = text_item_number();
-		int carry = text_item_number();
-		VehPrototype[protoID].preqTech = tech_name(text_item());
-		int icon = text_item_number();
-		int ability = text_item_binary();
-		int reactorID;
-		switch (protoID) 
-		{
-			// There was a pointless explicit check for BSC_BATTLE_OGRE_MK1 to set reactor to 1
-			// The parameters set by check are no different than default
-			case BSC_BATTLE_OGRE_MK2:
-				reactorID = 2;
-				break;
-			case BSC_BATTLE_OGRE_MK3:
-				reactorID = 3;
-				break;
-			default:
-				reactorID = 1;
-				break;
-		}
-		make_proto(protoID, chasID, weapID, armorID, ability, reactorID);
-		// If set, override auto calculated values from make_proto()
-		if (plan != -1) { // plan auto calculate: -1
-			VehPrototype[protoID].plan = plan;
-		}
-		if (cost) { // cost auto calculate: 0
-			VehPrototype[protoID].cost = cost;
-		}
-		if (carry) { // carry auto calculate: 0
-			VehPrototype[protoID].carryCapacity = carry;
-		}
-		VehPrototype[protoID].iconOffset = icon;
-	}
-	return FALSE;
-}
-
-/*
 Purpose: Clear rule values for Player
 Original Offset: 00585FE0
 Return Value: n/a
@@ -496,15 +381,15 @@ void __cdecl read_faction(int playerID) {
 }
 
 /*
-Purpose: Parse 1st 8 lines of faction files into Player structure. Toggle parameter will end the 
-         function early if set to 2. Original code never uses this.
+Purpose: Parse 1st 8 lines of faction files into Player structure. Toggle parameter will end the
+		 function early if set to 2. Original code never uses this.
 Original Offset: 00586090
 Return Value: n/a
 Status: Complete
 */
 void __cdecl read_faction(player *Player, int toggle) {
 	clear_faction(Player);
-	if (text_open(Player->filename, Player->searchKey) 
+	if (text_open(Player->filename, Player->searchKey)
 		&& text_open(Player->filename, Player->filename)) {
 		parse_says(0, Player->searchKey, -1, -1);
 		parse_says(1, Player->filename, -1, -1);
@@ -617,7 +502,7 @@ void __cdecl read_faction(player *Player, int toggle) {
 			Player->ruleFlags |= FLAG_TERRAFORM;
 		}
 		// SOCIAL, ROBUST, IMMUNITY; Moved factionBonusCount check to start rather than inner loop
-		else if ((!_strcmpi(parseRule, BonusName[16].key) || !_strcmpi(parseRule, BonusName[17].key) 
+		else if ((!_strcmpi(parseRule, BonusName[16].key) || !_strcmpi(parseRule, BonusName[17].key)
 			|| !_strcmpi(parseRule, BonusName[18].key)) && Player->factionBonusCount < 8) {
 			int value = 0;
 			while (parseParameter[0] == '+' || parseParameter[0] == '-') {
@@ -644,13 +529,13 @@ void __cdecl read_faction(player *Player, int toggle) {
 			}
 		}
 		// IMPUNITY, PENALTY; Moved factionBonusCount check to start rather than inner loop
-		else if ((!_strcmpi(parseRule, BonusName[19].key) 
+		else if ((!_strcmpi(parseRule, BonusName[19].key)
 			|| !_strcmpi(parseRule, BonusName[20].key)) && Player->factionBonusCount < 8) {
 			for (int j = 0; j < MaxSocialCatNum; j++) {
 				for (int k = 0; k < MaxSocialModelNum; k++) {
-					if (!_stricmp(parseParameter, 
+					if (!_stricmp(parseParameter,
 						StringTable->get((int)SocialCategory[j].name[k]))) {
-						Player->factionBonusID[Player->factionBonusCount] = 
+						Player->factionBonusID[Player->factionBonusCount] =
 							!_strcmpi(parseRule, BonusName[19].key) ? RULE_IMPUNITY : RULE_PENALTY;
 						Player->factionBonusVal1[Player->factionBonusCount] = j; // category id
 						Player->factionBonusVal2[Player->factionBonusCount] = k; // model id
@@ -766,7 +651,7 @@ void __cdecl read_faction(player *Player, int toggle) {
 		LPSTR socCategory = text_item();
 		for (int j = 0; j < MaxSocialCatNum; j++) {
 			LPSTR checkCatType = StringTable->get((int)SocialCategory[j].type);
-			if (*Language ? 
+			if (*Language ?
 				!_strnicmp(socCategory, checkCatType, 4) : !_stricmp(socCategory, checkCatType)) {
 				*(&Player->socIdeologyCategory + i) = j;
 				break;
@@ -777,7 +662,7 @@ void __cdecl read_faction(player *Player, int toggle) {
 		if (socCatNum >= 0) {
 			for (int j = 0; j < MaxSocialModelNum; j++) {
 				LPSTR checkModel = StringTable->get((int)SocialCategory[socCatNum].name[j]);
-				if (*Language ? 
+				if (*Language ?
 					!_strnicmp(socModel, checkModel, 4) : !_stricmp(socModel, checkModel)) {
 					*(&Player->socIdeologyModel + i) = j;
 					break;
@@ -796,7 +681,7 @@ void __cdecl read_faction(player *Player, int toggle) {
 	}
 	// Faction and Leader related strings
 	text_get(); // skips 2nd value in this line, abbreviation unused?
-	strcpy_s(Player->nameAdjFaction, 128, text_item()); 
+	strcpy_s(Player->nameAdjFaction, 128, text_item());
 	Player->nameAdjFaction[127] = 0;
 	text_get();
 	strcpy_s(Player->assistantName, 24, text_item());
@@ -819,38 +704,6 @@ void __cdecl read_faction(player *Player, int toggle) {
 	text_get();
 	strcpy_s(Player->insultLeader, 24, text_item());
 	Player->insultLeader[23] = 0;
-}
-
-/*
-Purpose: Read faction filenames and search keys from ini file (SMACX only). Has added effect of 
-		 forcing Player searchKey to be set to filename value. Rewrote almost the entire function
-		 because of how terrible the original code logic was.
-Original Offset: 0059DBD0
-Return Value: n/a
-Status: Complete
-*/
-void __cdecl prefs_fac_load() {
-	if (SMACX_Enabled) {
-		CHAR returnedString[256];
-		GetPrivateProfileStringA("Alpha Centauri", "Prefs Format", "0", 
-			returnedString, 256, ".\\Alpha Centauri.ini");
-		if (atoi(returnedString) == 12) {
-			for (int i = 1; i < MaxPlayerNum; i++) {
-				std::string faction = "Faction ";
-				faction += std::to_string(i);
-				GetPrivateProfileStringA("Alpha Centauri", faction.c_str(), Players[i].filename, 
-					returnedString, 256, ".\\Alpha Centauri.ini");
-				strncpy_s(Players[i].filename, returnedString, 24);
-				strncpy_s(Players[i].searchKey, returnedString, 24);
-			}
-		}
-		else {
-			// use separate loop rather than check "Prefs Format" value each time in single loop
-			for (int i = 1; i < MaxPlayerNum; i++) {
-				strncpy_s(Players[i].searchKey, Players[i].filename, 24);
-			}
-		}
-	}
 }
 
 /*
@@ -891,8 +744,85 @@ BOOL __cdecl read_factions() {
 }
 
 /*
-Purpose: Parse in all the game rules via alpha/x.txt. If param is set to TRUE, parse 
-         #UNITS & #FACTIONS. Otherwise, skip both. New game vs reload?
+Purpose: Parse and set noun item's gender and plurality from Txt buffer. Optimized out of vanilla
+		 code, useful for readability.
+Original Offset: 005871D0
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl noun_item(int *gender, BOOL *plurality) {
+	LPSTR noun = text_item();
+	*gender = 0; // defaults to male ('m' || 'M')
+	*plurality = FALSE; // defaults to singular ('1')
+	if (noun[0] == 'f' || noun[0] == 'F') {
+		*gender = 1;
+	}
+	else if (noun[0] == 'n' || noun[0] == 'N') {
+		*gender = 2;
+	}
+	if (noun[1] == '2') {
+		*plurality = TRUE;
+	}
+}
+
+/*
+Purpose: Parse #UNITS section inside alpha(x).txt
+Original Offset: 00587240
+Return Value: Was there an error? TRUE/FALSE
+Status: Complete
+*/
+BOOL __cdecl read_units() {
+	if (text_open(AlphaxFileID, "UNITS")) {
+		return TRUE;
+	}
+	int totalUnits = text_get_number(0, MaxVehProtoFactionNum);
+	for (int protoID = 0; protoID < totalUnits; protoID++) {
+		text_get();
+		LPSTR name = text_item();
+		strncpy_s(VehPrototype[protoID].vehName, 32, name, strlen(name));
+		int chasID = chas_name(text_item());
+		int weapID = weap_name(text_item());
+		int armorID = arm_name(text_item());
+		int plan = text_item_number();
+		int cost = text_item_number();
+		int carry = text_item_number();
+		VehPrototype[protoID].preqTech = tech_name(text_item());
+		int icon = text_item_number();
+		int ability = text_item_binary();
+		int reactorID;
+		switch (protoID)
+		{
+			// There was a pointless explicit check for BSC_BATTLE_OGRE_MK1 to set reactor to 1
+			// The parameters set by check are no different than default
+		case BSC_BATTLE_OGRE_MK2:
+			reactorID = 2;
+			break;
+		case BSC_BATTLE_OGRE_MK3:
+			reactorID = 3;
+			break;
+		default:
+			reactorID = 1;
+			break;
+		}
+		make_proto(protoID, chasID, weapID, armorID, ability, reactorID);
+		// If set, override auto calculated values from make_proto()
+		if (plan != -1) { // plan auto calculate: -1
+			VehPrototype[protoID].plan = plan;
+		}
+		if (cost) { // cost auto calculate: 0
+			VehPrototype[protoID].cost = cost;
+		}
+		if (carry) { // carry auto calculate: 0
+			VehPrototype[protoID].carryCapacity = carry;
+		}
+		VehPrototype[protoID].iconOffset = icon;
+	}
+	return FALSE;
+}
+
+/*
+Purpose: Parse in all the game rules via alpha/x.txt. If param is set to TRUE, parse
+		 #UNITS & #FACTIONS. Otherwise, skip both. New game vs reload?
 Original Offset: 005873C0
 Return Value: Was there an error? TRUE/FALSE
 Status: Complete
@@ -928,7 +858,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 			*(&Order[i + 4].order + j) = StringTable->put(stringTemp->str);
 		}
 		Order[i + 4].letter = text_item_string();
-		Terraforming[i].shortcuts = text_item_string();	
+		Terraforming[i].shortcuts = text_item_string();
 	}
 	// Resource Info
 	if (text_open(AlphaxFileID, "RESOURCEINFO")) {
@@ -1097,16 +1027,16 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		Facility[i].maint = text_item_number();
 		Facility[i].preqTech = tech_name(text_item());
 		/*
-		Enhancement: The original code explicitly sets this value to disabled (-2) overriding 
-		alpha/x.txt.  It states in #FACILITIES alpha/x.txt: "Free  = No longer supported". The 
-		original AC manual in Appendix 2 and official strategy guide both list the specific 
-		facilities being free with certain tech.  However, this mechanic could have been removed 
-		for balance reasons. Or maybe was dropped due to time constraints. There is code that 
-		checks this value and sets the free facility only for new bases built after discovering the 
-		tech. It looks like existing bases do not get it. Will have to review this more. For now, 
-		this mechanic will be included as is. You can revert to vanilla behavior by modifying the 
+		Enhancement: The original code explicitly sets this value to disabled (-2) overriding
+		alpha/x.txt.  It states in #FACILITIES alpha/x.txt: "Free  = No longer supported". The
+		original AC manual in Appendix 2 and official strategy guide both list the specific
+		facilities being free with certain tech.  However, this mechanic could have been removed
+		for balance reasons. Or maybe was dropped due to time constraints. There is code that
+		checks this value and sets the free facility only for new bases built after discovering the
+		tech. It looks like existing bases do not get it. Will have to review this more. For now,
+		this mechanic will be included as is. You can revert to vanilla behavior by modifying the
 		four entries below in alpha/x.txt #FACILITIES with free parameter set to Disabled.
-		
+
 		Recycling Tanks, 4, 0, Biogen, EcoEng2,   > free with "Adv.Ecological Engineering"
 		Recreation Commons, 4, 1, Psych, SentEco, > free with "Sentient Econometrics"
 		Energy Bank, 8, 1, IndEcon, QuanMac,      > free with "Quantum Machinery"
@@ -1319,4 +1249,74 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	// Geothermal
 	MainInterfaceVar->flatButton[35].set_bubble_text(StringTable->get((int)Natural[10].nameShort));
 	return FALSE;
+}
+
+/*
+Purpose: Read faction filenames and search keys from ini file (SMACX only). Has added effect of
+		 forcing Player searchKey to be set to filename value. Rewrote almost the entire function
+		 because of how terrible the original code logic was.
+Original Offset: 0059DBD0
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl prefs_fac_load() {
+	if (SMACX_Enabled) {
+		CHAR returnedString[256];
+		GetPrivateProfileStringA("Alpha Centauri", "Prefs Format", "0",
+			returnedString, 256, ".\\Alpha Centauri.ini");
+		if (atoi(returnedString) == 12) {
+			for (int i = 1; i < MaxPlayerNum; i++) {
+				std::string faction = "Faction ";
+				faction += std::to_string(i);
+				GetPrivateProfileStringA("Alpha Centauri", faction.c_str(), Players[i].filename,
+					returnedString, 256, ".\\Alpha Centauri.ini");
+				strncpy_s(Players[i].filename, returnedString, 24);
+				strncpy_s(Players[i].searchKey, returnedString, 24);
+			}
+		}
+		else {
+			// use separate loop rather than check "Prefs Format" value each time in single loop
+			for (int i = 1; i < MaxPlayerNum; i++) {
+				strncpy_s(Players[i].searchKey, Players[i].filename, 24);
+			}
+		}
+	}
+}
+
+/*
+Purpose: Parse #LABELS section inside labels.txt
+Original Offset: 00616A00
+Return Value: Was there an error? TRUE/FALSE
+Status: Complete
+*/
+BOOL __cdecl labels_init() {
+	labels_shutdown();
+	if (text_open("labels", "labels")) {
+		return TRUE;
+	}
+	text_get();
+	Label->count = text_item_number();
+	Label->stringsPtr = (LPSTR)mem_get(Label->count * 4);
+	if (!Label->stringsPtr) {
+		return TRUE;
+	}
+	for (int i = 0; i < Label->count; i++) {
+		*((LPSTR *)Label->stringsPtr + i) = text_string();
+	}
+	text_close();
+	return FALSE;
+}
+
+/*
+Purpose: Clean up labels global variable
+Original Offset: 006169D0
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl labels_shutdown() {
+	if (Label->stringsPtr) {
+		free(Label->stringsPtr);
+		Label->stringsPtr = 0;
+	}
+	Label->count = 0;
 }

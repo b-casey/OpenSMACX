@@ -59,8 +59,8 @@ extern rules_technology *Technology; // [89]
 extern BYTE *GameTechDiscovered; // [89]
 extern rules_mandate *Mandate; // [4]
 
-OPENSMACX_API int __cdecl tech_tech(int techID);
+OPENSMACX_API BOOL __cdecl has_tech(int techID, int factionID);
 OPENSMACX_API int __cdecl tech_mil(int techID);
+OPENSMACX_API int __cdecl tech_tech(int techID);
 OPENSMACX_API int __cdecl tech_infra(int techID);
 OPENSMACX_API int __cdecl tech_colonize(int techID);
-OPENSMACX_API BOOL __cdecl has_tech(int techID, int factionID);

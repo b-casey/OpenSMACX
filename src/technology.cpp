@@ -24,6 +24,29 @@ BYTE *GameTechDiscovered = (BYTE *)0x009A6670;
 rules_mandate *Mandate = (rules_mandate *)0x0094B4A0;
 
 /*
+Purpose: Check whether faction has a particular tech or not.
+Original Offset: 005B9F20
+Return Value: Faction has tech? TRUE/FALSE
+Status: Complete
+*/
+BOOL __cdecl has_tech(int techID, int factionID) {
+	if (factionID <= 0) {
+		return FALSE;
+	}
+	if (techID == TechNone) {
+		return TRUE;
+	}
+	if (techID < 0 || techID >= (MaxTechnologyNum - 1) // excludes 'Transcendent Thought'
+		|| Technology[techID].preqTech1 == TechDisabled
+		|| (Technology[techID].preqTech2 == TechDisabled
+			&& Technology[techID].preqTech1 != TechNone)) {
+		// "none, disable" ; valid #TECH preqTech entry
+		return FALSE;
+	}
+	return ((1 << factionID) & GameTechDiscovered[techID]) != 0;
+}
+
+/*
 Purpose: Get powerValue from technology struct for techID
 Original Offset: 005BDD70
 Return Value: powerValue or 0 if techID is greater than max
@@ -73,27 +96,4 @@ int __cdecl tech_colonize(int techID) {
 		return 1;
 	}
 	return *(&Technology[techID].growthValue);
-}
-
-/*
-Purpose: Check whether faction has a particular tech or not.
-Original Offset: 005B9F20
-Return Value: Faction has tech? TRUE/FALSE
-Status: Complete
-*/
-BOOL __cdecl has_tech(int techID, int factionID) {
-	if (factionID <= 0) {
-		return FALSE;
-	}
-	if (techID == TechNone) {
-		return TRUE;
-	}
-	if (techID < 0 || techID >= (MaxTechnologyNum - 1) // excludes 'Transcendent Thought'
-		|| Technology[techID].preqTech1 == TechDisabled
-		|| (Technology[techID].preqTech2 == TechDisabled
-		&& Technology[techID].preqTech1 != TechNone)) {
-		// "none, disable" ; valid #TECH preqTech entry
-		return FALSE;
-	}
-	return ((1 << factionID) & GameTechDiscovered[techID]) != 0;
 }
