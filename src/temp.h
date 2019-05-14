@@ -73,6 +73,11 @@ extern func7 *morale_alien;
 typedef int *func8(LPSTR, LPSTR);
 extern func8 *parse_string;
 
+// testing
+typedef DWORD func9(int);
+extern func9 *veh_health_;
+
+
 ///
 extern LPSTR *ParseTempPtr1_1;
 extern LPSTR *ParseTempPtr2_1;
@@ -100,3 +105,5 @@ extern DWORD *UnkBitfield1;
 
 extern Filefind *FilefindPath;
 extern MainInterface *MainInterfaceVar;
+
+OPENSMACX_API void __cdecl tester();

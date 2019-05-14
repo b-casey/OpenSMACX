@@ -786,7 +786,7 @@ BOOL __cdecl read_units() {
 		int plan = text_item_number();
 		int cost = text_item_number();
 		int carry = text_item_number();
-		VehPrototype[protoID].preqTech = tech_name(text_item());
+		VehPrototype[protoID].preqTech = (short)tech_name(text_item());
 		int icon = text_item_number();
 		int ability = text_item_binary();
 		int reactorID;
@@ -807,15 +807,15 @@ BOOL __cdecl read_units() {
 		make_proto(protoID, chasID, weapID, armorID, ability, reactorID);
 		// If set, override auto calculated values from make_proto()
 		if (plan != -1) { // plan auto calculate: -1
-			VehPrototype[protoID].plan = plan;
+			VehPrototype[protoID].plan = (BYTE)plan;
 		}
 		if (cost) { // cost auto calculate: 0
-			VehPrototype[protoID].cost = cost;
+			VehPrototype[protoID].cost = (BYTE)cost;
 		}
 		if (carry) { // carry auto calculate: 0
-			VehPrototype[protoID].carryCapacity = carry;
+			VehPrototype[protoID].carryCapacity = (BYTE)carry;
 		}
-		VehPrototype[protoID].iconOffset = icon;
+		VehPrototype[protoID].iconOffset = (CHAR)icon;
 	}
 	return FALSE;
 }
@@ -905,13 +905,13 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		// defsv2
 		Chassis[i].defsv2Name = text_item_string();
 		noun_item(&Chassis[i].defsv2Gender, &Chassis[i].defsv2IsPlural);
-		Chassis[i].speed = text_item_number();
-		Chassis[i].triad = text_item_number();
-		Chassis[i].range = text_item_number();
-		Chassis[i].missile = text_item_number();
-		Chassis[i].cargo = text_item_number();
-		Chassis[i].cost = text_item_number();
-		Chassis[i].preqTech = tech_name(text_item());
+		Chassis[i].speed = (BYTE)text_item_number();
+		Chassis[i].triad = (BYTE)text_item_number();
+		Chassis[i].range = (BYTE)text_item_number();
+		Chassis[i].missile = (BYTE)text_item_number();
+		Chassis[i].cargo = (BYTE)text_item_number();
+		Chassis[i].cost = (BYTE)text_item_number();
+		Chassis[i].preqTech = (short)tech_name(text_item());
 		// offsv_lrg
 		Chassis[i].offsvNameLrg = text_item_string();
 		noun_item(&Chassis[i].offsvGenderLrg, &Chassis[i].offsvIsPluralLrg);
@@ -930,8 +930,8 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		// Bug fix/Enhancement: original function skips this value and is left as zero, isn't 
 		// referenced elsewhere in code. Likely because default power value is sequential. 
 		// This will allow future modifications.
-		Reactor[i].power = text_item_number();
-		Reactor[i].preqTech = tech_name(text_item());
+		Reactor[i].power = (WORD)text_item_number();
+		Reactor[i].preqTech = (short)tech_name(text_item());
 	}
 	// Weapons
 	if (text_open(AlphaxFileID, "WEAPONS")) {
@@ -941,11 +941,11 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		text_get();
 		Weapon[i].name = text_item_string();
 		Weapon[i].nameShort = text_item_string();
-		Weapon[i].offenseRating = text_item_number();
-		Weapon[i].mode = text_item_number();
-		Weapon[i].cost = text_item_number();
-		Weapon[i].icon = text_item_number();
-		Weapon[i].preqTech = tech_name(text_item());
+		Weapon[i].offenseRating = (char)text_item_number();
+		Weapon[i].mode = (BYTE)text_item_number();
+		Weapon[i].cost = (BYTE)text_item_number();
+		Weapon[i].icon = (char)text_item_number();
+		Weapon[i].preqTech = (short)tech_name(text_item());
 	}
 	// Defenses / Armor
 	if (text_open(AlphaxFileID, "DEFENSES")) {
@@ -955,10 +955,10 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		text_get();
 		Armor[i].name = text_item_string();
 		Armor[i].nameShort = text_item_string();
-		Armor[i].defenseRating = text_item_number();
-		Armor[i].mode = text_item_number();
-		Armor[i].cost = text_item_number();
-		Armor[i].preqTech = tech_name(text_item());
+		Armor[i].defenseRating = (char)text_item_number();
+		Armor[i].mode = (BYTE)text_item_number();
+		Armor[i].cost = (BYTE)text_item_number();
+		Armor[i].preqTech = (short)tech_name(text_item());
 	}
 	// Abilities
 	if (text_open(AlphaxFileID, "ABILITIES")) {
@@ -968,7 +968,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		text_get();
 		Ability[i].name = text_item_string();
 		Ability[i].costFactor = text_item_number();
-		Ability[i].preqTech = tech_name(text_item());
+		Ability[i].preqTech = (short)tech_name(text_item());
 		Ability[i].abbreviation = text_item_string();
 		Ability[i].flags = text_item_binary();
 		Ability[i].description = text_item_string();

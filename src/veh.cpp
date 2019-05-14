@@ -125,7 +125,7 @@ void __cdecl rebuild_vehicle_bits() {
 			for (DWORD x = 0; x < *MapHorizontalBounds; x += 2, z++) {
 				Map[z]->bit &= ~BIT_VEH_IN_TILE;
 				for (int vehID = 0; vehID < *VehCurrentCount; vehID++) {
-					if (Veh[vehID].xCoord == x && Veh[vehID].yCoord == y) {
+					if (Veh[vehID].xCoord == (int)x && Veh[vehID].yCoord == (int)y) {
 						Map[z]->bit |= BIT_VEH_IN_TILE;
 					}
 					if (Map[z]->bit & BIT_BASE_IN_TILE) {
@@ -496,10 +496,10 @@ void __cdecl say_stats(LPSTR stat, int protoID, LPSTR customSpacer) {
 }
 
 /*
-Purpose:
+Purpose: Move Veh to specified coordinates.
 Original Offset: 005A59B0
 Return Value: n/a
-Status: WIP
+Status: Complete
 */
 void __cdecl veh_put(int vehID, int xCoord, int yCoord) {
 	veh_drop(veh_lift(vehID), xCoord, yCoord);
@@ -509,7 +509,7 @@ void __cdecl veh_put(int vehID, int xCoord, int yCoord) {
 Purpose: Get current health of vehID factoring in damage.
 Original Offset: 005A59E0
 Return Value: Health
-Status: WIP
+Status: Complete
 */
 DWORD __cdecl veh_health(int vehID) {
 	int protoID = Veh[vehID].protoID;
@@ -882,7 +882,7 @@ Status: WIP - further tests
 */
 int __cdecl veh_lift(int vehID) {
 	BOOL prevStackExists = FALSE;
-	int prevVehID = Veh[vehID].prevVehIDStack, nextVehID = Veh[vehID].nextVehIDStack;
+	short prevVehID = Veh[vehID].prevVehIDStack, nextVehID = Veh[vehID].nextVehIDStack;
 	if (prevVehID >= 0) {
 		prevStackExists = TRUE;
 		Veh[prevVehID].nextVehIDStack = nextVehID;
@@ -913,10 +913,10 @@ Status: WIP
 */
 int __cdecl veh_drop(int vehID, int xCoord, int yCoord) {
 	int vehIDAt = veh_at(xCoord, yCoord);
-	Veh[vehID].nextVehIDStack = vehIDAt;
+	Veh[vehID].nextVehIDStack = (short)vehIDAt;
 	Veh[vehID].prevVehIDStack = -1;
-	Veh[vehID].xCoord = xCoord;
-	Veh[vehID].yCoord = yCoord;
+	Veh[vehID].xCoord = (short)xCoord;
+	Veh[vehID].yCoord = (short)yCoord;
 	*VehDropLiftVehID = -1;
 	if (vehIDAt < 0) {
 		if (yCoord < 0) {
@@ -928,7 +928,7 @@ int __cdecl veh_drop(int vehID, int xCoord, int yCoord) {
 		}
 	}
 	else {
-		Veh[vehIDAt].prevVehIDStack = vehID;
+		Veh[vehIDAt].prevVehIDStack = (short)vehID;
 	}
 	if (yCoord >= 0 && yCoord < (int)*MapVerticalBounds && xCoord >= 0
 		&& xCoord < (int)*MapHorizontalBounds) {
@@ -967,7 +967,7 @@ void __cdecl veh_demote(int vehID) {
 		}
 		if (nextVehID != vehID) {
 			veh_lift(vehID);
-			Veh[nextVehID].nextVehIDStack = vehID;
+			Veh[nextVehID].nextVehIDStack = (short)vehID;
 			Veh[vehID].prevVehIDStack = nextVehID;
 			Veh[vehID].nextVehIDStack = -1;
 			Veh[vehID].xCoord = Veh[nextVehID].xCoord;
@@ -1007,8 +1007,8 @@ void __cdecl veh_clear(int vehID, int protoID, int factionID) {
 	Veh[vehID].yearEndLurking = 0;
 	Veh[vehID].unknown1 = 0;
 	Veh[vehID].flags = 0;
-	Veh[vehID].factionID = factionID;
-	Veh[vehID].protoID = protoID;
+	Veh[vehID].factionID = (BYTE)factionID;
+	Veh[vehID].protoID = (short)protoID;
 	Veh[vehID].nextVehIDStack = -1;
 	Veh[vehID].prevVehIDStack = -1;
 	Veh[vehID].waypointCount = 0;
@@ -1027,7 +1027,7 @@ void __cdecl veh_clear(int vehID, int protoID, int factionID) {
 	Veh[vehID].unknown7 = 0;
 	Veh[vehID].visibleToFaction = 0;
 	Veh[vehID].homeBaseID = -1;
-	Veh[vehID].morale = Players[factionID].ruleMorale + 1;
+	Veh[vehID].morale = (BYTE)(Players[factionID].ruleMorale + 1);
 	Veh[vehID].unknown5 = 2;
 	Veh[vehID].unknown8 = 0;
 	Veh[vehID].unknown9 = 0;
@@ -1314,7 +1314,7 @@ int __cdecl veh_wake(int vehID) {
 	int state = Veh[vehID].state;
 	if (orders >= ORDER_FARM && orders < ORDER_GO_TO && !(state & 0x4000000)) {
 		// TODO Bug: Issue with movesExpended size / speed return, see veh_skip()
-		Veh[vehID].movesExpended = (BYTE)speed(vehID, FALSE) - Rules->MoveRateRoads;
+		Veh[vehID].movesExpended = (BYTE)(speed(vehID, FALSE) - Rules->MoveRateRoads);
 		int terraTurns = Veh[vehID].terraformingTurns;
 		if (terraTurns) {
 			terraTurns -= contribution(vehID, orders - 4);

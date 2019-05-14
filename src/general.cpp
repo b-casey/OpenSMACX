@@ -444,7 +444,7 @@ int __cdecl parse_string_(LPSTR input, LPSTR output) {
 		case 'H':
 		case 'N':
 		{
-			int nCheck = 0, nBase;
+			int nCheck = 0, nBase = 0;
 			if (!strncmp(var, "$NUMBER", 7)) {
 				nCheck = 7;
 				nBase = 10;

@@ -20,6 +20,7 @@
 #include "faction.h"
 #include "general.h"
 #include "veh.h"
+#include "map.h"
 #include "maininterface.h"
 
 // built-in functions > used to prevent crash from mixed alloc/free SDKs
@@ -45,12 +46,14 @@ typedef void *func6(char const *, int(*)(void));
 func6 *X_pop = (func6 *)0x005BF310;
 typedef DWORD func7(int, int);
 func7 *morale_alien = (func7 *)0x00501350;
-//typedef void func10(int, int, int, int);
-//func10 *bit_set = (func10 *)0x00591D60;
 
 // string
 typedef int *func8(LPSTR, LPSTR);
 func8 *parse_string = (func8 *)0x00625880;
+
+// testing
+typedef DWORD func9(int);
+func9 *veh_health_ = (func9 *)0x005A59E0;
 
 ///
 LPSTR *ParseTempPtr1_1 = (LPSTR *)0x009B7D00;
@@ -79,3 +82,14 @@ DWORD *UnkBitfield1 = (DWORD *)0x0090D91C;
 
 Filefind *FilefindPath = (Filefind *)0x009B8198;
 MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
+
+void __cdecl tester() {
+	// veh_put
+	// veh_health
+	for (int j = 0; j < *VehCurrentCount; j++) {
+		if (veh_health(j) != veh_health_(j)) {
+			MessageBoxA(NULL, "veh_health Error", "FATAL ERROR", MB_ICONWARNING);
+		}
+		veh_put(j, 20, 20);
+	}
+}
