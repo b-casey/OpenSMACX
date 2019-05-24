@@ -38,7 +38,7 @@ Return Value: Pointer to initialized Filemap
 Status: Complete
 */
 Filemap *Filemap::init(LPCSTR fileName) {
-	open(fileName, FALSE);
+	open(fileName, false);
 	return this;
 }
 

@@ -261,7 +261,7 @@ struct base {
 	int unk3;
 	int unk4;
 	int unk5;
-	char facilitiesPresentTable[12];
+	BYTE facilitiesPresentTable[12];
 	int mineralSurplusFinal;
 	int mineralsAccumulated2;
 	int unk6;
@@ -409,6 +409,10 @@ extern rules_facility *Facility;
 extern rules_citizen *Citizen;
 extern base *Base;
 extern base_secret_project *SecretProject;
+extern int *BaseIDCurrentSelected;
+extern int *BaseCurrentCount;
 
 OPENSMACX_API BOOL __cdecl has_project(DWORD projectID, DWORD factionID);
+OPENSMACX_API BOOL __cdecl has_fac_built(DWORD facilityID);
+OPENSMACX_API int __cdecl base_project(DWORD projectID);
 OPENSMACX_API void __cdecl bitmask(DWORD facilityID, DWORD *offset, DWORD *mask);

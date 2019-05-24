@@ -19,7 +19,7 @@
 #include "temp.h"
 #include "faction.h"
 #include "general.h"
-#include "veh.h"
+#include "base.h"
 #include "map.h"
 #include "maininterface.h"
 
@@ -52,8 +52,6 @@ typedef int *func8(LPSTR, LPSTR);
 func8 *parse_string = (func8 *)0x00625880;
 
 // testing
-typedef DWORD func9(int);
-func9 *veh_health_ = (func9 *)0x005A59E0;
 
 ///
 LPSTR *ParseTempPtr1_1 = (LPSTR *)0x009B7D00;
@@ -67,15 +65,8 @@ int *ParseStrGender = (int *)0x009BB5C0;
 int *GenderDefault = (int *)0x009BBFEC;
 int *PluralityDefault = (int *)0x009BBFF0;
 int *Language = (int *)0x009BC054;
-int *TechValidCount = (int *)0x00949730;
-int *TechCommerceCount = (int *)0x00949734;
 BOOL *SMACX_Enabled = (BOOL *)0x009A6488;
 BOOL *IsLoggingDisabled = (BOOL *)0x009BC004;
-DWORD *GameRules = (DWORD *)0x009A64C0;
-int *DiffLevelCurrent = (int *)0x009A64C4;
-int *BaseCurrentCount = (int *)0x009A64CC;
-int *TurnCurrentNum = (int *)0x009A64D4;
-int *MissionYearCurrent = (int *)0x009A64D8;
 BOOL *MultiplayerToggle = (BOOL *)0x0093F660;
 
 DWORD *UnkBitfield1 = (DWORD *)0x0090D91C;
@@ -84,12 +75,13 @@ Filefind *FilefindPath = (Filefind *)0x009B8198;
 MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
 
 void __cdecl tester() {
-	// veh_put
-	// veh_health
-	for (int j = 0; j < *VehCurrentCount; j++) {
-		if (veh_health(j) != veh_health_(j)) {
-			MessageBoxA(NULL, "veh_health Error", "FATAL ERROR", MB_ICONWARNING);
-		}
-		veh_put(j, 20, 20);
-	}
+// 	for (int j = 0; j < max; j++) {
+// 		*BaseCurrentCount = j;
+// 		for (int i = 0; i < MaxFacilityNum; i++) {
+// 			if (has_fac_built(i) != has_fac_built_(i)) {
+// 				MessageBoxA(NULL, "has_fac_built Error", "FATAL ERROR", MB_ICONWARNING);
+// 			}
+// 		}
+// 		
+// 	}
 }

@@ -22,26 +22,28 @@
 rules_technology *Technology = (rules_technology *)0x0094F358;
 BYTE *GameTechDiscovered = (BYTE *)0x009A6670;
 rules_mandate *Mandate = (rules_mandate *)0x0094B4A0;
+int *TechValidCount = (int *)0x00949730;
+int *TechCommerceCount = (int *)0x00949734;
 
 /*
 Purpose: Check whether faction has a particular tech or not.
 Original Offset: 005B9F20
-Return Value: Faction has tech? TRUE/FALSE
+Return Value: Faction has tech? true/false
 Status: Complete
 */
 BOOL __cdecl has_tech(int techID, int factionID) {
 	if (factionID <= 0) {
-		return FALSE;
+		return false;
 	}
 	if (techID == TechNone) {
-		return TRUE;
+		return true;
 	}
 	if (techID < 0 || techID >= (MaxTechnologyNum - 1) // excludes 'Transcendent Thought'
 		|| Technology[techID].preqTech1 == TechDisabled
 		|| (Technology[techID].preqTech2 == TechDisabled
 			&& Technology[techID].preqTech1 != TechNone)) {
 		// "none, disable" ; valid #TECH preqTech entry
-		return FALSE;
+		return false;
 	}
 	return ((1 << factionID) & GameTechDiscovered[techID]) != 0;
 }

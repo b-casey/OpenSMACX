@@ -26,8 +26,8 @@ class OPENSMACX_API Log {
 	BOOL isDisabled;
 
 public:
-	Log(): logFile(0), isDisabled(FALSE) { } // 00625FB0
-	Log(LPCSTR input): logFile(0), isDisabled(FALSE) { // 00625FC0
+	Log(): logFile(0), isDisabled(false) { } // 00625FB0
+	Log(LPCSTR input): logFile(0), isDisabled(false) { // 00625FC0
 		if (input) {
 			int len = strlen(input) + 1;
 			logFile = (LPSTR)mem_get(len);
@@ -45,7 +45,7 @@ public:
 	void say_hex(LPCSTR str1, LPCSTR str2, int num1, int num2, int num3);
 
 	// additional functions to assist with encapsulation
-	void set_state(BOOL state) { isDisabled = state ? FALSE : TRUE; }
+	void set_state(BOOL state) { isDisabled = state ? false : true; }
 };
 
 // global

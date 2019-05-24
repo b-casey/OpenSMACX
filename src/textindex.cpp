@@ -35,7 +35,7 @@ void TextIndex::make_index(LPCSTR sourceTxt) {
 	if (!strchr(fileName, '.')) {
 		strcat_s(fileName, 256, ".txt"); // append extension if missing
 	}
-	LPVOID txtAddrBase = txtFileMap.open_read(fileName, FALSE);
+	LPVOID txtAddrBase = txtFileMap.open_read(fileName, false);
 	if (txtAddrBase) {
 		LPVOID seekAddr = txtAddrBase;
 		LPVOID eofAddr = LPVOID(DWORD(txtAddrBase) + txtFileMap.getSize());
@@ -58,7 +58,7 @@ void TextIndex::make_index(LPCSTR sourceTxt) {
 			}
 			seekAddr = LPVOID(DWORD(foundAddr) + 1);
 		}
-		heap.squeeze(TRUE);
+		heap.squeeze(true);
 	}
 }
 

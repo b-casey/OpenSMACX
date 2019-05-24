@@ -70,6 +70,8 @@
 		<Unit filename="src/flic.h" />
 		<Unit filename="src/font.cpp" />
 		<Unit filename="src/font.h" />
+		<Unit filename="src/game.cpp" />
+		<Unit filename="src/game.h" />
 		<Unit filename="src/general.cpp" />
 		<Unit filename="src/general.h" />
 		<Unit filename="src/graphicwin.cpp" />

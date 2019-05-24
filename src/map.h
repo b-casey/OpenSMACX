@@ -32,7 +32,7 @@ struct map {
 	CHAR territory; // factionID or -1 for unclaimed
 	DWORD bit; // see terrain_bit enum
 	DWORD bit2; // // FF FF FFFF | code (landmark tile sequence); unk flags; landmark id (2 bytes)
-	DWORD bitVisible[7];
+	DWORD bitVisible[7]; // what each faction sees tile as (ex. pods another faction already got)
 };
 
 struct landmark {

@@ -326,7 +326,7 @@ LPSTR __cdecl findnum(LPSTR str) {
 Purpose: Check to see if JACKAL lib version is up to date. Pretty pointless but might add OpenSMACX 
          check in future.
 Original Offset: 0062D570
-Return Value: Was there an error? TRUE/FALSE
+Return Value: Was there an error? true/false
 Status: Complete
 */
 BOOL __cdecl jackal_version_check(LPCSTR version) {
@@ -336,9 +336,9 @@ BOOL __cdecl jackal_version_check(LPCSTR version) {
 			"is out of sync with the library headers! Please rebuild JACKAL.LIB...Bye!",
 			"Oh, such serious danger, William Robinson!!!",
 			MB_OK);
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 /*
@@ -605,7 +605,7 @@ int __cdecl parse_string_(LPSTR input, LPSTR output) {
 		*/
 	}
 
-	return FALSE;
+	return false;
 }
 
 /*

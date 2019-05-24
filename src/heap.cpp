@@ -52,7 +52,7 @@ void Heap::squeeze(int toggle) {
 /*
 Purpose: Allocate memory based on requested size from parameter
 Original Offset: 005D4620
-Return Value: Was there an error? TRUE/FALSE
+Return Value: Was there an error? true/false
 Status: Complete
 */
 BOOL Heap::init(size_t reqSize) {
@@ -63,9 +63,9 @@ BOOL Heap::init(size_t reqSize) {
 	if (basePtr) {
 		currentPtr = basePtr;
 		baseSize = freeSize = reqSize;
-		return FALSE;
+		return false;
 	}
-	return TRUE; // error: failed to allocate memory
+	return true; // error: failed to allocate memory
 }
 
 /*

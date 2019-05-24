@@ -160,13 +160,13 @@ int __cdecl tech_item() {
 /*
 Purpose: Parse #RULES & #WORLDBUILDER sections inside alpha(x).txt
 Original Offset: 00585170
-Return Value: Was there an error? TRUE/FALSE
+Return Value: Was there an error? true/false
 Status: Complete
 */
 BOOL __cdecl read_basic_rules() {
 	// Rules
 	if (text_open(AlphaxFileID, "RULES")) {
-		return TRUE;
+		return true;
 	}
 	Rules->MoveRateRoads = text_get_number(1, 100);
 	Rules->NutrientReqCitizen = text_get_number(0, 100);
@@ -286,18 +286,18 @@ BOOL __cdecl read_basic_rules() {
 	WorldBuilder->ContSizeRatio4 = text_item_number();
 	WorldBuilder->ContSizeRatio5 = text_item_number();
 	WorldBuilder->Islands = text_get_number(1, 500);
-	return FALSE;
+	return false;
 }
 
 /*
 Purpose: Parse #TECHNOLOGY section inside alpha(x).txt with dup check
 Original Offset: 00585E30
-Return Value: Was there an error? TRUE/FALSE
+Return Value: Was there an error? true/false
 Status: Complete
 */
 BOOL __cdecl read_tech() {
 	if (text_open(AlphaxFileID, "TECHNOLOGY")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxTechnologyNum; i++) {
 		text_get();
@@ -317,7 +317,7 @@ BOOL __cdecl read_tech() {
 		}
 	}
 	if (text_open(AlphaxFileID, "TECHNOLOGY")) {
-		return TRUE;
+		return true;
 	}
 	*TechValidCount = 0;
 	*TechCommerceCount = 0;
@@ -340,7 +340,7 @@ BOOL __cdecl read_tech() {
 			}
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 /*
@@ -411,11 +411,11 @@ void __cdecl read_faction(player *Player, int toggle) {
 	else if (gender[0] == 'N' || gender[0] == 'n') {
 		Player->nounGender = NEUTRAL_GENDER;
 	}
-	Player->isNounPlural = range(text_item_number() - 1, FALSE, TRUE); // original value: 1 or 2
+	Player->isNounPlural = range(text_item_number() - 1, false, true); // original value: 1 or 2
 	strcpy_s(Player->nameLeader, 24, text_item());
 	Player->nameLeader[23] = 0;
 	gender = text_item();
-	Player->isLeaderFemale = (gender[0] == 'F' || gender[0] == 'f') ? TRUE : FALSE;
+	Player->isLeaderFemale = (gender[0] == 'F' || gender[0] == 'f') ? true : false;
 	if (toggle == 2) {
 		return;
 	}
@@ -709,12 +709,12 @@ void __cdecl read_faction(player *Player, int toggle) {
 /*
 Purpose: Parse #BONUSNAMES, #FACTIONS, #NEWFACTIONS sections inside alpha(x).txt
 Original Offset: 00586F30
-Return Value: Was there an error? TRUE/FALSE
+Return Value: Was there an error? true/false
 Status: Complete
 */
 BOOL __cdecl read_factions() {
 	if (text_open(AlphaxFileID, "BONUSNAMES")) {
-		return TRUE;
+		return true;
 	}
 	for (unsigned int i = 0; i < MaxBonusNameNum; i++) {
 		if (!(i % 8)) { // 8 entries per line
@@ -723,7 +723,7 @@ BOOL __cdecl read_factions() {
 		strncpy_s(BonusName[i].key, text_item(), 24);
 	}
 	if (text_open(AlphaxFileID, SMACX_Enabled ? "NEWFACTIONS" : "FACTIONS")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 1; i < MaxPlayerNum; i++) {
 		text_get();
@@ -740,7 +740,7 @@ BOOL __cdecl read_factions() {
 		read_faction(&Players[i], 0);
 		load_faction_art(i);
 	}
-	return FALSE;
+	return false;
 }
 
 /*
@@ -753,7 +753,7 @@ Status: Complete
 void __cdecl noun_item(int *gender, BOOL *plurality) {
 	LPSTR noun = text_item();
 	*gender = 0; // defaults to male ('m' || 'M')
-	*plurality = FALSE; // defaults to singular ('1')
+	*plurality = false; // defaults to singular ('1')
 	if (noun[0] == 'f' || noun[0] == 'F') {
 		*gender = 1;
 	}
@@ -761,19 +761,19 @@ void __cdecl noun_item(int *gender, BOOL *plurality) {
 		*gender = 2;
 	}
 	if (noun[1] == '2') {
-		*plurality = TRUE;
+		*plurality = true;
 	}
 }
 
 /*
 Purpose: Parse #UNITS section inside alpha(x).txt
 Original Offset: 00587240
-Return Value: Was there an error? TRUE/FALSE
+Return Value: Was there an error? true/false
 Status: Complete
 */
 BOOL __cdecl read_units() {
 	if (text_open(AlphaxFileID, "UNITS")) {
-		return TRUE;
+		return true;
 	}
 	int totalUnits = text_get_number(0, MaxVehProtoFactionNum);
 	for (int protoID = 0; protoID < totalUnits; protoID++) {
@@ -817,27 +817,27 @@ BOOL __cdecl read_units() {
 		}
 		VehPrototype[protoID].iconOffset = (CHAR)icon;
 	}
-	return FALSE;
+	return false;
 }
 
 /*
-Purpose: Parse in all the game rules via alpha/x.txt. If param is set to TRUE, parse
+Purpose: Parse in all the game rules via alpha/x.txt. If param is set to true, parse
 		 #UNITS & #FACTIONS. Otherwise, skip both. New game vs reload?
 Original Offset: 005873C0
-Return Value: Was there an error? TRUE/FALSE
+Return Value: Was there an error? true/false
 Status: Complete
 */
 BOOL __cdecl read_rules(BOOL tglAllRules) {
 	StringTable->init(49952);
 	if (labels_init()) {
-		return TRUE;
+		return true;
 	}
 	text_clear_index();
 	text_make_index("SCRIPT");
 	text_make_index(AlphaxFileID);
 	// Technology; Rules; Terrain
 	if (read_tech() || read_basic_rules() || text_open(AlphaxFileID, "TERRAIN")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxTerrainNum; i++) {
 		text_get();
@@ -862,7 +862,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Resource Info
 	if (text_open(AlphaxFileID, "RESOURCEINFO")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxResourceInfoNum; i++) {
 		text_get();
@@ -874,7 +874,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Time Controls
 	if (text_open(AlphaxFileID, "TIMECONTROLS")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxTimeControlNum; i++) {
 		text_get();
@@ -889,7 +889,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Chassis
 	if (text_open(AlphaxFileID, "CHASSIS")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxChassisNum; i++) {
 		text_get();
@@ -921,7 +921,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Reactors
 	if (text_open(AlphaxFileID, "REACTORS")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxReactorNum; i++) {
 		text_get();
@@ -935,7 +935,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Weapons
 	if (text_open(AlphaxFileID, "WEAPONS")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxWeaponNum; i++) {
 		text_get();
@@ -949,7 +949,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Defenses / Armor
 	if (text_open(AlphaxFileID, "DEFENSES")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxArmorNum; i++) {
 		text_get();
@@ -962,7 +962,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Abilities
 	if (text_open(AlphaxFileID, "ABILITIES")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxAbilityNum; i++) {
 		text_get();
@@ -975,7 +975,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Morale
 	if (text_open(AlphaxFileID, "MORALE")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxMoraleNum; i++) {
 		text_get();
@@ -984,7 +984,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Defense Modes
 	if (text_open(AlphaxFileID, "DEFENSEMODES")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxDefenseModeNum; i++) {
 		text_get();
@@ -995,7 +995,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Offense Modes
 	if (text_open(AlphaxFileID, "OFFENSEMODES")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxOffenseModeNum; i++) {
 		text_get();
@@ -1013,12 +1013,12 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 			VehPrototype[i].flags = 0;
 		}
 		if (read_units()) {
-			return TRUE;
+			return true;
 		}
 	}
 	// Facilities
 	if (text_open(AlphaxFileID, "FACILITIES")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 1; i < MaxFacilityNum; i++) { // Facility[0] is null
 		text_get();
@@ -1054,7 +1054,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Orders (basic)
 	if (text_open(AlphaxFileID, "ORDERS")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxOrderNum; i++) {
 		if (i < 4 || i > 23) { // Skipping over orders set by #TERRAIN
@@ -1067,7 +1067,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Compass
 	if (text_open(AlphaxFileID, "COMPASS")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxCompassNum; i++) {
 		text_get();
@@ -1075,7 +1075,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Plans
 	if (text_open(AlphaxFileID, "PLANS")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxPlanNum; i++) {
 		text_get();
@@ -1085,7 +1085,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Triad
 	if (text_open(AlphaxFileID, "TRIAD")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxTriadNum; i++) {
 		text_get();
@@ -1093,7 +1093,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Resources
 	if (text_open(AlphaxFileID, "RESOURCES")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxResourceNum; i++) {
 		text_get();
@@ -1102,7 +1102,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Energy
 	if (text_open(AlphaxFileID, "ENERGY")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxEnergyNum; i++) {
 		text_get();
@@ -1111,7 +1111,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Citizens
 	if (text_open(AlphaxFileID, "CITIZENS")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxCitizenNum; i++) {
 		text_get();
@@ -1127,7 +1127,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Socio
 	if (text_open(AlphaxFileID, "SOCIO")) {
-		return TRUE;
+		return true;
 	}
 	text_get();
 	for (int i = 0; i < MaxSocialEffectNum; i++) {
@@ -1168,7 +1168,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Difficulty
 	if (text_open(AlphaxFileID, "DIFF")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxDiffNum; i++) {
 		text_get();
@@ -1176,11 +1176,11 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Factions
 	if (tglAllRules && read_factions()) {
-		return TRUE;
+		return true;
 	}
 	// Mandate
 	if (text_open(AlphaxFileID, "MANDATE")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxMandateNum; i++) {
 		text_get();
@@ -1189,7 +1189,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Mood
 	if (text_open(AlphaxFileID, "MOOD")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxMoodNum; i++) {
 		text_get();
@@ -1197,7 +1197,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Repute
 	if (text_open(AlphaxFileID, "REPUTE")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxReputeNum; i++) {
 		text_get();
@@ -1205,7 +1205,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Might
 	if (text_open(AlphaxFileID, "MIGHT")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxMightNum; i++) {
 		text_get();
@@ -1214,7 +1214,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Proposals
 	if (text_open(AlphaxFileID, "PROPOSALS")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxProposalNum; i++) {
 		text_get();
@@ -1224,7 +1224,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	// Natural
 	if (text_open(AlphaxFileID, "NATURAL")) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < MaxNaturalNum; i++) {
 		text_get();
@@ -1248,7 +1248,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	MainInterfaceVar->flatButton[34].set_bubble_text(StringTable->get((int)Natural[3].nameShort));
 	// Geothermal
 	MainInterfaceVar->flatButton[35].set_bubble_text(StringTable->get((int)Natural[10].nameShort));
-	return FALSE;
+	return false;
 }
 
 /*
@@ -1286,25 +1286,25 @@ void __cdecl prefs_fac_load() {
 /*
 Purpose: Parse #LABELS section inside labels.txt
 Original Offset: 00616A00
-Return Value: Was there an error? TRUE/FALSE
+Return Value: Was there an error? true/false
 Status: Complete
 */
 BOOL __cdecl labels_init() {
 	labels_shutdown();
 	if (text_open("labels", "labels")) {
-		return TRUE;
+		return true;
 	}
 	text_get();
 	Label->count = text_item_number();
 	Label->stringsPtr = (LPSTR)mem_get(Label->count * 4);
 	if (!Label->stringsPtr) {
-		return TRUE;
+		return true;
 	}
 	for (int i = 0; i < Label->count; i++) {
 		*((LPSTR *)Label->stringsPtr + i) = text_string();
 	}
 	text_close();
-	return FALSE;
+	return false;
 }
 
 /*

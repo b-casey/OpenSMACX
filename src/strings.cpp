@@ -20,7 +20,7 @@
 /*
 Purpose: Initialize a new string table with specified size from parameter
 Original Offset: 006168F0
-Return Value: Was there an error? TRUE/FALSE
+Return Value: Was there an error? true/false
 Status: Complete
 */
 BOOL Strings::init(size_t memSize) {
@@ -28,11 +28,11 @@ BOOL Strings::init(size_t memSize) {
 		shutdown();
 	}
 	if (Heap::init(memSize)) {
-		return TRUE; // allocation failed
+		return true; // allocation failed
 	}
 	put("-Nil-");
-	isPopulated = TRUE;
-	return FALSE; // successful
+	isPopulated = true;
+	return false; // successful
 }
 
 /*
@@ -43,7 +43,7 @@ Status: Complete
 */
 void Strings::shutdown() {
 	Heap::shutdown();
-	isPopulated = FALSE;
+	isPopulated = false;
 }
 
 /*

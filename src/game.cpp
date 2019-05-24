@@ -16,15 +16,9 @@
  * along with OpenSMACX. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "stdafx.h"
+#include "game.h"
 
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved) {
-    switch (ul_reason_for_call)
-    {
-		case DLL_PROCESS_ATTACH:
-		case DLL_THREAD_ATTACH:
-		case DLL_THREAD_DETACH:
-		case DLL_PROCESS_DETACH:
-			break;
-    }
-    return true;
-}
+DWORD *GameRules = (DWORD *)0x009A64C0;
+int *DiffLevelCurrent = (int *)0x009A64C4;
+int *TurnCurrentNum = (int *)0x009A64D4;
+int *MissionYearCurrent = (int *)0x009A64D8;

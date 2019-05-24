@@ -76,11 +76,11 @@ void Text::close() {
 /*
 Purpose: Open specified source txt file and copy section into buffer for parsing
 Original Offset: 005FDA00
-Return Value: Was there an error? TRUE/FALSE
+Return Value: Was there an error? true/false
 Status: Complete
 */
 BOOL Text::open(LPCSTR srcFileID, LPCSTR sectionID) {
-	BOOL isFileOpen = FALSE; // open / possibly tracker for reading through whole file?
+	BOOL isFileOpen = false; // open / possibly tracker for reading through whole file?
 	if (srcFileID) {
 		strcpy_s(fileName, 80, srcFileID);
 		if (!strchr(fileName, '.')) {
@@ -89,29 +89,29 @@ BOOL Text::open(LPCSTR srcFileID, LPCSTR sectionID) {
 		close();
 		textFile = env_open(fileName, "rt");
 		if (!textFile) {
-			return TRUE;
+			return true;
 		}
 		strcpy_s(filePath, 256, FilefindPath->lastPath);
 	}
 	else if (textFile) {
-		isFileOpen = TRUE;
+		isFileOpen = true;
 	}
 	else {
 		textFile = env_open(fileName, "rt");
 		if (!textFile) {
-			return TRUE;
+			return true;
 		}
 		strcpy_s(filePath, 256, FilefindPath->lastPath);
 	}
 	if (!sectionID) {
-		return FALSE;
+		return false;
 	}
 	
 	int seekAddr = text_search_index(fileName, sectionID);
 	if (seekAddr >= 0) {
 		log_say("Seeking to", sectionID, seekAddr, 0, 0);
 		fseek(textFile, seekAddr, SEEK_SET);
-		isFileOpen = TRUE;
+		isFileOpen = true;
 	}
 	
 	std::string sectHeader("#");
@@ -119,23 +119,23 @@ BOOL Text::open(LPCSTR srcFileID, LPCSTR sectionID) {
 	do {
 		if (feof(textFile)) {
 			if (isFileOpen) {
-				isFileOpen = FALSE;
+				isFileOpen = false;
 				rewind(textFile);
 			}
 			else {
 				close();
-				return TRUE;
+				return true;
 			}
 		}
 		if (!fgets(bufferGet, 511, textFile)) {
 			close();
-			return TRUE;
+			return true;
 		}
 		kill_lf(bufferGet);
 		purge_spaces(bufferGet);
 	} while (_stricmp(sectHeader.c_str(), bufferGet));
 	currentPos = bufferGet;
-	return FALSE;
+	return false;
 }
 
 /*

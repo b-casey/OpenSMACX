@@ -218,18 +218,18 @@ void __cdecl lock_set(int xCoord, int yCoord, DWORD factionID) {
 /*
 Purpose: Lock tile at coordinates for factionID.
 Original Offset: 00591C90
-Return Value: TRUE if locked by another faction, otherwise FALSE
+Return Value: true if locked by another faction, otherwise false
 Status: Complete
 */
 BOOL __cdecl lock_map(int xCoord, int yCoord, DWORD factionID) {
 	DWORD lockID = lock_at(xCoord, yCoord);
 	if (lockID != factionID) {
 		if (lockID) {
-			return TRUE;
+			return true;
 		}
 		lock_set(xCoord, yCoord, factionID);
 	}
-	return FALSE;
+	return false;
 }
 
 /*
@@ -368,7 +368,7 @@ void __cdecl synch_bit(int xCoord, int yCoord, int factionID) {
 /*
 Purpose: Check whether tile is ocean or not.
 Original Offset: 005001E0
-Return Value: Is tile ocean? TRUE/FALSE
+Return Value: Is tile ocean? true/false
 Status: Complete
 */
 BOOL __cdecl is_ocean(int xCoord, int yCoord) {

@@ -22,11 +22,11 @@
  * Strings class: Create and interact with a basic string table.
  */
 class OPENSMACX_API Strings: Heap {
-	BOOL isPopulated; // (+20) -> set to TRUE when table is created
+	BOOL isPopulated; // (+20) -> set to true when table is created
 
 public:
 	// Constructor, other variables are from subclass (Heap)
-	Strings(): isPopulated(FALSE) { } // 006168D0
+	Strings(): isPopulated(false) { } // 006168D0
 									  // 006169C0 ; destructor
 	BOOL init(size_t memSize);
 	void shutdown();

@@ -22,19 +22,46 @@ rules_facility *Facility = (rules_facility *)0x009A4B68;
 rules_citizen *Citizen = (rules_citizen *)0x00946020;
 base *Base = (base *)0x0097D040; // 512
 base_secret_project *SecretProject = (base_secret_project *)0x009A6514; // 64
+int *BaseIDCurrentSelected = (int *)0x00689370;
+int *BaseCurrentCount = (int *)0x009A64CC;
 
 /*
 Purpose: Check if faction has secret project in a base they control.
 Original Offset: 004F80D0
-Return Value: Does faction have Secret Project? TRUE/FALSE
+Return Value: Does faction have Secret Project? true/false
 Status: Complete
 */
 BOOL __cdecl has_project(DWORD projectID, DWORD factionID) {
-	int baseID = *(&SecretProject->HumanGenomeProject + projectID);
+	int baseID = base_project(projectID);
 	if (baseID >= 0) {
 		return (Base[baseID].factionIDCurrent == factionID);
 	}
-	return FALSE; // Not built or destroyed
+	return false; // Not built or destroyed
+}
+
+/*
+Purpose: Checks whether facility (non-SP) has been build in currently selected base.
+Original Offset: 00500290
+Return Value: Does current base have facility? true/false
+Status: Complete
+*/
+BOOL __cdecl has_fac_built(DWORD facilityID) {
+	if (facilityID >= FAC_SKY_HYDRO_LAB) {
+		return false;
+	}
+	DWORD offset, mask;
+	bitmask(facilityID, &offset, &mask);
+	return (Base[*BaseIDCurrentSelected].facilitiesPresentTable[offset] & mask) != 0;
+}
+
+/*
+Purpose: Get current status of project.
+Original Offset: 005002E0
+Return Value: baseID or -1/-2 if not built or destroyed
+Status: Complete
+*/
+int __cdecl base_project(DWORD projectID) {
+	return *(&SecretProject->HumanGenomeProject + projectID);
 }
 
 /*

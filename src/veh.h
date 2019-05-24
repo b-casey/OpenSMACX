@@ -486,6 +486,8 @@ OPENSMACX_API DWORD __cdecl armor_proto(int protoID, int vehIDAtk, BOOL isArtyMi
 OPENSMACX_API DWORD __cdecl speed_proto(int protoID);
 OPENSMACX_API DWORD __cdecl speed(int vehID, BOOL skipMorale);
 OPENSMACX_API DWORD __cdecl veh_cargo(int vehID);
+OPENSMACX_API DWORD __cdecl prototype_factor(int protoID);
+OPENSMACX_API BOOL __cdecl veh_jail(int vehID);
 OPENSMACX_API void __cdecl veh_skip(int vehID);
 OPENSMACX_API int __cdecl veh_fake(int protoID, int factionID);
 OPENSMACX_API int __cdecl veh_wake(int vehID);

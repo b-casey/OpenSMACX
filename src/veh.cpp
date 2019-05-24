@@ -20,6 +20,7 @@
 #include "alpha.h"
 #include "base.h"
 #include "faction.h"
+#include "game.h"
 #include "general.h" // range
 #include "log.h"
 #include "map.h"
@@ -163,7 +164,7 @@ Return Value: Moves left
 Status: Complete
 */
 DWORD __cdecl veh_moves(int vehID) {
-	return range(speed(vehID, FALSE) - Veh[vehID].movesExpended, 0, 999);
+	return range(speed(vehID, false) - Veh[vehID].movesExpended, 0, 999);
 }
 
 /*
@@ -193,7 +194,7 @@ int __cdecl arm_strat(int armorID, int factionID) {
 	int defenseRating = Armor[armorID].defenseRating;
 	if (defenseRating < 0) {
 		return psi_factor((Rules->PsiCombatRatioDef[TRIAD_LAND] * PlayersData[factionID].unk_59)
-			/ Rules->PsiCombatRatioAtk[TRIAD_LAND], factionID, FALSE, FALSE);
+			/ Rules->PsiCombatRatioAtk[TRIAD_LAND], factionID, false, false);
 	}
 	return defenseRating;
 }
@@ -211,7 +212,7 @@ int __cdecl weap_strat(int weaponID, int factionID) {
 	int offenseRating = Weapon[weaponID].offenseRating;
 	if (offenseRating < 0) {
 		return psi_factor((Rules->PsiCombatRatioAtk[TRIAD_LAND] * PlayersData[factionID].unk_60)
-			/ Rules->PsiCombatRatioDef[TRIAD_LAND], factionID, TRUE, FALSE);
+			/ Rules->PsiCombatRatioDef[TRIAD_LAND], factionID, true, false);
 	}
 	return offenseRating;
 }
@@ -293,7 +294,7 @@ std::string __cdecl say_offense(int protoID) {
 	if (has_abil(protoID, ABL_BLINK_DISPLACER)) {
 		output += "!";
 	}
-	if (can_arty(protoID, TRUE)) {
+	if (can_arty(protoID, true)) {
 		output.insert(output.begin(), '(');
 		output += ")";
 	}
@@ -662,9 +663,9 @@ Status: Complete
 */
 void __cdecl make_proto(int protoID, DWORD chassisID, DWORD weaponID, DWORD armorID, DWORD ability,
 	DWORD reactorID) {
-	int unkLocal1 = 0;
+	int unkLocal1 = 0; // TODO: Identify
 	if (protoID >= MaxVehProtoFactionNum) {
-		BOOL cond1 = FALSE, cond2 = FALSE, cond3 = FALSE;
+		BOOL cond1 = false, cond2 = false, cond3 = false;
 		int protoIDLoop;
 		for (int i = 0; i < 128; i++) {
 			protoIDLoop = i % MaxVehProtoFactionNum;
@@ -678,27 +679,27 @@ void __cdecl make_proto(int protoID, DWORD chassisID, DWORD weaponID, DWORD armo
 					|| (protoIDLoop > MaxVehProtoFactionNum && (flagsCheck & 4))) {
 					DWORD loopWeaponID = VehPrototype[protoIDLoop].weaponID;
 					if (loopWeaponID == weaponID) {
-						cond1 = TRUE;
+						cond1 = true;
 					}
 					DWORD loopArmorID = VehPrototype[protoIDLoop].armorID;
 					if (loopArmorID == armorID) {
-						cond2 = TRUE;
+						cond2 = true;
 					}
 					DWORD loopChassisID = VehPrototype[protoIDLoop].chassisID;
 					if (loopChassisID == chassisID) {
-						cond3 = TRUE;
+						cond3 = true;
 					}
 					int offRating = Weapon[weaponID].offenseRating;
 					if (offRating > 0 && Weapon[loopWeaponID].offenseRating >= offRating) {
-						cond1 = TRUE;
+						cond1 = true;
 					}
 					int defRating = Armor[armorID].defenseRating;
 					if (defRating > 0 && Armor[loopArmorID].defenseRating >= defRating) {
-						cond2 = TRUE;
+						cond2 = true;
 					}
 					if (Chassis[chassisID].triad == Chassis[loopChassisID].triad
 						&& Chassis[loopChassisID].speed >= Chassis[chassisID].speed) {
-						cond3 = TRUE;
+						cond3 = true;
 					}
 				}
 			}
@@ -833,7 +834,7 @@ int __cdecl veh_at(int xCoord, int yCoord) {
 		if (*VehBitError) {
 			return -1;
 		}
-		*VehBitError = TRUE;
+		*VehBitError = true;
 	}
 	rebuild_vehicle_bits();
 	return -1;
@@ -842,19 +843,19 @@ int __cdecl veh_at(int xCoord, int yCoord) {
 /*
 Purpose: Check whether prototype has a specific ability
 Original Offset: 005BF1F0
-Return Value: Does prototype have ability? TRUE/FALSE
+Return Value: Does prototype have ability? true/false
 Status: Complete
 */
 BOOL __cdecl has_abil(int protoID, int abilityID) {
 	if (VehPrototype[protoID].abilityFlags & abilityID) {
-		return TRUE;
+		return true;
 	}
 	DWORD factionID = protoID / MaxVehProtoFactionNum;
 	if (!factionID) {
-		return FALSE; // skip basic prototypes from #UNITS
+		return false; // skip basic prototypes from #UNITS
 	}
 	if (Players[factionID].ruleFlags & FLAG_ALIEN && abilityID == ABL_DEEP_RADAR) {
-		return TRUE; // Caretakers + Usurpers > "Deep Radar" ability for all units
+		return true; // Caretakers + Usurpers > "Deep Radar" ability for all units
 	}
 	for (int i = 0; i < Players[factionID].factionBonusCount; i++) {
 		if (Players[factionID].factionBonusID[i] == RULE_FREEABIL) {
@@ -862,15 +863,15 @@ BOOL __cdecl has_abil(int protoID, int abilityID) {
 			if (has_tech(Ability[abilBonusID].preqTech, factionID) &&
 				(abilityID & (1 << abilBonusID))) {
 				// Pirates > "Marine Detachment" ability for combat sea units with Adaptive Doctrine
-				return TRUE;
+				return true;
 			}
 		}
 	}
 	if (VehPrototype[protoID].weaponID == WPN_PROBE_TEAM && abilityID == ABL_ALGO_ENHANCEMENT
 		&& has_project(SP_NETHACK_TERMINUS, factionID)) {
-		return TRUE; // All Probe Teams act as though they have the "Algorithmic Enhancement"
+		return true; // All Probe Teams act as though they have the "Algorithmic Enhancement"
 	}
-	return FALSE;
+	return false;
 }
 
 /*
@@ -881,10 +882,10 @@ Return Value: vehID
 Status: WIP - further tests
 */
 int __cdecl veh_lift(int vehID) {
-	BOOL prevStackExists = FALSE;
+	BOOL prevStackExists = false;
 	short prevVehID = Veh[vehID].prevVehIDStack, nextVehID = Veh[vehID].nextVehIDStack;
 	if (prevVehID >= 0) {
-		prevStackExists = TRUE;
+		prevStackExists = true;
 		Veh[prevVehID].nextVehIDStack = nextVehID;
 	}
 	int xCoord = Veh[vehID].xCoord, yCoord = Veh[vehID].yCoord;
@@ -935,7 +936,7 @@ int __cdecl veh_drop(int vehID, int xCoord, int yCoord) {
 		DWORD flags = (Veh[vehID].factionID
 			&& Chassis[VehPrototype[Veh[vehID].protoID].chassisID].triad == TRIAD_AIR)
 			? BIT_SUPPLY_REMOVE | BIT_VEH_IN_TILE : BIT_VEH_IN_TILE;
-		bit_set(xCoord, yCoord, flags, TRUE);
+		bit_set(xCoord, yCoord, flags, true);
 	}
 	return vehID;
 }
@@ -1044,14 +1045,14 @@ BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn) {
 	if ((Weapon[VehPrototype[protoID].weaponID].offenseRating <= 0 // PSI + non-combat
 		|| Armor[VehPrototype[protoID].armorID].defenseRating < 0) // PSI
 		&& protoID != BSC_SPORE_LAUNCHER) { // Spore Launcher exception
-		return FALSE;
+		return false;
 	}
 	BYTE triad = Chassis[VehPrototype[protoID].chassisID].triad;
 	if (triad == TRIAD_SEA) {
-		return seaTriadRetn; // cursory check shows this value always being set to TRUE
+		return seaTriadRetn; // cursory check shows this value always being set to true
 	}
 	if (triad == TRIAD_AIR) {
-		return FALSE;
+		return false;
 	}
 	return has_abil(protoID, ABL_ARTILLERY); // TRIAD_LAND
 }
@@ -1228,7 +1229,7 @@ DWORD __cdecl speed_proto(int protoID) {
 
 /*
 Purpose: Calculate speed of unit on roads taking into consideration prototype speed, elite morale,
-		 if unit is damaged and other factors. The skipMorale parameter seems to only be set to TRUE
+		 if unit is damaged and other factors. The skipMorale parameter seems to only be set to true
 		 for certain combat calculations in battle_fight().
 Original Offset: 005C1540
 Return Value: speed
@@ -1281,6 +1282,42 @@ DWORD __cdecl veh_cargo(int vehID) {
 }
 
 /*
+Purpose: Determine extra percent cost for building prototype. Includes a check if the faction has
+         the free prototype flag set or if the player is using one of the easier difficulties.
+Original Offset: 005C17D0
+Return Value: % extra prototype cost
+Status: WIP - test
+*/
+DWORD __cdecl prototype_factor(int protoID) {
+	if (Players[protoID / 64].ruleFlags & FLAG_FREEPROTO
+		|| PlayersData[protoID / 64].diffLevel <= DLVL_SPECIALIST) {
+		return 0;
+	}
+	BYTE triad = Chassis[VehPrototype[protoID].chassisID].triad;
+	if (triad == TRIAD_SEA) {
+		return Rules->ExtraPctCostProtoSea;
+	}
+	else if (triad == TRIAD_AIR) {
+		return Rules->ExtraPctCostProtoAir;
+	}
+	return Rules->ExtraPctCostProtoLand; // TRIAD_LAND
+}
+
+/*
+Purpose: 
+Original Offset: 005C1C40
+Return Value: true/false
+Status: WIP
+*/
+BOOL __cdecl veh_jail(int vehID) {
+	BYTE triad = Chassis[VehPrototype[Veh[vehID].protoID].chassisID].triad;
+	if (triad == TRIAD_LAND && Veh[vehID].orders == ORDER_SENTRY_BOARD) {
+		return 0;
+	}
+	return 0;
+}
+
+/*
 Purpose: Sets all moves as expended.
 Original Offset: 005C1D20
 Return Value: n/a
@@ -1289,7 +1326,7 @@ Status: Complete
 void __cdecl veh_skip(int vehID) {
 	// TODO Bug: Due to size of movesExpended, speeds over 255 will be incorrect. The speed() 
 	//           function can return a value from 1-999. Eventually increase size to 16 bits.
-	Veh[vehID].movesExpended = (BYTE)speed(vehID, FALSE);
+	Veh[vehID].movesExpended = (BYTE)speed(vehID, false);
 }
 
 /*
@@ -1314,7 +1351,7 @@ int __cdecl veh_wake(int vehID) {
 	int state = Veh[vehID].state;
 	if (orders >= ORDER_FARM && orders < ORDER_GO_TO && !(state & 0x4000000)) {
 		// TODO Bug: Issue with movesExpended size / speed return, see veh_skip()
-		Veh[vehID].movesExpended = (BYTE)(speed(vehID, FALSE) - Rules->MoveRateRoads);
+		Veh[vehID].movesExpended = (BYTE)(speed(vehID, false) - Rules->MoveRateRoads);
 		int terraTurns = Veh[vehID].terraformingTurns;
 		if (terraTurns) {
 			terraTurns -= contribution(vehID, orders - 4);

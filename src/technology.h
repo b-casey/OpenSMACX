@@ -58,6 +58,8 @@ constexpr int MaxMandateNum = 4;
 extern rules_technology *Technology; // [89]
 extern BYTE *GameTechDiscovered; // [89]
 extern rules_mandate *Mandate; // [4]
+extern int *TechValidCount;
+extern int *TechCommerceCount;
 
 OPENSMACX_API BOOL __cdecl has_tech(int techID, int factionID);
 OPENSMACX_API int __cdecl tech_mil(int techID);
