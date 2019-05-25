@@ -930,7 +930,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		// Bug fix/Enhancement: original function skips this value and is left as zero, isn't 
 		// referenced elsewhere in code. Likely because default power value is sequential. 
 		// This will allow future modifications.
-		Reactor[i].power = (uint32_t)text_item_number();
+		Reactor[i].power = (uint16_t)text_item_number();
 		Reactor[i].preqTech = (int16_t)tech_name(text_item());
 	}
 	// Weapons
