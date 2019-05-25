@@ -82,7 +82,7 @@ LPVOID Heap::get(size_t reqSize) {
 		}
 		LPVOID newAddr = realloc(basePtr, baseSize + 1024);
 		if (!newAddr) {
-			CHAR szError[150]; // max size of string + three int(s) + extra padding
+			char szError[150]; // max size of string + three int(s) + extra padding
 			wsprintfA(szError, 
 				"Aborting due to a heap shortage!\n"
 				"Base size: %d\n"

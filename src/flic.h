@@ -23,22 +23,22 @@
   * Flic class
   */
 class OPENSMACX_API Flic {
-	DWORD field_0;
+	uint32_t field_0;
 	Buffer buffer;
-	DWORD field_58C;
-	DWORD field_590;
-	DWORD field_594;
-	DWORD field_598;
-	DWORD field_59C;
-	DWORD field_5A0;
-	DWORD field_5A4;
+	uint32_t field_58C;
+	uint32_t field_590;
+	uint32_t field_594;
+	uint32_t field_598;
+	uint32_t field_59C;
+	uint32_t field_5A0;
+	uint32_t field_5A4;
 	Buffer *ptrBuffer2;
-	DWORD field_5AC;
-	DWORD field_5B0;
-	DWORD field_5B4;
+	uint32_t field_5AC;
+	uint32_t field_5B0;
+	uint32_t field_5B4;
 	FILE *file;
 	Palette *palette;
-	DWORD field_5C0[329];
+	uint32_t field_5C0[329];
 
 public:
 	Flic() { ; }

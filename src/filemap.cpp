@@ -109,7 +109,7 @@ Original Offset: 00628650
 Return Value: Memory address of mapped file or 0 on error
 Status: Complete
 */
-LPVOID Filemap::create(LPCSTR fileName, DWORD size, BOOL isSequential) {
+LPVOID Filemap::create(LPCSTR fileName, uint32_t size, BOOL isSequential) {
 	close();
 	fileSize = size;
 	hFile = CreateFileA(fileName, GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,

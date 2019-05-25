@@ -25,13 +25,13 @@ struct rules_terraforming {
 	LPSTR nameSea;
 	int preqTech;
 	int preqTechSea;
-	DWORD flag;
-	DWORD flagSea;
+	uint32_t flag;
+	uint32_t flagSea;
 	int rate;
 	LPSTR shortcuts;
 };
 
-const DWORD flagsTerraforming[] = { // land, sea
+const uint32_t flagsTerraforming[] = { // land, sea
 	    0x8000,   0x200000, // farm
 	   0x80000,   0x200000, // soil enricher
 	      0x10, 0x81E00050, // mine

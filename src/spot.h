@@ -28,8 +28,8 @@ class OPENSMACX_API Spot {
 	};
 
 	SpotInternal *ptrSpots;
-	DWORD maxCount;
-	DWORD addCount;
+	uint32_t maxCount;
+	uint32_t addCount;
 
 public:
 	Spot() { ; }

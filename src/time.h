@@ -35,7 +35,7 @@ private:
 	int field_20;
 	int field_24;
 
-	void TimerFunc1(HWND, UINT, UINT_PTR, DWORD);
+	void TimerFunc1(HWND, UINT, UINT_PTR, uint32_t);
 	TIMECALLBACK TimerFunc2;
 	void JACKAL_MsgClearQueue();
 

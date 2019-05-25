@@ -22,23 +22,23 @@
   * StringBox class
   */
 class OPENSMACX_API StringBox: GraphicWin {
-	DWORD field_A14;
-	DWORD field_A18;
-	DWORD field_A1C;
+	uint32_t field_A14;
+	uint32_t field_A18;
+	uint32_t field_A1C;
 	Scroll scroll;
-	DWORD field_2B6C;
-	DWORD field_2B70;
-	DWORD field_2B74;
-	DWORD field_2B78;
-	DWORD field_2B7C;
-	DWORD field_2B80;
-	DWORD field_2B84;
-	DWORD field_2B88;
-	DWORD field_2B8C;
-	DWORD field_2B90;
-	DWORD field_2B94;
-	DWORD field_2B98;
-	DWORD field_2B9C;
+	uint32_t field_2B6C;
+	uint32_t field_2B70;
+	uint32_t field_2B74;
+	uint32_t field_2B78;
+	uint32_t field_2B7C;
+	uint32_t field_2B80;
+	uint32_t field_2B84;
+	uint32_t field_2B88;
+	uint32_t field_2B8C;
+	uint32_t field_2B90;
+	uint32_t field_2B94;
+	uint32_t field_2B98;
+	uint32_t field_2B9C;
 
 public:
 	StringBox() { ; }

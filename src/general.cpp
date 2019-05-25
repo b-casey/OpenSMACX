@@ -396,7 +396,7 @@ Return Value: n/a
 Status: Complete
 */
 void prefs_put(LPCSTR keyName, int value, BOOL binaryTgl) {
-	CHAR temp[33];
+	char temp[33];
 	if (binaryTgl) {
 		temp[0] = 0;
 		for (int shift = 31, nonPad = 0; shift >= 0; shift--) {
@@ -614,7 +614,7 @@ Original Offset: 06003A0
 Return Value: Drive letter
 Status: Complete
 */
-CHAR filefind_cd_drive_letter() { return FilefindPath->cdPath[0]; }
+char filefind_cd_drive_letter() { return FilefindPath->cdPath[0]; }
 
 /*
 Purpose: Sets an alternative path for filefind checks
@@ -747,8 +747,8 @@ Original Offset: 0050BA30
 Return Value: Bit count
 Status: Complete
 */
-DWORD __cdecl bit_count(DWORD bitfield) {
-	DWORD count;
+uint32_t __cdecl bit_count(uint32_t bitfield) {
+	uint32_t count;
 	for (count = 0; bitfield; count++) {
 		bitfield &= bitfield - 1; // clear the least significant bit set
 	}

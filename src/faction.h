@@ -147,26 +147,26 @@ struct goal {
 
 struct player {
 	BOOL isLeaderFemale;
-	CHAR filename[24];
-	CHAR searchKey[24];
-	CHAR nameLeader[24];
-	CHAR titleLeader[24];
-	CHAR adjLeader[128];
-	CHAR adjInsultLeader[128];
-	CHAR adjFaction[128];
-	CHAR adjInsultFaction[128];
-	BYTE padding1[128];
-	CHAR nounFaction[24];
+	char filename[24];
+	char searchKey[24];
+	char nameLeader[24];
+	char titleLeader[24];
+	char adjLeader[128];
+	char adjInsultLeader[128];
+	char adjFaction[128];
+	char adjInsultFaction[128];
+	uint8_t padding1[128];
+	char nounFaction[24];
 	int nounGender;
 	BOOL isNounPlural;
-	CHAR nameAdjFaction[128]; // drops 2nd entry on line (abbreviation value?)
-	CHAR nameFaction[40];
-	CHAR insultLeader[24];
-	CHAR descNameFaction[24];
-	CHAR assistantName[24];
-	CHAR scientistName[24];
-	CHAR assistantCity[24];
-	BYTE padding2[176];
+	char nameAdjFaction[128]; // drops 2nd entry on line (abbreviation value?)
+	char nameFaction[40];
+	char insultLeader[24];
+	char descNameFaction[24];
+	char assistantName[24];
+	char scientistName[24];
+	char assistantCity[24];
+	uint8_t padding2[176];
 	int ruleTechSelected;
 	int ruleMorale;
 	int ruleResearch;
@@ -367,8 +367,8 @@ struct player_data {
 	int unk_67;
 	int unk_68;
 	char unk_69[4];
-	BYTE protoID_Active[512];
-	BYTE protoID_Queue[512];
+	uint8_t protoID_Active[512];
+	uint8_t protoID_Queue[512];
 	int16_t protoID_Lost[512];
 	int totalMilVeh;
 	int currentNumBases;

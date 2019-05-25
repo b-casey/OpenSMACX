@@ -25,29 +25,29 @@ class ButtonGroup; // forward declaration
   * BaseButton class
   */
 class OPENSMACX_API BaseButton: GraphicWin {
-	DWORD field_A14;
-	DWORD field_A18;
+	uint32_t field_A14;
+	uint32_t field_A18;
 	Time time1;
-	DWORD field_A44;
-	DWORD field_A48;
+	uint32_t field_A44;
+	uint32_t field_A48;
 	Time time2;
-	DWORD field_A74;
-	DWORD field_A78;
+	uint32_t field_A74;
+	uint32_t field_A78;
 	LPSTR name;
 	LPSTR bubbleText;
-	DWORD color;
-	DWORD bevelUpper;
-	DWORD bevelLower;
-	DWORD bevelThickness;
-	DWORD field_A94;
-	DWORD field_A98;
-	DWORD field_A9C;
-	DWORD field_AA0;
-	DWORD field_AA4;
+	uint32_t color;
+	uint32_t bevelUpper;
+	uint32_t bevelLower;
+	uint32_t bevelThickness;
+	uint32_t field_A94;
+	uint32_t field_A98;
+	uint32_t field_A9C;
+	uint32_t field_AA0;
+	uint32_t field_AA4;
 	ButtonGroup *btnGroup;
-	DWORD field_AAC;
-	DWORD field_AB0;
-	DWORD field_AB4;
+	uint32_t field_AAC;
+	uint32_t field_AB0;
+	uint32_t field_AB4;
 
 public:
 	BaseButton() { ; }

@@ -25,17 +25,17 @@
  Return Value: n/a
  Status: Complete
  */
-void Random::reseed(DWORD reseedValue) { seed ^= reseedValue; }
+void Random::reseed(uint32_t reseedValue) { seed ^= reseedValue; }
 
 /*
 Purpose: Get a random value between min and (max - 1)
 Original Offset: 00625770
-Return Value: Random DWORD value within bounds
+Return Value: Random uint32_t value within bounds
 Status: Complete
 */
-DWORD Random::get(DWORD min, DWORD max) {
+uint32_t Random::get(uint32_t min, uint32_t max) {
 	if (min > max) {
-		DWORD temp = min;
+		uint32_t temp = min;
 		min = max;
 		max = temp;
 	}
@@ -51,7 +51,7 @@ Status: Complete
 */
 double Random::get() {
 	seed = seed * 0x19660D + 0x3C6EF35F;
-	DWORD temp = (seed & 0x7FFFFF) | 0x3F800000; // FPU logic?
+	uint32_t temp = (seed & 0x7FFFFF) | 0x3F800000; // FPU logic?
 	return *reinterpret_cast<double *>(&temp) - 1.0;
 }
 
@@ -62,10 +62,10 @@ void __cdecl random_rand() { *Rand = *(new Random()); atexit(random_rand_exit); 
 
 void __cdecl random_rand_exit() { Rand->~Random(); } // 00625720
 
-void __cdecl random_reseed(DWORD reseedValue) { Rand->reseed(reseedValue); } // 006257E0
+void __cdecl random_reseed(uint32_t reseedValue) { Rand->reseed(reseedValue); } // 006257E0
 
-DWORD __cdecl random_get() { return Rand->getSeed(); } // 00625800
+uint32_t __cdecl random_get() { return Rand->getSeed(); } // 00625800
 
-DWORD __cdecl random(DWORD min, DWORD max) { return Rand->get(min, max); } // 00625810
+uint32_t __cdecl random(uint32_t min, uint32_t max) { return Rand->get(min, max); } // 00625810
 
 double __cdecl random() { return Rand->get(); } // 00625850

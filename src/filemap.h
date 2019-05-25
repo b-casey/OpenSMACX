@@ -24,7 +24,7 @@ class OPENSMACX_API Filemap {
 	LPVOID mapViewAddr; // (+0)
 	HANDLE hFile;       // (+4)
 	HANDLE hFileMap;    // (+8)
-	DWORD fileSize;     // (+12)
+	uint32_t fileSize;     // (+12)
 
 public:
 	Filemap(): mapViewAddr(NULL), hFile(INVALID_HANDLE_VALUE), hFileMap(NULL), 
@@ -35,10 +35,10 @@ public:
 	Filemap *init(LPCSTR fileName);
 	LPVOID open_read(LPCSTR fileName, BOOL isSequential);
 	LPVOID open(LPCSTR fileName, BOOL isSequential);
-	LPVOID create(LPCSTR fileName, DWORD size, BOOL isSequential);
+	LPVOID create(LPCSTR fileName, uint32_t size, BOOL isSequential);
 	void close();
 	void close(LPVOID newAddr);
 
 	// additional functions to assist with encapsulation
-	DWORD getSize() { return fileSize; }
+	uint32_t getSize() { return fileSize; }
 };

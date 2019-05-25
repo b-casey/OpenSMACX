@@ -20,15 +20,15 @@
 #include "map.h"
 
 rules_natural *Natural = (rules_natural *)0x0094ADE0;
-DWORD *MapHorizontalBounds = (DWORD *)0x00949870;
-DWORD *MapVerticalBounds = (DWORD *)0x00949874;
+uint32_t *MapHorizontalBounds = (uint32_t *)0x00949870;
+uint32_t *MapVerticalBounds = (uint32_t *)0x00949874;
 int *MapSeaLevel = (int *)0x0094987C;
-DWORD *MapArea = (DWORD *)0x00949884;
-DWORD *MapAreaSqRoot = (DWORD *)0x00949888;
+uint32_t *MapArea = (uint32_t *)0x00949884;
+uint32_t *MapAreaSqRoot = (uint32_t *)0x00949888;
 BOOL *MapFlatToggle = (BOOL *)0x0094988C;
-DWORD *MapLandmarkCount = (DWORD *)0x00949890;
+uint32_t *MapLandmarkCount = (uint32_t *)0x00949890;
 landmark *MapLandmark = (landmark *)0x00949894; // [64]
-DWORD *MapHorizontal = (DWORD *)0x0068FAF0;
+uint32_t *MapHorizontal = (uint32_t *)0x0068FAF0;
 map **Map = (map **)0x0094A30C;
 
 /*
@@ -47,7 +47,7 @@ Original Offset: n/a
 Return Value: Temperature
 Status: Complete
 */
-DWORD __cdecl temp_at(int xCoord, int yCoord) {
+uint32_t __cdecl temp_at(int xCoord, int yCoord) {
 	return map_loc(xCoord, yCoord)->val1 & 7;
 }
 
@@ -57,7 +57,7 @@ Original Offset: 00591AD0
 Return Value: n/a
 Status: Complete
 */
-void __cdecl temp_set(int xCoord, int yCoord, BYTE temperature) {
+void __cdecl temp_set(int xCoord, int yCoord, uint8_t temperature) {
 	map *tile = map_loc(xCoord, yCoord);
 	tile->val1 &= 0xF8;
 	tile->val1 |= temperature & 7;
@@ -69,7 +69,7 @@ Original Offset: n/a
 Return Value: Climate
 Status: Complete
 */
-DWORD __cdecl climate_at(int xCoord, int yCoord) {
+uint32_t __cdecl climate_at(int xCoord, int yCoord) {
 	return (map_loc(xCoord, yCoord)->val1 >> 3) & 3;
 }
 
@@ -79,7 +79,7 @@ Original Offset: 00591A80
 Return Value: n/a
 Status: Complete
 */
-void __cdecl climate_set(int xCoord, int yCoord, BYTE climate) {
+void __cdecl climate_set(int xCoord, int yCoord, uint8_t climate) {
 	map *tile = map_loc(xCoord, yCoord);
 	tile->val1 &= 0xE7;
 	tile->val1 |= (climate & 3) << 3;
@@ -93,7 +93,7 @@ Original Offset: 00500150
 Return Value: Altitude
 Status: Complete
 */
-DWORD __cdecl alt_at(int xCoord, int yCoord) {
+uint32_t __cdecl alt_at(int xCoord, int yCoord) {
 	return map_loc(xCoord, yCoord)->val1 >> 5;
 }
 
@@ -103,7 +103,7 @@ Original Offset: 00500180
 Return Value: Altitude detail
 Status: Complete
 */
-DWORD __cdecl alt_detail_at(int xCoord, int yCoord) {
+uint32_t __cdecl alt_detail_at(int xCoord, int yCoord) {
 	return map_loc(xCoord, yCoord)->altDetail;
 }
 
@@ -113,7 +113,7 @@ Original Offset: 00591260
 Return Value: n/a
 Status: Complete
 */
-void __cdecl alt_put_detail(int xCoord, int yCoord, BYTE detail) {
+void __cdecl alt_put_detail(int xCoord, int yCoord, uint8_t detail) {
 	map_loc(xCoord, yCoord)->altDetail = detail;
 }
 
@@ -123,7 +123,7 @@ Original Offset: n/a
 Return Value: factionID
 Status: Complete
 */
-DWORD __cdecl owner_at(int xCoord, int yCoord) {
+uint32_t __cdecl owner_at(int xCoord, int yCoord) {
 	return map_loc(xCoord, yCoord)->val2 & 0xF;
 }
 
@@ -157,7 +157,7 @@ Original Offset: 00500220
 Return Value: Region
 Status: Complete
 */
-DWORD __cdecl region_at(int xCoord, int yCoord) {
+uint32_t __cdecl region_at(int xCoord, int yCoord) {
 	return map_loc(xCoord, yCoord)->region;
 }
 
@@ -167,7 +167,7 @@ Original Offset: 00591B90
 Return Value: n/a
 Status: Complete
 */
-void __cdecl region_set(int xCoord, int yCoord, BYTE region) {
+void __cdecl region_set(int xCoord, int yCoord, uint8_t region) {
 	map_loc(xCoord, yCoord)->region = region;
 }
 
@@ -177,7 +177,7 @@ Original Offset: n/a
 Return Value: factionID
 Status: Complete
 */
-DWORD __cdecl using_at(int xCoord, int yCoord) {
+uint32_t __cdecl using_at(int xCoord, int yCoord) {
 	return map_loc(xCoord, yCoord)->val3 & 7;
 }
 
@@ -199,7 +199,7 @@ Original Offset: n/a
 Return Value: factionID
 Status: Complete
 */
-DWORD __cdecl lock_at(int xCoord, int yCoord) {
+uint32_t __cdecl lock_at(int xCoord, int yCoord) {
 	return (map_loc(xCoord, yCoord)->val3 >> 3) & 7;
 }
 
@@ -209,7 +209,7 @@ Original Offset: 00591C50
 Return Value: n/a
 Status: Complete
 */
-void __cdecl lock_set(int xCoord, int yCoord, DWORD factionID) {
+void __cdecl lock_set(int xCoord, int yCoord, uint32_t factionID) {
 	map *tile = map_loc(xCoord, yCoord);
 	tile->val3 &= 0xC7;
 	tile->val3 |= (factionID & 7) << 3;
@@ -221,8 +221,8 @@ Original Offset: 00591C90
 Return Value: true if locked by another faction, otherwise false
 Status: Complete
 */
-BOOL __cdecl lock_map(int xCoord, int yCoord, DWORD factionID) {
-	DWORD lockID = lock_at(xCoord, yCoord);
+BOOL __cdecl lock_map(int xCoord, int yCoord, uint32_t factionID) {
+	uint32_t lockID = lock_at(xCoord, yCoord);
 	if (lockID != factionID) {
 		if (lockID) {
 			return true;
@@ -238,7 +238,7 @@ Original Offset: 00591CF0
 Return Value: n/a
 Status: Complete
 */
-void __cdecl unlock_map(int xCoord, int yCoord, DWORD factionID) {
+void __cdecl unlock_map(int xCoord, int yCoord, uint32_t factionID) {
 	if (lock_at(xCoord, yCoord) == factionID) {
 		map_loc(xCoord, yCoord)->val3 &= 0xC7;
 	}
@@ -250,7 +250,7 @@ Original Offset: n/a
 Return Value: Rockiness
 Status: Complete
 */
-DWORD __cdecl rocky_at(int xCoord, int yCoord) {
+uint32_t __cdecl rocky_at(int xCoord, int yCoord) {
 	return map_loc(xCoord, yCoord)->val3 >> 6;
 }
 
@@ -260,7 +260,7 @@ Original Offset: 00591BC0
 Return Value: n/a
 Status: Complete
 */
-void __cdecl rocky_set(int xCoord, int yCoord, BYTE rocky) {
+void __cdecl rocky_set(int xCoord, int yCoord, uint8_t rocky) {
 	map *tile = map_loc(xCoord, yCoord);
 	tile->val3 &= 0x3F;
 	tile->val3 |= rocky << 6;
@@ -274,7 +274,7 @@ Original Offset: 005001B0
 Return Value: Bitfield
 Status: Complete
 */
-DWORD __cdecl bit_at(int xCoord, int yCoord) {
+uint32_t __cdecl bit_at(int xCoord, int yCoord) {
 	return map_loc(xCoord, yCoord)->bit;
 }
 
@@ -284,7 +284,7 @@ Original Offset: 00591D30
 Return Value: n/a
 Status: Complete
 */
-void __cdecl bit_put(int xCoord, int yCoord, DWORD bit) {
+void __cdecl bit_put(int xCoord, int yCoord, uint32_t bit) {
 	map_loc(xCoord, yCoord)->bit = bit;
 }
 
@@ -294,7 +294,7 @@ Original Offset: 00591D60
 Return Value: n/a
 Status: Complete
 */
-void __cdecl bit_set(int xCoord, int yCoord, DWORD bit, BOOL set) {
+void __cdecl bit_set(int xCoord, int yCoord, uint32_t bit, BOOL set) {
 	if (set) {
 		map_loc(xCoord, yCoord)->bit |= bit;
 	}
@@ -309,7 +309,7 @@ Original Offset: n/a
 Return Value: Bitfield
 Status: Complete
 */
-DWORD __cdecl bit2_at(int xCoord, int yCoord) {
+uint32_t __cdecl bit2_at(int xCoord, int yCoord) {
 	return map_loc(xCoord, yCoord)->bit2;
 }
 
@@ -319,7 +319,7 @@ Original Offset: 00591DB0
 Return Value: n/a
 Status: Complete
 */
-void __cdecl bit2_set(int xCoord, int yCoord, DWORD bit2, BOOL set) {
+void __cdecl bit2_set(int xCoord, int yCoord, uint32_t bit2, BOOL set) {
 	if (set) {
 		map_loc(xCoord, yCoord)->bit2 |= bit2;
 	}
@@ -335,7 +335,7 @@ Original Offset: n/a
 Return Value: Code
 Status: Complete
 */
-DWORD __cdecl code_at(int xCoord, int yCoord) {
+uint32_t __cdecl code_at(int xCoord, int yCoord) {
 	return map_loc(xCoord, yCoord)->bit2 >> 24;
 }
 
@@ -346,7 +346,7 @@ Original Offset: 00591E00
 Return Value: n/a
 Status: Complete
 */
-void __cdecl code_set(int xCoord, int yCoord, DWORD code) {
+void __cdecl code_set(int xCoord, int yCoord, uint32_t code) {
 	map *tile = map_loc(xCoord, yCoord);
 	tile->bit2 &= 0xFFFFFF;
 	tile->bit2 |= code << 24;
@@ -384,7 +384,7 @@ Status: Complete
 int __cdecl veh_who(int xCoord, int yCoord) {
 	map *tile = map_loc(xCoord, yCoord);
 	if (tile->bit & BIT_VEH_IN_TILE) {
-		DWORD owner = tile->val2 & 0xF;
+		uint32_t owner = tile->val2 & 0xF;
 		if (owner < 8) {
 			return owner;
 		}
@@ -401,7 +401,7 @@ Status: Complete
 int __cdecl anything_at(int xCoord, int yCoord) {
 	map *tile = map_loc(xCoord, yCoord);
 	if (tile->bit & (BIT_VEH_IN_TILE | BIT_BASE_IN_TILE)) {
-		DWORD owner = tile->val2 & 0xF;
+		uint32_t owner = tile->val2 & 0xF;
 		if (owner < 8) {
 			return owner;
 		}

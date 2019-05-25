@@ -24,7 +24,7 @@
 */
 class OPENSMACX_API TextIndex {
 	char fileName[256]; // name of file to be mapped
-	DWORD sectionCount; // number of section entries
+	uint32_t sectionCount; // number of section entries
 	Heap heap;
 
 public:
@@ -36,7 +36,7 @@ public:
 	int search_index(LPCSTR sourceTxt, LPCSTR sectionTxt);
 	
 	// additional functions to assist with encapsulation
-	DWORD getCount() { return sectionCount; }
+	uint32_t getCount() { return sectionCount; }
 };
 
 /* 

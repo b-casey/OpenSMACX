@@ -44,7 +44,7 @@ func5 *load_faction_art = (func5 *)0x00453710;
 // Next call to text_get() tries to access 009B7CF4 and the game crashes.
 typedef void *func6(char const *, int(*)(void));
 func6 *X_pop = (func6 *)0x005BF310;
-typedef DWORD func7(int, int);
+typedef uint32_t func7(int, int);
 func7 *morale_alien = (func7 *)0x00501350;
 
 // string
@@ -69,7 +69,7 @@ BOOL *SMACX_Enabled = (BOOL *)0x009A6488;
 BOOL *IsLoggingDisabled = (BOOL *)0x009BC004;
 BOOL *MultiplayerToggle = (BOOL *)0x0093F660;
 
-DWORD *UnkBitfield1 = (DWORD *)0x0090D91C;
+uint32_t *UnkBitfield1 = (uint32_t *)0x0090D91C;
 
 Filefind *FilefindPath = (Filefind *)0x009B8198;
 MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;

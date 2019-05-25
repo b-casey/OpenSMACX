@@ -33,9 +33,9 @@ enum technology_flag_bitfield {
 };
 
 struct rules_technology {
-	DWORD flags;
+	uint32_t flags;
 	LPSTR name;
-	CHAR id[8];
+	char id[8];
 	int padding; // unused value
 	int growthValue;
 	int techValue;
@@ -56,7 +56,7 @@ constexpr int TechDisabled = -2;
 constexpr int MaxMandateNum = 4;
 
 extern rules_technology *Technology; // [89]
-extern BYTE *GameTechDiscovered; // [89]
+extern uint8_t *GameTechDiscovered; // [89]
 extern rules_mandate *Mandate; // [4]
 extern int *TechValidCount;
 extern int *TechCommerceCount;

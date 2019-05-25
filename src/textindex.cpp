@@ -38,25 +38,25 @@ void TextIndex::make_index(LPCSTR sourceTxt) {
 	LPVOID txtAddrBase = txtFileMap.open_read(fileName, false);
 	if (txtAddrBase) {
 		LPVOID seekAddr = txtAddrBase;
-		LPVOID eofAddr = LPVOID(DWORD(txtAddrBase) + txtFileMap.getSize());
+		LPVOID eofAddr = LPVOID(uint32_t(txtAddrBase) + txtFileMap.getSize());
 		heap.init(0x8000); // maximum amount of memory per section index
 		while (seekAddr < eofAddr) {
-			LPVOID foundAddr = memchr(seekAddr, '\n', DWORD(eofAddr) - DWORD(seekAddr));
+			LPVOID foundAddr = memchr(seekAddr, '\n', uint32_t(eofAddr) - uint32_t(seekAddr));
 			if (!foundAddr) {
 				break; // invalid file, no newlines
 			}
 			char parseBuffer[512]; // maximum line length
-			memcpy_s(parseBuffer, 512, seekAddr, DWORD(foundAddr) - DWORD(seekAddr) + 1);
+			memcpy_s(parseBuffer, 512, seekAddr, uint32_t(foundAddr) - uint32_t(seekAddr) + 1);
 			kill_nl(parseBuffer); // bug fix; Filemap reads in raw file including carriage return
 			purge_spaces(parseBuffer);
 			if (parseBuffer[0] == '#' && isupper(parseBuffer[1])) {
-				DWORD len = strlen(&parseBuffer[1]) + 1;
+				uint32_t len = strlen(&parseBuffer[1]) + 1;
 				LPVOID storeAddr = heap.get(len + 4); // section name + address
-				*(LPDWORD)storeAddr = DWORD(seekAddr) - DWORD(txtAddrBase); // file offset
+				*(LPDWORD)storeAddr = uint32_t(seekAddr) - uint32_t(txtAddrBase); // file offset
 				strcpy_s(LPSTR(storeAddr) + 4, len, &parseBuffer[1]);
 				sectionCount++;
 			}
-			seekAddr = LPVOID(DWORD(foundAddr) + 1);
+			seekAddr = LPVOID(uint32_t(foundAddr) + 1);
 		}
 		heap.squeeze(true);
 	}

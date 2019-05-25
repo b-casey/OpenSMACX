@@ -23,14 +23,14 @@
   * Menu class
   */
 class OPENSMACX_API Menu: GraphicWin {
-	DWORD proc;
-	DWORD field_A18;
-	DWORD field_A1C;
-	DWORD field_A20;
-	DWORD field_A24;
-	DWORD field_A28;
+	uint32_t proc;
+	uint32_t field_A18;
+	uint32_t field_A1C;
+	uint32_t field_A20;
+	uint32_t field_A24;
+	uint32_t field_A28;
 	Spot spot;
-	DWORD array[15][5];
+	uint32_t array[15][5];
 
 public:
 	Menu() { ; }

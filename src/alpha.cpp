@@ -428,7 +428,7 @@ void __cdecl read_faction(player *Player, int toggle) {
 	LPSTR parseRuleCheck = text_item();
 	int len = strlen(parseRuleCheck);
 	while (len) {
-		LPSTR parseRule = new CHAR[len + 1];
+		LPSTR parseRule = new char[len + 1];
 		strcpy_s(parseRule, len + 1, parseRuleCheck);
 		LPSTR parseParameter = text_item();
 		if (!_strcmpi(parseRule, BonusName[0].key)) { // TECH
@@ -1261,7 +1261,7 @@ Status: Complete
 */
 void __cdecl prefs_fac_load() {
 	if (SMACX_Enabled) {
-		CHAR returnedString[256];
+		char returnedString[256];
 		GetPrivateProfileStringA("Alpha Centauri", "Prefs Format", "0",
 			returnedString, 256, ".\\Alpha Centauri.ini");
 		if (atoi(returnedString) == 12) {

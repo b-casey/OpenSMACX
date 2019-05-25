@@ -23,11 +23,11 @@
   */
 class OPENSMACX_API ButtonGroup {
 	BaseButton *buttons[32];
-	DWORD btnCount;
-	DWORD field_84;
-	DWORD field_88;
-	DWORD field_8C;
-	DWORD field_90;
+	uint32_t btnCount;
+	uint32_t field_84;
+	uint32_t field_88;
+	uint32_t field_8C;
+	uint32_t field_90;
 
 public:
 	ButtonGroup() { ; }

@@ -21,25 +21,25 @@
   * Random class: Handles pseudo random number generator.
   */
 class OPENSMACX_API Random {
-	DWORD seed;
+	uint32_t seed;
 
 public:
 	Random() : seed(0) { } // 00625730
 	~Random() { seed = 0; } // 00625740
 
-	void reseed(DWORD reseedValue);
-	DWORD get(DWORD min, DWORD max);
+	void reseed(uint32_t reseedValue);
+	uint32_t get(uint32_t min, uint32_t max);
 	double get();
 
 	// additional functions to assist with encapsulation
-	DWORD getSeed() { return seed;  }
+	uint32_t getSeed() { return seed;  }
 };
 
 // global
 extern Random *Rand;
 OPENSMACX_API void __cdecl random_rand();
 OPENSMACX_API void __cdecl random_rand_exit();
-OPENSMACX_API void __cdecl random_reseed(DWORD reseedValue);
-OPENSMACX_API DWORD __cdecl random_get();
-OPENSMACX_API DWORD __cdecl random(DWORD min, DWORD max);
+OPENSMACX_API void __cdecl random_reseed(uint32_t reseedValue);
+OPENSMACX_API uint32_t __cdecl random_get();
+OPENSMACX_API uint32_t __cdecl random(uint32_t min, uint32_t max);
 OPENSMACX_API double __cdecl random();

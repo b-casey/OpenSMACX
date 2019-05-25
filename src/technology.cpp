@@ -20,7 +20,7 @@
 #include "technology.h"
 
 rules_technology *Technology = (rules_technology *)0x0094F358;
-BYTE *GameTechDiscovered = (BYTE *)0x009A6670;
+uint8_t *GameTechDiscovered = (uint8_t *)0x009A6670;
 rules_mandate *Mandate = (rules_mandate *)0x0094B4A0;
 int *TechValidCount = (int *)0x00949730;
 int *TechCommerceCount = (int *)0x00949734;

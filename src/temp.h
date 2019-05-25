@@ -47,7 +47,7 @@ typedef void *func5(int);
 extern func5 *load_faction_art;
 typedef void *func6(char const *, int(*)(void));
 extern func6 *X_pop;
-typedef DWORD func7(int, int);
+typedef uint32_t func7(int, int);
 extern func7 *morale_alien;
 
 // string
@@ -55,13 +55,13 @@ typedef int *func8(LPSTR, LPSTR);
 extern func8 *parse_string;
 
 // testing
-typedef DWORD func9(int);
+typedef uint32_t func9(int);
 extern func9 *veh_health_;
-typedef BOOL func10(DWORD, DWORD);
+typedef BOOL func10(uint32_t, uint32_t);
 extern func10 *has_project_;
-typedef BOOL func11(DWORD);
+typedef BOOL func11(uint32_t);
 extern func11 *has_fac_built_;
-typedef int func12(DWORD);
+typedef int func12(uint32_t);
 extern func12 *base_project_;
 
 ///
@@ -80,7 +80,7 @@ extern BOOL *SMACX_Enabled;
 extern BOOL *IsLoggingDisabled; // global toggle for logging on/off? debug vs release?
 extern BOOL *MultiplayerToggle;
 
-extern DWORD *UnkBitfield1;
+extern uint32_t *UnkBitfield1;
 
 extern Filefind *FilefindPath;
 extern MainInterface *MainInterfaceVar;

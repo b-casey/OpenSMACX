@@ -23,43 +23,43 @@
   * FlatButton class
   */
 class OPENSMACX_API FlatButton: public BaseButton {
-	DWORD field_AB8;
-	DWORD field_ABC;
-	DWORD field_AC0;
-	DWORD field_AC4;
-	DWORD field_AC8;
-	DWORD field_ACC;
-	DWORD field_AD0;
-	DWORD field_AD4;
-	DWORD field_AD8;
-	DWORD field_ADC;
+	uint32_t field_AB8;
+	uint32_t field_ABC;
+	uint32_t field_AC0;
+	uint32_t field_AC4;
+	uint32_t field_AC8;
+	uint32_t field_ACC;
+	uint32_t field_AD0;
+	uint32_t field_AD4;
+	uint32_t field_AD8;
+	uint32_t field_ADC;
 	Sprite *sprite0;
-	DWORD field_AE4;
-	DWORD field_AE8;
-	DWORD field_AEC;
-	DWORD field_AF0;
-	DWORD field_AF4;
-	DWORD field_AF8;
-	DWORD field_AFC;
-	DWORD field_B00;
-	DWORD field_B04;
-	DWORD field_B08;
-	DWORD field_B0C;
+	uint32_t field_AE4;
+	uint32_t field_AE8;
+	uint32_t field_AEC;
+	uint32_t field_AF0;
+	uint32_t field_AF4;
+	uint32_t field_AF8;
+	uint32_t field_AFC;
+	uint32_t field_B00;
+	uint32_t field_B04;
+	uint32_t field_B08;
+	uint32_t field_B0C;
 	Sprite *sprite1;
 	Sprite *sprite2;
 	Sprite *sprite3;
-	DWORD field_B1C;
-	DWORD field_B20;
-	DWORD field_B24;
-	DWORD field_B28;
-	DWORD field_B2C;
-	DWORD field_B30;
-	DWORD field_B34;
-	DWORD field_B38;
-	DWORD field_B3C;
-	DWORD field_B40;
-	DWORD field_B44;
-	DWORD field_B48;
+	uint32_t field_B1C;
+	uint32_t field_B20;
+	uint32_t field_B24;
+	uint32_t field_B28;
+	uint32_t field_B2C;
+	uint32_t field_B30;
+	uint32_t field_B34;
+	uint32_t field_B38;
+	uint32_t field_B3C;
+	uint32_t field_B40;
+	uint32_t field_B44;
+	uint32_t field_B48;
 
 public:
 	FlatButton() { ; }

@@ -22,17 +22,17 @@
   */
 
 struct map {
-	BYTE val1; // 000 00 000 | altitude (3 bit) ; climate (2 bit) ; temperature (3 bit)
-	BYTE altDetail;
-	BYTE val2; // 0000 0000 | site (0xF0) ; owner (0x0F)
-	BYTE region;
-	BYTE visibility; // (1 << factionID)
-	BYTE val3; // 00 000 000 | rocky (2 bits); lock - factionID (3 bits); using - factionID (3 bits)
-	BYTE unk1; // sometimes set to 0x80, seems to be unused
-	CHAR territory; // factionID or -1 for unclaimed
-	DWORD bit; // see terrain_bit enum
-	DWORD bit2; // // FF FF FFFF | code (landmark tile sequence); unk flags; landmark id (2 bytes)
-	DWORD bitVisible[7]; // what each faction sees tile as (ex. pods another faction already got)
+	uint8_t val1; // 000 00 000 | altitude (3 bit) ; climate (2 bit) ; temperature (3 bit)
+	uint8_t altDetail;
+	uint8_t val2; // 0000 0000 | site (0xF0) ; owner (0x0F)
+	uint8_t region;
+	uint8_t visibility; // (1 << factionID)
+	uint8_t val3; // 00 000 000 | rocky (2 bit); lock - factionID (3 bit); using - factionID (3 bit)
+	uint8_t unk1; // sometimes set to 0x80, seems to be unused
+	int8_t territory; // factionID or -1 for unclaimed
+	uint32_t bit; // see terrain_bit enum
+	uint32_t bit2; // // FF FF FFFF | code (landmark tile sequence); unk flags; landmark id
+	uint32_t bitVisible[7]; // what each faction sees tile as (ex. pods another faction already got)
 };
 
 struct landmark {
@@ -127,45 +127,45 @@ constexpr int MaxNaturalNum = 16;
 constexpr int MaxLandmarkNum = 64;
 
 extern rules_natural *Natural;
-extern DWORD *MapVerticalBounds;
-extern DWORD *MapHorizontalBounds;
+extern uint32_t *MapVerticalBounds;
+extern uint32_t *MapHorizontalBounds;
 extern int *MapSeaLevel;
-extern DWORD *MapArea;
-extern DWORD *MapAreaSqRoot;
+extern uint32_t *MapArea;
+extern uint32_t *MapAreaSqRoot;
 extern BOOL *MapFlatToggle;
-extern DWORD *MapLandmarkCount;
+extern uint32_t *MapLandmarkCount;
 extern landmark *MapLandmark;
-extern DWORD *MapHorizontal;
+extern uint32_t *MapHorizontal;
 extern map **Map;
 
 map * __cdecl map_loc(int xCoord, int yCoord);
-DWORD __cdecl temp_at(int xCoord, int yCoord);
-void __cdecl temp_set(int xCoord, int yCoord, BYTE temperature);
-DWORD __cdecl climate_at(int xCoord, int yCoord);
-void __cdecl climate_set(int xCoord, int yCoord, BYTE climate);
-DWORD __cdecl alt_at(int xCoord, int yCoord);
-DWORD __cdecl alt_detail_at(int xCoord, int yCoord);
-void __cdecl alt_put_detail(int xCoord, int yCoord, BYTE detail);
-DWORD __cdecl owner_at(int xCoord, int yCoord);
+uint32_t __cdecl temp_at(int xCoord, int yCoord);
+void __cdecl temp_set(int xCoord, int yCoord, uint8_t temperature);
+uint32_t __cdecl climate_at(int xCoord, int yCoord);
+void __cdecl climate_set(int xCoord, int yCoord, uint8_t climate);
+uint32_t __cdecl alt_at(int xCoord, int yCoord);
+uint32_t __cdecl alt_detail_at(int xCoord, int yCoord);
+void __cdecl alt_put_detail(int xCoord, int yCoord, uint8_t detail);
+uint32_t __cdecl owner_at(int xCoord, int yCoord);
 void __cdecl owner_set(int xCoord, int yCoord, int factionID);
 void __cdecl site_set(int xCoord, int yCoord, int site);
-DWORD __cdecl region_at(int xCoord, int yCoord);
-void __cdecl region_set(int xCoord, int yCoord, BYTE region);
-DWORD __cdecl using_at(int xCoord, int yCoord);
+uint32_t __cdecl region_at(int xCoord, int yCoord);
+void __cdecl region_set(int xCoord, int yCoord, uint8_t region);
+uint32_t __cdecl using_at(int xCoord, int yCoord);
 void __cdecl using_set(int xCoord, int yCoord, int factionID);
-DWORD __cdecl lock_at(int xCoord, int yCoord);
-void __cdecl lock_set(int xCoord, int yCoord, DWORD factionID);
-BOOL __cdecl lock_map(int xCoord, int yCoord, DWORD factionID);
-void __cdecl unlock_map(int xCoord, int yCoord, DWORD factionID);
-DWORD __cdecl rocky_at(int xCoord, int yCoord);
-void __cdecl rocky_set(int xCoord, int yCoord, BYTE rocky);
-DWORD __cdecl bit_at(int xCoord, int yCoord);
-void __cdecl bit_put(int xCoord, int yCoord, DWORD bit);
-void __cdecl bit_set(int xCoord, int yCoord, DWORD bit, BOOL set);
-DWORD __cdecl bit2_at(int xCoord, int yCoord);
-void __cdecl bit2_set(int xCoord, int yCoord, DWORD bit2, BOOL set);
-DWORD __cdecl code_at(int xCoord, int yCoord);
-void __cdecl code_set(int xCoord, int yCoord, DWORD code);
+uint32_t __cdecl lock_at(int xCoord, int yCoord);
+void __cdecl lock_set(int xCoord, int yCoord, uint32_t factionID);
+BOOL __cdecl lock_map(int xCoord, int yCoord, uint32_t factionID);
+void __cdecl unlock_map(int xCoord, int yCoord, uint32_t factionID);
+uint32_t __cdecl rocky_at(int xCoord, int yCoord);
+void __cdecl rocky_set(int xCoord, int yCoord, uint8_t rocky);
+uint32_t __cdecl bit_at(int xCoord, int yCoord);
+void __cdecl bit_put(int xCoord, int yCoord, uint32_t bit);
+void __cdecl bit_set(int xCoord, int yCoord, uint32_t bit, BOOL set);
+uint32_t __cdecl bit2_at(int xCoord, int yCoord);
+void __cdecl bit2_set(int xCoord, int yCoord, uint32_t bit2, BOOL set);
+uint32_t __cdecl code_at(int xCoord, int yCoord);
+void __cdecl code_set(int xCoord, int yCoord, uint32_t code);
 void __cdecl synch_bit(int xCoord, int yCoord, int factionID);
 BOOL __cdecl is_ocean(int xCoord, int yCoord);
 int __cdecl veh_who(int xCoord, int yCoord);
