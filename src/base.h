@@ -234,20 +234,20 @@ enum base_status_bitfield {
 };
 
 struct base {
-	__int16 xCoord;
-	__int16 yCoord;
-	BYTE factionIDCurrent;
-	BYTE factionIDFormer;
-	char populationSize;
-	BYTE assimilationTurnsLeft;
-	BYTE nerveStapleTurnsLeft;
-	BYTE unk1;
-	BYTE unk2;
-	BYTE factionPopulationSizeIntel[8];
+	int16_t xCoord;
+	int16_t yCoord;
+	uint8_t factionIDCurrent;
+	uint8_t factionIDFormer;
+	int8_t populationSize;
+	uint8_t assimilationTurnsLeft;
+	uint8_t nerveStapleTurnsLeft;
+	uint8_t unk1;
+	uint8_t unk2;
+	uint8_t factionPopulationSizeIntel[8];
 	char nameString[25];
-	__int16 unkX;
-	__int16 unkY;
-	DWORD status;
+	int16_t unkX;
+	int16_t unkY;
+	uint32_t status;
 	int event;
 	int governor;
 	int nutrientsAccumulated;
@@ -261,7 +261,7 @@ struct base {
 	int unk3;
 	int unk4;
 	int unk5;
-	BYTE facilitiesPresentTable[12];
+	uint8_t facilitiesPresentTable[12];
 	int mineralSurplusFinal;
 	int mineralsAccumulated2;
 	int unk6;
@@ -292,10 +292,10 @@ struct base {
 	int psychTotal;
 	int labsTotal;
 	int unk10;
-	__int16 autoforwardLandBaseID;
-	__int16 autoforwardSeaBaseID;
-	__int16 autoforwardAirBaseID;
-	__int16 padding0;
+	int16_t autoforwardLandBaseID;
+	int16_t autoforwardSeaBaseID;
+	int16_t autoforwardAirBaseID;
+	int16_t padding0;
 	int talentTotal;
 	int droneTotal;
 	int superdroneTotal;
@@ -308,7 +308,7 @@ struct base {
 struct rules_facility {
 	LPSTR name;
 	LPSTR effect;
-	DWORD pad;
+	uint32_t pad;
 	int cost;
 	int maint;
 	int preqTech;
@@ -412,7 +412,7 @@ extern base_secret_project *SecretProject;
 extern int *BaseIDCurrentSelected;
 extern int *BaseCurrentCount;
 
-OPENSMACX_API BOOL __cdecl has_project(DWORD projectID, DWORD factionID);
-OPENSMACX_API BOOL __cdecl has_fac_built(DWORD facilityID);
-OPENSMACX_API int __cdecl base_project(DWORD projectID);
-OPENSMACX_API void __cdecl bitmask(DWORD facilityID, DWORD *offset, DWORD *mask);
+OPENSMACX_API BOOL __cdecl has_project(uint32_t projectID, uint32_t factionID);
+OPENSMACX_API BOOL __cdecl has_fac_built(uint32_t facilityID);
+OPENSMACX_API int __cdecl base_project(uint32_t projectID);
+OPENSMACX_API void __cdecl bitmask(uint32_t facilityID, uint32_t *offset, uint32_t *mask);

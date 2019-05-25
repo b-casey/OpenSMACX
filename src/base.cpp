@@ -31,7 +31,7 @@ Original Offset: 004F80D0
 Return Value: Does faction have Secret Project? true/false
 Status: Complete
 */
-BOOL __cdecl has_project(DWORD projectID, DWORD factionID) {
+BOOL __cdecl has_project(uint32_t projectID, uint32_t factionID) {
 	int baseID = base_project(projectID);
 	if (baseID >= 0) {
 		return (Base[baseID].factionIDCurrent == factionID);
@@ -45,11 +45,11 @@ Original Offset: 00500290
 Return Value: Does current base have facility? true/false
 Status: Complete
 */
-BOOL __cdecl has_fac_built(DWORD facilityID) {
+BOOL __cdecl has_fac_built(uint32_t facilityID) {
 	if (facilityID >= FAC_SKY_HYDRO_LAB) {
 		return false;
 	}
-	DWORD offset, mask;
+	uint32_t offset, mask;
 	bitmask(facilityID, &offset, &mask);
 	return (Base[*BaseIDCurrentSelected].facilitiesPresentTable[offset] & mask) != 0;
 }
@@ -60,7 +60,7 @@ Original Offset: 005002E0
 Return Value: baseID or -1/-2 if not built or destroyed
 Status: Complete
 */
-int __cdecl base_project(DWORD projectID) {
+int __cdecl base_project(uint32_t projectID) {
 	return *(&SecretProject->HumanGenomeProject + projectID);
 }
 
@@ -70,7 +70,7 @@ Original Offset: 0050BA00
 Return Value: n/a
 Status: Complete
 */
-void __cdecl bitmask(DWORD facilityID, DWORD *offset, DWORD *mask) {
+void __cdecl bitmask(uint32_t facilityID, uint32_t *offset, uint32_t *mask) {
 	*offset = facilityID / 8;
 	*mask = 1 << (facilityID & 7);
 }

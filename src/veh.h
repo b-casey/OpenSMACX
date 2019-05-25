@@ -284,100 +284,100 @@ struct rules_chassis {
 	BOOL defsv1IsPlural;
 	BOOL defsv2IsPlural;
 	BOOL defsvIsPluralLrg;
-	BYTE speed;
-	BYTE triad;
-	BYTE range;
-	BYTE cargo;
-	BYTE cost; // expand to DWORD eventually
-	BYTE missile;
-	BYTE spriteFlagXOff[8];
-	BYTE spriteFlagYOff[8];
-	BYTE spriteUnk1XOff[8];
-	BYTE spriteUnk1YOff[8];
-	BYTE spriteUnk2XOff[8];
-	BYTE spriteUnk2YOff[8];
-	BYTE spriteUnk3XOff[8];
-	BYTE spriteUnk3YOff[8];
-	__int16 preqTech;
+	uint8_t speed;
+	uint8_t triad;
+	uint8_t range;
+	uint8_t cargo;
+	uint8_t cost; // expand to uint32_t eventually
+	uint8_t missile;
+	uint8_t spriteFlagXOff[8];
+	uint8_t spriteFlagYOff[8];
+	uint8_t spriteUnk1XOff[8];
+	uint8_t spriteUnk1YOff[8];
+	uint8_t spriteUnk2XOff[8];
+	uint8_t spriteUnk2YOff[8];
+	uint8_t spriteUnk3XOff[8];
+	uint8_t spriteUnk3YOff[8];
+	int16_t preqTech;
 };
 
 struct rules_weapon {
 	LPSTR name;
 	LPSTR nameShort;
-	__int8 offenseRating;
-	__int8 icon;
-	BYTE mode;
-	BYTE cost;
-	__int16 preqTech;
-	__int16 padding;
+	int8_t offenseRating;
+	int8_t icon;
+	uint8_t mode;
+	uint8_t cost;
+	int16_t preqTech;
+	int16_t padding;
 };
 
 struct rules_armor {
 	LPSTR name;
 	LPSTR nameShort;
-	__int8 defenseRating;
-	BYTE mode;
-	BYTE cost;
-	BYTE padding1;
-	__int16 preqTech;
-	__int16 padding2;
+	int8_t defenseRating;
+	uint8_t mode;
+	uint8_t cost;
+	uint8_t padding1;
+	int16_t preqTech;
+	int16_t padding2;
 };
 
 struct veh {
-	__int16 xCoord;
-	__int16 yCoord;
-	DWORD state;
-	WORD flags;
-	__int16 protoID;
-	WORD unknown1;
-	BYTE factionID;
-	BYTE yearEndLurking;
-	BYTE dmgIncurred;
-	char orders; // see veh_orders enum
-	BYTE waypointCount;
-	BYTE patrolCurrentPoint;
-	__int16 waypoint_xCoord[4];
-	__int16 waypoint_yCoord[4];
-	BYTE morale;
-	BYTE terraformingTurns;
-	BYTE orderAutoType; // see veh_orders_auto_type enum
-	BYTE visibleToFaction; // bitfield (1 << (1 to 7))
-	BYTE movesExpended;
-	char unknown5;
-	BYTE unknown6;
-	BYTE unknown7;
-	BYTE unknown8;
-	char unknown9;
-	__int16 homeBaseID;
-	__int16 nextVehIDStack;
-	__int16 prevVehIDStack;
+	int16_t xCoord;
+	int16_t yCoord;
+	uint32_t state;
+	uint16_t flags;
+	int16_t protoID;
+	uint16_t unknown1;
+	uint8_t factionID;
+	uint8_t yearEndLurking;
+	uint8_t dmgIncurred;
+	int8_t orders; // see veh_orders enum
+	uint8_t waypointCount;
+	uint8_t patrolCurrentPoint;
+	int16_t waypoint_xCoord[4];
+	int16_t waypoint_yCoord[4];
+	uint8_t morale;
+	uint8_t terraformingTurns;
+	uint8_t orderAutoType; // see veh_orders_auto_type enum
+	uint8_t visibleToFaction; // bitfield (1 << (1 to 7))
+	uint8_t movesExpended;
+	int8_t unknown5;
+	uint8_t unknown6;
+	uint8_t unknown7;
+	uint8_t unknown8;
+	int8_t unknown9;
+	int16_t homeBaseID;
+	int16_t nextVehIDStack;
+	int16_t prevVehIDStack;
 };
 
 struct veh_prototype {
 	char vehName[32];
-	DWORD abilityFlags;
-	BYTE chassisID;
-	BYTE weaponID;
-	BYTE armorID;
-	BYTE reactorID;
-	BYTE carryCapacity;
-	BYTE cost;
-	BYTE plan;
-	char unk1; // some kind of internal prototype category?
-	char unk2; // factions that have created prototype?
-	char unk3; // which faction "knows" about unit prototype? seemed to only be used by battle_fight
+	uint32_t abilityFlags;
+	uint8_t chassisID;
+	uint8_t weaponID;
+	uint8_t armorID;
+	uint8_t reactorID;
+	uint8_t carryCapacity;
+	uint8_t cost;
+	uint8_t plan;
+	int8_t unk1; // some kind of internal prototype category?
+	int8_t unk2; // factions that have created prototype?
+	int8_t unk3; // which faction "knows" about unit prototype? seemed to only be used by battle_fight
 			   // to set it after initial value in make_proto()
-	char iconOffset;
-	char padding; // unused
-	WORD flags;
-	__int16 preqTech; // only set by read_units() for predefined units
+	int8_t iconOffset;
+	int8_t padding; // unused
+	uint16_t flags;
+	int16_t preqTech; // only set by read_units() for predefined units
 };
 
 struct rules_reactor {
 	LPSTR name;
 	LPSTR nameShort;
-	__int16 preqTech;
-	WORD power; // Bug fix: this value isn't originally set
+	int16_t preqTech;
+	uint16_t power; // Bug fix: this value isn't originally set
 };
 
 struct rules_ability {
@@ -386,9 +386,9 @@ struct rules_ability {
 	LPSTR abbreviation;
 	int costFactor;
 	int unkVal; // only referenced in NetDaemon::synch?
-	DWORD flags;
-	__int16 preqTech;
-	WORD padding;
+	uint32_t flags;
+	int16_t preqTech;
+	uint16_t padding;
 };
 
 struct rules_morale {
@@ -444,20 +444,20 @@ extern int *VehLift_xCoord;
 extern int *VehLift_yCoord;
 extern BOOL *VehBitError;
 
-OPENSMACX_API DWORD __cdecl contribution(int vehID, DWORD terraformID);
-OPENSMACX_API DWORD __cdecl drop_range(int factionID);
+OPENSMACX_API uint32_t __cdecl contribution(int vehID, uint32_t terraformID);
+OPENSMACX_API uint32_t __cdecl drop_range(int factionID);
 OPENSMACX_API int __cdecl psi_factor(int combatRatio, int factionID, BOOL isAttack, 
 	BOOL isFungalTower);
 OPENSMACX_API void __cdecl rebuild_vehicle_bits();
 OPENSMACX_API int __cdecl veh_top(int vehID);
-OPENSMACX_API DWORD __cdecl veh_moves(int vehID);
-OPENSMACX_API DWORD __cdecl proto_power(int vehID);
+OPENSMACX_API uint32_t __cdecl veh_moves(int vehID);
+OPENSMACX_API uint32_t __cdecl proto_power(int vehID);
 OPENSMACX_API int __cdecl arm_strat(int armorID, int factionID);
 OPENSMACX_API int __cdecl weap_strat(int weaponID, int factionID);
 OPENSMACX_API int __cdecl weap_val(int protoID, int factionID);
 OPENSMACX_API int __cdecl arm_val(int armorID, int factionID);
 OPENSMACX_API int __cdecl armor_val(int protoID, int factionID);
-OPENSMACX_API DWORD __cdecl transport_val(DWORD chassisID, int ability, DWORD reactorID);
+OPENSMACX_API uint32_t __cdecl transport_val(uint32_t chassisID, int ability, uint32_t reactorID);
 OPENSMACX_API std::string __cdecl say_offense(int protoID);
 OPENSMACX_API std::string __cdecl say_defense(int protoID);
 OPENSMACX_API void __cdecl say_stats_3(LPSTR stat, int protoID);
@@ -465,12 +465,12 @@ OPENSMACX_API void __cdecl say_stats_3(int protoID);
 OPENSMACX_API void __cdecl say_stats_2(LPSTR stat, int protoID);
 OPENSMACX_API void __cdecl say_stats(LPSTR stat, int protoID, LPSTR customSpacer);
 OPENSMACX_API void __cdecl veh_put(int vehID, int xCoord, int yCoord);
-OPENSMACX_API DWORD __cdecl veh_health(int vehID);
-OPENSMACX_API DWORD __cdecl proto_cost(DWORD chassisID, DWORD weaponID, DWORD armorID, 
-	DWORD ability, DWORD reactorID);
-OPENSMACX_API DWORD __cdecl base_cost(int protoID);
-OPENSMACX_API void __cdecl make_proto(int protoID, DWORD chassisID, DWORD weaponID, DWORD armorID, 
-	DWORD ability, DWORD reactorID);
+OPENSMACX_API uint32_t __cdecl veh_health(int vehID);
+OPENSMACX_API uint32_t __cdecl proto_cost(uint32_t chassisID, uint32_t weaponID, uint32_t armorID, 
+	uint32_t ability, uint32_t reactorID);
+OPENSMACX_API uint32_t __cdecl base_cost(int protoID);
+OPENSMACX_API void __cdecl make_proto(int protoID, uint32_t chassisID, uint32_t weaponID, 
+	uint32_t armorID, uint32_t ability, uint32_t reactorID);
 OPENSMACX_API int __cdecl veh_at(int xCoord, int yCoord);
 OPENSMACX_API BOOL __cdecl has_abil(int protoID, int abilityID);
 OPENSMACX_API int __cdecl veh_lift(int vehID);
@@ -480,13 +480,13 @@ OPENSMACX_API void __cdecl veh_demote(int vehID);
 OPENSMACX_API void __cdecl veh_promote(int vehID);
 OPENSMACX_API void __cdecl veh_clear(int vehID, int protoID, int factionID);
 OPENSMACX_API BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn);
-OPENSMACX_API DWORD __cdecl morale_veh(int vehID, BOOL checkDroneRiot, int factionIDvsNative);
-OPENSMACX_API DWORD __cdecl offense_proto(int protoID, int vehIDDef, BOOL isArtyMissile);
-OPENSMACX_API DWORD __cdecl armor_proto(int protoID, int vehIDAtk, BOOL isArtyMissile);
-OPENSMACX_API DWORD __cdecl speed_proto(int protoID);
-OPENSMACX_API DWORD __cdecl speed(int vehID, BOOL skipMorale);
-OPENSMACX_API DWORD __cdecl veh_cargo(int vehID);
-OPENSMACX_API DWORD __cdecl prototype_factor(int protoID);
+OPENSMACX_API uint32_t __cdecl morale_veh(int vehID, BOOL checkDroneRiot, int factionIDvsNative);
+OPENSMACX_API uint32_t __cdecl offense_proto(int protoID, int vehIDDef, BOOL isArtyMissile);
+OPENSMACX_API uint32_t __cdecl armor_proto(int protoID, int vehIDAtk, BOOL isArtyMissile);
+OPENSMACX_API uint32_t __cdecl speed_proto(int protoID);
+OPENSMACX_API uint32_t __cdecl speed(int vehID, BOOL skipMorale);
+OPENSMACX_API uint32_t __cdecl veh_cargo(int vehID);
+OPENSMACX_API uint32_t __cdecl prototype_factor(int protoID);
 OPENSMACX_API BOOL __cdecl veh_jail(int vehID);
 OPENSMACX_API void __cdecl veh_skip(int vehID);
 OPENSMACX_API int __cdecl veh_fake(int protoID, int factionID);

@@ -55,8 +55,8 @@ Original Offset: 004C9A50
 Return Value: Terraforming speed
 Status: Complete
 */
-DWORD __cdecl contribution(int vehID, DWORD terraformID) {
-	DWORD rate = has_abil(Veh[vehID].protoID, ABL_SUPER_TERRAFORMER) ? 4 : 2;
+uint32_t __cdecl contribution(int vehID, uint32_t terraformID) {
+	uint32_t rate = has_abil(Veh[vehID].protoID, ABL_SUPER_TERRAFORMER) ? 4 : 2;
 	if (terraformID == (ORDER_REMOVE_FUNGUS - 4) || terraformID == (ORDER_PLANT_FUNGUS - 4)) {
 		if (has_project(SP_XENOEMPATYH_DOME, Veh[vehID].factionID)) {
 			rate *= 2; // Doubled
@@ -74,7 +74,7 @@ Original Offset: 00500320
 Return Value: Max range
 Status: Complete
 */
-DWORD __cdecl drop_range(int factionID) {
+uint32_t __cdecl drop_range(int factionID) {
 	if (!has_tech(Rules->TechOrbInsertSansSpcElev, factionID) // default 'Graviton Theory'
 		&& !has_project(SP_SPACE_ELEVATOR, factionID)) {
 		return Rules->MaxAirdropSansOrbInsert;
@@ -120,10 +120,10 @@ void __cdecl rebuild_vehicle_bits() {
 	if (MapVerticalBounds <= 0) {
 		return;
 	}
-	for (DWORD y = 0, z = 0; y < *MapVerticalBounds; y++) {
-		DWORD val = (y & 1);
+	for (uint32_t y = 0, z = 0; y < *MapVerticalBounds; y++) {
+		uint32_t val = (y & 1);
 		if (val < *MapHorizontalBounds) {
-			for (DWORD x = 0; x < *MapHorizontalBounds; x += 2, z++) {
+			for (uint32_t x = 0; x < *MapHorizontalBounds; x += 2, z++) {
 				Map[z]->bit &= ~BIT_VEH_IN_TILE;
 				for (int vehID = 0; vehID < *VehCurrentCount; vehID++) {
 					if (Veh[vehID].xCoord == (int)x && Veh[vehID].yCoord == (int)y) {
@@ -163,7 +163,7 @@ Original Offset: 00579960
 Return Value: Moves left
 Status: Complete
 */
-DWORD __cdecl veh_moves(int vehID) {
+uint32_t __cdecl veh_moves(int vehID) {
 	return range(speed(vehID, false) - Veh[vehID].movesExpended, 0, 999);
 }
 
@@ -173,7 +173,7 @@ Original Offset: 005799A0
 Return Value: power
 Status: Complete
 */
-DWORD __cdecl proto_power(int vehID) {
+uint32_t __cdecl proto_power(int vehID) {
 	int protoID = Veh[vehID].protoID;
 	if (VehPrototype[protoID].plan == PLAN_ALIEN_ARTIFACT) {
 		return 1;
@@ -256,8 +256,8 @@ Original Offset: 0057D510
 Return Value: Transport value
 Status: Complete
 */
-DWORD __cdecl transport_val(DWORD chassisID, int ability, DWORD reactorID) {
-	DWORD transport = Chassis[chassisID].cargo;
+uint32_t __cdecl transport_val(uint32_t chassisID, int ability, uint32_t reactorID) {
+	uint32_t transport = Chassis[chassisID].cargo;
 	if (Chassis[chassisID].triad == TRIAD_SEA) {
 		transport *= reactorID;
 	}
@@ -302,7 +302,7 @@ std::string __cdecl say_offense(int protoID) {
 		output.insert(output.begin(), '<');
 		output += ">";
 	}
-	DWORD weaponID = VehPrototype[protoID].weaponID;
+	uint32_t weaponID = VehPrototype[protoID].weaponID;
 	if (weaponID == WPN_RESONANCE_LASER || weaponID == WPN_RESONANCE_BOLT) {
 		output += "r";
 	}
@@ -328,7 +328,7 @@ std::string __cdecl say_defense(int protoID) {
 		output.insert(output.begin(), '<');
 		output += ">";
 	}
-	DWORD armorID = VehPrototype[protoID].armorID;
+	uint32_t armorID = VehPrototype[protoID].armorID;
 	if (armorID == ARM_PULSE_3_ARMOR || armorID == ARM_PULSE_8_ARMOR) {
 		output += "p";
 	}
@@ -359,7 +359,7 @@ void __cdecl say_stats_3(LPSTR stat, int protoID) {
 		say_defense(protoID) : "?";
 	output += "-";
 	output += std::to_string(speed_proto(protoID) / Rules->MoveRateRoads);
-	BYTE reactor = VehPrototype[protoID].reactorID;
+	uint8_t reactor = VehPrototype[protoID].reactorID;
 	if (reactor > 1) {
 		output += "*";
 		output += std::to_string(reactor);
@@ -400,7 +400,7 @@ void __cdecl say_stats_2(LPSTR stat, int protoID) {
 		say_defense(protoID) : StringTable->get((int)*((LPSTR *)Label->stringsPtr + 0xC4)); // 'Psi'
 	output += "-";
 	output += std::to_string(speed_proto(protoID) / Rules->MoveRateRoads);
-	DWORD triad = Chassis[VehPrototype[protoID].chassisID].triad;
+	uint32_t triad = Chassis[VehPrototype[protoID].chassisID].triad;
 	if (triad == TRIAD_SEA) {
 		output += " ";
 		output += StringTable->get((int)*((LPSTR *)Label->stringsPtr + 0xA3)); // 'Sea';
@@ -409,7 +409,7 @@ void __cdecl say_stats_2(LPSTR stat, int protoID) {
 		output += " ";
 		output += StringTable->get((int)*((LPSTR *)Label->stringsPtr + 0xA2)); // 'Air';
 	}
-	DWORD reactor = VehPrototype[protoID].reactorID;
+	uint32_t reactor = VehPrototype[protoID].reactorID;
 	if (reactor > 1) {
 		output += "*";
 		output += std::to_string(reactor);
@@ -427,10 +427,10 @@ Status: Complete (TODO: Eventually remove LPSTR stat param and return std::strin
 */
 void __cdecl say_stats(LPSTR stat, int protoID, LPSTR customSpacer) {
 	std::string output;
-	BYTE plan = VehPrototype[protoID].plan;
-	BYTE chas = VehPrototype[protoID].chassisID;
-	BYTE triad = Chassis[chas].triad;
-	BYTE mode = Weapon[VehPrototype[protoID].weaponID].mode;
+	uint8_t plan = VehPrototype[protoID].plan;
+	uint8_t chas = VehPrototype[protoID].chassisID;
+	uint8_t triad = Chassis[chas].triad;
+	uint8_t mode = Weapon[VehPrototype[protoID].weaponID].mode;
 	int offRating = Weapon[VehPrototype[protoID].weaponID].offenseRating;
 	int defRating = Armor[VehPrototype[protoID].armorID].defenseRating;
 	if (plan == PLAN_RECONNAISANCE && triad == TRIAD_LAND && offRating == 1 && defRating == 1
@@ -486,7 +486,7 @@ void __cdecl say_stats(LPSTR stat, int protoID, LPSTR customSpacer) {
 		output += " ";
 		output += StringTable->get((int)*((LPSTR *)Label->stringsPtr + 0xA2)); // 'Air';
 	}
-	DWORD reactor = VehPrototype[protoID].reactorID;
+	uint32_t reactor = VehPrototype[protoID].reactorID;
 	if (reactor > 1) {
 		output += " (*";
 		output += std::to_string(reactor);
@@ -512,7 +512,7 @@ Original Offset: 005A59E0
 Return Value: Health
 Status: Complete
 */
-DWORD __cdecl veh_health(int vehID) {
+uint32_t __cdecl veh_health(int vehID) {
 	int protoID = Veh[vehID].protoID;
 	int health = VehPrototype[protoID].plan != PLAN_ALIEN_ARTIFACT 
 		? range(VehPrototype[protoID].reactorID, 1, 100) * 10: 1;
@@ -526,16 +526,16 @@ Original Offset: 005A5A60
 Return Value: Cost of prototype
 Status: Complete
 */
-DWORD __cdecl proto_cost(DWORD chassisID, DWORD weaponID, DWORD armorID, DWORD ability,
-	DWORD reactorID) {
-	BYTE weapCost = Weapon[weaponID].cost;
+uint32_t __cdecl proto_cost(uint32_t chassisID, uint32_t weaponID, uint32_t armorID, 
+	uint32_t ability, uint32_t reactorID) {
+	uint8_t weapCost = Weapon[weaponID].cost;
 	// PB check: moved to start vs after 1st triad checks in original > no difference in logic
 	if (Chassis[chassisID].missile && Weapon[weaponID].offenseRating >= 99) {
 		return weapCost;
 	}
-	BYTE triad = Chassis[chassisID].triad;
-	DWORD armorCost = Armor[armorID].cost;
-	DWORD speedCost = Chassis[chassisID].cost;
+	uint8_t triad = Chassis[chassisID].triad;
+	uint32_t armorCost = Armor[armorID].cost;
+	uint32_t speedCost = Chassis[chassisID].cost;
 	int abilModifier = 0, flagsModifier = 0;
 	if (ability) {
 		for (int i = 0; i < MaxAbilityNum; i++) {
@@ -604,7 +604,7 @@ DWORD __cdecl proto_cost(DWORD chassisID, DWORD weaponID, DWORD armorID, DWORD a
 		}
 		speedCost += reactorID * 2;
 	} // TRIAD_LAND ability flag check moved into ability loop above
-	DWORD combatMod = armorCost / 2 + 1;
+	uint32_t combatMod = armorCost / 2 + 1;
 	if (combatMod < weapCost) { // which ever is greater
 		combatMod = weapCost;
 	}
@@ -650,7 +650,7 @@ Original Offset: 005A5D00
 Return Value: Cost of prototype
 Status: Complete
 */
-DWORD __cdecl base_cost(int protoID) {
+uint32_t __cdecl base_cost(int protoID) {
 	return proto_cost(VehPrototype[protoID].chassisID, VehPrototype[protoID].weaponID,
 		VehPrototype[protoID].armorID, 0, VehPrototype[protoID].reactorID);
 }
@@ -661,8 +661,8 @@ Original Offset: 005A5D40
 Return Value: n/a
 Status: Complete
 */
-void __cdecl make_proto(int protoID, DWORD chassisID, DWORD weaponID, DWORD armorID, DWORD ability,
-	DWORD reactorID) {
+void __cdecl make_proto(int protoID, uint32_t chassisID, uint32_t weaponID, uint32_t armorID, 
+	uint32_t ability, uint32_t reactorID) {
 	int unkLocal1 = 0; // TODO: Identify
 	if (protoID >= MaxVehProtoFactionNum) {
 		BOOL cond1 = false, cond2 = false, cond3 = false;
@@ -677,15 +677,15 @@ void __cdecl make_proto(int protoID, DWORD chassisID, DWORD weaponID, DWORD armo
 				if ((protoIDLoop <= MaxVehProtoFactionNum &&
 					has_tech(VehPrototype[protoIDLoop].preqTech, protoID / MaxVehProtoFactionNum))
 					|| (protoIDLoop > MaxVehProtoFactionNum && (flagsCheck & 4))) {
-					DWORD loopWeaponID = VehPrototype[protoIDLoop].weaponID;
+					uint32_t loopWeaponID = VehPrototype[protoIDLoop].weaponID;
 					if (loopWeaponID == weaponID) {
 						cond1 = true;
 					}
-					DWORD loopArmorID = VehPrototype[protoIDLoop].armorID;
+					uint32_t loopArmorID = VehPrototype[protoIDLoop].armorID;
 					if (loopArmorID == armorID) {
 						cond2 = true;
 					}
-					DWORD loopChassisID = VehPrototype[protoIDLoop].chassisID;
+					uint32_t loopChassisID = VehPrototype[protoIDLoop].chassisID;
 					if (loopChassisID == chassisID) {
 						cond3 = true;
 					}
@@ -709,15 +709,15 @@ void __cdecl make_proto(int protoID, DWORD chassisID, DWORD weaponID, DWORD armo
 				&& VehPrototype[protoIDLoop].flags & 0x10) ? 3 : 1;
 		}
 	}
-	VehPrototype[protoID].chassisID = (BYTE)chassisID;
-	VehPrototype[protoID].weaponID = (BYTE)weaponID;
-	VehPrototype[protoID].armorID = (BYTE)armorID;
+	VehPrototype[protoID].chassisID = (uint8_t)chassisID;
+	VehPrototype[protoID].weaponID = (uint8_t)weaponID;
+	VehPrototype[protoID].armorID = (uint8_t)armorID;
 	VehPrototype[protoID].abilityFlags = ability;
-	VehPrototype[protoID].reactorID = (BYTE)reactorID;
-	VehPrototype[protoID].cost = (BYTE)proto_cost(chassisID, weaponID, armorID, ability,
+	VehPrototype[protoID].reactorID = (uint8_t)reactorID;
+	VehPrototype[protoID].cost = (uint8_t)proto_cost(chassisID, weaponID, armorID, ability,
 		reactorID);
 	VehPrototype[protoID].carryCapacity = (Weapon[weaponID].mode == WPN_MODE_TRANSPORT) ?
-		(BYTE)transport_val(chassisID, ability, reactorID) : 0;
+		(uint8_t)transport_val(chassisID, ability, reactorID) : 0;
 	// set plan & unk1
 	if (Chassis[chassisID].missile) {
 		if (Weapon[weaponID].offenseRating < 99) { // non-PB missiles
@@ -850,7 +850,7 @@ BOOL __cdecl has_abil(int protoID, int abilityID) {
 	if (VehPrototype[protoID].abilityFlags & abilityID) {
 		return true;
 	}
-	DWORD factionID = protoID / MaxVehProtoFactionNum;
+	uint32_t factionID = protoID / MaxVehProtoFactionNum;
 	if (!factionID) {
 		return false; // skip basic prototypes from #UNITS
 	}
@@ -883,7 +883,7 @@ Status: WIP - further tests
 */
 int __cdecl veh_lift(int vehID) {
 	BOOL prevStackExists = false;
-	short prevVehID = Veh[vehID].prevVehIDStack, nextVehID = Veh[vehID].nextVehIDStack;
+	int16_t prevVehID = Veh[vehID].prevVehIDStack, nextVehID = Veh[vehID].nextVehIDStack;
 	if (prevVehID >= 0) {
 		prevStackExists = true;
 		Veh[prevVehID].nextVehIDStack = nextVehID;
@@ -914,10 +914,10 @@ Status: WIP
 */
 int __cdecl veh_drop(int vehID, int xCoord, int yCoord) {
 	int vehIDAt = veh_at(xCoord, yCoord);
-	Veh[vehID].nextVehIDStack = (short)vehIDAt;
+	Veh[vehID].nextVehIDStack = (int16_t)vehIDAt;
 	Veh[vehID].prevVehIDStack = -1;
-	Veh[vehID].xCoord = (short)xCoord;
-	Veh[vehID].yCoord = (short)yCoord;
+	Veh[vehID].xCoord = (int16_t)xCoord;
+	Veh[vehID].yCoord = (int16_t)yCoord;
 	*VehDropLiftVehID = -1;
 	if (vehIDAt < 0) {
 		if (yCoord < 0) {
@@ -929,11 +929,11 @@ int __cdecl veh_drop(int vehID, int xCoord, int yCoord) {
 		}
 	}
 	else {
-		Veh[vehIDAt].prevVehIDStack = (short)vehID;
+		Veh[vehIDAt].prevVehIDStack = (int16_t)vehID;
 	}
 	if (yCoord >= 0 && yCoord < (int)*MapVerticalBounds && xCoord >= 0
 		&& xCoord < (int)*MapHorizontalBounds) {
-		DWORD flags = (Veh[vehID].factionID
+		uint32_t flags = (Veh[vehID].factionID
 			&& Chassis[VehPrototype[Veh[vehID].protoID].chassisID].triad == TRIAD_AIR)
 			? BIT_SUPPLY_REMOVE | BIT_VEH_IN_TILE : BIT_VEH_IN_TILE;
 		bit_set(xCoord, yCoord, flags, true);
@@ -962,13 +962,13 @@ Status: WIP
 */
 void __cdecl veh_demote(int vehID) {
 	if (vehID >= 0) {
-		short nextVehID = Veh[vehID].nextVehIDStack;
+		int16_t nextVehID = Veh[vehID].nextVehIDStack;
 		while (nextVehID >= 0) {
 			nextVehID = Veh[nextVehID].nextVehIDStack;
 		}
 		if (nextVehID != vehID) {
 			veh_lift(vehID);
-			Veh[nextVehID].nextVehIDStack = (short)vehID;
+			Veh[nextVehID].nextVehIDStack = (int16_t)vehID;
 			Veh[vehID].prevVehIDStack = nextVehID;
 			Veh[vehID].nextVehIDStack = -1;
 			Veh[vehID].xCoord = Veh[nextVehID].xCoord;
@@ -985,7 +985,7 @@ Status: WIP
 */
 void __cdecl veh_promote(int vehID) {
 	if (vehID >= 0) {
-		short prevVehID = Veh[vehID].prevVehIDStack;
+		int16_t prevVehID = Veh[vehID].prevVehIDStack;
 		while (prevVehID >= 0) {
 			prevVehID = Veh[prevVehID].prevVehIDStack;
 		}
@@ -1008,8 +1008,8 @@ void __cdecl veh_clear(int vehID, int protoID, int factionID) {
 	Veh[vehID].yearEndLurking = 0;
 	Veh[vehID].unknown1 = 0;
 	Veh[vehID].flags = 0;
-	Veh[vehID].factionID = (BYTE)factionID;
-	Veh[vehID].protoID = (short)protoID;
+	Veh[vehID].factionID = (uint8_t)factionID;
+	Veh[vehID].protoID = (int16_t)protoID;
 	Veh[vehID].nextVehIDStack = -1;
 	Veh[vehID].prevVehIDStack = -1;
 	Veh[vehID].waypointCount = 0;
@@ -1028,7 +1028,7 @@ void __cdecl veh_clear(int vehID, int protoID, int factionID) {
 	Veh[vehID].unknown7 = 0;
 	Veh[vehID].visibleToFaction = 0;
 	Veh[vehID].homeBaseID = -1;
-	Veh[vehID].morale = (BYTE)(Players[factionID].ruleMorale + 1);
+	Veh[vehID].morale = (uint8_t)(Players[factionID].ruleMorale + 1);
 	Veh[vehID].unknown5 = 2;
 	Veh[vehID].unknown8 = 0;
 	Veh[vehID].unknown9 = 0;
@@ -1047,7 +1047,7 @@ BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn) {
 		&& protoID != BSC_SPORE_LAUNCHER) { // Spore Launcher exception
 		return false;
 	}
-	BYTE triad = Chassis[VehPrototype[protoID].chassisID].triad;
+	uint8_t triad = Chassis[VehPrototype[protoID].chassisID].triad;
 	if (triad == TRIAD_SEA) {
 		return seaTriadRetn; // cursory check shows this value always being set to true
 	}
@@ -1063,12 +1063,12 @@ Original Offset: 005C0E40
 Return Value: Morale value
 Status: WIP
 */
-DWORD __cdecl morale_veh(int vehID, BOOL checkDroneRiot, int factionIDvsNative) {
-	DWORD factionID = Veh[vehID].factionID;
+uint32_t __cdecl morale_veh(int vehID, BOOL checkDroneRiot, int factionIDvsNative) {
+	uint32_t factionID = Veh[vehID].factionID;
 	if (!factionID) {
 		return morale_alien(vehID, factionIDvsNative); // Native life
 	}
-	SHORT protoID = Veh[vehID].protoID;
+	int16_t protoID = Veh[vehID].protoID;
 	if (VehPrototype[protoID].plan == PLAN_INFO_WARFARE) {
 		int probeMorale = range(PlayersData[factionID].SE_Probe, 0, 3);
 		probeMorale += has_project(SP_TELEPATHIC_MATRIX, factionID) ? 2 : 0;
@@ -1092,7 +1092,7 @@ DWORD __cdecl morale_veh(int vehID, BOOL checkDroneRiot, int factionIDvsNative) 
 	}
 	int homeBaseID = Veh[vehID].homeBaseID;
 	if (homeBaseID >= 0) {
-		DWORD offset, mask;
+		uint32_t offset, mask;
 		bitmask(FAC_CHILDREN_CRECHE, &offset, &mask);
 		if (Base[homeBaseID].facilitiesPresentTable[offset] & mask) {
 			if (morale < 0) {
@@ -1132,8 +1132,8 @@ Original Offset: 005C1150
 Return Value: Prototype's armor
 Status: Complete
 */
-DWORD __cdecl offense_proto(int protoID, int vehIDDef, BOOL isArtyMissile) {
-	DWORD weaponID = VehPrototype[protoID].weaponID;
+uint32_t __cdecl offense_proto(int protoID, int vehIDDef, BOOL isArtyMissile) {
+	uint32_t weaponID = VehPrototype[protoID].weaponID;
 	if (Weapon[weaponID].mode == WPN_MODE_INFOWAR && vehIDDef >= 0 
 		&& VehPrototype[Veh[vehIDDef].protoID].plan == PLAN_INFO_WARFARE) {
 		return 16; // probe attacking another probe
@@ -1164,7 +1164,7 @@ Original Offset: 005C1290
 Return Value: Prototype's armor
 Status: Complete
 */
-DWORD __cdecl armor_proto(int protoID, int vehIDAtk, BOOL isArtyMissile) {
+uint32_t __cdecl armor_proto(int protoID, int vehIDAtk, BOOL isArtyMissile) {
 	if (Weapon[VehPrototype[protoID].weaponID].mode == WPN_MODE_INFOWAR && vehIDAtk >= 0
 		&& VehPrototype[Veh[vehIDAtk].protoID].plan == PLAN_INFO_WARFARE) {
 		return 16; // probe defending against another probe
@@ -1176,7 +1176,7 @@ DWORD __cdecl armor_proto(int protoID, int vehIDAtk, BOOL isArtyMissile) {
 		|| (Armor[VehPrototype[protoID].armorID].defenseRating >= 0 
 		&& (vehIDAtk < 0 
 			|| Weapon[VehPrototype[Veh[vehIDAtk].protoID].weaponID].offenseRating >= 0))) {
-		DWORD defRating = range(Armor[VehPrototype[protoID].armorID].defenseRating, 1, 9999);
+		uint32_t defRating = range(Armor[VehPrototype[protoID].armorID].defenseRating, 1, 9999);
 		return (vehIDAtk < 0) ? defRating : defRating * 8; // conventional
 	}
 	return (vehIDAtk < 0) ? Rules->PsiCombatRatioDef[TRIAD_LAND] : // PSI
@@ -1189,14 +1189,14 @@ Original Offset: 005C13B0
 Return Value: Prototype's speed
 Status: Complete
 */
-DWORD __cdecl speed_proto(int protoID) {
+uint32_t __cdecl speed_proto(int protoID) {
 	if (protoID == BSC_FUNGAL_TOWER) {
 		return 0; // cannot move
 	}
 	int chasID = VehPrototype[protoID].chassisID;
 	int speedVal = Chassis[chasID].speed;
-	BYTE triad = Chassis[chasID].triad;
-	DWORD weapID = VehPrototype[protoID].weaponID;
+	uint8_t triad = Chassis[chasID].triad;
+	uint32_t weapID = VehPrototype[protoID].weaponID;
 	if (triad == TRIAD_AIR) {
 		speedVal += VehPrototype[protoID].reactorID * 2;
 	}
@@ -1235,13 +1235,13 @@ Original Offset: 005C1540
 Return Value: speed
 Status: Complete
 */
-DWORD __cdecl speed(int vehID, BOOL skipMorale) {
-	DWORD protoID = Veh[vehID].protoID;
+uint32_t __cdecl speed(int vehID, BOOL skipMorale) {
+	uint32_t protoID = Veh[vehID].protoID;
 	if (protoID == BSC_FUNGAL_TOWER) { // moved this check to top vs bottom, same logic
 		return 0; // cannot move
 	}
-	DWORD speedVal = speed_proto(protoID);
-	BYTE triad = Chassis[VehPrototype[protoID].chassisID].triad;
+	uint32_t speedVal = speed_proto(protoID);
+	uint8_t triad = Chassis[VehPrototype[protoID].chassisID].triad;
 	if (triad == TRIAD_SEA && has_project(SP_MARITIME_CONTROL_CENTER, Veh[vehID].factionID)) {
 		speedVal += Rules->MoveRateRoads * 2;
 	}
@@ -1251,7 +1251,7 @@ DWORD __cdecl speed(int vehID, BOOL skipMorale) {
 	}
 	if (Veh[vehID].dmgIncurred && triad != TRIAD_AIR) {
 		// optimized code without changes to logic
-		DWORD moves = speedVal / Rules->MoveRateRoads, reactorFac;
+		uint32_t moves = speedVal / Rules->MoveRateRoads, reactorFac;
 		if (VehPrototype[protoID].plan == PLAN_ALIEN_ARTIFACT) {
 			speedVal = reactorFac = 1;
 		}
@@ -1273,9 +1273,9 @@ Original Offset: 005C1760
 Return Value: Cargo value
 Status: Complete
 */
-DWORD __cdecl veh_cargo(int vehID) {
-	DWORD protoID = Veh[vehID].protoID;
-	DWORD cargo = VehPrototype[protoID].carryCapacity;
+uint32_t __cdecl veh_cargo(int vehID) {
+	uint32_t protoID = Veh[vehID].protoID;
+	uint32_t cargo = VehPrototype[protoID].carryCapacity;
 	return (cargo && protoID < MaxVehProtoFactionNum 
 		&& (Weapon[VehPrototype[protoID].weaponID].offenseRating < 0 // Isle of the Deep
 			|| protoID == BSC_SPORE_LAUNCHER)) ? Veh[vehID].morale + 1 : cargo;
@@ -1288,12 +1288,12 @@ Original Offset: 005C17D0
 Return Value: % extra prototype cost
 Status: WIP - test
 */
-DWORD __cdecl prototype_factor(int protoID) {
+uint32_t __cdecl prototype_factor(int protoID) {
 	if (Players[protoID / 64].ruleFlags & FLAG_FREEPROTO
 		|| PlayersData[protoID / 64].diffLevel <= DLVL_SPECIALIST) {
 		return 0;
 	}
-	BYTE triad = Chassis[VehPrototype[protoID].chassisID].triad;
+	uint8_t triad = Chassis[VehPrototype[protoID].chassisID].triad;
 	if (triad == TRIAD_SEA) {
 		return Rules->ExtraPctCostProtoSea;
 	}
@@ -1310,7 +1310,7 @@ Return Value: true/false
 Status: WIP
 */
 BOOL __cdecl veh_jail(int vehID) {
-	BYTE triad = Chassis[VehPrototype[Veh[vehID].protoID].chassisID].triad;
+	uint8_t triad = Chassis[VehPrototype[Veh[vehID].protoID].chassisID].triad;
 	if (triad == TRIAD_LAND && Veh[vehID].orders == ORDER_SENTRY_BOARD) {
 		return 0;
 	}
@@ -1326,7 +1326,7 @@ Status: Complete
 void __cdecl veh_skip(int vehID) {
 	// TODO Bug: Due to size of movesExpended, speeds over 255 will be incorrect. The speed() 
 	//           function can return a value from 1-999. Eventually increase size to 16 bits.
-	Veh[vehID].movesExpended = (BYTE)speed(vehID, false);
+	Veh[vehID].movesExpended = (uint8_t)speed(vehID, false);
 }
 
 /*
@@ -1351,14 +1351,14 @@ int __cdecl veh_wake(int vehID) {
 	int state = Veh[vehID].state;
 	if (orders >= ORDER_FARM && orders < ORDER_GO_TO && !(state & 0x4000000)) {
 		// TODO Bug: Issue with movesExpended size / speed return, see veh_skip()
-		Veh[vehID].movesExpended = (BYTE)(speed(vehID, false) - Rules->MoveRateRoads);
+		Veh[vehID].movesExpended = (uint8_t)(speed(vehID, false) - Rules->MoveRateRoads);
 		int terraTurns = Veh[vehID].terraformingTurns;
 		if (terraTurns) {
 			terraTurns -= contribution(vehID, orders - 4);
 			if (terraTurns < 0) {
 				terraTurns = 0;
 			}
-			Veh[vehID].terraformingTurns = (BYTE)terraTurns;
+			Veh[vehID].terraformingTurns = (uint8_t)terraTurns;
 		}
 	}
 	if (state & 0x200 && Veh[vehID].orderAutoType == ORDERA_ON_ALERT && !(state & 4)) {

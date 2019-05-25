@@ -138,8 +138,8 @@ struct rules_bonusname {
 };
 
 struct goal {
-	__int16 type;
-	__int16 unk1;
+	int16_t type;
+	int16_t unk1;
 	int xCoord;
 	int yCoord;
 	int baseID;
@@ -369,7 +369,7 @@ struct player_data {
 	char unk_69[4];
 	BYTE protoID_Active[512];
 	BYTE protoID_Queue[512];
-	__int16 protoID_Lost[512];
+	int16_t protoID_Lost[512];
 	int totalMilVeh;
 	int currentNumBases;
 	int milStrength_1;
@@ -379,15 +379,15 @@ struct player_data {
 	int planetBusters;
 	int unk_71;
 	int unk_72;
-	__int16 unk_73[128];
+	int16_t unk_73[128];
 	char unk_74[128];
 	char unk_75[128];
-	__int16 unk_76[128];
-	__int16 unk_77[128];
-	__int16 unk_78[128];
-	__int16 unk_79[128];
-	__int16 unk_80[128];
-	__int16 unk_81[128];
+	int16_t unk_76[128];
+	int16_t unk_77[128];
+	int16_t unk_78[128];
+	int16_t unk_79[128];
+	int16_t unk_80[128];
+	int16_t unk_81[128];
 	char unk_82[128];
 	char unk_83[128];
 	char unk_84[128];

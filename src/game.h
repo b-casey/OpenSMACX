@@ -48,7 +48,7 @@ enum game_difficulty_level {
 	DLVL_TRANSCEND = 5,
 };
 
-extern DWORD *GameRules; // bitfield
+extern uint32_t *GameRules; // bitfield
 extern int *DiffLevelCurrent;
 extern int *TurnCurrentNum;
 extern int *MissionYearCurrent;

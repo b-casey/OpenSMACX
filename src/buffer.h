@@ -23,7 +23,7 @@
   * Buffer class
   */
 class OPENSMACX_API Buffer {
-	typedef __int32 Dib;
+	typedef int32_t Dib;
 	LPVOID vtable;
 	DWORD field_4;
 	DWORD field_8;
