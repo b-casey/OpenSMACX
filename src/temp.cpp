@@ -59,6 +59,8 @@ LPSTR *ParseTempPtr2_1 = (LPSTR *)0x009B7D04;
 char1032 *stringTemp = (char1032 *)0x009B86A0;
 char256 *ParseStrBuffer = (char256 *)0x009BB5E8;
 
+//  ; int 
+int *BufferStrHeight = (int *)0x009B3A9C;
 int *ParseNumTable = (int *)0x009BB598;
 int *ParseStrPlurality = (int *)0x009BB570;
 int *ParseStrGender = (int *)0x009BB5C0;

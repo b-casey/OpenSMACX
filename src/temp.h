@@ -70,6 +70,7 @@ extern LPSTR *ParseTempPtr2_1;
 extern char1032 *stringTemp;
 extern char256 *ParseStrBuffer;
 
+extern int *BufferStrHeight;
 extern int *ParseNumTable;
 extern int *ParseStrPlurality;
 extern int *ParseStrGender;
