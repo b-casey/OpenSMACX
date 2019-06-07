@@ -27,11 +27,24 @@ class OPENSMACX_API Spot {
 		int position;
 	};
 
-	SpotInternal *ptrSpots;
+	SpotInternal *spots;
 	uint32_t maxCount;
 	uint32_t addCount;
 
 public:
-	Spot() { ; }
-	~Spot() { ; }
+	Spot() : spots(0), maxCount(0), addCount(0) { } // 005FA860
+	~Spot() { shutdown(); }                         // 005FA870
+
+	void clear() { spots = 0;  maxCount = 0; addCount = 0; } // 005FA820
+	void shutdown();
+	void init(uint32_t count);
+	void replace(int position, int type, int left, int top, int length, int width);
+	int add(int position, int type, int left, int top, int length, int width);
+	int add(int position, int type, RECT *rect);
+	void kill_pos(int position);
+	void kill_specific(int position, int type);
+	void kill_type(int type);
+	int check(int xCoord, int yCoord, int *spotPos, int *spotType);
+	int check(int xCoord, int yCoord, int *spotPos, int *spotType, RECT *spotRect);
+	int get_rect(int position, int type, RECT *spotRect);
 };

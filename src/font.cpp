@@ -28,7 +28,7 @@ int Font::FontInitCount;
 Purpose: Initialize instance of Font using font name.
 Original Offset: 00618F40
 Return Value: Non-zero error; Zero successful
-Status: Complete
+Status: Complete - test pending
 */
 int Font::init(LPCSTR fontName, int heightInit, uint32_t style) {
 	if (!fontName) {
@@ -82,7 +82,7 @@ int Font::init(LPCSTR fontName, int heightInit, uint32_t style) {
 Purpose: Initialize instance of Font using font name and file.
 Original Offset: 006190D0
 Return Value: Non-zero error; Zero successful
-Status: Complete
+Status: Complete - test pending
 */
 int Font::init(LPCSTR file, LPCSTR fontName, int heightInit, uint32_t style) {
 	close();
@@ -113,7 +113,7 @@ int Font::init(LPCSTR file, LPCSTR fontName, int heightInit, uint32_t style) {
 Purpose: Shutdown instance of Font.
 Original Offset: 00619230
 Return Value: n/a
-Status: Complete
+Status: Complete - test pending
 */
 void Font::close() {
 	unk1 = -1;
@@ -136,7 +136,7 @@ void Font::close() {
 Purpose: Get width for input text.
 Original Offset: 00619280
 Return Value: Width, otherwise zero if error
-Status: Complete
+Status: Complete - test pending
 */
 int Font::width(LPSTR input) {
 	if (!input) {
@@ -153,7 +153,7 @@ int Font::width(LPSTR input) {
 Purpose: Get width for input text with minimum length.
 Original Offset: 006192F0
 Return Value: Width, otherwise zero if error
-Status: Complete
+Status: Complete - test pending
 */
 int Font::width(LPSTR input, int maxLen) {
 	if (!input) {
@@ -174,7 +174,7 @@ int Font::width(LPSTR input, int maxLen) {
 Purpose: Find line break length.
 Original Offset: 00619370
 Return Value: Length
-Status: Complete
+Status: Complete - test pending
 */
 LPSTR Font::find_line_break_l(LPSTR input, int *breakLen, size_t len) {
 	int searchBrk = *breakLen;
@@ -187,7 +187,7 @@ LPSTR Font::find_line_break_l(LPSTR input, int *breakLen, size_t len) {
 		if (!space) {
 			break;
 		}
-		searchBrk -= width(input, space - searchStr);
+		searchBrk -= width(searchStr, space - searchStr);
 		if (input != space) {
 			if (searchBrk < 0) {
 				*breakLen = 0;
@@ -224,7 +224,7 @@ LPSTR Font::find_line_break_l(LPSTR input, int *breakLen, size_t len) {
 Purpose: Initialize Font class static variables.
 Original Offset: 006195B0
 Return Value: Non-zero error; Zero successful (or already initalized)
-Status: Complete
+Status: Complete - test pending
 */
 int __cdecl Font::init_font_class(Font *font) {
 	if (++FontInitCount > 1) {
@@ -248,7 +248,7 @@ int __cdecl Font::init_font_class(Font *font) {
 Purpose: Shutdown Font class static variables.
 Original Offset: 00619610
 Return Value: n/a
-Status: Complete
+Status: Complete - test pending
 */
 void __cdecl Font::close_font_class() {
 	if (--FontInitCount <= 0) {
