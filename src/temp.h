@@ -80,6 +80,8 @@ extern int *Language;
 extern BOOL *SMACX_Enabled;
 extern BOOL *IsLoggingDisabled; // global toggle for logging on/off? debug vs release?
 extern BOOL *MultiplayerToggle;
+extern int *MsgStatus;
+extern HWND *HandleMain;
 
 extern uint32_t *UnkBitfield1;
 

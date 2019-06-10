@@ -50,6 +50,6 @@ public:
 	static Font *FontDefaultPtr;
 	static HDC FontHDC;
 	static int FontInitCount;
-	static int init_font_class(Font *font);
-	static void close_font_class();
+	static int __cdecl init_font_class(Font *font);
+	static void __cdecl close_font_class();
 };

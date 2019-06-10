@@ -70,6 +70,8 @@ int *Language = (int *)0x009BC054;
 BOOL *SMACX_Enabled = (BOOL *)0x009A6488;
 BOOL *IsLoggingDisabled = (BOOL *)0x009BC004;
 BOOL *MultiplayerToggle = (BOOL *)0x0093F660;
+int *MsgStatus = (int *)0x009B7B9C;
+HWND *HandleMain = (HWND *)0x009B7B28;
 
 uint32_t *UnkBitfield1 = (uint32_t *)0x0090D91C;
 

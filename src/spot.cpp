@@ -56,7 +56,7 @@ Return Value: n/a
 Status: Complete ; verify 0 addCount will exit correctly ; test pending
 */
 void Spot::replace(int position, int type, int left, int top, int length, int width) {
-	for (int i = 0; i < addCount; i++) {
+	for (uint32_t i = 0; i < addCount; i++) {
 		if (spots[i].position == position && spots[i].type == type) {
 			spots[i].rect.left = left;
 			spots[i].rect.right = left + length;
@@ -103,11 +103,11 @@ Return Value: n/a
 Status: Complete; test optimizations/pending
 */
 void Spot::kill_pos(int position) {
-	if (position < 0 || position >= maxCount) {
+	if (position < 0 || position >= (int)maxCount) {
 		return;
 	}
 	addCount--;
-	if (position < addCount) {
+	if (position < (int)addCount) {
 		memcpy_s(&spots[position], sizeof(SpotInternal) * (addCount - position), 
 			&spots[position + 1], sizeof(SpotInternal) * (addCount - position));
 	}
@@ -161,7 +161,7 @@ int Spot::check(int xCoord, int yCoord, int *spotPos, int *spotType) {
 			if (spotType) {
 				*spotType = spots[i].type;
 			}
-			return;
+			return i;
 		}
 	}
 	return -1;
