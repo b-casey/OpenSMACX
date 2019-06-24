@@ -17,6 +17,8 @@
  */
 #include "stdafx.h"
 #include "base.h"
+#include "faction.h" // PlayerData
+#include "map.h" // x_dist(), region_at()
 
 rules_facility *Facility = (rules_facility *)0x009A4B68;
 rules_citizen *Citizen = (rules_citizen *)0x00946020;
@@ -24,6 +26,106 @@ base *Base = (base *)0x0097D040; // 512
 base_secret_project *SecretProject = (base_secret_project *)0x009A6514; // 64
 int *BaseIDCurrentSelected = (int *)0x00689370;
 int *BaseCurrentCount = (int *)0x009A64CC;
+int *BaseFindDist = (int *)0x0090EA04;
+
+/*
+Purpose: Find baseID nearest to coordinates.
+Original Offset: 004E3B80
+Return Value: -1 if not found, otherwise baseID
+Status: Complete
+*/
+int __cdecl base_find(int xCoord, int yCoord) {
+	if (*BaseCurrentCount <= 0) {
+		return -1;
+	}
+	int proximity = 9999, baseID = -1;
+	for (int i = 0; i < *BaseCurrentCount; i++) {
+		int distHorz = abs(xCoord - Base[i].xCoord);
+		if (!(*MapFlatToggle & 1) && distHorz > (int)*MapHorizontal) {
+			distHorz = *MapHorizontalBounds - distHorz;
+		}
+		int dist = x_dist(distHorz, yCoord - Base[i].yCoord); // removed extra abs() yCoord diff
+		if (dist <= proximity) {
+			proximity = dist;
+			baseID = i;
+		}
+	}
+	if (baseID >= 0) {
+		*BaseFindDist = proximity;
+	}
+	return baseID;
+}
+
+/*
+Purpose: Find baseID nearest to coordinates owned by faction.
+Original Offset: 004E3C60
+Return Value: -1 if not found, otherwise baseID
+Status: Complete
+*/
+int __cdecl base_find(int xCoord, int yCoord, uint32_t factionID) {
+	if (*BaseCurrentCount <= 0) {
+		return -1;
+	}
+	int proximity = 9999, baseID = -1;
+	for (int i = 0; i < *BaseCurrentCount; i++) {
+		if (Base[i].factionIDCurrent == factionID) {
+			int distHorz = abs(xCoord - Base[i].xCoord);
+			if (!(*MapFlatToggle & 1) && distHorz > (int)*MapHorizontal) {
+				distHorz = *MapHorizontalBounds - distHorz;
+			}
+			int dist = x_dist(distHorz, yCoord - Base[i].yCoord); // removed extra abs() yCoord diff
+			if (dist <= proximity) {
+				proximity = dist;
+				baseID = i;
+			}
+		}
+	}
+	if (baseID >= 0) {
+		*BaseFindDist = proximity;
+	}
+	return baseID;
+}
+
+/*
+Purpose: Find baseID nearest to coordinates meeting various conditional checks.
+Original Offset: 004E3D50
+Return Value: -1 if not found, otherwise baseID
+Status: Complete
+*/
+int __cdecl base_find(int xCoord, int yCoord, int factionID, int region, int factionID2, 
+	int factionID3) {
+	int proximity = 9999, baseID = -1;
+	*BaseFindDist = 9999; // difference from other two functions where this is reset at start
+	if (*BaseCurrentCount <= 0) {
+		return -1;
+	}
+	for (int i = 0; i < *BaseCurrentCount; i++) {
+		if (region < 0 || region_at(Base[i].xCoord, Base[i].yCoord) == (uint32_t)region) {
+			if (factionID < 0 ? (factionID2 < 0 || Base[i].factionIDCurrent != factionID2) 
+				: (factionID == Base[i].factionIDCurrent || (factionID2 == -2 
+					? PlayersData[factionID].diploStatus[Base[i].factionIDCurrent] & DSTATE_PACT 
+					: (factionID2 >= 0 && factionID2 == Base[i].factionIDCurrent)))) {
+				if (factionID3 < 0 || Base[i].factionIDCurrent == factionID3 
+					|| ((1 << factionID3) & Base[i].unk2)) {
+					int distHorz = abs(xCoord - Base[i].xCoord);
+					if (!(*MapFlatToggle & 1) && distHorz > (int)*MapHorizontal) {
+						distHorz = *MapHorizontalBounds - distHorz;
+					}
+					// removed extra abs() yCoord diff
+					int dist = x_dist(distHorz, yCoord - Base[i].yCoord);
+					if (dist <= proximity) {
+						proximity = dist;
+						baseID = i;
+					}
+				}
+			}
+		}
+	}
+	if (baseID >= 0) {
+		*BaseFindDist = proximity;
+	}
+	return baseID;
+}
 
 /*
 Purpose: Check if faction has secret project in a base they control.

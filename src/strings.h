@@ -27,7 +27,8 @@ class OPENSMACX_API Strings: Heap {
 public:
 	// Constructor, other variables are from subclass (Heap)
 	Strings(): isPopulated(false) { } // 006168D0
-									  // 006169C0 ; destructor
+	~Strings() { Heap::shutdown(); }  // 006169C0
+
 	BOOL init(size_t memSize);
 	void shutdown();
 	LPSTR put(LPCSTR input);

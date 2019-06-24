@@ -235,6 +235,7 @@ void Time::close() {
 	unk2 = 0;
 }
 
+// 006167E0
 void Time::TimerProc(HWND a2, uint32_t a3, UINT_PTR wParam, uint32_t a5) {
 	/*
 	if (wParam && (!*TimeModal || (Time *)wParam == *TimeModal) && (Time *)wParam->unk1) {
@@ -244,6 +245,7 @@ void Time::TimerProc(HWND a2, uint32_t a3, UINT_PTR wParam, uint32_t a5) {
 	*/
 }
 
+// 00616820
 void Time::MultimediaProc(uint32_t timerID, uint32_t msg, uint32_t user, uint32_t dw1, uint32_t) {
 	//
 }

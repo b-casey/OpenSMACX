@@ -55,14 +55,8 @@ typedef int *func8(LPSTR, LPSTR);
 extern func8 *parse_string;
 
 // testing
-typedef uint32_t func9(int);
-extern func9 *veh_health_;
-typedef BOOL func10(uint32_t, uint32_t);
-extern func10 *has_project_;
-typedef BOOL func11(uint32_t);
-extern func11 *has_fac_built_;
-typedef int func12(uint32_t);
-extern func12 *base_project_;
+typedef int func14(int, int, int, int, int, int);
+extern func14 *base_find___;
 
 ///
 extern LPSTR *ParseTempPtr1_1;
@@ -89,3 +83,4 @@ extern Filefind *FilefindPath;
 extern MainInterface *MainInterfaceVar;
 
 OPENSMACX_API void __cdecl tester();
+OPENSMACX_API void __cdecl testerMap();

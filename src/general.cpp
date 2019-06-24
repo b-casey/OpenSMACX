@@ -610,7 +610,7 @@ int __cdecl parse_string_(LPSTR input, LPSTR output) {
 
 /*
 Purpose: Get drive letter of CD path
-Original Offset: 06003A0
+Original Offset: 006003A0
 Return Value: Drive letter
 Status: Complete
 */

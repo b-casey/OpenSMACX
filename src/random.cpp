@@ -21,7 +21,7 @@
  /*
  Purpose: Updates seed value. Original code after some convoluted XORs simplified to 'seed = param'. 
           Modified it to XOR old seed with new seed.
- Original Offset: 00625750 
+ Original Offset: 00625750
  Return Value: n/a
  Status: Complete
  */

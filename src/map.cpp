@@ -32,6 +32,26 @@ uint32_t *MapHorizontal = (uint32_t *)0x0068FAF0;
 map **Map = (map **)0x0094A30C;
 
 /*
+Purpose: Calculate distance between two points.
+Original Offset: 004F8090
+Return Value: Distance
+Status: Complete
+*/
+int __cdecl x_dist(int xCoord, int yCoord) {
+	int absX = abs(xCoord);
+	int absY = abs(yCoord);
+	int largest = absX;
+	if (absX <= absY) {
+		largest = absY;
+	}
+	int smallest = absX;
+	if (absX >= absY) {
+		smallest = absY;
+	}
+	return largest - ((((absY + absX) >> 1) - smallest + 1) >> 1);
+}
+
+/*
 Purpose: Get map tile based on coords. Optimized out of original code, helps reduce code complexity.
 Original Offset: n/a
 Return Value: Pointer to map tile
@@ -361,7 +381,7 @@ Status: Complete
 */
 void __cdecl synch_bit(int xCoord, int yCoord, int factionID) {
 	if (factionID) {
-		map_loc(xCoord, yCoord)->bitVisible[factionID] = bit_at(xCoord, yCoord);
+		map_loc(xCoord, yCoord)->bitVisible[factionID-1] = bit_at(xCoord, yCoord);
 	}
 }
 

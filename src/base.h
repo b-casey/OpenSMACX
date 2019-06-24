@@ -242,7 +242,7 @@ struct base {
 	uint8_t assimilationTurnsLeft;
 	uint8_t nerveStapleTurnsLeft;
 	uint8_t unk1;
-	uint8_t unk2;
+	uint8_t unk2; // visibility?
 	uint8_t factionPopulationSizeIntel[8];
 	char nameString[25];
 	int16_t unkX;
@@ -411,7 +411,12 @@ extern base *Base;
 extern base_secret_project *SecretProject;
 extern int *BaseIDCurrentSelected;
 extern int *BaseCurrentCount;
+extern int *BaseFindDist;
 
+OPENSMACX_API int __cdecl base_find(int xCoord, int yCoord);
+OPENSMACX_API int __cdecl base_find(int xCoord, int yCoord, uint32_t factionID);
+OPENSMACX_API int __cdecl base_find(int xCoord, int yCoord, int factionID, int region,
+	int factionID2, int factionID3);
 OPENSMACX_API BOOL __cdecl has_project(uint32_t projectID, uint32_t factionID);
 OPENSMACX_API BOOL __cdecl has_fac_built(uint32_t facilityID);
 OPENSMACX_API int __cdecl base_project(uint32_t projectID);

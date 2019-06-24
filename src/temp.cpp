@@ -52,6 +52,8 @@ typedef int *func8(LPSTR, LPSTR);
 func8 *parse_string = (func8 *)0x00625880;
 
 // testing
+typedef int func14(int, int, int, int, int, int);
+func14 *base_find___ = (func14 *)0x004E3D50;
 
 ///
 LPSTR *ParseTempPtr1_1 = (LPSTR *)0x009B7D00;
@@ -88,4 +90,22 @@ void __cdecl tester() {
 // 		}
 // 		
 // 	}
+}
+
+void __cdecl testerMap() {
+	for (int y = 0; y < *MapVerticalBounds; y++) {
+		for (int x = 0; x < *MapHorizontalBounds; x++) {
+			for (int f = -2; f < 8; f++) {
+				for (int f2 = -2; f2 < 8; f2++) {
+					for (int f3 = -2; f3 < 8; f3++) {
+						//for (int reg = -2; reg <= 5; reg++) {
+							if (base_find(x, y, f, -1, f2, f3) != base_find___(x, y, f, -1, f2, f3)) {
+								MessageBoxA(NULL, "base_find Error", "FATAL ERROR", MB_ICONWARNING);
+							}
+						//}
+					}
+				}
+			}
+		}
+	}
 }
