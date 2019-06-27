@@ -20,7 +20,6 @@
 #include "general.h" // mem_get()
 #include "temp.h" // BufferStrHeight
 
-Font *Font::FontDefaultPtr;
 HDC Font::FontHDC;
 int Font::FontInitCount;
 
@@ -28,13 +27,13 @@ int Font::FontInitCount;
 Purpose: Initialize instance of Font using font name.
 Original Offset: 00618F40
 Return Value: Non-zero error; Zero successful
-Status: Complete - test pending
+Status: Complete
 */
 int Font::init(LPCSTR fontName, int heightInit, uint32_t style) {
 	if (!fontName) {
 		return 3;
 	}
-	if (toggle & 1) {
+	if (isFotSet & 1) {
 		lineHeight = 0;
 		height = 0;
 		ascent = 0;
@@ -53,7 +52,7 @@ int Font::init(LPCSTR fontName, int heightInit, uint32_t style) {
 	lf.lfEscapement = 0;
 	lf.lfUnderline = (style >> 2) & 1;
 	lf.lfOrientation = 0;
-	lf.lfWeight = (style & 1) != 0 ? 700 : 0;
+	lf.lfWeight = (style & 1) ? 700 : 0;
 	lf.lfItalic = (style >> 1) & 1;
 	lf.lfStrikeOut = 0;
 	lf.lfCharSet = 0;
@@ -82,7 +81,7 @@ int Font::init(LPCSTR fontName, int heightInit, uint32_t style) {
 Purpose: Initialize instance of Font using font name and file.
 Original Offset: 006190D0
 Return Value: Non-zero error; Zero successful
-Status: Complete - test pending
+Status: Complete
 */
 int Font::init(LPCSTR file, LPCSTR fontName, int heightInit, uint32_t style) {
 	close();
@@ -95,7 +94,7 @@ int Font::init(LPCSTR file, LPCSTR fontName, int heightInit, uint32_t style) {
 		return 4;
 	}
 	strcpy_s(fotFileName, len, file);
-	fotFileName[len - 5] = 0; // ?
+	fotFileName[len - 5] = 0; // font extension length + 1
 	strcat_s(fotFileName, len, ".fot");
 	char path[MAX_PATH + 1];
 	GetCurrentDirectoryA(MAX_PATH, path);
@@ -105,15 +104,15 @@ int Font::init(LPCSTR file, LPCSTR fontName, int heightInit, uint32_t style) {
 		return 1;
 	}
 	PostMessageA(HWND_BROADCAST, WM_FONTCHANGE, 0, 0);
-	toggle |= 1;
+	isFotSet |= 1;
 	return init(fontName, heightInit, style);
 }
 
 /*
-Purpose: Shutdown instance of Font.
+Purpose: Close instance of Font.
 Original Offset: 00619230
 Return Value: n/a
-Status: Complete - test pending
+Status: Complete
 */
 void Font::close() {
 	unk1 = -1;
@@ -136,7 +135,7 @@ void Font::close() {
 Purpose: Get width for input text.
 Original Offset: 00619280
 Return Value: Width, otherwise zero if error
-Status: Complete - test pending
+Status: Complete
 */
 int Font::width(LPSTR input) {
 	if (!input) {
@@ -150,17 +149,17 @@ int Font::width(LPSTR input) {
 }
 
 /*
-Purpose: Get width for input text with minimum length.
+Purpose: Get width for input text with maximum length.
 Original Offset: 006192F0
 Return Value: Width, otherwise zero if error
-Status: Complete - test pending
+Status: Complete
 */
 int Font::width(LPSTR input, int maxLen) {
 	if (!input) {
 		return 0;
 	}
 	int len = strlen(input);
-	if (len >= maxLen) {
+	if (len > maxLen) {
 		len = maxLen;
 	}
 	SelectObject(FontHDC, fontObj);
@@ -174,7 +173,7 @@ int Font::width(LPSTR input, int maxLen) {
 Purpose: Find line break length.
 Original Offset: 00619370
 Return Value: Length
-Status: Complete - test pending
+Status: Complete
 */
 LPSTR Font::find_line_break_l(LPSTR input, int *breakLen, size_t len) {
 	int searchBrk = *breakLen;
@@ -185,37 +184,28 @@ LPSTR Font::find_line_break_l(LPSTR input, int *breakLen, size_t len) {
 	do {
 		LPSTR space = (LPSTR)memchr(searchStr + 1, ' ', len);
 		if (!space) {
+			searchBrk -= width(searchStr, len);
+			if (searchBrk < 0) {
+				*breakLen = 0;
+				if (searchStr != input) {
+					return searchStr + 1;
+				}
+				return *BufferStrHeight ? searchStr : 0;
+			}
 			break;
 		}
 		searchBrk -= width(searchStr, space - searchStr);
-		if (input != space) {
-			if (searchBrk < 0) {
-				*breakLen = 0;
+		if (searchBrk < 0) {
+			*breakLen = 0;
+			if (searchStr != input) {
 				return searchStr + 1;
 			}
+			return *BufferStrHeight ? searchStr : space + 1;
 		}
-		else {
-			if (searchBrk < 0) {
-				if (!BufferStrHeight) {
-					*breakLen = 0;
-					return space + 1;
-				}
-				else {
-					*breakLen = 0;
-					return input;
-				}
-			}
-		}
-	} while (true);
-	searchBrk -= width(searchStr, len);
-	if (searchBrk < 0) {
-		*breakLen = 0;
-		if (input != searchStr) {
-			return searchStr + 1;
-		}
-		return *BufferStrHeight ? searchStr : 0;
-	}
-	BufferStrHeight += *breakLen - searchBrk;
+		len += searchStr - space;
+		searchStr = space;
+	} while (len);
+	*BufferStrHeight += *breakLen - searchBrk;
 	*breakLen = searchBrk;
 	return 0;
 }
@@ -224,7 +214,7 @@ LPSTR Font::find_line_break_l(LPSTR input, int *breakLen, size_t len) {
 Purpose: Initialize Font class static variables.
 Original Offset: 006195B0
 Return Value: Non-zero error; Zero successful (or already initalized)
-Status: Complete - test pending
+Status: Complete
 */
 int __cdecl Font::init_font_class(Font *font) {
 	if (++FontInitCount > 1) {
@@ -237,7 +227,7 @@ int __cdecl Font::init_font_class(Font *font) {
 	if (!FontHDC) {
 		return 2;
 	}
-	FontDefaultPtr = font;
+	*FontDefaultPtr = font;
 	if (font->fontObj) {
 		return 0;
 	}
@@ -248,7 +238,7 @@ int __cdecl Font::init_font_class(Font *font) {
 Purpose: Shutdown Font class static variables.
 Original Offset: 00619610
 Return Value: n/a
-Status: Complete - test pending
+Status: Complete
 */
 void __cdecl Font::close_font_class() {
 	if (--FontInitCount <= 0) {
@@ -256,6 +246,9 @@ void __cdecl Font::close_font_class() {
 			DeleteDC(FontHDC);
 			FontHDC = 0;
 		}
-		FontDefaultPtr = 0;
+		*FontDefaultPtr = NULL;
 	}
 }
+
+// global
+Font **FontDefaultPtr = (Font **)0x009BB484;

@@ -55,8 +55,6 @@ typedef int *func8(LPSTR, LPSTR);
 extern func8 *parse_string;
 
 // testing
-typedef int func14(int, int, int, int, int, int);
-extern func14 *base_find___;
 
 ///
 extern LPSTR *ParseTempPtr1_1;

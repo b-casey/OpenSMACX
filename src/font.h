@@ -21,24 +21,24 @@
   * Font class
   */
 class OPENSMACX_API Font {
-	int unk1; // height offset?
-	int toggle; // boolean? system font? already active?
+	int unk1; // height offset? set outside of class functions
+	BOOL isFotSet; // used only by both init() functions
 	HFONT fontObj;
 	int lineHeight;
 	int height;
 	int internalLeading;
 	int ascent;
 	int descent;
-	int pad; // padding?
+	int pad; // padding? no references
 	LPSTR fotFileName;
 
 public:
-	Font() : unk1(-1), toggle(0), fontObj(0), lineHeight(0), height(0), ascent(0), descent(0), 
+	Font() : unk1(-1), isFotSet(0), fontObj(0), lineHeight(0), height(0), ascent(0), descent(0),
 		fotFileName(0)  { } // 00618EA0
 	Font(LPSTR fontName, int height, int style) { init(fontName, height, style); } // 00618EC0
 	~Font() { close(); } // 00618EE0
 
-	// int UNK1(int, int, int, int) { return 1; }
+	// int UNK1(int, int, int, int) { return 1; } // no direct references
 	int init(LPCSTR fontName, int height, uint32_t style);
 	int init(LPCSTR lpszFile, LPCSTR fontName, int height, uint32_t style);
 	void close();
@@ -47,9 +47,11 @@ public:
 	LPSTR find_line_break_l(LPSTR input, int *breakLen, size_t len);
 
 	// eventually make atomic for thread safety
-	static Font *FontDefaultPtr;
 	static HDC FontHDC;
 	static int FontInitCount;
 	static int __cdecl init_font_class(Font *font);
 	static void __cdecl close_font_class();
 };
+
+// global
+extern Font **FontDefaultPtr;
