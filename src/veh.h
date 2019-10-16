@@ -138,7 +138,7 @@ enum veh_orders {
 	ORDER_TERRAFORM_DOWN = 21,   // ([)
 	ORDER_TERRAFORM_LEVEL = 22,  // (_)
 	ORDER_PLACE_MONOLITH = 23,   // (?)
-	ORDER_GO_TO = 24,            // (G); Go to Base, Group go to, Patrol
+	ORDER_MOVE_TO = 24,          // (G); Move unit to here, Go to Base, Group go to, Patrol
 	ORDER_MOVE = 25,             // (>); Only used in a few places, seems to be buggy mechanic
 	ORDER_EXPLORE = 26,          // (/); not set via shortcut, AI related?
 	ORDER_ROADS_TO = 27,         // (r)
@@ -175,6 +175,41 @@ enum veh_flags_bitfield {
 	VFLAG_START_RAND_MONOLITH = 0x100,
 	VFLAG_START_RAND_FUNGUS = 0x200,
 	VFLAG_INVISIBLE = 0x400,
+};
+
+enum veh_state {
+	VSTATE_UNK_1 = 0x1,
+	VSTATE_UNK_2 = 0x2,
+	VSTATE_UNK_4 = 0x4,
+	VSTATE_UNK_8 = 0x8,
+	VSTATE_REQUIRES_SUPPORT = 0x10,
+	VSTATE_MADE_AIRDROP = 0x20,
+	VSTATE_UNK_40 = 0x40,
+	VSTATE_DESIGNATE_DEFENDER = 0x80,
+	VSTATE_MONOLITH_UPGRADED = 0x100,
+	VSTATE_UNK_200 = 0x200,
+	VSTATE_UNK_400 = 0x400,
+	VSTATE_UNK_800 = 0x800,
+	VSTATE_UNK_1000 = 0x1000,
+	VSTATE_UNK_2000 = 0x2000,
+	VSTATE_EXPLORE = 0x4000,
+	VSTATE_UNK_8000 = 0x8000,
+	VSTATE_UNK_10000 = 0x10000,
+	VSTATE_UNK_20000 = 0x20000,
+	VSTATE_UNK_40000 = 0x40000,
+	VSTATE_UNK_80000 = 0x80000,
+	VSTATE_UNK_100000 = 0x100000,
+	VSTATE_PACIFISM_DRONE = 0x200000,
+	VSTATE_PACIFISM_FREE_SKIP = 0x400000,
+	VSTATE_UNK_800000 = 0x800000,
+	VSTATE_UNK_1000000 = 0x1000000,
+	VSTATE_UNK_2000000 = 0x2000000,
+	VSTATE_CRAWLING = 0x4000000,
+	VSTATE_UNK_8000000 = 0x8000000,
+	VSTATE_UNK_10000000 = 0x10000000,
+	VSTATE_UNK_20000000 = 0x20000000,
+	VSTATE_UNK_40000000 = 0x40000000,
+	VSTATE_UNK_80000000 = 0x80000000,
 };
 
 enum veh_weapon_mode {
@@ -336,7 +371,7 @@ struct veh {
 	int8_t orders; // see veh_orders enum
 	uint8_t waypointCount;
 	uint8_t patrolCurrentPoint;
-	int16_t waypoint_xCoord[4];
+	int16_t waypoint_xCoord[4]; // ...xCoord[0] duals as transport vehID if veh is sentry/board
 	int16_t waypoint_yCoord[4];
 	uint8_t morale;
 	uint8_t terraformingTurns;
@@ -364,7 +399,7 @@ struct veh_prototype {
 	uint8_t cost;
 	uint8_t plan;
 	int8_t unk1; // some kind of internal prototype category?
-	int8_t unk2; // factions that have created prototype?
+	int8_t unk2; // factions that have created prototype? maybe retired?
 	int8_t unk3; // which faction "knows" about unit prototype? seemed to only be used by battle_fight
 			   // to set it after initial value in make_proto()
 	int8_t iconOffset;
@@ -446,9 +481,10 @@ extern BOOL *VehBitError;
 
 OPENSMACX_API uint32_t __cdecl contribution(int vehID, uint32_t terraformID);
 OPENSMACX_API uint32_t __cdecl drop_range(int factionID);
+OPENSMACX_API uint32_t __cdecl planet_buster2(int protoID);
+OPENSMACX_API uint32_t __cdecl planet_buster(int vehID);
 OPENSMACX_API int __cdecl psi_factor(int combatRatio, int factionID, BOOL isAttack, 
 	BOOL isFungalTower);
-OPENSMACX_API void __cdecl rebuild_vehicle_bits();
 OPENSMACX_API int __cdecl veh_top(int vehID);
 OPENSMACX_API uint32_t __cdecl veh_moves(int vehID);
 OPENSMACX_API uint32_t __cdecl proto_power(int vehID);
@@ -464,6 +500,11 @@ OPENSMACX_API void __cdecl say_stats_3(LPSTR stat, int protoID);
 OPENSMACX_API void __cdecl say_stats_3(int protoID);
 OPENSMACX_API void __cdecl say_stats_2(LPSTR stat, int protoID);
 OPENSMACX_API void __cdecl say_stats(LPSTR stat, int protoID, LPSTR customSpacer);
+OPENSMACX_API int __cdecl best_reactor(int factionID);
+OPENSMACX_API int __cdecl pick_chassis(int factionID, int triadChk, int speedChk);
+OPENSMACX_API int __cdecl weapon_budget(int factionID, int condition, BOOL checkMode);
+OPENSMACX_API int __cdecl armor_budget(int factionID, int maxCost);
+OPENSMACX_API int __cdecl abil_index(int abilityID);
 OPENSMACX_API void __cdecl veh_put(int vehID, int xCoord, int yCoord);
 OPENSMACX_API uint32_t __cdecl veh_health(int vehID);
 OPENSMACX_API uint32_t __cdecl proto_cost(uint32_t chassisID, uint32_t weaponID, uint32_t armorID, 
@@ -471,6 +512,7 @@ OPENSMACX_API uint32_t __cdecl proto_cost(uint32_t chassisID, uint32_t weaponID,
 OPENSMACX_API uint32_t __cdecl base_cost(int protoID);
 OPENSMACX_API void __cdecl make_proto(int protoID, uint32_t chassisID, uint32_t weaponID, 
 	uint32_t armorID, uint32_t ability, uint32_t reactorID);
+OPENSMACX_API BOOL __cdecl veh_avail(int protoID, int factionID, int baseID);
 OPENSMACX_API int __cdecl veh_at(int xCoord, int yCoord);
 OPENSMACX_API BOOL __cdecl has_abil(int protoID, int abilityID);
 OPENSMACX_API int __cdecl veh_lift(int vehID);

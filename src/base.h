@@ -412,12 +412,18 @@ extern base_secret_project *SecretProject;
 extern int *BaseIDCurrentSelected;
 extern int *BaseCurrentCount;
 extern int *BaseFindDist;
+extern base **BaseCurrent;
 
+OPENSMACX_API void __cdecl set_base(int baseID);
+OPENSMACX_API void __cdecl say_base(LPSTR strBase, int baseID);
 OPENSMACX_API int __cdecl base_find(int xCoord, int yCoord);
 OPENSMACX_API int __cdecl base_find(int xCoord, int yCoord, uint32_t factionID);
 OPENSMACX_API int __cdecl base_find(int xCoord, int yCoord, int factionID, int region,
 	int factionID2, int factionID3);
+OPENSMACX_API uint32_t __cdecl pop_goal_fac(int baseID);
+OPENSMACX_API int __cdecl pop_goal(int baseID);
 OPENSMACX_API BOOL __cdecl has_project(uint32_t projectID, uint32_t factionID);
 OPENSMACX_API BOOL __cdecl has_fac_built(uint32_t facilityID);
 OPENSMACX_API int __cdecl base_project(uint32_t projectID);
 OPENSMACX_API void __cdecl bitmask(uint32_t facilityID, uint32_t *offset, uint32_t *mask);
+OPENSMACX_API BOOL __cdecl is_port(int baseID, BOOL isBaseRadius);

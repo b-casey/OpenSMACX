@@ -16,8 +16,10 @@
  * along with OpenSMACX. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "stdafx.h"
-#include "temp.h"
 #include "map.h"
+#include "base.h"
+#include "veh.h"
+#include "temp.h"
 
 rules_natural *Natural = (rules_natural *)0x0094ADE0;
 uint32_t *MapHorizontalBounds = (uint32_t *)0x00949870;
@@ -30,6 +32,17 @@ uint32_t *MapLandmarkCount = (uint32_t *)0x00949890;
 landmark *MapLandmark = (landmark *)0x00949894; // [64]
 uint32_t *MapHorizontal = (uint32_t *)0x0068FAF0;
 map **Map = (map **)0x0094A30C;
+
+/*
+Purpose: Check whether coordinates are on the map.
+Original Offset: 004712A0
+Return Value: true if on map, otherwise false
+Status: Complete
+*/
+BOOL __cdecl on_map(int xCoord, int yCoord) {
+	return yCoord >= 0 && yCoord < (int)*MapVerticalBounds 
+		&& xCoord >= 0 && xCoord < (int)*MapHorizontalBounds;
+}
 
 /*
 Purpose: Calculate distance between two points.
@@ -386,6 +399,36 @@ void __cdecl synch_bit(int xCoord, int yCoord, int factionID) {
 }
 
 /*
+Purpose: Check if coordinates are considered near or on coast. Radius (excludes actual coordinates)
+         can either be all the squares directly around the coordinates or same as Base '+' radius.
+Original Offset: 004E49D0
+Return Value: Is tile coast? true/false
+Status: Complete
+*/
+BOOL __cdecl is_coast(int xCoord, int yCoord, BOOL isBaseRadius) {
+	uint32_t radius = isBaseRadius ? 21 : 9;
+	for (uint32_t i = 1; i < radius; i++) {
+		int xRadius = xCoord + xRadiusOffset[i-1];
+		if (!*MapFlatToggle) { // if round map, additional parsing of coordinates
+			if (xRadius >= 0) {
+				if (xRadius >= (int)*MapHorizontalBounds) {
+					xRadius -= *MapHorizontalBounds;
+				}
+			}
+			else {
+				xRadius += *MapHorizontalBounds;
+			}
+		}
+		int yRadius = yCoord + yRadiusOffset[i-1];
+		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0 
+			&& xRadius < (int)*MapHorizontalBounds && is_ocean(xRadius, yRadius)) {
+			return true; // modified original that would return i, all calls check return as boolean
+		}
+	}
+	return false;
+}
+
+/*
 Purpose: Check whether tile is ocean or not.
 Original Offset: 005001E0
 Return Value: Is tile ocean? true/false
@@ -413,6 +456,56 @@ int __cdecl veh_who(int xCoord, int yCoord) {
 }
 
 /*
+Purpose: Rebuild the Map's Veh related values.
+Original Offset: 00532A90
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl rebuild_vehicle_bits() {
+	if (*MapVerticalBounds <= 0) {
+		return;
+	}
+	for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
+		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
+			bit_set(x, y, BIT_VEH_IN_TILE, false);
+			for (int vehID = 0; vehID < *VehCurrentCount; vehID++) {
+				if (Veh[vehID].xCoord == (int)x && Veh[vehID].yCoord == (int)y) {
+					bit_set(x, y, BIT_VEH_IN_TILE, true);
+					if(!(bit_at(x, y) & BIT_BASE_IN_TILE)) {
+						owner_set(x, y, Veh[vehID].factionID);
+					}
+					break;
+				}
+			}
+		}
+	}
+}
+
+/*
+Purpose: Rebuild the Map's Base related values.
+Original Offset: 00532B70
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl rebuild_base_bits() {
+	if (*MapVerticalBounds <= 0) {
+		return;
+	}
+	for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
+		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
+			bit_set(x, y, BIT_BASE_IN_TILE, false);
+			for (int baseID = 0; baseID < *BaseCurrentCount; baseID++) {
+				if (Base[baseID].xCoord == (int)x && Base[baseID].yCoord == (int)y) {
+					bit_set(x, y, BIT_BASE_IN_TILE, true);
+					owner_set(x, y, Base[baseID].factionIDCurrent);
+					break;
+				}
+			}
+		}
+	}
+}
+
+/*
 Purpose: Get owner of tile if there is a Veh or Base in it.
 Original Offset: 005798E0
 Return Value: Owner/factionID or -1
@@ -427,4 +520,34 @@ int __cdecl anything_at(int xCoord, int yCoord) {
 		}
 	}
 	return -1;
+}
+
+/*
+Purpose: Check whether there is a sensor available in the tile.
+Original Offset: 005BF010
+Return Value: 0 (no sensor), 1 (sensor array via terraforming), 2 (Geosynchronous Survey Pod)
+Status: Complete
+*/
+int __cdecl is_sensor(int xCoord, int yCoord) {
+	if (bit_at(xCoord, yCoord) & BIT_SENSOR_ARRAY) {
+		return 1; // Sensor Array built in tile
+	}
+	int baseID = base_find(xCoord, yCoord);
+	if (baseID != -1) {
+		int distX = abs(xCoord - Base[baseID].xCoord);
+		if (!(*MapFlatToggle & 1) && distX > (int)*MapHorizontal) {
+			distX = *MapHorizontalBounds - distX;
+		}
+		if (!distX || distX == 2) { // removed unnecessary duplicate calculation of distX
+			int distY = abs(yCoord - Base[baseID].yCoord);
+			if (!distY || distY == 2) {
+				uint32_t geoOffset, geoMask;
+				bitmask(FAC_GEOSYNC_SURVEY_POD, &geoOffset, &geoMask);
+				if (Base[baseID].facilitiesPresentTable[geoOffset] & geoMask) {
+					return 2; // Geosynchronous Survey Pod
+				}
+			}
+		}
+	}
+	return 0; // No sensor found
 }

@@ -17,6 +17,7 @@
  */
 #include "stdafx.h"
 #include "faction.h"
+#include "technology.h"
 
 player *Players = (player *)0x00946A50;
 player_data *PlayersData = (player_data *)0x0096C9E0;
@@ -28,3 +29,17 @@ LPSTR *Repute = (LPSTR *)0x00946A30;
 rules_might *Might = (rules_might *)0x0094C558;
 rules_proposal *Proposal = (rules_proposal *)0x009A6828;
 rules_bonusname *BonusName = (rules_bonusname *)0x009461A8;
+
+/*
+Purpose: Check to see whether provided faction can utilize a specific social category and model.
+Original Offset: 005B4730
+Return Value: Is social category/model available to faction? true/false
+Status: Complete
+*/
+BOOL __cdecl society_avail(int socCategory, int socModel, int factionID) {
+	if (Players[factionID].socAntiIdeologyCategory == socCategory 
+		&& Players[factionID].socAntiIdeologyModel == socModel) {
+		return false;
+	}
+	return has_tech(SocialCategory[socCategory].preqTech[socModel], factionID);
+}

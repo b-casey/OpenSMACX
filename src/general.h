@@ -39,6 +39,7 @@ OPENSMACX_API LPVOID __cdecl mem_get_old(size_t size);
 OPENSMACX_API LPVOID __cdecl mem_get(size_t size);
 OPENSMACX_API FILE * __cdecl env_open_old(LPCSTR source, LPCSTR mode);
 OPENSMACX_API FILE * __cdecl env_open(LPCSTR source, LPCSTR mode);
+OPENSMACX_API void __cdecl parse_set(int gender, int plurality);
 OPENSMACX_API int __cdecl parse_num(int id, int value);
 OPENSMACX_API int __cdecl parse_say(int id, int input, int gender, int pluralality);
 OPENSMACX_API int __cdecl parse_says(int id, LPSTR input, int gender, int pluralality);

@@ -17,5 +17,27 @@
  */
 #include "stdafx.h"
 #include "terraforming.h"
+#include "base.h"
+#include "game.h"
+#include "technology.h"
 
 rules_terraforming *Terraforming = (rules_terraforming *)0x00691878;
+
+/*
+Purpose: Check to see whether provided faction can construct specific terrain enhancement.
+Original Offset: 005BAB40
+Return Value: Is terrain enhancement available to faction? true/false
+Status: Complete
+*/
+BOOL __cdecl terrain_avail(int terraformID, BOOL isSea, int factionID) {
+	int preqTech = *(&Terraforming[terraformID].preqTech + isSea);
+	if (preqTech < TechNone || ((terraformID == TERRA_RAISE_LAND || terraformID == TERRA_LOWER_LAND) 
+		&& *GameRules2 & SCENRULE_NO_TERRAFORMING)) {
+		return false;
+	}
+	if (terraformID >= TERRA_CONDENSER && terraformID <= TERRA_LEVEL_TERRAIN
+		&& has_project(SP_WEATHER_PARADIGM, factionID)) {
+		return true;
+	}
+	return has_tech(preqTech, factionID);
+}

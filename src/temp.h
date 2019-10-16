@@ -55,7 +55,11 @@ typedef int *func8(LPSTR, LPSTR);
 extern func8 *parse_string;
 
 // testing
+typedef int func10(int, int, int);
+extern func10 *veh_drop_OG;
 
+typedef BOOL func11(int, int, int);
+extern func11 *veh_avail_OG;
 ///
 extern LPSTR *ParseTempPtr1_1;
 extern LPSTR *ParseTempPtr2_1;

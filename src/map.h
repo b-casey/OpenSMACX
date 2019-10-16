@@ -126,9 +126,12 @@ enum terrain_landmark_bit2 {
 constexpr int MaxNaturalNum = 16;
 constexpr int MaxLandmarkNum = 64;
 
+const int xRadiusOffset[] = { 1, 2, 1, 0, -1, -2, -1, 0, 2, 2, -2, -2, 1, 3, 3, 1, -1, -3, -3, -1 };
+const int yRadiusOffset[] = { -1, 0, 1, 2, 1, 0, -1, -2, -2, 2, 2, -2, -3, -1, 1, 3, 3, 1, -1, -3 };
+
 extern rules_natural *Natural;
-extern uint32_t *MapVerticalBounds;
-extern uint32_t *MapHorizontalBounds;
+extern uint32_t *MapVerticalBounds; // y
+extern uint32_t *MapHorizontalBounds; // x
 extern int *MapSeaLevel;
 extern uint32_t *MapArea;
 extern uint32_t *MapAreaSqRoot;
@@ -138,6 +141,7 @@ extern landmark *MapLandmark;
 extern uint32_t *MapHorizontal;
 extern map **Map;
 
+OPENSMACX_API BOOL __cdecl on_map(int xCoord, int yCoord);
 OPENSMACX_API int __cdecl x_dist(int xCoord, int yCoord);
 OPENSMACX_API map * __cdecl map_loc(int xCoord, int yCoord);
 OPENSMACX_API uint32_t __cdecl temp_at(int xCoord, int yCoord);
@@ -168,6 +172,10 @@ OPENSMACX_API void __cdecl bit2_set(int xCoord, int yCoord, uint32_t bit2, BOOL 
 OPENSMACX_API uint32_t __cdecl code_at(int xCoord, int yCoord);
 OPENSMACX_API void __cdecl code_set(int xCoord, int yCoord, uint32_t code);
 OPENSMACX_API void __cdecl synch_bit(int xCoord, int yCoord, int factionID);
+OPENSMACX_API BOOL __cdecl is_coast(int xCoord, int yCoord, BOOL isBaseRadius);
 OPENSMACX_API BOOL __cdecl is_ocean(int xCoord, int yCoord);
 OPENSMACX_API int __cdecl veh_who(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl rebuild_vehicle_bits();
+OPENSMACX_API void __cdecl rebuild_base_bits();
 OPENSMACX_API int __cdecl anything_at(int xCoord, int yCoord);
+OPENSMACX_API int __cdecl is_sensor(int xCoord, int yCoord);

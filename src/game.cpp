@@ -18,7 +18,8 @@
 #include "stdafx.h"
 #include "game.h"
 
-uint32_t *GameRules = (uint32_t *)0x009A64C0;
+uint32_t *GameRules  = (uint32_t *)0x009A64C0;
+uint32_t *GameRules2 = (uint32_t *)0x009A649C;
 int *DiffLevelCurrent = (int *)0x009A64C4;
 int *TurnCurrentNum = (int *)0x009A64D4;
 int *MissionYearCurrent = (int *)0x009A64D8;

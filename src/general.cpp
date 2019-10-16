@@ -173,6 +173,17 @@ FILE * __cdecl env_open(LPCSTR source, LPCSTR mode) {
 }
 
 /*
+Purpose: Set global gender and plurality values used by parse functions.
+Original Offset: 005A58E0
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl parse_set(int gender, int plurality) {
+	*GenderDefault = gender;
+	*PluralityDefault = plurality;
+}
+
+/*
 Purpose: Copies number value into number message buffer using id
 Original Offset: 00625E30
 Return Value: 0: no errors; 3: error

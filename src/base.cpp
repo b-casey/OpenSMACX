@@ -17,8 +17,10 @@
  */
 #include "stdafx.h"
 #include "base.h"
+#include "alpha.h"
 #include "faction.h" // PlayerData
 #include "map.h" // x_dist(), region_at()
+#include "strings.h"
 
 rules_facility *Facility = (rules_facility *)0x009A4B68;
 rules_citizen *Citizen = (rules_citizen *)0x00946020;
@@ -27,6 +29,31 @@ base_secret_project *SecretProject = (base_secret_project *)0x009A6514; // 64
 int *BaseIDCurrentSelected = (int *)0x00689370;
 int *BaseCurrentCount = (int *)0x009A64CC;
 int *BaseFindDist = (int *)0x0090EA04;
+base **BaseCurrent = (base **)0x0090EA30;
+
+/*
+Purpose: Set current base globals.
+Original Offset: 004E39D0
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl set_base(int baseID) {
+	*BaseIDCurrentSelected = baseID;
+	*BaseCurrent = &Base[baseID];
+}
+
+/*
+Purpose: Get base name string from baseID and store it in strBase. If baseID is -1, use 'NONE'.
+Original Offset: 004E3A00
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl say_base(LPSTR strBase, int baseID) {
+	std::string output = (baseID >= 0) ? Base[baseID].nameString 
+		: StringTable->get((int)*((LPSTR *)Label->stringsPtr + 0x19)); // 'NONE'
+	// assumes 1032 char buffer via stringTemp, eventually remove
+	strcat_s(strBase, 1032, output.c_str());
+}
 
 /*
 Purpose: Find baseID nearest to coordinates.
@@ -128,6 +155,65 @@ int __cdecl base_find(int xCoord, int yCoord, int factionID, int region, int fac
 }
 
 /*
+Purpose: Check what facility (if any) a base needs for additional population growth. Stand alone
+         function unused in original game and likely optimized out.
+Original Offset: 004EEF80
+Return Value: Facility id needed for pop growth or zero if base already has Hab Complex and Dome.
+Status: WIP - test
+*/
+uint32_t __cdecl pop_goal_fac(int baseID) {
+	uint32_t factionID = Base[baseID].factionIDCurrent;
+	uint32_t limitMod = has_project(SP_ASCETIC_VIRTUES, factionID) ? 2 : 0;
+	int pop = Base[baseID].populationSize - limitMod + Players[factionID].rulePopulation;
+	if (pop >= Rules->PopLimitSansHabComplex) {
+		uint32_t offset, mask;
+		bitmask(FAC_HAB_COMPLEX, &offset, &mask);
+		if (!(Base[baseID].facilitiesPresentTable[offset] & mask)) {
+			return FAC_HAB_COMPLEX;
+		}
+	}
+	if (pop >= Rules->PopLimitSansHabDome) {
+		uint32_t offset, mask;
+		bitmask(FAC_HABITATION_DOME, &offset, &mask);
+		if (!(Base[baseID].facilitiesPresentTable[offset] & mask)) {
+			return FAC_HABITATION_DOME;
+		}
+	}
+	return 0; // Base already has Hab Complex and Dome
+}
+
+/*
+Purpose: ?
+Original Offset: 004EF090
+Return Value: ?
+Status: WIP - test
+*/
+int __cdecl pop_goal(int baseID) {
+	uint32_t factionID = Base[baseID].factionIDCurrent;
+	uint32_t limitMod = has_project(SP_ASCETIC_VIRTUES, factionID) ? 2 : 0;
+	int goal = (36 - Base[baseID].populationSize) / 6 + Base[baseID].populationSize;
+	if (goal <= 6) {
+		goal = 6;
+	}
+	uint32_t offset, mask;
+	bitmask(FAC_HAB_COMPLEX, &offset, &mask);
+	if (!(Base[baseID].facilitiesPresentTable[offset] & mask)) {
+		int compare = Rules->PopLimitSansHabComplex - Players[factionID].rulePopulation + limitMod;
+		if (goal >= compare) {
+			goal = compare;
+		}
+	}
+	bitmask(FAC_HABITATION_DOME, &offset, &mask);
+	if (!(Base[baseID].facilitiesPresentTable[offset] & mask)) {
+		int compare = Rules->PopLimitSansHabDome - Players[factionID].rulePopulation + limitMod;
+		if (goal >= compare) {
+			goal = compare;
+		}
+	}
+	return goal;
+}
+
+/*
 Purpose: Check if faction has secret project in a base they control.
 Original Offset: 004F80D0
 Return Value: Does faction have Secret Project? true/false
@@ -175,4 +261,14 @@ Status: Complete
 void __cdecl bitmask(uint32_t facilityID, uint32_t *offset, uint32_t *mask) {
 	*offset = facilityID / 8;
 	*mask = 1 << (facilityID & 7);
+}
+
+/*
+Purpose: Check if base is a port.
+Original Offset: 00579A00
+Return Value: Is base port? true/false
+Status: Complete
+*/
+BOOL __cdecl is_port(int baseID, BOOL isBaseRadius) {
+	return is_coast(Base[baseID].xCoord, Base[baseID].yCoord, isBaseRadius);
 }

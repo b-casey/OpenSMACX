@@ -49,10 +49,31 @@ BOOL __cdecl has_tech(int techID, int factionID) {
 }
 
 /*
+Purpose: Check to see whether provided faction can research a specific technology. Checks are
+		 included to prevent SMACX specific Veh from being built in SMAC mode.
+Original Offset: 005BAC20
+Return Value: Is tech available to faction? true/false
+Status: Complete
+*/
+BOOL __cdecl tech_avail(int techID, int factionID) {
+	if (has_tech(techID, factionID) || techID >= MaxTechnologyNum || (!*SMACX_Enabled 
+		&& (techID == TECH_PRPSYCH || techID == TECH_FLDMOD || techID == TECH_ADAPDOC 
+			|| techID == TECH_ADAPECO || techID == TECH_BIOADAP || techID == TECH_SENTRES 
+			|| techID == TECH_SECMANI || techID == TECH_NEWMISS || techID == TECH_BFG9000))) {
+		return false;
+	}
+	int preqTech1 = Technology[techID].preqTech1, preqTech2 = Technology[techID].preqTech2;
+	if (preqTech1 < TechNone || preqTech2 < TechNone) {
+		return false; // if either prerequisite tech is set to disabled (-2)
+	}
+	return (has_tech(preqTech1, factionID) && has_tech(preqTech2, factionID));
+}
+
+/*
 Purpose: Get powerValue from technology struct for techID
 Original Offset: 005BDD70
 Return Value: powerValue or 0 if techID is greater than max
-Status: Complete with explicit pointers
+Status: Complete
 */
 int __cdecl tech_mil(int techID) {
 	if (techID >= MaxTechnologyNum) {
@@ -65,7 +86,7 @@ int __cdecl tech_mil(int techID) {
 Purpose: Get techValue from technology struct for techID
 Original Offset: 005BDD90
 Return Value: techValue or 1 if techID is greater than max
-Status: Complete with explicit pointers
+Status: Complete
 */
 int __cdecl tech_tech(int techID) {
 	if (techID >= MaxTechnologyNum) {
@@ -78,7 +99,7 @@ int __cdecl tech_tech(int techID) {
 Purpose: Get wealthValue from technology struct for techID
 Original Offset: 005BDDC0
 Return Value: wealthValue or 1 if techID is greater than max
-Status: Complete with explicit pointers
+Status: Complete
 */
 int __cdecl tech_infra(int techID) {
 	if (techID >= MaxTechnologyNum) {
@@ -91,7 +112,7 @@ int __cdecl tech_infra(int techID) {
 Purpose: Get growthValue from technology struct for techID
 Original Offset: 005BDDF0
 Return Value: growthValue or 1 if techID is greater than max
-Status: Complete with explicit pointers
+Status: Complete
 */
 int __cdecl tech_colonize(int techID) {
 	if (techID >= MaxTechnologyNum) {
