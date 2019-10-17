@@ -159,7 +159,7 @@ Purpose: Check what facility (if any) a base needs for additional population gro
          function unused in original game and likely optimized out.
 Original Offset: 004EEF80
 Return Value: Facility id needed for pop growth or zero if base already has Hab Complex and Dome.
-Status: WIP - test
+Status: Complete
 */
 uint32_t __cdecl pop_goal_fac(int baseID) {
 	uint32_t factionID = Base[baseID].factionIDCurrent;
@@ -179,16 +179,16 @@ uint32_t __cdecl pop_goal_fac(int baseID) {
 			return FAC_HABITATION_DOME;
 		}
 	}
-	return 0; // Base already has Hab Complex and Dome
+	return 0; // Pop hasn't reached capacity or Base already has Hab Complex and Dome
 }
 
 /*
-Purpose: ?
+Purpose: Calculate population goal for a base.
 Original Offset: 004EF090
-Return Value: ?
-Status: WIP - test
+Return Value: Goal population
+Status: Complete
 */
-int __cdecl pop_goal(int baseID) {
+uint32_t __cdecl pop_goal(int baseID) {
 	uint32_t factionID = Base[baseID].factionIDCurrent;
 	uint32_t limitMod = has_project(SP_ASCETIC_VIRTUES, factionID) ? 2 : 0;
 	int goal = (36 - Base[baseID].populationSize) / 6 + Base[baseID].populationSize;

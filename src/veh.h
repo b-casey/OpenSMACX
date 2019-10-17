@@ -483,6 +483,7 @@ OPENSMACX_API uint32_t __cdecl contribution(int vehID, uint32_t terraformID);
 OPENSMACX_API uint32_t __cdecl drop_range(int factionID);
 OPENSMACX_API uint32_t __cdecl planet_buster2(int protoID);
 OPENSMACX_API uint32_t __cdecl planet_buster(int vehID);
+OPENSMACX_API uint32_t __cdecl morale_alien(int vehID, int factionIDvsNative);
 OPENSMACX_API int __cdecl psi_factor(int combatRatio, int factionID, BOOL isAttack, 
 	BOOL isFungalTower);
 OPENSMACX_API int __cdecl veh_top(int vehID);

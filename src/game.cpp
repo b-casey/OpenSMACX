@@ -18,8 +18,10 @@
 #include "stdafx.h"
 #include "game.h"
 
+BOOL *SMACX_Enabled = (BOOL *)0x009A6488;
 uint32_t *GameRules  = (uint32_t *)0x009A64C0;
 uint32_t *GameRules2 = (uint32_t *)0x009A649C;
 int *DiffLevelCurrent = (int *)0x009A64C4;
 int *TurnCurrentNum = (int *)0x009A64D4;
 int *MissionYearCurrent = (int *)0x009A64D8;
+uint32_t *TectonicDetonationCount = (uint32_t *)0x00946138; // [8]; value for each faction

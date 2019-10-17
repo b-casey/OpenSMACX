@@ -421,7 +421,7 @@ OPENSMACX_API int __cdecl base_find(int xCoord, int yCoord, uint32_t factionID);
 OPENSMACX_API int __cdecl base_find(int xCoord, int yCoord, int factionID, int region,
 	int factionID2, int factionID3);
 OPENSMACX_API uint32_t __cdecl pop_goal_fac(int baseID);
-OPENSMACX_API int __cdecl pop_goal(int baseID);
+OPENSMACX_API uint32_t __cdecl pop_goal(int baseID);
 OPENSMACX_API BOOL __cdecl has_project(uint32_t projectID, uint32_t factionID);
 OPENSMACX_API BOOL __cdecl has_fac_built(uint32_t facilityID);
 OPENSMACX_API int __cdecl base_project(uint32_t projectID);

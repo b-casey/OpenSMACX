@@ -16,8 +16,8 @@
  * along with OpenSMACX. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "stdafx.h"
-#include "temp.h"
 #include "technology.h"
+#include "game.h"
 
 rules_technology *Technology = (rules_technology *)0x0094F358;
 uint8_t *GameTechDiscovered = (uint8_t *)0x009A6670;

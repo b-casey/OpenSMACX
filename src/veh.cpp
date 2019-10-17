@@ -16,6 +16,7 @@
  * along with OpenSMACX. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "stdafx.h"
+#include "temp.h"
 #include "veh.h"
 #include "alpha.h"
 #include "base.h"
@@ -26,7 +27,6 @@
 #include "map.h"
 #include "strings.h"
 #include "technology.h"
-#include "temp.h"
 
 veh_prototype *VehPrototype = (veh_prototype *)0x009AB868; // [512]
 veh *Veh = (veh *)0x00952828; // [2049]
@@ -103,6 +103,77 @@ Status: Complete
 */
 uint32_t __cdecl planet_buster(int vehID) {
 	return planet_buster2(Veh[vehID].protoID);
+}
+
+/*
+Purpose: Calculate morale of native life.
+Original Offset: 00501350
+Return Value: morale value
+Status: WIP
+*/
+uint32_t __cdecl morale_alien(int vehID, int factionIDvsNative) {
+	int morale;
+	// Fungal Tower specific, shifted code to start
+	if (vehID >= 0 && Veh[vehID].protoID == BSC_FUNGAL_TOWER) {
+		morale = 0;
+		int16_t xCoord = Veh[vehID].xCoord;
+		int16_t yCoord = Veh[vehID].yCoord;
+		// similar to is_coast() > added fungus check + ocean/ocean trench only
+		for (uint32_t i = 0; i < 8; i++) {
+			int xRadius = xCoord + xRadiusOffset[i];
+			if (!*MapFlatToggle) { // if round map, additional parsing of coordinates
+				if (xRadius >= 0) {
+					if (xRadius >= (int)*MapHorizontalBounds) {
+						xRadius -= *MapHorizontalBounds;
+					}
+				}
+				else {
+					xRadius += *MapHorizontalBounds;
+				}
+			}
+			int yRadius = yCoord + yRadiusOffset[i];
+			if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
+				&& xRadius < (int)*MapHorizontalBounds && bit_at(xRadius, yRadius) & BIT_FUNGUS
+				&& ((map_loc(xRadius, yRadius)->val1 & 0xE0) < ALT_OCEAN_SHELF)) {
+				morale++;
+			}
+		}
+		morale -= 2;
+	}
+	else { // everything else
+		if (*TurnCurrentNum < 45) {
+			morale = 0;
+		}
+		else if (*TurnCurrentNum < 90) {
+			morale = 1;
+		}
+		else if (*TurnCurrentNum < 170) {
+			morale = 2;
+		}
+		else if (*TurnCurrentNum < 250) {
+			morale = 3;
+		}
+		else if (*TurnCurrentNum < 330) {
+			morale = 4;
+		}
+		else { // 330+
+			morale = 6;
+		}
+		if (factionIDvsNative > 0) {
+			morale += (PlayersData[factionIDvsNative].majorAtrocities != 0)
+				+ (TectonicDetonationCount[factionIDvsNative] != 0);
+		}
+		if (vehID >= 0) { // modified '>' to '>=', even though unlikely vehID 0 is native
+			if (Veh[vehID].state & VSTATE_MONOLITH_UPGRADED) {
+				morale++;
+			}
+			if (Veh[vehID].protoID == BSC_LOCUSTS_OF_CHIRON) {
+				morale++;
+			}
+			morale += (Veh[vehID].flags >> 3) & 3; // 0x8|0x10 > +1, +2, or +3; TODO: unknown flags
+		}
+	}
+	return range(morale, 0, 6);
 }
 
 /*

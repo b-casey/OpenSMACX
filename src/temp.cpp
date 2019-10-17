@@ -47,8 +47,6 @@ func5 *load_faction_art = (func5 *)0x00453710;
 // Next call to text_get() tries to access 009B7CF4 and the game crashes.
 typedef void *func6(char const *, int(*)(void));
 func6 *X_pop = (func6 *)0x005BF310;
-typedef uint32_t func7(int, int);
-func7 *morale_alien = (func7 *)0x00501350;
 
 // string
 typedef int *func8(LPSTR, LPSTR);
@@ -57,9 +55,10 @@ func8 *parse_string = (func8 *)0x00625880;
 // testing
 typedef int func10(int, int, int);
 func10 *veh_drop_OG = (func10 *)0x005C0080;
-
 typedef BOOL func11(int, int, int);
 func11 *veh_avail_OG = (func11 *)0x005BA910;
+typedef uint32_t func7(int, int);
+func7 *morale_alien_OG = (func7 *)0x00501350;
 
 ///
 LPSTR *ParseTempPtr1_1 = (LPSTR *)0x009B7D00;
@@ -75,7 +74,6 @@ int *ParseStrGender = (int *)0x009BB5C0;
 int *GenderDefault = (int *)0x009BBFEC;
 int *PluralityDefault = (int *)0x009BBFF0;
 int *Language = (int *)0x009BC054;
-BOOL *SMACX_Enabled = (BOOL *)0x009A6488;
 BOOL *IsLoggingDisabled = (BOOL *)0x009BC004;
 BOOL *MultiplayerToggle = (BOOL *)0x0093F660;
 int *MsgStatus = (int *)0x009B7B9C;

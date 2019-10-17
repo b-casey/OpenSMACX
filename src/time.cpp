@@ -16,8 +16,8 @@
  * along with OpenSMACX. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "stdafx.h"
-#include "time.h"
 #include "temp.h" // MsgStatus, HandleMain
+#include "time.h"
 
 Time *Time::TimeModal;
 int Time::TimeInitCount;

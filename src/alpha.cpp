@@ -17,8 +17,9 @@
  */
 #include "stdafx.h"
 #include "temp.h"
-#include <string>
 #include "alpha.h"
+#include <string>
+#include "game.h"
 #include "base.h"
 #include "faction.h"
 #include "general.h"

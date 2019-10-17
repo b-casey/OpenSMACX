@@ -83,8 +83,10 @@ enum game_difficulty_level {
 	DLVL_TRANSCEND = 5,
 };
 
+extern BOOL *SMACX_Enabled;
 extern uint32_t *GameRules; // bitfield
 extern uint32_t *GameRules2; // bitfield
 extern int *DiffLevelCurrent;
 extern int *TurnCurrentNum;
 extern int *MissionYearCurrent;
+extern uint32_t *TectonicDetonationCount;

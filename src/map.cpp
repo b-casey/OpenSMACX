@@ -16,10 +16,10 @@
  * along with OpenSMACX. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "stdafx.h"
+#include "temp.h"
 #include "map.h"
 #include "base.h"
 #include "veh.h"
-#include "temp.h"
 
 rules_natural *Natural = (rules_natural *)0x0094ADE0;
 uint32_t *MapHorizontalBounds = (uint32_t *)0x00949870;

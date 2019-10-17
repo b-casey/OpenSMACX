@@ -47,8 +47,6 @@ typedef void *func5(int);
 extern func5 *load_faction_art;
 typedef void *func6(char const *, int(*)(void));
 extern func6 *X_pop;
-typedef uint32_t func7(int, int);
-extern func7 *morale_alien;
 
 // string
 typedef int *func8(LPSTR, LPSTR);
@@ -57,9 +55,11 @@ extern func8 *parse_string;
 // testing
 typedef int func10(int, int, int);
 extern func10 *veh_drop_OG;
-
 typedef BOOL func11(int, int, int);
 extern func11 *veh_avail_OG;
+typedef uint32_t func7(int, int);
+extern func7 *morale_alien_OG;
+
 ///
 extern LPSTR *ParseTempPtr1_1;
 extern LPSTR *ParseTempPtr2_1;
@@ -73,7 +73,6 @@ extern int *ParseStrGender;
 extern int *GenderDefault;
 extern int *PluralityDefault;
 extern int *Language;
-extern BOOL *SMACX_Enabled;
 extern BOOL *IsLoggingDisabled; // global toggle for logging on/off? debug vs release?
 extern BOOL *MultiplayerToggle;
 extern int *MsgStatus;

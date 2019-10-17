@@ -16,9 +16,9 @@
  * along with OpenSMACX. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "stdafx.h"
+#include "temp.h" // BufferStrHeight
 #include "font.h"
 #include "general.h" // mem_get()
-#include "temp.h" // BufferStrHeight
 
 HDC Font::FontHDC;
 int Font::FontInitCount;
