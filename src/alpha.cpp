@@ -790,20 +790,21 @@ BOOL __cdecl read_units() {
 		VehPrototype[protoID].preqTech = (int16_t)tech_name(text_item());
 		int icon = text_item_number();
 		int ability = text_item_binary();
-		int reactorID;
-		switch (protoID)
-		{
-			// There was a pointless explicit check for BSC_BATTLE_OGRE_MK1 to set reactor to 1
-			// The parameters set by check are no different than default
-		case BSC_BATTLE_OGRE_MK2:
-			reactorID = 2;
-			break;
-		case BSC_BATTLE_OGRE_MK3:
-			reactorID = 3;
-			break;
-		default:
-			reactorID = 1;
-			break;
+		int reactorID = text_item_number(); // Add ability to read reactor for #UNITS
+		if (!reactorID) { // if not set or 0, default behavior
+			switch (protoID) {
+				// There was a pointless explicit check for BSC_BATTLE_OGRE_MK1 to set reactor to 1
+				// The parameters set by check are no different than default
+				case BSC_BATTLE_OGRE_MK2:
+					reactorID = 2;
+					break;
+				case BSC_BATTLE_OGRE_MK3:
+					reactorID = 3;
+					break;
+				default:
+					reactorID = 1;
+					break;
+			}
 		}
 		make_proto(protoID, chasID, weapID, armorID, ability, reactorID);
 		// If set, override auto calculated values from make_proto()
