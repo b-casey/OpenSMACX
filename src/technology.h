@@ -153,6 +153,7 @@ extern uint8_t *GameTechDiscovered; // [89]
 extern rules_mandate *Mandate; // [4]
 extern int *TechValidCount;
 extern int *TechCommerceCount;
+extern char TechName[80];
 
 OPENSMACX_API BOOL __cdecl has_tech(int techID, int factionID);
 OPENSMACX_API BOOL __cdecl tech_avail(int techID, int factionID);

@@ -432,7 +432,7 @@ void __cdecl read_faction(player *Player, int toggle) {
 		LPSTR parseRule = new char[len + 1];
 		strcpy_s(parseRule, len + 1, parseRuleCheck);
 		LPSTR parseParameter = text_item();
-		if (!_strcmpi(parseRule, BonusName[0].key)) { // TECH
+		if (!_stricmp(parseRule, BonusName[0].key)) { // TECH
 			// will have issues if custom tech abbreviations starting with numbers are used
 			int playerSelected = atoi(parseParameter);
 			if (!playerSelected && Player->factionBonusCount < 8) {
@@ -444,7 +444,7 @@ void __cdecl read_faction(player *Player, int toggle) {
 				Player->ruleTechSelected = playerSelected;
 			}
 		}
-		else if (!_strcmpi(parseRule, BonusName[1].key)) { // MORALE
+		else if (!_stricmp(parseRule, BonusName[1].key)) { // MORALE
 			if (parseParameter[0] == '+') {
 				parseParameter++;
 			}
@@ -455,56 +455,56 @@ void __cdecl read_faction(player *Player, int toggle) {
 			}
 		}
 		// FACILITY
-		else if (!_strcmpi(parseRule, BonusName[3].key) && Player->factionBonusCount < 8) {
+		else if (!_stricmp(parseRule, BonusName[3].key) && Player->factionBonusCount < 8) {
 			Player->factionBonusID[Player->factionBonusCount] = RULE_FACILITY;
 			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
 			Player->factionBonusCount++;
 		}
-		else if (!_strcmpi(parseRule, BonusName[4].key)) { // RESEARCH
+		else if (!_stricmp(parseRule, BonusName[4].key)) { // RESEARCH
 			Player->ruleResearch = atoi(parseParameter);
 		}
-		else if (!_strcmpi(parseRule, BonusName[5].key)) { // DRONE
+		else if (!_stricmp(parseRule, BonusName[5].key)) { // DRONE
 			Player->ruleDrone = atoi(parseParameter);
 		}
-		else if (!_strcmpi(parseRule, BonusName[6].key)) { // TALENT
+		else if (!_stricmp(parseRule, BonusName[6].key)) { // TALENT
 			Player->ruleTalent = atoi(parseParameter);
 		}
-		else if (!_strcmpi(parseRule, BonusName[7].key)) { // ENERGY
+		else if (!_stricmp(parseRule, BonusName[7].key)) { // ENERGY
 			Player->ruleEnergy = atoi(parseParameter);
 		}
-		else if (!_strcmpi(parseRule, BonusName[8].key)) { // INTEREST
+		else if (!_stricmp(parseRule, BonusName[8].key)) { // INTEREST
 			Player->ruleFlags |= FLAG_INTEREST;
 			Player->ruleInterest = atoi(parseParameter);
 		}
-		else if (!_strcmpi(parseRule, BonusName[9].key)) { // COMMERCE
+		else if (!_stricmp(parseRule, BonusName[9].key)) { // COMMERCE
 			Player->ruleCommerce = atoi(parseParameter);
 		}
-		else if (!_strcmpi(parseRule, BonusName[10].key)) { // POPULATION
+		else if (!_stricmp(parseRule, BonusName[10].key)) { // POPULATION
 			Player->rulePopulation = atoi(parseParameter);
 		}
-		else if (!_strcmpi(parseRule, BonusName[11].key)) { // HURRY
+		else if (!_stricmp(parseRule, BonusName[11].key)) { // HURRY
 			Player->ruleHurry = range(atoi(parseParameter), 1, 1000);
 		}
-		else if (!_strcmpi(parseRule, BonusName[13].key)) { // TECHCOST
+		else if (!_stricmp(parseRule, BonusName[13].key)) { // TECHCOST
 			Player->ruleTechcost = atoi(parseParameter);
 		}
-		else if (!_strcmpi(parseRule, BonusName[12].key) && Player->factionBonusCount < 8) { // UNIT
+		else if (!_stricmp(parseRule, BonusName[12].key) && Player->factionBonusCount < 8) { // UNIT
 			Player->factionBonusID[Player->factionBonusCount] = RULE_UNIT;
 			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
 			Player->factionBonusCount++;
 		}
-		else if (!_strcmpi(parseRule, BonusName[2].key)) { // PSI
+		else if (!_stricmp(parseRule, BonusName[2].key)) { // PSI
 			Player->rulePsi = atoi(parseParameter);
 		}
-		else if (!_strcmpi(parseRule, BonusName[14].key)) { // SHARETECH
+		else if (!_stricmp(parseRule, BonusName[14].key)) { // SHARETECH
 			Player->ruleSharetech = atoi(parseParameter);
 		}
-		else if (!_strcmpi(parseRule, BonusName[15].key)) { // TERRAFORM
+		else if (!_stricmp(parseRule, BonusName[15].key)) { // TERRAFORM
 			Player->ruleFlags |= FLAG_TERRAFORM;
 		}
 		// SOCIAL, ROBUST, IMMUNITY; Moved factionBonusCount check to start rather than inner loop
-		else if ((!_strcmpi(parseRule, BonusName[16].key) || !_strcmpi(parseRule, BonusName[17].key)
-			|| !_strcmpi(parseRule, BonusName[18].key)) && Player->factionBonusCount < 8) {
+		else if ((!_stricmp(parseRule, BonusName[16].key) || !_stricmp(parseRule, BonusName[17].key)
+			|| !_stricmp(parseRule, BonusName[18].key)) && Player->factionBonusCount < 8) {
 			int value = 0;
 			while (parseParameter[0] == '+' || parseParameter[0] == '-') {
 				(parseParameter[0] == '+') ? value++ : value--;
@@ -514,13 +514,13 @@ void __cdecl read_faction(player *Player, int toggle) {
 				value = 1;
 			}
 			for (int j = 0; j < MaxSocialEffectNum; j++) {
-				if (!_strcmpi(SocialEffect[j].set1, parseParameter)) {
-					if (!_strcmpi(parseRule, BonusName[17].key)) {
+				if (!_stricmp(SocialEffect[j].set1, parseParameter)) {
+					if (!_stricmp(parseRule, BonusName[17].key)) {
 						Player->factionBonusID[Player->factionBonusCount] = RULE_ROBUST;
 					}
 					else {
 						Player->factionBonusID[Player->factionBonusCount] =
-							!_strcmpi(parseRule, BonusName[16].key) ? RULE_SOCIAL : RULE_IMMUNITY;
+							!_stricmp(parseRule, BonusName[16].key) ? RULE_SOCIAL : RULE_IMMUNITY;
 					}
 					Player->factionBonusVal1[Player->factionBonusCount] = j; // Social Effect id
 					Player->factionBonusVal2[Player->factionBonusCount] = value; // value modifier
@@ -530,14 +530,14 @@ void __cdecl read_faction(player *Player, int toggle) {
 			}
 		}
 		// IMPUNITY, PENALTY; Moved factionBonusCount check to start rather than inner loop
-		else if ((!_strcmpi(parseRule, BonusName[19].key)
-			|| !_strcmpi(parseRule, BonusName[20].key)) && Player->factionBonusCount < 8) {
+		else if ((!_stricmp(parseRule, BonusName[19].key)
+			|| !_stricmp(parseRule, BonusName[20].key)) && Player->factionBonusCount < 8) {
 			for (int j = 0; j < MaxSocialCatNum; j++) {
 				for (int k = 0; k < MaxSocialModelNum; k++) {
 					if (!_stricmp(parseParameter,
 						StringTable->get((int)SocialCategory[j].name[k]))) {
 						Player->factionBonusID[Player->factionBonusCount] =
-							!_strcmpi(parseRule, BonusName[19].key) ? RULE_IMPUNITY : RULE_PENALTY;
+							!_stricmp(parseRule, BonusName[19].key) ? RULE_IMPUNITY : RULE_PENALTY;
 						Player->factionBonusVal1[Player->factionBonusCount] = j; // category id
 						Player->factionBonusVal2[Player->factionBonusCount] = k; // model id
 						Player->factionBonusCount++;
@@ -546,97 +546,97 @@ void __cdecl read_faction(player *Player, int toggle) {
 			}
 		}
 		// FUNGNUTRIENT
-		else if (!_strcmpi(parseRule, BonusName[21].key) && Player->factionBonusCount < 8) {
+		else if (!_stricmp(parseRule, BonusName[21].key) && Player->factionBonusCount < 8) {
 			Player->factionBonusID[Player->factionBonusCount] = RULE_FUNGNUTRIENT;
 			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
 			Player->factionBonusCount++;
 		}
 		// FUNGMINERALS
-		else if (!_strcmpi(parseRule, BonusName[22].key) && Player->factionBonusCount < 8) {
+		else if (!_stricmp(parseRule, BonusName[22].key) && Player->factionBonusCount < 8) {
 			Player->factionBonusID[Player->factionBonusCount] = RULE_FUNGMINERALS;
 			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
 			Player->factionBonusCount++;
 		}
 		// FUNGENERGY
-		else if (!_strcmpi(parseRule, BonusName[23].key) && Player->factionBonusCount < 8) {
+		else if (!_stricmp(parseRule, BonusName[23].key) && Player->factionBonusCount < 8) {
 			Player->factionBonusID[Player->factionBonusCount] = RULE_FUNGENERGY;
 			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
 			Player->factionBonusCount++;
 		}
-		else if (!_strcmpi(parseRule, BonusName[24].key)) { // COMMFREQ
+		else if (!_stricmp(parseRule, BonusName[24].key)) { // COMMFREQ
 			Player->ruleFlags |= FLAG_COMMFREQ;
 		}
-		else if (!_strcmpi(parseRule, BonusName[25].key)) { // MINDCONTROL
+		else if (!_stricmp(parseRule, BonusName[25].key)) { // MINDCONTROL
 			Player->ruleFlags |= FLAG_MINDCONTROL;
 		}
-		else if (!_strcmpi(parseRule, BonusName[26].key)) { // FANATIC
+		else if (!_stricmp(parseRule, BonusName[26].key)) { // FANATIC
 			Player->ruleFlags |= FLAG_FANATIC;
 		}
 		// VOTES
-		else if (!_strcmpi(parseRule, BonusName[27].key) && Player->factionBonusCount < 8) {
+		else if (!_stricmp(parseRule, BonusName[27].key) && Player->factionBonusCount < 8) {
 			Player->factionBonusID[Player->factionBonusCount] = RULE_VOTES;
 			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
 			Player->factionBonusCount++;
 		}
-		else if (!_strcmpi(parseRule, BonusName[28].key)) { // FREEPROTO
+		else if (!_stricmp(parseRule, BonusName[28].key)) { // FREEPROTO
 			Player->ruleFlags |= FLAG_FREEPROTO;
 		}
-		else if (!_strcmpi(parseRule, BonusName[29].key)) { // AQUATIC
+		else if (!_stricmp(parseRule, BonusName[29].key)) { // AQUATIC
 			Player->ruleFlags |= FLAG_AQUATIC;
 		}
-		else if (!_strcmpi(parseRule, BonusName[30].key)) { // ALIEN
+		else if (!_stricmp(parseRule, BonusName[30].key)) { // ALIEN
 			Player->ruleFlags |= FLAG_ALIEN;
 		}
 		// FREEFAC
-		else if (!_strcmpi(parseRule, BonusName[31].key) && Player->factionBonusCount < 8) {
+		else if (!_stricmp(parseRule, BonusName[31].key) && Player->factionBonusCount < 8) {
 			Player->factionBonusID[Player->factionBonusCount] = RULE_FREEFAC;
 			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
 			Player->factionBonusCount++;
 		}
 		// REVOLT
-		else if (!_strcmpi(parseRule, BonusName[32].key) && Player->factionBonusCount < 8) {
+		else if (!_stricmp(parseRule, BonusName[32].key) && Player->factionBonusCount < 8) {
 			Player->factionBonusID[Player->factionBonusCount] = RULE_REVOLT;
 			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
 			Player->factionBonusCount++;
 		}
 		// NODRONE
-		else if (!_strcmpi(parseRule, BonusName[33].key) && Player->factionBonusCount < 8) {
+		else if (!_stricmp(parseRule, BonusName[33].key) && Player->factionBonusCount < 8) {
 			Player->factionBonusID[Player->factionBonusCount] = RULE_NODRONE;
 			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
 			Player->factionBonusCount++;
 		}
-		else if (!_strcmpi(parseRule, BonusName[34].key)) { // WORMPOLICE
+		else if (!_stricmp(parseRule, BonusName[34].key)) { // WORMPOLICE
 			Player->ruleFlags |= FLAG_WORMPOLICE;
 		}
 		// FREEABIL
-		else if (!_strcmpi(parseRule, BonusName[35].key) && Player->factionBonusCount < 8) {
+		else if (!_stricmp(parseRule, BonusName[35].key) && Player->factionBonusCount < 8) {
 			Player->factionBonusID[Player->factionBonusCount] = RULE_FREEABIL;
 			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
 			Player->factionBonusCount++;
 		}
 		// PROBECOST
-		else if (!_strcmpi(parseRule, BonusName[36].key) && Player->factionBonusCount < 8) {
+		else if (!_stricmp(parseRule, BonusName[36].key) && Player->factionBonusCount < 8) {
 			Player->factionBonusID[Player->factionBonusCount] = RULE_PROBECOST;
 			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
 			Player->factionBonusCount++;
 		}
 		// DEFENSE
-		else if (!_strcmpi(parseRule, BonusName[37].key) && Player->factionBonusCount < 8) {
+		else if (!_stricmp(parseRule, BonusName[37].key) && Player->factionBonusCount < 8) {
 			Player->factionBonusID[Player->factionBonusCount] = RULE_DEFENSE;
 			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
 			Player->factionBonusCount++;
 		}
 		// OFFENSE
-		else if (!_strcmpi(parseRule, BonusName[38].key) && Player->factionBonusCount < 8) {
+		else if (!_stricmp(parseRule, BonusName[38].key) && Player->factionBonusCount < 8) {
 			Player->factionBonusID[Player->factionBonusCount] = RULE_OFFSENSE;
 			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
 			Player->factionBonusCount++;
 		}
-		else if (!_strcmpi(parseRule, BonusName[39].key)) { // TECHSHARE
+		else if (!_stricmp(parseRule, BonusName[39].key)) { // TECHSHARE
 			Player->ruleFlags |= FLAG_TECHSHARE;
 			Player->ruleSharetech = atoi(parseParameter);
 		}
-		else if (!_strcmpi(parseRule, BonusName[40].key)) { // TECHSTEAL
+		else if (!_stricmp(parseRule, BonusName[40].key)) { // TECHSTEAL
 			Player->ruleFlags |= FLAG_TECHSTEAL;
 		}
 		parseRuleCheck = text_item();
@@ -672,7 +672,7 @@ void __cdecl read_faction(player *Player, int toggle) {
 		}
 		LPSTR socEffect = text_item();
 		for (int j = 0; j < MaxSocialEffectNum; j++) {
-			if (!_strcmpi(SocialEffect[j].set1, socEffect)) {
+			if (!_stricmp(SocialEffect[j].set1, socEffect)) {
 				// Bug fix: Original code sets this value to -1, disabling AI faction "Emphasis" 
 				// value. No indication this was intentional.
 				*(&Player->socIdeologyEffect + i) = j;
@@ -855,7 +855,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		for (int j = 0; j < 2; j++) {
 			parse_say(0, (int)*(&Terraforming[i].name + j), -1, -1);
 			stringTemp->str[0] = 0;
-			parse_string(orderStr, stringTemp->str);
+			parse_string_OG(orderStr, stringTemp->str); // TODO: replace with completed parse_string
 			*(&Order[i + 4].order + j) = StringTable->put(stringTemp->str);
 		}
 		Order[i + 4].letter = text_item_string();
@@ -1157,7 +1157,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 					modValue++;
 				}
 				for (int k = 0; k < MaxSocialEffectNum; k++) {
-					if (!_strcmpi(modValue, SocialEffect[k].set1)) {
+					if (!_stricmp(modValue, SocialEffect[k].set1)) {
 						*(&SocialCategory[i].effect[j].economy + k) = value;
 						break;
 					}

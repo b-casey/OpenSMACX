@@ -33,6 +33,8 @@ typedef void *func2(void *);
 func2 *_free = (func2 *)0x00644EF2;
 typedef FILE *func3(LPCSTR, LPCSTR);
 func3 *_fopen = (func3 *)0x00645646;
+typedef void *func4(unsigned int);
+func4 *_srand = (func4 *)0x00646010;
 //typedef void *func12(void *, size_t);
 //func12 *_realloc = (func12 *)0x00647132;
 //typedef int *func18(FILE *);
@@ -48,17 +50,18 @@ func5 *load_faction_art = (func5 *)0x00453710;
 typedef void *func6(char const *, int(*)(void));
 func6 *X_pop = (func6 *)0x005BF310;
 
-// string
-typedef int *func8(LPSTR, LPSTR);
-func8 *parse_string = (func8 *)0x00625880;
-
 // testing
-typedef int func10(int, int, int);
-func10 *veh_drop_OG = (func10 *)0x005C0080;
-typedef BOOL func11(int, int, int);
-func11 *veh_avail_OG = (func11 *)0x005BA910;
-typedef uint32_t func7(int, int);
-func7 *morale_alien_OG = (func7 *)0x00501350;
+typedef int *func8(LPSTR, LPSTR);
+func8 *parse_string_OG = (func8 *)0x00625880;
+
+typedef BOOL func12(int, int, int, int);
+func12 *facility_avail_OG = (func12 *)0x005BA0E0;
+
+
+typedef int func21(int, int);
+func21 *fixed_div_OG = (func21 *)0x00628AD0;
+typedef void func22(const void *, const void *, char);
+func22 *memrchr_OG = (func22 *)0x00628AF0;
 
 ///
 LPSTR *ParseTempPtr1_1 = (LPSTR *)0x009B7D00;
@@ -84,7 +87,33 @@ uint32_t *UnkBitfield1 = (uint32_t *)0x0090D91C;
 Filefind *FilefindPath = (Filefind *)0x009B8198;
 MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
 
-void __cdecl tester() {
+int __cdecl tester() {
+	for (uint32_t i = 0xFFFF0000; i < 0xFFFFFFFF; i++) {
+		if (fixed_div(i, 0xFF) != fixed_div_OG(i, 0xFF)) {
+			MessageBoxA(NULL, "Error", "FATAL ERROR", MB_ICONWARNING);
+		}
+	}
+	/*
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < *BaseCurrentCount; j++) {
+			for (int k = 0; k <= FAC_EMPTY_SP_64; k++) {
+				if (k != FAC_PARADISE_GARDEN) {
+					if (facility_avail_OG(k, i, j, 10) != facility_avail(k, i, j, 10)) {
+						char szError[150];
+						wsprintfA(szError,
+							"facility_avail error!\n"
+							"FacilityID: %d\n"
+							"FactionID: %d\n"
+							"BaseID: %d",
+							k, i, j);
+						MessageBoxA(NULL, szError, "FATAL ERROR", MB_ICONWARNING);
+					}
+				}
+			}
+		}
+	}
+	return 0;
+	*/
 	/*
 	for (int i = 0; i < MaxPlayerNum; i++) {
 		for (int j = 0; j < *BaseCurrentCount; j++) {
@@ -173,6 +202,7 @@ void __cdecl tester() {
 		veh_drop(i, x, y);
 		*/
 	//}
+	return 0;
 }
 
 void __cdecl testerMap() {

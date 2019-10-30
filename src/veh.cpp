@@ -108,17 +108,17 @@ uint32_t __cdecl planet_buster(int vehID) {
 /*
 Purpose: Calculate morale of native life.
 Original Offset: 00501350
-Return Value: morale value
-Status: WIP
+Return Value: Morale value
+Status: Complete
 */
 uint32_t __cdecl morale_alien(int vehID, int factionIDvsNative) {
 	int morale;
-	// Fungal Tower specific, shifted code to start
+	// Fungal Tower specific code, shifted to start and added vehID check to prevent crash
 	if (vehID >= 0 && Veh[vehID].protoID == BSC_FUNGAL_TOWER) {
 		morale = 0;
 		int16_t xCoord = Veh[vehID].xCoord;
 		int16_t yCoord = Veh[vehID].yCoord;
-		// similar to is_coast() > added fungus check + ocean/ocean trench only
+		// similar to is_coast() > except with fungus check + Ocean Shelf included
 		for (uint32_t i = 0; i < 8; i++) {
 			int xRadius = xCoord + xRadiusOffset[i];
 			if (!*MapFlatToggle) { // if round map, additional parsing of coordinates
@@ -134,7 +134,7 @@ uint32_t __cdecl morale_alien(int vehID, int factionIDvsNative) {
 			int yRadius = yCoord + yRadiusOffset[i];
 			if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
 				&& xRadius < (int)*MapHorizontalBounds && bit_at(xRadius, yRadius) & BIT_FUNGUS
-				&& ((map_loc(xRadius, yRadius)->val1 & 0xE0) < ALT_OCEAN_SHELF)) {
+				&& ((map_loc(xRadius, yRadius)->val1 & 0xE0) >= ALT_OCEAN_SHELF)) {
 				morale++;
 			}
 		}
@@ -163,7 +163,7 @@ uint32_t __cdecl morale_alien(int vehID, int factionIDvsNative) {
 			morale += (PlayersData[factionIDvsNative].majorAtrocities != 0)
 				+ (TectonicDetonationCount[factionIDvsNative] != 0);
 		}
-		if (vehID >= 0) { // modified '>' to '>=', even though unlikely vehID 0 is native
+		if (vehID >= 0) {
 			if (Veh[vehID].state & VSTATE_MONOLITH_UPGRADED) {
 				morale++;
 			}
@@ -1135,10 +1135,10 @@ int __cdecl veh_lift(int vehID) {
 }
 
 /*
-Purpose: Move and drop a specific Veh to specified coordinates.
+Purpose: Move/drop the specified Veh to coordinates.
 Original Offset: 005C0080
 Return Value: vehID (param1), doesn't seem to be used.
-Status: WIP - test
+Status: Complete
 */
 int __cdecl veh_drop(int vehID, int xCoord, int yCoord) {
 	int vehIDDest = veh_at(xCoord, yCoord);
@@ -1299,15 +1299,15 @@ BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn) {
 Purpose: Calculate Veh morale.
 Original Offset: 005C0E40
 Return Value: Morale value
-Status: WIP
+Status: Complete
 */
 uint32_t __cdecl morale_veh(int vehID, BOOL checkDroneRiot, int factionIDvsNative) {
 	uint32_t factionID = Veh[vehID].factionID;
 	if (!factionID) {
-		return morale_alien(vehID, factionIDvsNative); // Native life
+		return morale_alien(vehID, factionIDvsNative);
 	}
 	int16_t protoID = Veh[vehID].protoID;
-	if (VehPrototype[protoID].plan == PLAN_INFO_WARFARE) {
+	if (VehPrototype[protoID].plan == PLAN_INFO_WARFARE) { // probe
 		int probeMorale = range(PlayersData[factionID].SE_Probe, 0, 3);
 		probeMorale += has_project(SP_TELEPATHIC_MATRIX, factionID) ? 2 : 0;
 		for (int i = 0; i < MaxTechnologyNum; i++) {
@@ -1322,27 +1322,29 @@ uint32_t __cdecl morale_veh(int vehID, BOOL checkDroneRiot, int factionIDvsNativ
 	if (protoID < MaxVehProtoFactionNum && offenseRating < 0) {
 		return range(Veh[vehID].morale, 0, 6); // Basic Psi Veh
 	}
-	int morale = 0;
-	//
-	int ruleMorale = Players[factionID].ruleMorale;
-	if (ruleMorale < 0) {
+	int morale = range(PlayersData[factionID].SE_Morale, -4, 4); // everything else
+	if (morale <= -2) {
+		morale++;
+	}
+	else if (morale >= 2) {
+		morale--;
+	}
+	int ruleMorale = Players[factionID].ruleMorale; // different from 'SOCIAL, MORALE'
+	if (ruleMorale < 0) { // negative effects 1st
 		morale += ruleMorale;
 	}
 	int homeBaseID = Veh[vehID].homeBaseID;
-	if (homeBaseID >= 0) {
+	if (homeBaseID >= 0) { // home base countering negative effects
 		uint32_t offset, mask;
 		bitmask(FAC_CHILDREN_CRECHE, &offset, &mask);
-		if (Base[homeBaseID].facilitiesPresentTable[offset] & mask) {
-			if (morale < 0) {
-				morale /= 2;
-			}
+		if (Base[homeBaseID].facilitiesPresentTable[offset] & mask && morale < 0) {
+			morale /= 2;
 		}
 		bitmask(FAC_BROOD_PIT, &offset, &mask);
-		if (Base[homeBaseID].facilitiesPresentTable[offset] & mask) {
-			if (protoID <= MaxVehProtoFactionNum 
-				&& (offenseRating < 0 || protoID == BSC_SPORE_LAUNCHER) && morale < 0) {
-				morale /= 2;
-			}
+		if (Base[homeBaseID].facilitiesPresentTable[offset] & mask 
+			&& protoID < MaxVehProtoFactionNum 
+			&& (offenseRating < 0 || protoID == BSC_SPORE_LAUNCHER) && morale < 0) {
+			morale /= 2; // never reached due to above 'Basic Psi Veh' checks
 		}
 	}
 	if (ruleMorale > 0) {
@@ -1352,12 +1354,9 @@ uint32_t __cdecl morale_veh(int vehID, BOOL checkDroneRiot, int factionIDvsNativ
 	if (moraleFlag && morale < 0) {
 		morale = 0;
 	}
-	if (checkDroneRiot) {
-		if (homeBaseID >= 0) {
-			if (Base[homeBaseID].status & BSTATUS_DRONE_RIOTS_ACTIVE && !moraleFlag) {
-				morale = range(morale--, 0, 6);
-			}
-		}
+	if (checkDroneRiot && homeBaseID >= 0 && Base[homeBaseID].status & BSTATUS_DRONE_RIOTS_ACTIVE
+		&& !moraleFlag) {
+		morale = range(--morale, 0, 6);
 	}
 	morale += Veh[vehID].morale;
 	return range(morale, 0, 6);
@@ -1483,7 +1482,8 @@ uint32_t __cdecl speed(int vehID, BOOL skipMorale) {
 	if (triad == TRIAD_SEA && has_project(SP_MARITIME_CONTROL_CENTER, Veh[vehID].factionID)) {
 		speedVal += Rules->MoveRateRoads * 2;
 	}
-	if (!skipMorale && morale_veh(vehID, 1, 0) == MORALE_ELITE && (protoID >= MaxVehProtoFactionNum
+	if (!skipMorale && morale_veh(vehID, true, 0) == MORALE_ELITE 
+		&& (protoID >= MaxVehProtoFactionNum
 		|| Weapon[VehPrototype[protoID].weaponID].offenseRating >= 0)) {
 		speedVal += Rules->MoveRateRoads;
 	}
@@ -1588,16 +1588,16 @@ int __cdecl veh_fake(int protoID, int factionID) {
 }
 
 /*
-Purpose: Activate unit and clear current action.
+Purpose: Activate unit and clears current action.
 Original Offset: 005C1D70
 Return Value: vehID (doesn't look to be used on return)
 Status: WIP - test, incomplete flags/enums
 */
 int __cdecl veh_wake(int vehID) {
-	char orders = Veh[vehID].orders;
-	int state = Veh[vehID].state;
+	int8_t orders = Veh[vehID].orders;
+	uint32_t state = Veh[vehID].state;
 	if (orders >= ORDER_FARM && orders < ORDER_MOVE_TO && !(state & VSTATE_CRAWLING)) {
-		// TODO Bug: Issue with movesExpended size / speed return, see veh_skip()
+		// TODO bug fix: Issue with movesExpended size / speed return, see veh_skip()
 		Veh[vehID].movesExpended = (uint8_t)(speed(vehID, false) - Rules->MoveRateRoads);
 		int terraTurns = Veh[vehID].terraformingTurns;
 		if (terraTurns) {
@@ -1613,6 +1613,7 @@ int __cdecl veh_wake(int vehID) {
 		Veh[vehID].movesExpended = 0;
 	}
 	Veh[vehID].orders = ORDER_NONE;
-	Veh[vehID].state &= 0xF4FFBDFF;
+	Veh[vehID].state &= ~(VSTATE_UNK_200 | VSTATE_EXPLORE | VSTATE_UNK_1000000 | VSTATE_UNK_2000000 
+		| VSTATE_UNK_8000000);
 	return vehID;
 }

@@ -88,5 +88,10 @@ extern uint32_t *GameRules; // bitfield
 extern uint32_t *GameRules2; // bitfield
 extern int *DiffLevelCurrent;
 extern int *TurnCurrentNum;
-extern int *MissionYearCurrent;
+extern uint32_t *MissionYearCurrent;
+extern uint32_t *StartingMissionYear;
+extern uint32_t *EndingMissionYear;
 extern uint32_t *TectonicDetonationCount;
+
+OPENSMACX_API uint32_t __cdecl game_year(int turn);
+OPENSMACX_API void __cdecl say_year(LPSTR output);

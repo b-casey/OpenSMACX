@@ -56,7 +56,14 @@ OPENSMACX_API char filefind_cd_drive_letter();
 OPENSMACX_API void filefind_set_alternative(LPCSTR path);
 OPENSMACX_API LPSTR filefind_get(LPCSTR fileName);
 OPENSMACX_API uint32_t __cdecl bit_count(uint32_t bitfield);
+OPENSMACX_API uint32_t __cdecl bit_count_signed(int bitfield);
+OPENSMACX_API void __cdecl my_srand(uint32_t reseed);
+OPENSMACX_API void __cdecl swap(int *var1, int *var2);
+OPENSMACX_API void __cdecl swap(uint8_t *var1, uint8_t *var2);
+OPENSMACX_API int __cdecl fixed_div(int numer, int denom);
+OPENSMACX_API const char *__cdecl memrchr(const char *start, const char *end, char value);
+OPENSMACX_API int __cdecl quick_root(int input);
 
 // WIP
 int filefind_init(LPCSTR path, BOOL isComplete); 
-int __cdecl parse_string_(LPSTR input, LPSTR output);
+int __cdecl parse_string(LPSTR input, LPSTR output);

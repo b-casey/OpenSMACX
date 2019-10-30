@@ -16,14 +16,100 @@
  * along with OpenSMACX. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "stdafx.h"
+#include "temp.h"
 #include "technology.h"
+#include "alpha.h"
 #include "game.h"
+#include "strings.h"
 
 rules_technology *Technology = (rules_technology *)0x0094F358;
 uint8_t *GameTechDiscovered = (uint8_t *)0x009A6670;
 rules_mandate *Mandate = (rules_mandate *)0x0094B4A0;
 int *TechValidCount = (int *)0x00949730;
 int *TechCommerceCount = (int *)0x00949734;
+char TechName[80];
+
+// 005B9C40
+void __cdecl say_tech(LPSTR output, int techID, int toggle) {
+	//std::string output;
+	if (techID < -1) {
+		// "Not Available"
+		strcat_s(output, 80, StringTable->get((int)*((LPSTR *)Label->stringsPtr + 310)));
+	}
+	else if (!techID) {
+		// "NONE"
+		strcat_s(output, 80, StringTable->get((int)*((LPSTR *)Label->stringsPtr + 25)));
+	}
+	else if (techID == 9999) {
+		// "World Map"		
+		strcat_s(output, 80, StringTable->get((int)*((LPSTR *)Label->stringsPtr + 306)));
+	}
+	else if (techID <= 89) {
+		/*
+		
+		strcat_s(output, 80, StringTable->get((int)*Technology[techID].name));
+		if (toggle) { // include category + preq
+			strcat_s(output, 80, " (");
+			strcat_s(output, 80, StringTable->get((int)*((LPSTR *)Label->stringsPtr + 
+				tech_category(techID) + 629)));
+			int val1 = tech_recurse(Technology[techID].preqTech1, 1);
+			int val2 = tech_recurse(Technology[techID].preqTech2, 1);
+			if (val1 > val2) {
+				val2 = val1;
+			}
+			int len = strlen(output);
+			wsprintfA(&output[len], "%d)", val2);
+		}
+		*/
+	}
+	else if (techID <= 97) {
+		if (*Language) {
+			strcat_s(output, 80, StringTable->get((int)*((LPSTR *)Label->stringsPtr + 487)));
+			strcat_s(output, 80, " (");
+			strcat_s(output, 80, Players[techID - 89].nameAdjFaction);
+			*PluralityDefault = Players[techID - 89].isNounPlural;
+			//*GenderDefault = Players[techID - 89].nounFaction
+			
+		}
+		else {
+			strcat_s(output, 80, Players[techID - 89].nameAdjFaction);
+			strcat_s(output, 80, " ");
+			strcat_s(output, 80, StringTable->get((int)*((LPSTR *)Label->stringsPtr + 487)));
+		}
+		
+		/*
+		v11 = techID - 89;
+		if (Language)
+		{
+			GenderDefault = *(_DWORD *)&Players.nounFaction[1436 * v11 + 24];
+			strcat(output, &Players.nounFaction[1436 * v11]);
+			strcat(output, asc_682E98);
+			return;
+		}
+		*/
+
+	}
+	//v17 = (const char *)Strings::get(&StringTable, v14);
+	//strcat(v13, v17);
+	else {
+	/*
+		v13 = output;
+		strcat(output, &VehPrototype.vehName[4 * (techID + 4 * (3 * techID - 291)) - 388]);
+		strcat(output, szSPACE);
+		v14 = *((_DWORD *)Labels.stringsPtr + 185);
+		strcat_s(output, 80, StringTable->get((int)*((LPSTR *)Label->stringsPtr + 306)));
+		v17 = (const char *)Strings::get(&StringTable, v14);
+		strcat(v13, v17);
+		*/
+	}
+}
+
+// 005B9EF0
+LPSTR __cdecl tech_name(int techID, BOOL toggle) {
+	TechName[0] = 0;
+	say_tech(TechName, techID, toggle);
+	return (LPSTR)&TechName;
+}
 
 /*
 Purpose: Check whether faction has a particular tech or not.
@@ -46,6 +132,32 @@ BOOL __cdecl has_tech(int techID, int factionID) {
 		return false;
 	}
 	return ((1 << factionID) & GameTechDiscovered[techID]) != 0;
+}
+
+// 005B9F90
+int __cdecl tech_recurse(int techID, int ret) {
+	if (techID < 0 || techID >= 89) {
+		return ret;
+	}
+	int val1 = tech_recurse(Technology[techID].preqTech1, ret + 1);
+	int val2 = tech_recurse(Technology[techID].preqTech2, ret + 1);
+	return (val1 > val2) ? val1 : val2;
+}
+
+// 005B9FE0
+int __cdecl tech_category(int techID) {
+	int compare = Technology[techID].growthValue, tech = Technology[techID].techValue,
+		wealth = Technology[techID].wealthValue, power = Technology[techID].powerValue;
+	uint32_t category = 0;
+	if (tech > compare) {
+		category = 1;
+		compare = tech;
+	}
+	if (wealth > compare) {
+		category = 2;
+		compare = wealth;
+	}
+	return (power > compare) ? 3 : category;
 }
 
 /*

@@ -18,6 +18,7 @@
 #include "stdafx.h"
 #include "temp.h"
 #include "general.h"
+#include "log.h" // log_say
 #include "strings.h"
 #include "text.h"
 
@@ -430,9 +431,9 @@ void prefs_put(LPCSTR keyName, int value, BOOL binaryTgl) {
 Purpose: Primary string parsing function
 Original Offset: 00625880
 Return Value: 0: no errors; 3: error
-Status: WIP with explicit pointers
+Status: WIP
 */
-int __cdecl parse_string_(LPSTR input, LPSTR output) {
+int __cdecl parse_string(LPSTR input, LPSTR output) {
 	if (!input || !output) {
 		return 3;
 	}
@@ -753,7 +754,7 @@ LPSTR filefind_get(LPCSTR fileName) {
 }
 
 /*
-Purpose: Count number of bits set. Replaced existing code with Brian Kernighan's Algorithm.
+Purpose: Count number of bits set (unsigned). Replaced existing code with Brian Kernighan's algo.
 Original Offset: 0050BA30
 Return Value: Bit count
 Status: Complete
@@ -764,4 +765,111 @@ uint32_t __cdecl bit_count(uint32_t bitfield) {
 		bitfield &= bitfield - 1; // clear the least significant bit set
 	}
 	return count;
+}
+
+/*
+Purpose: Count number of bits set (signed). Added a fix to prevent an infinite loop. Only referenced
+         by one GraphicWin function.
+Original Offset: 00628AB0
+Return Value: Bit count
+Status: Complete
+*/
+uint32_t __cdecl bit_count_signed(int input) {
+	uint32_t count = 0;
+	for (count = 0; input && count < 32; count++) {
+		input >>= 1;
+	}
+	return count;
+}
+
+/*
+Purpose: Initialize pseudo-random number generator.
+Original Offset: 00538FB0
+Return Value: n/a
+Status: Complete with built in version of srand(). Revisit once more code is redirected to dll.
+*/
+void __cdecl my_srand(uint32_t reseed) {
+	log_say("Reseed to", reseed, 0, 0);
+	//srand(reseed);
+	_srand(reseed);
+}
+
+/*
+Purpose: Swap the values of two 32-bit variables. Added an additional check when swapping the same
+		 memory location. Future: convert to MACRO?
+Original Offset: 00628A50
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl swap(int *var1, int *var2) {
+	if (var1 == var2) {
+		return;
+	}
+	int temp = *var1 ^ *var2;
+	*var1 = temp;
+	*var2 ^= temp;
+	*var1 ^= *var2;
+}
+
+/*
+Purpose: Swap the values of two 8-bit variables. Added an additional check when swapping the same
+         memory location. Future: convert to MACRO?
+Original Offset: 00628A80
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl swap(uint8_t *var1, uint8_t *var2) {
+	if (var1 == var2) {
+		return;
+	}
+	uint8_t temp = *var1 ^ *var2;
+	*var1 = temp;
+	*var2 ^= temp;
+	*var1 ^= *var2;
+}
+
+/*
+Purpose: Shift numerator to left by 16 then divide denominator. Added a check to prevent divide by 
+         zero crash.
+Original Offset: 00628AD0
+Return Value: Quotient
+Status: Complete
+*/
+int __cdecl fixed_div(int numer, int denom) {
+	if (!denom) {
+		return 0;
+	}
+	return ((int64_t)numer << 16) / denom;
+}
+
+/*
+Purpose: Reverse string search for last occurrence of specified character. Replaced searching logic
+         with strrchr() that does same thing. End parameter can be removed in future.
+Original Offset: 00628AF0
+Return Value: Position of character or null if not found.
+Status: Complete
+*/
+const char *__cdecl memrchr(const char *start, const char *end, char value) {
+	if (!start || !end || start == end) {
+		return 0;
+	}
+	return strrchr(start, value);
+}
+
+/*
+Purpose: Calculate the square root of input.
+Original Offset: 006290E0
+Return Value: root
+Status: Complete
+*/
+int __cdecl quick_root(int input) {
+	int temp = input >> 1, root;
+	if (input <= 1) {
+		return input;
+	}
+	do {
+		root = temp;
+		temp = (temp + input / temp) >> 1;
+	} while (temp < root);
+	return root;
 }

@@ -35,6 +35,8 @@ typedef void *func2(void *);
 extern func2 *_free;
 typedef FILE *func3(LPCSTR, LPCSTR);
 extern func3 *_fopen;
+typedef void *func4(unsigned int);
+extern func4 *_srand;
 //typedef void *func12(void *, size_t);
 //extern func12 *_realloc;
 //typedef int *func18(FILE *);
@@ -48,17 +50,17 @@ extern func5 *load_faction_art;
 typedef void *func6(char const *, int(*)(void));
 extern func6 *X_pop;
 
-// string
-typedef int *func8(LPSTR, LPSTR);
-extern func8 *parse_string;
-
 // testing
-typedef int func10(int, int, int);
-extern func10 *veh_drop_OG;
-typedef BOOL func11(int, int, int);
-extern func11 *veh_avail_OG;
-typedef uint32_t func7(int, int);
-extern func7 *morale_alien_OG;
+typedef int *func8(LPSTR, LPSTR);
+extern func8 *parse_string_OG;
+
+typedef BOOL func12(int, int, int, int);
+extern func12 *facility_avail_OG;
+
+typedef int func21(int, int);
+extern func21 *fixed_div_OG;
+typedef void func22(const void *, const void *, char);
+extern func22 *memrchr_OG;
 
 ///
 extern LPSTR *ParseTempPtr1_1;
@@ -83,5 +85,5 @@ extern uint32_t *UnkBitfield1;
 extern Filefind *FilefindPath;
 extern MainInterface *MainInterfaceVar;
 
-OPENSMACX_API void __cdecl tester();
+OPENSMACX_API int __cdecl tester();
 OPENSMACX_API void __cdecl testerMap();
