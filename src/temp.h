@@ -54,13 +54,12 @@ extern func6 *X_pop;
 typedef int *func8(LPSTR, LPSTR);
 extern func8 *parse_string_OG;
 
-typedef BOOL func12(int, int, int, int);
-extern func12 *facility_avail_OG;
-
-typedef int func21(int, int);
-extern func21 *fixed_div_OG;
-typedef void func22(const void *, const void *, char);
-extern func22 *memrchr_OG;
+// Time
+typedef void func30(int);
+extern func30 *blink_timer;
+extern func30 *blink2_timer;
+extern func30 *line_timer;
+extern func30 *turn_timer;
 
 ///
 extern LPSTR *ParseTempPtr1_1;

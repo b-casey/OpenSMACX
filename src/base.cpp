@@ -184,6 +184,68 @@ int __cdecl base_find(int xCoord, int yCoord, int factionID, int region, int fac
 }
 
 /*
+Purpose: Used to determine if base has any restrictions around production item retooling.
+Original Offset: 004E4700
+Return Value: Fixed value (-1, 0, 1, 2, 3, -70) or productionID
+Status: Complete
+*/
+int __cdecl base_making(int productionID, int baseID) {
+	uint32_t retool = Rules->RetoolStrictness;
+	uint32_t offset, mask;
+	bitmask(FAC_SKUNKWORKS, &offset, &mask);
+	if (Base[baseID].facilitiesPresentTable[offset] & mask && retool >= 1) {
+		retool = 1; // Skunkworks overrides retooling strictness to 'Free in Category'
+	}
+	if (productionID < 0) { // facility or SP to build
+		int queueID = Base[baseID].queueProductionID[0]; // current production item
+		if (queueID < 0) { // non-Veh
+			queueID = -queueID;
+			if (queueID < FAC_SKY_HYDRO_LAB) {
+				bitmask(queueID, &offset, &mask);
+				if (Base[baseID].facilitiesPresentTable[offset] & mask) {
+					return -1; // fac completed outside normal process, no retool penalty to change
+				}
+			}
+		}
+	}
+	switch (retool) { // converted into switch to improve readability and performance
+		case 0: // Always Free
+			return 0;
+		case 1: // Free in Category
+			if (productionID >= 0) {
+				return 0; // Veh
+			}
+			// SP (1), repeatable facility (2), non-repeatable facility (3)
+			return (productionID > -70) ? (productionID > -65) + 2 : 1;
+		case 2: // Free switching between SPs (default behavior)
+			return (productionID <= -70) ? -70 : productionID;
+		case 3: // Never Free
+			return productionID;
+		default:
+			return 1; // should never be reached unless problem with retool value
+	}
+}
+
+/*
+Purpose: Calculate mineral loss if production is changed at base. The 2nd parameter is unused.
+Original Offset: 004E4810
+Return Value: Minerals that would be lost if production changed, or 0 if not applicable.
+Status: Complete
+*/
+int __cdecl base_lose_minerals(int baseID, int productionID) {
+	int minAccumal;
+	if (Rules->RetoolPctPenProdChg
+		&& FactionCurrentBitfield[0] & (1 << Base[baseID].factionIDCurrent)
+		&& base_making(Base[baseID].productionIDLast, baseID)
+		!= base_making(Base[baseID].queueProductionID[0], baseID)
+		&& (minAccumal = Base[baseID].mineralsAccumulated2, minAccumal > Rules->RetoolExemption)) {
+		return minAccumal - (100 - Rules->RetoolPctPenProdChg) 
+			* (minAccumal - Rules->RetoolExemption) / 100 - Rules->RetoolExemption;
+	}
+	return 0;
+}
+
+/*
 Purpose: Set or unset facility at base.
 Original Offset: 004E48B0
 Return Value: n/a
@@ -361,7 +423,7 @@ Purpose: Check to see whether provided faction can build a specific facility or 
 		 in SMAC mode.
 Original Offset: 005BA0E0
 Return Value: Is facility or Secret Project available to faction and base? true/false
-Status: WIP
+Status: Complete
 */
 BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID, int queueCount) {
 	// initial checks
@@ -383,7 +445,7 @@ BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID, int queue
 		return false;
 	}
 	if (facilityID == FAC_VOICE_OF_PLANET && !_stricmp(Players[factionID].filename, "CARETAKE")) {
-		return false; // shifted 'Ascent to Transcendence' check to top (never reached here)    
+		return false; // shifted Caretaker Ascent check to top (never reached here)    
 	}
 	if (facilityID >= FAC_HUMAN_GENOME_PROJ) {
 		return base_project(facilityID - FAC_HUMAN_GENOME_PROJ) == SP_Unbuilt;
@@ -396,132 +458,63 @@ BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID, int queue
 		return false; // already built or in queue
 	}
 	if (redundant(facilityID, factionID)) {
-		return false; // has SP count as facility
+		return false; // has SP that counts as facility
 	}
-	switch (facilityID) {
-		case FAC_NAVAL_YARD:
-			return is_coast(Base[baseID].xCoord, Base[baseID].yCoord, FALSE); // needs ocean
-			//if (has_project(SP_MARITIME_CONTROL_CENTER, factionID) 
-				//|| !is_coast(Base[baseID].xCoord, Base[baseID].yCoord, FALSE)) {
-				//return false; // already counts as a Naval Yard or no Ocean, skip
-			//}
-			//break;
-		case FAC_QUANTUM_CONVERTER:
-			//if (has_project(SP_SINGULARITY_INDUCTOR, factionID)) {
-			//	return false; // already counts as a Quantum Converter, skip
-			//}
-			return has_fac(FAC_ROBOTIC_ASSEMBLY_PLANT, baseID, queueCount); // Cumulative
-		case FAC_AQUAFARM:
-		case FAC_SUBSEA_TRUNKLINE:
-		case FAC_THERMOCLINE_TRANSDUCER:
-			if (!*SMACX_Enabled || !is_coast(Base[baseID].xCoord, Base[baseID].yCoord, FALSE)) {
-				return false; // SMAC mode or no ocean, skip
-			}
-			break;
-		case FAC_GEOSYNC_SURVEY_POD:
-		case FAC_COVERT_OPS_CENTER:
-		case FAC_BROOD_PIT:
-		case FAC_FLECHETTE_DEFENSE_SYS:
-//		case FAC_SUBSPACE_GENERATOR:
-			if (!*SMACX_Enabled) {
-				return false; // SMAC mode, skip
-			}
-			break;
-		case FAC_SUBSPACE_GENERATOR:
-			if (!*SMACX_Enabled || !(Players[factionID].ruleFlags & FLAG_ALIEN)) {
-				return false; // Progenitor factions only, skip
-			}
-			break;
+	switch (facilityID) { // consolidated into switch to improve readability and performance
 		case FAC_RECYCLING_TANKS:
 			return !has_fac(FAC_PRESSURE_DOME, baseID, queueCount); // count as Recycling Tank, skip
 		case FAC_TACHYON_FIELD:
 			return has_fac(FAC_PERIMETER_DEFENSE, baseID, queueCount)
 				|| has_project(SP_CITIZENS_DEFENSE_FORCE, factionID); // Cumulative
+		case FAC_SKUNKWORKS:
+			return !(Players[factionID].ruleFlags & FLAG_FREEPROTO); // no prototype costs? skip
 		case FAC_HOLOGRAM_THEATRE:
-			if (!has_fac(FAC_RECREATION_COMMONS, baseID, queueCount)) { // not documented in manual
-				return false;
-			}
-			return !has_project(SP_VIRTUAL_WORLD, factionID); // Network Nodes replaces Theater
+			return has_fac(FAC_RECREATION_COMMONS, baseID, queueCount) // not documented in manual
+				&& !has_project(SP_VIRTUAL_WORLD, factionID); // Network Nodes replaces Theater
 		case FAC_HYBRID_FOREST:
 			return has_fac(FAC_TREE_FARM, baseID, queueCount); // Cumulative
 		case FAC_QUANTUM_LAB:
 			return has_fac(FAC_FUSION_LAB, baseID, queueCount); // Cumulative
 		case FAC_NANOHOSPITAL:
 			return has_fac(FAC_RESEARCH_HOSPITAL, baseID, queueCount); // Cumulative
-		case FAC_SKUNKWORKS:
-			return !(Players[factionID].ruleFlags & FLAG_FREEPROTO); // no prototype costs? skip
+		case FAC_PARADISE_GARDEN: // bug fix: added check
+			return !has_fac(FAC_PUNISHMENT_SPHERE, baseID, queueCount); // antithetical
 		case FAC_PUNISHMENT_SPHERE:
 			return !has_fac(FAC_PARADISE_GARDEN, baseID, queueCount); // antithetical
-		case FAC_PARADISE_GARDEN: // bug fix
-			return !has_fac(FAC_PUNISHMENT_SPHERE, baseID, queueCount); // antithetical
-		case FAC_HABITATION_DOME:
-			return has_fac(FAC_HAB_COMPLEX, baseID, queueCount); // must have Complex
 		case FAC_NANOREPLICATOR:
 			return has_fac(FAC_ROBOTIC_ASSEMBLY_PLANT, baseID, queueCount) // Cumulative
 				|| has_fac(FAC_GENEJACK_FACTORY, baseID, queueCount);
+		case FAC_HABITATION_DOME:
+			return has_fac(FAC_HAB_COMPLEX, baseID, queueCount); // must have Complex
 		case FAC_TEMPLE_OF_PLANET:
 			return has_fac(FAC_CENTAURI_PRESERVE, baseID, queueCount); // must have Preserve
+		case FAC_QUANTUM_CONVERTER:
+			return has_fac(FAC_ROBOTIC_ASSEMBLY_PLANT, baseID, queueCount); // Cumulative
+		case FAC_NAVAL_YARD:
+			return is_coast(Base[baseID].xCoord, Base[baseID].yCoord, FALSE); // needs ocean
+		case FAC_AQUAFARM:
+		case FAC_SUBSEA_TRUNKLINE:
+		case FAC_THERMOCLINE_TRANSDUCER:
+			return *SMACX_Enabled && is_coast(Base[baseID].xCoord, Base[baseID].yCoord, FALSE);
+		case FAC_COVERT_OPS_CENTER:
+		case FAC_BROOD_PIT:
+		case FAC_FLECHETTE_DEFENSE_SYS:
+			return *SMACX_Enabled;
+		case FAC_GEOSYNC_SURVEY_POD: // SMACX only & must have Aerospace Complex
+			return *SMACX_Enabled && (has_fac(FAC_AEROSPACE_COMPLEX, baseID, queueCount)
+				|| has_project(SP_CLOUDBASE_ACADEMY, factionID)
+				|| has_project(SP_SPACE_ELEVATOR, factionID));
+		case FAC_SKY_HYDRO_LAB:
+		case FAC_NESSUS_MINING_STATION:
+		case FAC_ORBITAL_POWER_TRANS:
+		case FAC_ORBITAL_DEFENSE_POD:  // must have Aerospace Complex
+			return has_fac(FAC_AEROSPACE_COMPLEX, baseID, queueCount)
+				|| has_project(SP_CLOUDBASE_ACADEMY, factionID)
+				|| has_project(SP_SPACE_ELEVATOR, factionID);
+		case FAC_SUBSPACE_GENERATOR: // Progenitor factions only
+			return *SMACX_Enabled && (Players[factionID].ruleFlags & FLAG_ALIEN);
 		default:
 			break;
 	}
-	/*
-	// merge into one switch?
-	if (facilityID == FAC_SUBSPACE_GENERATOR && !(Players[factionID].ruleFlags & FLAG_ALIEN)) {
-		return false; // Progenitor factions only, skip
-	}
-	if (facilityID == FAC_RECYCLING_TANKS) {
-		return !has_fac(FAC_PRESSURE_DOME, baseID, queueCount); // counts as Recycling Tank, skip
-	}
-	if (facilityID == FAC_TACHYON_FIELD) {
-		return has_fac(FAC_PERIMETER_DEFENSE, baseID, queueCount) 
-			|| has_project(SP_CITIZENS_DEFENSE_FORCE, factionID); // Cumulative
-	}
-	if (facilityID == FAC_HOLOGRAM_THEATRE) { // not documented
-		if (!has_fac(FAC_RECREATION_COMMONS, baseID, queueCount)) {
-			return false;
-		}
-		return !has_project(SP_VIRTUAL_WORLD, factionID); // Network Nodes replaces Theater
-	}
-	if (facilityID == FAC_HYBRID_FOREST) {
-		return has_fac(FAC_TREE_FARM, baseID, queueCount); // Cumulative
-	}
-	if (facilityID == FAC_QUANTUM_LAB) {
-		return has_fac(FAC_FUSION_LAB, baseID, queueCount); // Cumulative
-	}
-	if (facilityID == FAC_NANOHOSPITAL) {
-		return has_fac(FAC_RESEARCH_HOSPITAL, baseID, queueCount); // Cumulative
-	}
-	if (facilityID == FAC_SKUNKWORKS) {
-		return !(Players[factionID].ruleFlags & FLAG_FREEPROTO); // no prototype costs? skip
-	}
-	// bug fix: add "Paradise Garden" inverse
-	if (facilityID == FAC_PUNISHMENT_SPHERE) {
-		return !has_fac(FAC_PARADISE_GARDEN, baseID, queueCount); // antithetical, can't have both
-	}
-	if (facilityID == FAC_HABITATION_DOME) {
-		return has_fac(FAC_HAB_COMPLEX, baseID, queueCount); // must have Complex
-	}
-	*/
-	/*
-
-	*/
-	if (facilityID >= FAC_SKY_HYDRO_LAB && facilityID < FAC_STOCKPILE_ENERGY 
-		|| facilityID == FAC_GEOSYNC_SURVEY_POD) {
-		return has_fac(FAC_AEROSPACE_COMPLEX, baseID, queueCount) // must have Aerospace Complex
-			|| has_project(SP_CLOUDBASE_ACADEMY, factionID) 
-			|| has_project(SP_SPACE_ELEVATOR, factionID);
-	}
-	/*
-	if (facilityID == FAC_NANOREPLICATOR) {
-		return has_fac(FAC_ROBOTIC_ASSEMBLY_PLANT, baseID, queueCount) // Cumulative
-			|| has_fac(FAC_GENEJACK_FACTORY, baseID, queueCount);
-	}
-	if (facilityID == FAC_QUANTUM_CONVERTER) {
-		return has_fac(FAC_ROBOTIC_ASSEMBLY_PLANT, baseID, queueCount); // Cumulative
-	}
-	if (facilityID == FAC_TEMPLE_OF_PLANET) {
-		return has_fac(FAC_CENTAURI_PRESERVE, baseID, queueCount); // must have Preserve
-	}
-	*/
 	return true;
 }

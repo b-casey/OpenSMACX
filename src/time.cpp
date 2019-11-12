@@ -67,7 +67,7 @@ Original Offset: 00616350
 Return Value: Zero success, non-zero error
 Status: Complete ; test pending
 */
-int Time::start(void(__cdecl * callback)(int), int param, uint32_t cnt, uint32_t res) {
+uint32_t Time::start(void(__cdecl * callback)(int), int param, uint32_t cnt, uint32_t res) {
 	init(callback, param, cnt, res);
 	if (!callback) {
 		return 7;
@@ -89,7 +89,7 @@ Original Offset: 00616410
 Return Value: Zero success, non-zero error
 Status: Complete ; test pending
 */
-int Time::start(void(__cdecl * callback)(int, int), int param, int param2,
+uint32_t Time::start(void(__cdecl * callback)(int, int), int param, int param2,
 	uint32_t cnt, uint32_t res) {
 	init(callback, param, param2, cnt, res);
 	if (!callback) {
@@ -112,7 +112,7 @@ Original Offset: 006164D0
 Return Value: Zero success, non-zero error
 Status: Complete ; test pending
 */
-int Time::pulse(void(__cdecl * callback)(int), int param, uint32_t cnt, uint32_t res) {
+uint32_t Time::pulse(void(__cdecl * callback)(int), int param, uint32_t cnt, uint32_t res) {
 	init(callback, param, cnt, res);
 	if (!callback) {
 		return 7;
@@ -137,7 +137,7 @@ Original Offset: 00616590
 Return Value: Zero success, non-zero error
 Status: Complete ; test pending
 */
-int Time::pulse(void(__cdecl * callback)(int, int), int param, int param2,
+uint32_t Time::pulse(void(__cdecl * callback)(int, int), int param, int param2,
 	uint32_t cnt, uint32_t res) {
 	init(callback, param, param2, cnt, res);
 	if (!callback) {
@@ -159,11 +159,11 @@ Original Offset: 00616650
 Return Value: Zero success, non-zero error
 Status: Complete ; test pending
 */
-int Time::start() {
+uint32_t Time::start() {
 	if (!callback1 && !callback2) {
 		return 7;
 	}
-	unkToggle &= 0xFFFFFFFE;
+	unkToggle &= ~2;
 	if (count >= 50) {
 		idEvent = SetTimer(*HandleMain, idEvent, count, (TIMERPROC)TimerProc);
 	}
@@ -175,17 +175,17 @@ int Time::start() {
 }
 
 /*
-Purpose: Start instance of Time.
+Purpose: Start instance of pulse Time.
 Original Offset: 006166C0
 Return Value: Zero success, non-zero error
 Status: Complete ; test pending
 */
-int Time::pulse() {
+uint32_t Time::pulse() {
 	if (!callback1 && !callback2) {
 		return 7;
 	}
 	if (count >= 50) {
-		unkToggle = (unkToggle & 0xFFFFFFFD) | 1;
+		unkToggle = (unkToggle & ~2) | 1;
 		idEvent = SetTimer(*HandleMain, idEvent, count, (TIMERPROC)TimerProc);
 	}
 	else {
@@ -236,7 +236,7 @@ void Time::close() {
 }
 
 // 006167E0
-void Time::TimerProc(HWND a2, uint32_t a3, UINT_PTR wParam, uint32_t a5) {
+void Time::TimerProc(HWND hwnd, uint32_t msg, uint32_t *idEvent, uint32_t dwTime) {
 	/*
 	if (wParam && (!*TimeModal || (Time *)wParam == *TimeModal) && (Time *)wParam->unk1) {
 		PostMessageA(*HandleMain, 0x401, wParam, NULL);
@@ -246,13 +246,47 @@ void Time::TimerProc(HWND a2, uint32_t a3, UINT_PTR wParam, uint32_t a5) {
 }
 
 // 00616820
-void Time::MultimediaProc(uint32_t timerID, uint32_t msg, uint32_t user, uint32_t dw1, uint32_t) {
+void Time::MultimediaProc(uint32_t timerID, uint32_t msg, uint32_t *user, uint32_t *dw1, 
+	uint32_t *dw2) {
 	//
 }
 
 // global
+Time *TurnTimer = (Time *)0x00915628;
+Time *LineTimer = (Time *)0x00915658;
+Time *BlinkTimer = (Time *)0x00915688;
+Time *Blink2Timer = (Time *)0x00939EB0;
+Time *GoTimer = (Time *)0x00939E60;
+Time *ConsoleTimer = (Time *)0x00939E88;
+ 
 /*
-Purpose: Clear timer message queue?
+Purpose: Start global timers.
+Original Offset: 0050F3D0
+Return Value: n/a
+Status: Complete ; test pending
+*/
+void __cdecl start_timers() {
+	BlinkTimer->start(blink_timer, 1, 150, 150);
+	Blink2Timer->start(blink2_timer, 2, 100, 100);
+	LineTimer->start(line_timer, 3, 100, 100);
+	TurnTimer->start(turn_timer, 4, 500, 500);
+}
+
+/*
+Purpose: Stop global timers.
+Original Offset: 0050F440
+Return Value: n/a
+Status: Complete ; test pending
+*/
+void __cdecl stop_timers() {
+	Blink2Timer->close();
+	BlinkTimer->close();
+	LineTimer->close();
+	// missing TurnTimer?
+}
+
+/*
+Purpose: Clear timer message queue (?)
 Original Offset: 005FD370
 Return Value: n/a
 Status: Complete ; test pending

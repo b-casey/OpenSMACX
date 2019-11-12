@@ -17,6 +17,7 @@
  */
 #include "stdafx.h"
 #include "temp.h"
+#include "alpha.h"
 #include "faction.h"
 #include "general.h"
 #include "base.h"
@@ -54,14 +55,12 @@ func6 *X_pop = (func6 *)0x005BF310;
 typedef int *func8(LPSTR, LPSTR);
 func8 *parse_string_OG = (func8 *)0x00625880;
 
-typedef BOOL func12(int, int, int, int);
-func12 *facility_avail_OG = (func12 *)0x005BA0E0;
-
-
-typedef int func21(int, int);
-func21 *fixed_div_OG = (func21 *)0x00628AD0;
-typedef void func22(const void *, const void *, char);
-func22 *memrchr_OG = (func22 *)0x00628AF0;
+// Time
+typedef void func30(int);
+func30 *blink_timer = (func30 *)0x0050EA40;
+func30 *blink2_timer = (func30 *)0x0050EE30;
+func30 *line_timer = (func30 *)0x0050EE80;
+func30 *turn_timer = (func30 *)0x0050EF10;
 
 ///
 LPSTR *ParseTempPtr1_1 = (LPSTR *)0x009B7D00;
@@ -88,32 +87,7 @@ Filefind *FilefindPath = (Filefind *)0x009B8198;
 MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
 
 int __cdecl tester() {
-	for (uint32_t i = 0xFFFF0000; i < 0xFFFFFFFF; i++) {
-		if (fixed_div(i, 0xFF) != fixed_div_OG(i, 0xFF)) {
-			MessageBoxA(NULL, "Error", "FATAL ERROR", MB_ICONWARNING);
-		}
-	}
-	/*
-	for (int i = 0; i < 8; i++) {
-		for (int j = 0; j < *BaseCurrentCount; j++) {
-			for (int k = 0; k <= FAC_EMPTY_SP_64; k++) {
-				if (k != FAC_PARADISE_GARDEN) {
-					if (facility_avail_OG(k, i, j, 10) != facility_avail(k, i, j, 10)) {
-						char szError[150];
-						wsprintfA(szError,
-							"facility_avail error!\n"
-							"FacilityID: %d\n"
-							"FactionID: %d\n"
-							"BaseID: %d",
-							k, i, j);
-						MessageBoxA(NULL, szError, "FATAL ERROR", MB_ICONWARNING);
-					}
-				}
-			}
-		}
-	}
-	return 0;
-	*/
+
 	/*
 	for (int i = 0; i < MaxPlayerNum; i++) {
 		for (int j = 0; j < *BaseCurrentCount; j++) {

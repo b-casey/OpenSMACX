@@ -43,12 +43,14 @@ public:
 
 	void init(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res);
 	void init(void(__cdecl *callback)(int, int), int param, int param2, uint32_t cnt, uint32_t res);
-	int start(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res);
-	int start(void(__cdecl *callback)(int, int), int param, int param2, uint32_t cnt, uint32_t res);
-	int pulse(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res);
-	int pulse(void(__cdecl *callback)(int, int), int param, int param2, uint32_t cnt, uint32_t res);
-	int start();
-	int pulse();
+	uint32_t start(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res);
+	uint32_t start(void(__cdecl *callback)(int, int), int param, int param2, 
+		uint32_t cnt, uint32_t res);
+	uint32_t pulse(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res);
+	uint32_t pulse(void(__cdecl *callback)(int, int), int param, int param2, 
+		uint32_t cnt, uint32_t res);
+	uint32_t start();
+	uint32_t pulse();
 	void stop();
 	void close();
 	void set_modal() { TimeModal = this; } // 00616860
@@ -57,12 +59,21 @@ public:
 	// eventually make atomic for thread safety
 	static Time *TimeModal;
 	static int TimeInitCount;
-	static void TimerProc(HWND a2, uint32_t a3, UINT_PTR wParam, uint32_t a5);
-	static void MultimediaProc(uint32_t timerID, uint32_t msg, uint32_t user, 
-		uint32_t dw1, uint32_t);
+	static void TimerProc(HWND hwnd, uint32_t msg, uint32_t *idEvent, uint32_t dwTime);
+	static void MultimediaProc(uint32_t timerID, uint32_t msg, uint32_t *user, 
+		uint32_t *dw1, uint32_t *dw2);
 	static int __cdecl init_class() { ++TimeInitCount; return 0; } // 00616880
 	static void __cdecl close_class() { --TimeInitCount; } // 00616890
 };
 
 // global
+extern Time *TurnTimer;
+extern Time *LineTimer;
+extern Time *BlinkTimer;
+extern Time *Blink2Timer;
+extern Time *GoTimer;
+extern Time *ConsoleTimer;
+
+OPENSMACX_API void __cdecl start_timers();
+OPENSMACX_API void __cdecl stop_timers();
 OPENSMACX_API void __cdecl flush_timer();

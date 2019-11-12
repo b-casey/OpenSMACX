@@ -421,6 +421,8 @@ OPENSMACX_API int __cdecl base_find(int xCoord, int yCoord);
 OPENSMACX_API int __cdecl base_find(int xCoord, int yCoord, uint32_t factionID);
 OPENSMACX_API int __cdecl base_find(int xCoord, int yCoord, int factionID, int region,
 	int factionID2, int factionID3);
+OPENSMACX_API int __cdecl base_making(int productionID, int baseID);
+OPENSMACX_API int __cdecl base_lose_minerals(int baseID, int productionID);
 OPENSMACX_API void __cdecl set_fac(int facilityID, int baseID, BOOL set);
 OPENSMACX_API uint32_t __cdecl pop_goal_fac(int baseID);
 OPENSMACX_API uint32_t __cdecl pop_goal(int baseID);

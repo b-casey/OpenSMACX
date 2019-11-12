@@ -457,5 +457,6 @@ extern rules_bonusname *BonusName;
 extern player *Players; // Players[0] is AI native life faction
 extern player_data *PlayersData;
 extern faction_art *FactionArt;
+extern uint8_t *FactionCurrentBitfield;
 
 OPENSMACX_API BOOL __cdecl society_avail(int socCategory, int socModel, int factionID);

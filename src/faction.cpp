@@ -29,6 +29,7 @@ LPSTR *Repute = (LPSTR *)0x00946A30;
 rules_might *Might = (rules_might *)0x0094C558;
 rules_proposal *Proposal = (rules_proposal *)0x009A6828;
 rules_bonusname *BonusName = (rules_bonusname *)0x009461A8;
+uint8_t *FactionCurrentBitfield = (uint8_t *)0x009A64E8;
 
 /*
 Purpose: Check to see whether provided faction can utilize a specific social category and model.
