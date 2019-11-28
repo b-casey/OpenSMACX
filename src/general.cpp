@@ -363,10 +363,10 @@ Status: Complete with internal string pointers. Eventually, clean up code depend
 int prefs_get(LPCSTR keyName, int defaultValue, BOOL useDefault) {
 	_itoa_s(defaultValue, stringTemp->str, 256, 10);
 	if (useDefault) {
-		strcpy_s(*ParseTempPtr1_1, 256, stringTemp->str);
+		strcpy_s(*TextBufferGetPtr, 256, stringTemp->str);
 		return defaultValue;
 	}
-	GetPrivateProfileStringA("Alpha Centauri", keyName, stringTemp->str, *ParseTempPtr1_1, 256, 
+	GetPrivateProfileStringA("Alpha Centauri", keyName, stringTemp->str, *TextBufferGetPtr, 256,
 		".\\Alpha Centauri.ini");
 	return atoi(Txt->update());
 }
@@ -380,12 +380,12 @@ Status: Complete with internal string pointers. Eventually, clean up dependent c
 */
 LPSTR prefs_get(LPCSTR keyName, LPCSTR defaultValue, BOOL useDefault) {
 	if (useDefault ||
-		(GetPrivateProfileStringA("Alpha Centauri", "Prefs Format", "0", *ParseTempPtr1_1, 256, 
-			".\\Alpha Centauri.ini"), atoi(*ParseTempPtr1_1) != 12)) {
-		strcpy_s(*ParseTempPtr1_1, 256, defaultValue);
+		(GetPrivateProfileStringA("Alpha Centauri", "Prefs Format", "0", *TextBufferGetPtr, 256,
+			".\\Alpha Centauri.ini"), atoi(*TextBufferGetPtr) != 12)) {
+		strcpy_s(*TextBufferGetPtr, 256, defaultValue);
 	}
 	else {
-		GetPrivateProfileStringA("Alpha Centauri", keyName, defaultValue, *ParseTempPtr1_1, 256, 
+		GetPrivateProfileStringA("Alpha Centauri", keyName, defaultValue, *TextBufferGetPtr, 256,
 			".\\Alpha Centauri.ini");
 	}
 	return Txt->update();

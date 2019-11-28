@@ -608,3 +608,5 @@ OPENSMACX_API BOOL __cdecl read_rules(BOOL tglAllRules);
 OPENSMACX_API void __cdecl prefs_fac_load();
 OPENSMACX_API BOOL __cdecl labels_init();
 OPENSMACX_API void __cdecl labels_shutdown();
+OPENSMACX_API void __cdecl say_label(int labelOffset);
+OPENSMACX_API LPSTR __cdecl label_get(int labelOffset);

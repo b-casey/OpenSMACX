@@ -55,6 +55,10 @@ func6 *X_pop = (func6 *)0x005BF310;
 typedef int *func8(LPSTR, LPSTR);
 func8 *parse_string_OG = (func8 *)0x00625880;
 
+typedef void func9(LPSTR, int, BOOL);
+func9 *say_tech_OG = (func9 *)0x005B9C40;
+
+
 // Time
 typedef void func30(int);
 func30 *blink_timer = (func30 *)0x0050EA40;
@@ -63,8 +67,6 @@ func30 *line_timer = (func30 *)0x0050EE80;
 func30 *turn_timer = (func30 *)0x0050EF10;
 
 ///
-LPSTR *ParseTempPtr1_1 = (LPSTR *)0x009B7D00;
-LPSTR *ParseTempPtr2_1 = (LPSTR *)0x009B7D04;
 char1032 *stringTemp = (char1032 *)0x009B86A0;
 char256 *ParseStrBuffer = (char256 *)0x009BB5E8;
 
@@ -87,7 +89,55 @@ Filefind *FilefindPath = (Filefind *)0x009B8198;
 MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
 
 int __cdecl tester() {
+	char szCmp1[80], szCmp2[80];
+	for (int k = 0; k < 3; k++) {
+		*Language = k;
+		for (int i = -10; i < 120; i++) {
+			szCmp1[0] = 0, szCmp2[0] = 0;
+			say_tech_OG(szCmp1, i, TRUE);
+			say_tech(szCmp2, i, TRUE);
+			if (strcmp(szCmp1, szCmp2)) {
+				MessageBoxA(NULL, "say_tech T error", "FATAL ERROR", MB_ICONWARNING);
+			}
+			szCmp1[0] = 0, szCmp2[0] = 0;
+			say_tech_OG(szCmp1, i, FALSE);
+			say_tech(szCmp2, i, FALSE);
+			if (strcmp(szCmp1, szCmp2)) {
+				MessageBoxA(NULL, "say_tech F error", "FATAL ERROR", MB_ICONWARNING);
+			}
+			szCmp1[0] = 0, szCmp2[0] = 0;
+			strcpy_s(szCmp1, 80, "test ..... ");
+			strcpy_s(szCmp2, 80, "test ..... ");
+			say_tech_OG(szCmp1, i, FALSE);
+			say_tech(szCmp2, i, FALSE);
+			if (strcmp(szCmp1, szCmp2)) {
+				MessageBoxA(NULL, "say_tech F error", "FATAL ERROR", MB_ICONWARNING);
+			}
+			szCmp1[0] = 0, szCmp2[0] = 0;
+			strcpy_s(szCmp1, 80, "test ..... ");
+			strcpy_s(szCmp2, 80, "test ..... ");
+			say_tech_OG(szCmp1, i, TRUE);
+			say_tech(szCmp2, i, TRUE);
+			if (strcmp(szCmp1, szCmp2)) {
+				MessageBoxA(NULL, "say_tech F error", "FATAL ERROR", MB_ICONWARNING);
+			}
+		}
+		szCmp1[0] = 0, szCmp2[0] = 0;
+		say_tech_OG(szCmp1, 9999, TRUE);
+		say_tech(szCmp2, 9999, TRUE);
+		if (strcmp(szCmp1, szCmp2)) {
+			MessageBoxA(NULL, "say_tech 9999 T error", "FATAL ERROR", MB_ICONWARNING);
+		}
+		szCmp1[0] = 0, szCmp2[0] = 0;
+		say_tech_OG(szCmp1, 9999, FALSE);
+		say_tech(szCmp2, 9999, FALSE);
+		if (strcmp(szCmp1, szCmp2)) {
+			MessageBoxA(NULL, "say_tech 9999 F error", "FATAL ERROR", MB_ICONWARNING);
+		}
+	}
+	
 
+	
 	/*
 	for (int i = 0; i < MaxPlayerNum; i++) {
 		for (int j = 0; j < *BaseCurrentCount; j++) {

@@ -63,7 +63,7 @@ int __cdecl tech_name(LPSTR techName) {
 	}
 	parse_says(0, Txt->getFilePath(), -1, -1);
 	parse_says(1, techName, -1, -1);
-	parse_says(2, *ParseTempPtr1_1, -1, -1);
+	parse_says(2, *TextBufferGetPtr, -1, -1);
 	X_pop("BADTECHKEY", 0);
 	return DisabledValue;
 }
@@ -89,7 +89,7 @@ int __cdecl chas_name(LPSTR chasName) {
 	}
 	parse_says(0, Txt->getFilePath(), -1, -1);
 	parse_says(1, chasName, -1, -1);
-	parse_says(2, *ParseTempPtr1_1, -1, -1);
+	parse_says(2, *TextBufferGetPtr, -1, -1);
 	X_pop("BADCHASKEY", 0);
 	return 0;
 }
@@ -115,7 +115,7 @@ int __cdecl weap_name(LPSTR weapName) {
 	}
 	parse_says(0, Txt->getFilePath(), -1, -1);
 	parse_says(1, weapName, -1, -1);
-	parse_says(2, *ParseTempPtr1_1, -1, -1);
+	parse_says(2, *TextBufferGetPtr, -1, -1);
 	X_pop("BADWEAPKEY", 0);
 	return 0;
 }
@@ -141,7 +141,7 @@ int __cdecl arm_name(LPSTR armName) {
 	}
 	parse_says(0, Txt->getFilePath(), -1, -1);
 	parse_says(1, armName, -1, -1);
-	parse_says(2, *ParseTempPtr1_1, -1, -1);
+	parse_says(2, *TextBufferGetPtr, -1, -1);
 	X_pop("BADARMKEY", 0);
 	return DisabledValue;
 }
@@ -304,7 +304,7 @@ BOOL __cdecl read_tech() {
 		text_get();
 		text_item();
 		text_item();
-		strncpy_s(Technology[i].id, 8, *ParseTempPtr2_1, strlen(*ParseTempPtr2_1));
+		strncpy_s(Technology[i].id, 8, *TextBufferItemPtr, strlen(*TextBufferItemPtr));
 		Technology[i].id[7] = 0;
 		for (int j = 0; j < i; j++) {
 			if (!strcmp(Technology[i].id, Technology[j].id)) {
@@ -312,7 +312,7 @@ BOOL __cdecl read_tech() {
 				parse_num(1, j);
 				parse_says(0, Technology[i].id, -1, -1);
 				parse_says(1, FilefindPath->lastPath, -1, -1);
-				parse_says(2, *ParseTempPtr1_1, -1, -1);
+				parse_says(2, *TextBufferGetPtr, -1, -1);
 				X_pop("DUPLICATETECH", 0);
 			}
 		}
@@ -1321,4 +1321,24 @@ void __cdecl labels_shutdown() {
 		Label->stringsPtr = 0;
 	}
 	Label->count = 0;
+}
+
+/*
+Purpose: Get label string and concatenate it to stringTemp buffer.
+Original Offset: 005A5880
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl say_label(int labelOffset) {
+	strcat_s(stringTemp->str, 1032, label_get(labelOffset));
+}
+
+/*
+Purpose: Get label string from label offset. Created to reduce code complexity.
+Original Offset: n/a
+Return Value: Pointer to label string
+Status: Complete
+*/
+LPSTR __cdecl label_get(int labelOffset) {
+	return StringTable->get((int)*((LPSTR *)Label->stringsPtr + labelOffset));
 }

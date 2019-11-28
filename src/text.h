@@ -56,12 +56,18 @@ public:
 	// additional functions to assist with encapsulation
 	LPSTR update() { currentPos = bufferGet; return bufferGet; }
 	LPSTR getFilePath() { return filePath; }
+	LPSTR getBufferItem() { return bufferItem; }
+	LPSTR getBufferGet() { return bufferGet; }
 };
 
 // global
 extern Text *Txt;
+extern LPSTR *TextBufferGetPtr;
+extern LPSTR *TextBufferItemPtr;
 OPENSMACX_API void __cdecl text_txt();
 OPENSMACX_API void __cdecl text_txt_exit();
+OPENSMACX_API void __cdecl text_set_get_ptr();
+OPENSMACX_API void __cdecl text_set_item_ptr();
 OPENSMACX_API void __cdecl text_close();
 OPENSMACX_API BOOL __cdecl text_open(LPCSTR srcID, LPCSTR sectionID);
 OPENSMACX_API LPSTR __cdecl text_get();

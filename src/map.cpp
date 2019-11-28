@@ -24,6 +24,7 @@
 rules_natural *Natural = (rules_natural *)0x0094ADE0;
 uint32_t *MapHorizontalBounds = (uint32_t *)0x00949870;
 uint32_t *MapVerticalBounds = (uint32_t *)0x00949874;
+uint32_t *MapRandSeed = (uint32_t *)0x00949878;
 int *MapSeaLevel = (int *)0x0094987C;
 uint32_t *MapArea = (uint32_t *)0x00949884;
 uint32_t *MapAreaSqRoot = (uint32_t *)0x00949888;
@@ -45,7 +46,27 @@ BOOL __cdecl on_map(int xCoord, int yCoord) {
 }
 
 /*
-Purpose: Calculate distance between two points.
+Purpose: Bounds check and handling of xCoord for round maps.
+Original Offset: 0048BEE0
+Return Value: xCoord
+Status: Complete
+*/
+int __cdecl xrange(int xCoord) {
+	if (!*MapFlatToggle) {
+		if (xCoord >= 0) {
+			if (xCoord >= (int)*MapHorizontalBounds) {
+				xCoord -= *MapHorizontalBounds;
+			}
+		}
+		else {
+			xCoord += *MapHorizontalBounds;
+		}
+	}
+	return xCoord;
+}
+
+/*
+Purpose: Calculate the distance between two points.
 Original Offset: 004F8090
 Return Value: Distance
 Status: Complete
@@ -284,7 +305,7 @@ Return Value: Rockiness
 Status: Complete
 */
 uint32_t __cdecl rocky_at(int xCoord, int yCoord) {
-	return map_loc(xCoord, yCoord)->val3 >> 6;
+	return map_loc(xCoord, yCoord)->val3 & 0xC0;
 }
 
 /*
@@ -394,7 +415,7 @@ Status: Complete
 */
 void __cdecl synch_bit(int xCoord, int yCoord, int factionID) {
 	if (factionID) {
-		map_loc(xCoord, yCoord)->bitVisible[factionID-1] = bit_at(xCoord, yCoord);
+		map_loc(xCoord, yCoord)->bitVisible[factionID - 1] = bit_at(xCoord, yCoord);
 	}
 }
 
@@ -408,18 +429,8 @@ Status: Complete
 BOOL __cdecl is_coast(int xCoord, int yCoord, BOOL isBaseRadius) {
 	uint32_t radius = isBaseRadius ? 21 : 9;
 	for (uint32_t i = 1; i < radius; i++) {
-		int xRadius = xCoord + xRadiusOffset[i-1];
-		if (!*MapFlatToggle) { // if round map, additional parsing of coordinates
-			if (xRadius >= 0) {
-				if (xRadius >= (int)*MapHorizontalBounds) {
-					xRadius -= *MapHorizontalBounds;
-				}
-			}
-			else {
-				xRadius += *MapHorizontalBounds;
-			}
-		}
-		int yRadius = yCoord + yRadiusOffset[i-1];
+		int xRadius = xrange(xCoord + xRadiusOffset[i - 1]), 
+			yRadius = yCoord + yRadiusOffset[i - 1];
 		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0 
 			&& xRadius < (int)*MapHorizontalBounds && is_ocean(xRadius, yRadius)) {
 			return true; // modified original that would return i, all calls check return as boolean
@@ -504,6 +515,20 @@ void __cdecl rebuild_base_bits() {
 		}
 	}
 }
+ 
+/*
+Purpose: Calculate distance between two xCoords with handling for round maps.
+Original Offset: 00579790
+Return Value: Distance
+Status: Complete
+*/
+int __cdecl cursor_dist(int xCoord1, int xCoord2) {
+	int dist = abs(xCoord1 - xCoord2);
+	if (!*MapFlatToggle && dist > (int)*MapHorizontal) {
+		dist = *MapHorizontalBounds - dist;
+	}
+	return dist;
+}
 
 /*
 Purpose: Get owner of tile if there is a Veh or Base in it.
@@ -534,10 +559,7 @@ int __cdecl is_sensor(int xCoord, int yCoord) {
 	}
 	int baseID = base_find(xCoord, yCoord);
 	if (baseID != -1) {
-		int distX = abs(xCoord - Base[baseID].xCoord);
-		if (!(*MapFlatToggle & 1) && distX > (int)*MapHorizontal) {
-			distX = *MapHorizontalBounds - distX;
-		}
+		int distX = cursor_dist(xCoord, Base[baseID].xCoord);
 		if (!distX || distX == 2) { // removed unnecessary duplicate calculation of distX
 			int distY = abs(yCoord - Base[baseID].yCoord);
 			if (!distY || distY == 2) {

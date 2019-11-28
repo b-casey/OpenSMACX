@@ -202,8 +202,8 @@ struct player_data {
 	int diploFlags;
 	int ranking;
 	int diffLevel;
-	int unk_0;
-	int unk_1;
+	uint32_t baseNameOffset;
+	uint32_t baseSeaNameOffset;
 	int tutorialMoreBases;
 	int diploStatus[8];
 	int diploAgenda[8];
@@ -459,4 +459,6 @@ extern player_data *PlayersData;
 extern faction_art *FactionArt;
 extern uint8_t *FactionCurrentBitfield;
 
+OPENSMACX_API LPSTR __cdecl get_adjective(int factionID);
+OPENSMACX_API LPSTR __cdecl get_noun(int factionID);
 OPENSMACX_API BOOL __cdecl society_avail(int socCategory, int socModel, int factionID);
