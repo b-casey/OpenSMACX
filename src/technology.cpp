@@ -21,7 +21,6 @@
 #include "alpha.h"
 #include "game.h"
 #include "strings.h"
-#include "veh.h"
 
 rules_technology *Technology = (rules_technology *)0x0094F358;
 uint8_t *GameTechDiscovered = (uint8_t *)0x009A6670;
@@ -30,66 +29,86 @@ int *TechValidCount = (int *)0x00949730;
 int *TechCommerceCount = (int *)0x00949734;
 char TechName[80];
 
-/*
-Purpose: Get tech string for techID and store it into stringTemp buffer.
-Original Offset: 005591A0
-Return Value: n/a
-Status: Complete
-*/
-void __cdecl say_tech(int techID, BOOL categoryLvl) {
-	say_tech(stringTemp->str, techID, categoryLvl);
-}
-
-/*
-Purpose: Craft an output string related to a specific technology. For techIDs outside the standard
-         range, craft a string related to world map, comm links or prototypes.
-Original Offset: 005B9C40
-Return Value: n/a
-Status: Complete
-*/
-void __cdecl say_tech(LPSTR output, int techID, BOOL categoryLvl) {
+// 005B9C40
+void __cdecl say_tech(LPSTR output, int techID, int toggle) {
+	//std::string output;
 	if (techID < -1) {
-		strcat_s(output, 80, label_get(310)); // "Not Available"
+		// "Not Available"
+		strcat_s(output, 80, StringTable->get((int)*((LPSTR *)Label->stringsPtr + 310)));
 	}
-	else if (techID < 0) {
-		strcat_s(output, 80, label_get(25)); // "NONE"
+	else if (!techID) {
+		// "NONE"
+		strcat_s(output, 80, StringTable->get((int)*((LPSTR *)Label->stringsPtr + 25)));
 	}
 	else if (techID == 9999) {
-		strcat_s(output, 80, label_get(306)); // "World Map"
+		// "World Map"		
+		strcat_s(output, 80, StringTable->get((int)*((LPSTR *)Label->stringsPtr + 306)));
 	}
-	else if (techID < MaxTechnologyNum) {
-		strcat_s(output, 80, StringTable->get((int)Technology[techID].name));
-		if (categoryLvl) {
-			sprintf_s(&output[strlen(output)], 80, " (%s%d)", // 'E#', 'D#', 'B#', 'C#'
-				label_get(629 + tech_category(techID)), tech_recurse(techID, 0));
+	else if (techID <= 89) {
+		/*
+		
+		strcat_s(output, 80, StringTable->get((int)*Technology[techID].name));
+		if (toggle) { // include category + preq
+			strcat_s(output, 80, " (");
+			strcat_s(output, 80, StringTable->get((int)*((LPSTR *)Label->stringsPtr + 
+				tech_category(techID) + 629)));
+			int val1 = tech_recurse(Technology[techID].preqTech1, 1);
+			int val2 = tech_recurse(Technology[techID].preqTech2, 1);
+			if (val1 > val2) {
+				val2 = val1;
+			}
+			int len = strlen(output);
+			wsprintfA(&output[len], "%d)", val2);
 		}
+		*/
 	}
-	else if (techID < 97) {
+	else if (techID <= 97) {
 		if (*Language) {
-			sprintf_s(&output[strlen(output)], 80, "%s (%s)", label_get(487), // 'Comm Frequency'
-				get_noun(techID - 89));
+			strcat_s(output, 80, StringTable->get((int)*((LPSTR *)Label->stringsPtr + 487)));
+			strcat_s(output, 80, " (");
+			strcat_s(output, 80, Players[techID - 89].nameAdjFaction);
+			*PluralityDefault = Players[techID - 89].isNounPlural;
+			//*GenderDefault = Players[techID - 89].nounFaction
+			
 		}
 		else {
-			sprintf_s(&output[strlen(output)], 80, "%s %s", Players[techID - 89].nameAdjFaction,
-				label_get(487)); // 'Comm Frequency'
+			strcat_s(output, 80, Players[techID - 89].nameAdjFaction);
+			strcat_s(output, 80, " ");
+			strcat_s(output, 80, StringTable->get((int)*((LPSTR *)Label->stringsPtr + 487)));
 		}
+		
+		/*
+		v11 = techID - 89;
+		if (Language)
+		{
+			GenderDefault = *(_DWORD *)&Players.nounFaction[1436 * v11 + 24];
+			strcat(output, &Players.nounFaction[1436 * v11]);
+			strcat(output, asc_682E98);
+			return;
+		}
+		*/
+
 	}
+	//v17 = (const char *)Strings::get(&StringTable, v14);
+	//strcat(v13, v17);
 	else {
-		sprintf_s(&output[strlen(output)], 80, "%s %s", VehPrototype[techID - 97].vehName, 
-			label_get(185)); // 'Prototype'
+	/*
+		v13 = output;
+		strcat(output, &VehPrototype.vehName[4 * (techID + 4 * (3 * techID - 291)) - 388]);
+		strcat(output, szSPACE);
+		v14 = *((_DWORD *)Labels.stringsPtr + 185);
+		strcat_s(output, 80, StringTable->get((int)*((LPSTR *)Label->stringsPtr + 306)));
+		v17 = (const char *)Strings::get(&StringTable, v14);
+		strcat(v13, v17);
+		*/
 	}
 }
 
-/*
-Purpose: Get tech string for techID and store it into TechName buffer.
-Original Offset: 005B9EF0
-Return Value: Pointer to TechName
-Status: Complete
-*/
-LPSTR __cdecl tech_name(int techID, BOOL categoryLvl) {
+// 005B9EF0
+LPSTR __cdecl tech_name(int techID, BOOL toggle) {
 	TechName[0] = 0;
-	say_tech(TechName, techID, categoryLvl);
-	return TechName;
+	say_tech(TechName, techID, toggle);
+	return (LPSTR)&TechName;
 }
 
 /*
@@ -115,40 +134,30 @@ BOOL __cdecl has_tech(int techID, int factionID) {
 	return ((1 << factionID) & GameTechDiscovered[techID]) != 0;
 }
 
-/*
-Purpose: Determine technology level for techID.
-Original Offset: 005B9F90
-Return Value: Level
-Status: Complete
-*/
-int __cdecl tech_recurse(int techID, int baseLevel) {
-	if (techID < 0 || techID >= MaxTechnologyNum) {
-		return baseLevel;
+// 005B9F90
+int __cdecl tech_recurse(int techID, int ret) {
+	if (techID < 0 || techID >= 89) {
+		return ret;
 	}
-	int val1 = tech_recurse(Technology[techID].preqTech1, baseLevel + 1);
-	int val2 = tech_recurse(Technology[techID].preqTech2, baseLevel + 1);
+	int val1 = tech_recurse(Technology[techID].preqTech1, ret + 1);
+	int val2 = tech_recurse(Technology[techID].preqTech2, ret + 1);
 	return (val1 > val2) ? val1 : val2;
 }
 
-/*
-Purpose: Determine what category is dominate for techID. If there is a tie, the order of precedence
-         is as follows: growth > tech > wealth > power.
-Original Offset: 005B9FE0
-Return Value: Tech category id: growth (0), tech (1), wealth (2) or power (3).
-Status: Complete
-*/
+// 005B9FE0
 int __cdecl tech_category(int techID) {
+	int compare = Technology[techID].growthValue, tech = Technology[techID].techValue,
+		wealth = Technology[techID].wealthValue, power = Technology[techID].powerValue;
 	uint32_t category = 0;
-	int compare = Technology[techID].growthValue;
-	if (Technology[techID].techValue > compare) {
+	if (tech > compare) {
 		category = 1;
-		compare = Technology[techID].techValue;
+		compare = tech;
 	}
-	if (Technology[techID].wealthValue > compare) {
+	if (wealth > compare) {
 		category = 2;
-		compare = Technology[techID].wealthValue;
+		compare = wealth;
 	}
-	return (Technology[techID].powerValue > compare) ? 3 : category;
+	return (power > compare) ? 3 : category;
 }
 
 /*

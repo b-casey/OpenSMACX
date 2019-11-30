@@ -132,7 +132,6 @@ const int yRadiusOffset[] = { -1, 0, 1, 2, 1, 0, -1, -2, -2, 2, 2, -2, -3, -1, 1
 extern rules_natural *Natural;
 extern uint32_t *MapVerticalBounds; // y
 extern uint32_t *MapHorizontalBounds; // x
-extern uint32_t *MapRandSeed;
 extern int *MapSeaLevel;
 extern uint32_t *MapArea;
 extern uint32_t *MapAreaSqRoot;
@@ -143,7 +142,6 @@ extern uint32_t *MapHorizontal;
 extern map **Map;
 
 OPENSMACX_API BOOL __cdecl on_map(int xCoord, int yCoord);
-OPENSMACX_API int __cdecl xrange(int xCoord);
 OPENSMACX_API int __cdecl x_dist(int xCoord, int yCoord);
 OPENSMACX_API map * __cdecl map_loc(int xCoord, int yCoord);
 OPENSMACX_API uint32_t __cdecl temp_at(int xCoord, int yCoord);
@@ -179,6 +177,5 @@ OPENSMACX_API BOOL __cdecl is_ocean(int xCoord, int yCoord);
 OPENSMACX_API int __cdecl veh_who(int xCoord, int yCoord);
 OPENSMACX_API void __cdecl rebuild_vehicle_bits();
 OPENSMACX_API void __cdecl rebuild_base_bits();
-OPENSMACX_API int __cdecl cursor_dist(int xCoord1, int xCoord2);
 OPENSMACX_API int __cdecl anything_at(int xCoord, int yCoord);
 OPENSMACX_API int __cdecl is_sensor(int xCoord, int yCoord);

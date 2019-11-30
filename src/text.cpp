@@ -231,16 +231,10 @@ int Text::item_hex() {
 
 // global
 Text *Txt = (Text *)0x009B7BA0;
-LPSTR *TextBufferGetPtr = (LPSTR *)0x009B7D00;
-LPSTR *TextBufferItemPtr = (LPSTR *)0x009B7D04;
 
 void __cdecl text_txt() { *Txt = *(new Text(512)); atexit(text_txt_exit); } // 005FD400  
 
 void __cdecl text_txt_exit() { Txt->~Text(); } // 005FD460
-
-void __cdecl text_set_get_ptr() { *TextBufferGetPtr = Txt->getBufferGet(); } // 005FD4C0
-
-void __cdecl text_set_item_ptr() { *TextBufferItemPtr = Txt->getBufferItem(); } // 005FD4D0
 
 void __cdecl text_close() { Txt->close(); } // 005FD530
 

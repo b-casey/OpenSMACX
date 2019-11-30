@@ -54,9 +54,6 @@ extern func6 *X_pop;
 typedef int *func8(LPSTR, LPSTR);
 extern func8 *parse_string_OG;
 
-typedef void func9(LPSTR, int, BOOL);
-extern func9 *say_tech_OG;
-
 // Time
 typedef void func30(int);
 extern func30 *blink_timer;
@@ -65,6 +62,8 @@ extern func30 *line_timer;
 extern func30 *turn_timer;
 
 ///
+extern LPSTR *ParseTempPtr1_1;
+extern LPSTR *ParseTempPtr2_1;
 extern char1032 *stringTemp;
 extern char256 *ParseStrBuffer;
 

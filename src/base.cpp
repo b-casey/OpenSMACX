@@ -22,7 +22,6 @@
 #include "game.h" // Difficulty level
 #include "map.h" // x_dist(), region_at()
 #include "strings.h"
-#include "text.h"
 #include "technology.h" // has_tech()
 
 rules_facility *Facility = (rules_facility *)0x009A4B68;
@@ -79,7 +78,8 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl say_base(LPSTR strBase, int baseID) {
-	std::string output = (baseID >= 0) ? Base[baseID].nameString : label_get(25); // 'NONE'
+	std::string output = (baseID >= 0) ? Base[baseID].nameString 
+		: StringTable->get((int)*((LPSTR *)Label->stringsPtr + 0x19)); // 'NONE'
 	// assumes 1032 char buffer via stringTemp, eventually remove
 	strcat_s(strBase, 1032, output.c_str());
 }
@@ -96,8 +96,11 @@ int __cdecl base_find(int xCoord, int yCoord) {
 	}
 	int proximity = 9999, baseID = -1;
 	for (int i = 0; i < *BaseCurrentCount; i++) {
-		// removed redundant abs() around yCoord difference
-		int dist = x_dist(cursor_dist(xCoord, Base[i].xCoord), yCoord - Base[i].yCoord);
+		int distHorz = abs(xCoord - Base[i].xCoord);
+		if (!(*MapFlatToggle & 1) && distHorz > (int)*MapHorizontal) {
+			distHorz = *MapHorizontalBounds - distHorz;
+		}
+		int dist = x_dist(distHorz, yCoord - Base[i].yCoord); // removed extra abs() yCoord diff
 		if (dist <= proximity) {
 			proximity = dist;
 			baseID = i;
@@ -122,8 +125,11 @@ int __cdecl base_find(int xCoord, int yCoord, uint32_t factionID) {
 	int proximity = 9999, baseID = -1;
 	for (int i = 0; i < *BaseCurrentCount; i++) {
 		if (Base[i].factionIDCurrent == factionID) {
-			// removed redundant abs() around yCoord difference
-			int dist = x_dist(cursor_dist(xCoord, Base[i].xCoord), yCoord - Base[i].yCoord);
+			int distHorz = abs(xCoord - Base[i].xCoord);
+			if (!(*MapFlatToggle & 1) && distHorz > (int)*MapHorizontal) {
+				distHorz = *MapHorizontalBounds - distHorz;
+			}
+			int dist = x_dist(distHorz, yCoord - Base[i].yCoord); // removed extra abs() yCoord diff
 			if (dist <= proximity) {
 				proximity = dist;
 				baseID = i;
@@ -157,8 +163,12 @@ int __cdecl base_find(int xCoord, int yCoord, int factionID, int region, int fac
 					: (factionID2 >= 0 && factionID2 == Base[i].factionIDCurrent)))) {
 				if (factionID3 < 0 || Base[i].factionIDCurrent == factionID3 
 					|| ((1 << factionID3) & Base[i].unk2)) {
-					// removed redundant abs() around yCoord difference
-					int dist = x_dist(cursor_dist(xCoord, Base[i].xCoord), yCoord - Base[i].yCoord);
+					int distHorz = abs(xCoord - Base[i].xCoord);
+					if (!(*MapFlatToggle & 1) && distHorz > (int)*MapHorizontal) {
+						distHorz = *MapHorizontalBounds - distHorz;
+					}
+					// removed extra abs() yCoord diff
+					int dist = x_dist(distHorz, yCoord - Base[i].yCoord);
 					if (dist <= proximity) {
 						proximity = dist;
 						baseID = i;
@@ -171,108 +181,6 @@ int __cdecl base_find(int xCoord, int yCoord, int factionID, int region, int fac
 		*BaseFindDist = proximity;
 	}
 	return baseID;
-}
-
-/*
-Purpose: Find the best specialist available to the current base with more weight placed on psych.
-Original Offset: 004E4020
-Return Value: Best citizen id (always going to be 1, 4, or 6 based on default weights)
-Status: Complete
-*/
-uint32_t  __cdecl best_specialist() {
-	int currentBonus = -999;
-	uint32_t citizenID = 0;
-	for (int i = 0; i < MaxSpecialistNum; i++) {
-		if (has_tech(Citizen[i].preqTech, (*BaseCurrent)->factionIDCurrent)) {
-			uint32_t bonus = Citizen[i].psychBonus * 3;
-			if ((*BaseCurrent)->populationSize >= Rules->MinBaseSizeSpecialists) {
-				bonus += Citizen[i].opsBonus + Citizen[i].researchBonus;
-			}
-			if ((int)bonus > currentBonus) {
-				currentBonus = bonus;
-				citizenID = i;
-			}
-		}
-	}
-	return citizenID;
-}
-
-/*
-Purpose: Generate a base name.
-Original Offset: 004E4090
-Return Value: n/a
-Status: WIP
-*/
-void __cdecl name_base(int factionID, LPSTR nameOut, BOOL isFinal, BOOL isWaterBase) {
-	if (isWaterBase && !text_open(Players[factionID].filename, "WATERBASES")) {
-		uint32_t offsetSea = PlayersData[factionID].baseSeaNameOffset + 1, search;
-		for (search = 0; search < offsetSea; search++) {
-			text_get();
-			if (!strlen(*TextBufferGetPtr) || !_strnicmp(*TextBufferGetPtr, "#END", 4)) {
-				break;
-			}
-		}
-		if (search == offsetSea) {
-			// water base name available
-			strncpy_s(nameOut, 25, text_item(), 24);
-			nameOut[23] = 0;
-			if (isFinal) {
-				PlayersData[factionID].baseSeaNameOffset = offsetSea;
-			}
-			text_close();
-			return;
-		}
-	}
-	uint32_t offset = PlayersData[factionID].baseNameOffset + 1;
-	sprintf_s(nameOut, 25, "%s %d", get_noun(factionID), offset); // default if names exhausted
-	if (!text_open(Players[factionID].filename, "BASES")) {
-		uint32_t search;
-		for (search = 0; ; search++) {
-			text_get();
-			if (!strlen(*TextBufferGetPtr) || !_strnicmp(*TextBufferGetPtr, "#END", 4)) {
-				break;
-			}
-		}
-		if (offset > 1 && offset <= search) {
-			int seed = ((*MapRandSeed + factionID) & 0xFE) | 1;
-			int loop = 1;
-			do {
-				if (seed & 1) {
-					seed ^= 0x170;
-				}
-				seed >>= 1;
-			} while (seed >= offset || ++loop != offset);
-			offset = seed + 1;
-		}
-		if (!text_open(Players[factionID].filename, "BASES")) {
-			for (search = 0; search < offset; search++) {
-				text_get();
-				if (!strlen(*TextBufferGetPtr) || !_strnicmp(*TextBufferGetPtr, "#END", 4)) {
-					break;
-				}
-			}
-			if (offset != search) {
-				if (text_open("BASENAME", "GENERIC")) {
-					return;
-				}
-				if (search < offset) {
-					for (search = 0; search < offset; search++) {
-						text_get();
-						if (!strlen(*TextBufferGetPtr) || !_strnicmp(*TextBufferGetPtr, "#END", 4)) {
-							return;
-						}
-					}
-				}
-			}
-			strncpy_s(nameOut, 25, text_item(), 24);
-			nameOut[23] = 0;
-			if (isFinal) {
-				PlayersData[factionID].baseSeaNameOffset++;
-			}
-			text_close();
-			return;
-		}
-	}
 }
 
 /*

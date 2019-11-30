@@ -16,7 +16,6 @@
  * along with OpenSMACX. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "stdafx.h"
-#include "temp.h"
 #include "faction.h"
 #include "technology.h"
 
@@ -31,28 +30,6 @@ rules_might *Might = (rules_might *)0x0094C558;
 rules_proposal *Proposal = (rules_proposal *)0x009A6828;
 rules_bonusname *BonusName = (rules_bonusname *)0x009461A8;
 uint8_t *FactionCurrentBitfield = (uint8_t *)0x009A64E8;
-
-/*
-Purpose: Get Player's faction name adjective.
-Original Offset: 0050B910
-Return Value: Faction name adjective
-Status: Complete
-*/
-LPSTR __cdecl get_adjective(int factionID) {
-	return Players[factionID].nameAdjFaction;
-}
-
-/*
-Purpose: Get Player's faction noun.
-Original Offset: 0050B930
-Return Value: Faction noun
-Status: Complete
-*/
-LPSTR __cdecl get_noun(int factionID) {
-	*GenderDefault = Players[factionID].nounGender;
-	*PluralityDefault = Players[factionID].isNounPlural;
-	return Players[factionID].nounFaction;
-}
 
 /*
 Purpose: Check to see whether provided faction can utilize a specific social category and model.
