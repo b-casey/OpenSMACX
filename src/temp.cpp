@@ -63,8 +63,6 @@ func30 *line_timer = (func30 *)0x0050EE80;
 func30 *turn_timer = (func30 *)0x0050EF10;
 
 ///
-LPSTR *ParseTempPtr1_1 = (LPSTR *)0x009B7D00;
-LPSTR *ParseTempPtr2_1 = (LPSTR *)0x009B7D04;
 char1032 *stringTemp = (char1032 *)0x009B86A0;
 char256 *ParseStrBuffer = (char256 *)0x009BB5E8;
 
@@ -87,7 +85,6 @@ Filefind *FilefindPath = (Filefind *)0x009B8198;
 MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
 
 int __cdecl tester() {
-
 	/*
 	for (int i = 0; i < MaxPlayerNum; i++) {
 		for (int j = 0; j < *BaseCurrentCount; j++) {

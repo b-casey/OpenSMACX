@@ -204,7 +204,7 @@ enum veh_state {
 	VSTATE_UNK_800000 = 0x800000,
 	VSTATE_UNK_1000000 = 0x1000000,
 	VSTATE_UNK_2000000 = 0x2000000,
-	VSTATE_CRAWLING = 0x4000000,
+	VSTATE_CRAWLING = 0x4000000, // more than just crawling, terraforming also?
 	VSTATE_UNK_8000000 = 0x8000000,
 	VSTATE_UNK_10000000 = 0x10000000,
 	VSTATE_UNK_20000000 = 0x20000000,
@@ -506,6 +506,8 @@ OPENSMACX_API int __cdecl pick_chassis(int factionID, int triadChk, int speedChk
 OPENSMACX_API int __cdecl weapon_budget(int factionID, int condition, BOOL checkMode);
 OPENSMACX_API int __cdecl armor_budget(int factionID, int maxCost);
 OPENSMACX_API int __cdecl abil_index(int abilityID);
+OPENSMACX_API int __cdecl hex_cost(int protoID, int factionID, int xCoordSrc, int yCoordSrc, 
+	int xCoordDst, int yCoordDst, BOOL toggle);
 OPENSMACX_API void __cdecl veh_put(int vehID, int xCoord, int yCoord);
 OPENSMACX_API uint32_t __cdecl veh_health(int vehID);
 OPENSMACX_API uint32_t __cdecl proto_cost(uint32_t chassisID, uint32_t weaponID, uint32_t armorID, 
@@ -513,6 +515,9 @@ OPENSMACX_API uint32_t __cdecl proto_cost(uint32_t chassisID, uint32_t weaponID,
 OPENSMACX_API uint32_t __cdecl base_cost(int protoID);
 OPENSMACX_API void __cdecl make_proto(int protoID, uint32_t chassisID, uint32_t weaponID, 
 	uint32_t armorID, uint32_t ability, uint32_t reactorID);
+OPENSMACX_API void __cdecl stack_put(int vehID, int xCoord, int yCoord);
+OPENSMACX_API void __cdecl stack_sort(int vehID);
+OPENSMACX_API void __cdecl stack_sort_2(int vehID);
 OPENSMACX_API BOOL __cdecl veh_avail(int protoID, int factionID, int baseID);
 OPENSMACX_API int __cdecl veh_at(int xCoord, int yCoord);
 OPENSMACX_API BOOL __cdecl has_abil(int protoID, int abilityID);

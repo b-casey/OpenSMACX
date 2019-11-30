@@ -62,8 +62,6 @@ extern func30 *line_timer;
 extern func30 *turn_timer;
 
 ///
-extern LPSTR *ParseTempPtr1_1;
-extern LPSTR *ParseTempPtr2_1;
 extern char1032 *stringTemp;
 extern char256 *ParseStrBuffer;
 

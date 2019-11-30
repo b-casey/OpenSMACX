@@ -120,18 +120,7 @@ uint32_t __cdecl morale_alien(int vehID, int factionIDvsNative) {
 		int16_t yCoord = Veh[vehID].yCoord;
 		// similar to is_coast() > except with fungus check + Ocean Shelf included
 		for (uint32_t i = 0; i < 8; i++) {
-			int xRadius = xCoord + xRadiusOffset[i];
-			if (!*MapFlatToggle) { // if round map, additional parsing of coordinates
-				if (xRadius >= 0) {
-					if (xRadius >= (int)*MapHorizontalBounds) {
-						xRadius -= *MapHorizontalBounds;
-					}
-				}
-				else {
-					xRadius += *MapHorizontalBounds;
-				}
-			}
-			int yRadius = yCoord + yRadiusOffset[i];
+			int xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
 			if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
 				&& xRadius < (int)*MapHorizontalBounds && bit_at(xRadius, yRadius) & BIT_FUNGUS
 				&& ((map_loc(xRadius, yRadius)->val1 & 0xE0) >= ALT_OCEAN_SHELF)) {
@@ -454,21 +443,21 @@ void __cdecl say_stats_2(LPSTR stat, int protoID) {
 		output = (offRating < 99) ? say_offense(protoID) : "*";
 	}
 	else {
-		output = StringTable->get((int)*((LPSTR *)Label->stringsPtr + 0xC4)); // 'Psi'
+		output = label_get(196); // 'Psi'
 	}
 	output += "-";
 	output += (Armor[VehPrototype[protoID].armorID].defenseRating) >= 0 ?
-		say_defense(protoID) : StringTable->get((int)*((LPSTR *)Label->stringsPtr + 0xC4)); // 'Psi'
+		say_defense(protoID) : label_get(196); // 'Psi'
 	output += "-";
 	output += std::to_string(speed_proto(protoID) / Rules->MoveRateRoads);
 	uint32_t triad = Chassis[VehPrototype[protoID].chassisID].triad;
 	if (triad == TRIAD_SEA) {
 		output += " ";
-		output += StringTable->get((int)*((LPSTR *)Label->stringsPtr + 0xA3)); // 'Sea';
+		output += label_get(163); // 'Sea'
 	}
 	else if (triad == TRIAD_AIR) {
 		output += " ";
-		output += StringTable->get((int)*((LPSTR *)Label->stringsPtr + 0xA2)); // 'Air';
+		output += label_get(162); // 'Air'
 	}
 	uint32_t reactor = VehPrototype[protoID].reactorID;
 	if (reactor > 1) {
@@ -500,17 +489,14 @@ void __cdecl say_stats(LPSTR stat, int protoID, LPSTR customSpacer) {
 		output += ", ";
 	}
 	else if (mode < 3) { // Projectile, energy, missile
-		LPSTR temp = (plan != PLAN_DEFENSIVE || (offRating >= 0 && offRating <= defRating))
-			? PlansShortName[plan] : *((LPSTR *)Label->stringsPtr + 0x138); // 'Combat'
-		output = StringTable->get((int)temp);
+		output = (plan != PLAN_DEFENSIVE || (offRating >= 0 && offRating <= defRating))
+			? StringTable->get((int)PlansShortName[plan]) : label_get(312); // 'Combat'
 		output += ", ";
 	}
 	if (offRating < 0 || mode < 3) {
-		output += (offRating < 0) ? StringTable->get((int)*((LPSTR *)Label->stringsPtr + 0xC4)) :
-			say_offense(protoID);
+		output += (offRating < 0) ? label_get(196) : say_offense(protoID); // 'Psi'
 		output += customSpacer ? customSpacer : "/";
-		output += (defRating < 0) ? StringTable->get((int)*((LPSTR *)Label->stringsPtr + 0xC4)) :
-			say_defense(protoID);
+		output += (defRating < 0) ? label_get(196) : say_defense(protoID); // 'Psi'
 		output += customSpacer ? customSpacer : "/";
 		output += std::to_string(speed_proto(protoID) / Rules->MoveRateRoads);
 	}
@@ -523,8 +509,7 @@ void __cdecl say_stats(LPSTR stat, int protoID, LPSTR customSpacer) {
 			output += ")";
 		}
 		output += ", ";
-		output += (defRating < 0) ? StringTable->get((int)*((LPSTR *)Label->stringsPtr + 0xC4)) :
-			say_defense(protoID);
+		output += (defRating < 0) ? label_get(196) : say_defense(protoID); // 'Psi'
 		output += customSpacer ? customSpacer : "/";
 		output += std::to_string(speed_proto(protoID) / Rules->MoveRateRoads);
 	}
@@ -541,11 +526,11 @@ void __cdecl say_stats(LPSTR stat, int protoID, LPSTR customSpacer) {
 	}
 	if (triad == TRIAD_SEA) {
 		output += " ";
-		output += StringTable->get((int)*((LPSTR *)Label->stringsPtr + 0xA3)); // 'Sea';
+		output += label_get(163); // 'Sea'
 	}
 	else if (triad == TRIAD_AIR) {
 		output += " ";
-		output += StringTable->get((int)*((LPSTR *)Label->stringsPtr + 0xA2)); // 'Air';
+		output += label_get(162); // 'Air'
 	}
 	uint32_t reactor = VehPrototype[protoID].reactorID;
 	if (reactor > 1) {
@@ -678,6 +663,75 @@ int __cdecl abil_index(int abilityID) {
 		check >>= 1;
 	}
 	return index;
+}
+ 
+/*
+Purpose: Calculate movement penalty/cost.
+Original Offset: 00593510
+Return Value: Movement cost
+Status: WIP
+*/
+int __cdecl hex_cost(int protoID, int factionID, int xCoordSrc, int yCoordSrc, 
+	int xCoordDst, int yCoordDst, BOOL toggle) {
+	uint32_t bitDst = bit_at(xCoordDst, yCoordDst);
+	if (is_ocean(xCoordDst, yCoordDst)) {
+		if (bitDst & BIT_FUNGUS
+			&& map_loc(xCoordDst, yCoordDst)->val1 == ALT_OCEAN_SHELF
+			&& Chassis[VehPrototype[protoID].chassisID].triad == TRIAD_SEA 
+			// SEALURK fix?
+			&& protoID != BSC_ISLE_OF_THE_DEEP && !has_project(SP_XENOEMPATYH_DOME, factionID)) {
+			return Rules->MoveRateRoads * 3;
+		}
+		return Rules->MoveRateRoads;
+	}
+	if (is_ocean(xCoordSrc, yCoordSrc)) {
+		return Rules->MoveRateRoads;
+	}
+	if (protoID >= 0 && Chassis[VehPrototype[protoID].chassisID].triad == TRIAD_LAND) {
+		return Rules->MoveRateRoads;
+	}
+	uint32_t bitSrc = bit_at(xCoordSrc, yCoordSrc);
+	if (bitSrc & (BIT_MAGTUBE | BIT_BASE_IN_TILE) && bitDst & (BIT_MAGTUBE | BIT_BASE_IN_TILE)
+		&& factionID) {
+		return 0;
+	}
+	if ((bitSrc & (BIT_ROAD | BIT_BASE_IN_TILE) || bitSrc & BIT_FUNGUS && factionID > 0
+		&& has_project(SP_XENOEMPATYH_DOME, factionID)) && bitDst & (BIT_ROAD | BIT_BASE_IN_TILE)
+		&& factionID) {
+		return 1;
+	}
+	if (factionID > 0 && has_project(SP_XENOEMPATYH_DOME, factionID) || !factionID
+		|| protoID == BSC_MIND_WORMS || protoID == BSC_SPORE_LAUNCHER && bitDst & BIT_FUNGUS) {
+		return 1;
+	}
+	if (bitDst & BIT_RIVER && bitDst & BIT_RIVER && cursor_dist(xCoordSrc, xCoordDst) == 1
+		&& abs(yCoordSrc - yCoordDst) == 1 && factionID) {
+		return 1;
+	}
+	if (VehPrototype[protoID].chassisID == CHSI_HOVERTANK 
+		|| has_abil(protoID, ABL_ANTIGRAV_STRUTS)) {
+		return Rules->MoveRateRoads;
+	}
+	uint32_t cost = Rules->MoveRateRoads;
+	if (rocky_at(xCoordDst, yCoordDst) & TERRAIN_ROLLING & !toggle) {
+		cost += Rules->MoveRateRoads;
+	}
+	if (bitDst & BIT_FOREST && !toggle) {
+		cost += Rules->MoveRateRoads;
+	}
+	if (factionID && bitDst & BIT_FUNGUS && (protoID >= MaxVehProtoFactionNum
+		|| Weapon[VehPrototype[protoID].weaponID].offenseRating >= 0)) {
+		uint8_t plan = VehPrototype[protoID].plan;
+		if (plan != PLAN_TERRAFORMING && plan != PLAN_ALIEN_ARTIFACT
+			&& PlayersData[factionID].SE_Planet <= 0) {
+			return cost + Rules->MoveRateRoads * 2;
+		}
+		uint32_t speed = speed_proto(protoID);
+		if (cost <= speed) {
+			return speed;
+		}
+	}
+	return cost;
 }
 
 /*
@@ -988,6 +1042,43 @@ void __cdecl make_proto(int protoID, uint32_t chassisID, uint32_t weaponID, uint
 		1 << (protoID / MaxVehProtoFactionNum) : -1;
 	VehPrototype[protoID].flags = unkLocal1 ? ((unkLocal1 & 2) ? 0x115 : 0x105) : PROTO_ACTIVE;
 	VehPrototype[protoID].iconOffset = -1;
+}
+
+/*
+Purpose: Move all Vehs in same tile as param to the destination coordinates.
+Original Offset: 005B8AF0
+Return Value: n/a
+Status: WIP
+*/
+void __cdecl stack_put(int vehID, int xCoord, int yCoord) {
+	int nextVehID = veh_top(vehID), vehIDLoop;
+	if (nextVehID >= 0) {
+		do {
+			vehIDLoop = Veh[nextVehID].nextVehIDStack;
+			veh_drop(veh_lift(nextVehID), xCoord, yCoord);
+			nextVehID = vehIDLoop;
+		} while (vehIDLoop >= 0);
+	}
+}
+
+/*
+Purpose: 
+Original Offset: 005B8B60
+Return Value: n/a
+Status: WIP
+*/
+void __cdecl stack_sort(int vehID) {
+	//
+}
+
+/*
+Purpose:
+Original Offset: 005B8C90
+Return Value: n/a
+Status: WIP
+*/
+void __cdecl stack_sort_2(int vehID) {
+	//
 }
 
 /*
@@ -1588,13 +1679,13 @@ int __cdecl veh_fake(int protoID, int factionID) {
 }
 
 /*
-Purpose: Activate unit and clears current action.
+Purpose: Activate unit and clear current action.
 Original Offset: 005C1D70
 Return Value: vehID (doesn't look to be used on return)
-Status: WIP - test, incomplete flags/enums
+Status: Complete (TODO: Identify VSTATE flags)
 */
 int __cdecl veh_wake(int vehID) {
-	int8_t orders = Veh[vehID].orders;
+	uint8_t orders = Veh[vehID].orders;
 	uint32_t state = Veh[vehID].state;
 	if (orders >= ORDER_FARM && orders < ORDER_MOVE_TO && !(state & VSTATE_CRAWLING)) {
 		// TODO bug fix: Issue with movesExpended size / speed return, see veh_skip()
