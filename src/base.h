@@ -423,7 +423,7 @@ OPENSMACX_API int __cdecl base_find(int xCoord, int yCoord, uint32_t factionID);
 OPENSMACX_API int __cdecl base_find(int xCoord, int yCoord, int factionID, int region,
 	int factionID2, int factionID3);
 OPENSMACX_API uint32_t  __cdecl best_specialist();
-OPENSMACX_API void __cdecl name_base(int factionID, LPSTR nameOut, BOOL isFinal, BOOL isWaterBase);
+OPENSMACX_API void __cdecl name_base(int factionID, LPSTR nameOut, BOOL isFinal, BOOL isSeaBase);
 OPENSMACX_API int __cdecl base_making(int productionID, int baseID);
 OPENSMACX_API int __cdecl base_lose_minerals(int baseID, int productionID);
 OPENSMACX_API void __cdecl set_fac(int facilityID, int baseID, BOOL set);

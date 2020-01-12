@@ -198,80 +198,108 @@ uint32_t  __cdecl best_specialist() {
 }
 
 /*
-Purpose: Generate a base name.
+Purpose: Generate a base name. Added some minor randomization for sea bases and ensuring offset gets 
+         increased for default base name. TODO: Eventually improve base name shuffling.
 Original Offset: 004E4090
 Return Value: n/a
-Status: WIP
+Status: Complete
 */
-void __cdecl name_base(int factionID, LPSTR nameOut, BOOL isFinal, BOOL isWaterBase) {
-	if (isWaterBase && !text_open(Players[factionID].filename, "WATERBASES")) {
-		uint32_t offsetSea = PlayersData[factionID].baseSeaNameOffset + 1, search;
-		for (search = 0; search < offsetSea; search++) {
-			text_get();
-			if (!strlen(*TextBufferGetPtr) || !_strnicmp(*TextBufferGetPtr, "#END", 4)) {
-				break;
-			}
-		}
-		if (search == offsetSea) {
-			// water base name available
-			strncpy_s(nameOut, 25, text_item(), 24);
-			nameOut[23] = 0;
-			if (isFinal) {
-				PlayersData[factionID].baseSeaNameOffset = offsetSea;
-			}
-			text_close();
-			return;
-		}
-	}
-	uint32_t offset = PlayersData[factionID].baseNameOffset + 1;
-	sprintf_s(nameOut, 25, "%s %d", get_noun(factionID), offset); // default if names exhausted
-	if (!text_open(Players[factionID].filename, "BASES")) {
-		uint32_t search;
-		for (search = 0; ; search++) {
-			text_get();
-			if (!strlen(*TextBufferGetPtr) || !_strnicmp(*TextBufferGetPtr, "#END", 4)) {
-				break;
-			}
-		}
-		if (offset > 1 && offset <= search) {
-			int seed = ((*MapRandSeed + factionID) & 0xFE) | 1;
-			int loop = 1;
-			do {
-				if (seed & 1) {
-					seed ^= 0x170;
-				}
-				seed >>= 1;
-			} while (seed >= offset || ++loop != offset);
-			offset = seed + 1;
-		}
-		if (!text_open(Players[factionID].filename, "BASES")) {
-			for (search = 0; search < offset; search++) {
+void __cdecl name_base(int factionID, LPSTR nameOut, BOOL isFinal, BOOL isSeaBase) {
+	if (isSeaBase && !text_open(Players[factionID].filename, "WATERBASES")) {
+		uint32_t offsetSea = PlayersData[factionID].baseSeaNameOffset + 1;
+		if (offsetSea > 1) {
+			uint32_t total;
+			for (total = 0; ; total++) {
 				text_get();
 				if (!strlen(*TextBufferGetPtr) || !_strnicmp(*TextBufferGetPtr, "#END", 4)) {
 					break;
 				}
 			}
-			if (offset != search) {
+			if (offsetSea <= total) {
+				int seed = ((*MapRandSeed + factionID) & 0xFE) | 1;
+				uint32_t loop = 1;
+				do {
+					if (seed & 1) {
+						seed ^= 0x170;
+					}
+					seed >>= 1;
+				} while (seed >= (int)total || ++loop != offsetSea);
+				offsetSea = seed + 1;
+			}
+		}
+		if (!text_open(Players[factionID].filename, "WATERBASES")) {
+			uint32_t count;
+			for (count = 0; count < offsetSea; count++) {
+				text_get();
+				if (!strlen(*TextBufferGetPtr) || !_strnicmp(*TextBufferGetPtr, "#END", 4)) {
+					break;
+				}
+			}
+			if (count == offsetSea) {
+				// water base name available
+				strncpy_s(nameOut, 25, text_item(), 24);
+				nameOut[23] = 0;
+				if (isFinal) {
+					PlayersData[factionID].baseSeaNameOffset++;
+				}
+				text_close();
+				return;
+			}
+			
+		}
+		text_close();
+	}
+	// Land base names or generic
+	uint32_t offset = PlayersData[factionID].baseNameOffset + 1;
+	sprintf_s(nameOut, 25, "%s %d", get_noun(factionID), offset);
+	if (isFinal) {
+		PlayersData[factionID].baseNameOffset++;
+	}
+	if (!text_open(Players[factionID].filename, "BASES")) {
+		if (offset > 1) {
+			uint32_t total;
+			for (total = 0; ; total++) {
+				text_get();
+				if (!strlen(*TextBufferGetPtr) || !_strnicmp(*TextBufferGetPtr, "#END", 4)) {
+					break;
+				}
+			}
+			if (offset <= total) {
+				int seed = ((*MapRandSeed + factionID) & 0xFE) | 1;
+				uint32_t loop = 1;
+				do {
+					if (seed & 1) {
+						seed ^= 0x170;
+					}
+					seed >>= 1;
+				} while (seed >= (int)total || ++loop != offset);
+				offset = seed + 1;
+			}
+		}
+		if (!text_open(Players[factionID].filename, "BASES")) {
+			uint32_t count;
+			for (count = 0; count < offset; count++) {
+				text_get();
+				if (!strlen(*TextBufferGetPtr) || !_strnicmp(*TextBufferGetPtr, "#END", 4)) {
+					break;
+				}
+			}
+			if (count != offset) {
 				if (text_open("BASENAME", "GENERIC")) {
 					return;
 				}
-				if (search < offset) {
-					for (search = 0; search < offset; search++) {
-						text_get();
-						if (!strlen(*TextBufferGetPtr) || !_strnicmp(*TextBufferGetPtr, "#END", 4)) {
-							return;
-						}
+				while (count < offset) {
+					text_get();
+					if (!strlen(*TextBufferGetPtr) || !_strnicmp(*TextBufferGetPtr, "#END", 4)) {
+						return;
 					}
+					count++;
 				}
 			}
 			strncpy_s(nameOut, 25, text_item(), 24);
 			nameOut[23] = 0;
-			if (isFinal) {
-				PlayersData[factionID].baseSeaNameOffset++;
-			}
-			text_close();
-			return;
 		}
+		text_close();
 	}
 }
 

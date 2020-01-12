@@ -142,13 +142,23 @@ void __cdecl climate_set(int xCoord, int yCoord, uint8_t climate) {
 }
 
 /*
-Purpose: Get altitude of tile at coordinates.
+Purpose: Get altitude of tile at coordinates shifting bits down.
 Original Offset: 00500150
 Return Value: Altitude
 Status: Complete
 */
 uint32_t __cdecl alt_at(int xCoord, int yCoord) {
 	return map_loc(xCoord, yCoord)->val1 >> 5;
+}
+
+/*
+Purpose: Get altitude of tile at coordinates without shifting bits.
+Original Offset: n/a
+Return Value: Altitude
+Status: Complete
+*/
+uint32_t __cdecl altitude_at(int xCoord, int yCoord) {
+	return map_loc(xCoord, yCoord)->val1 & 0xE0;
 }
 
 /*
@@ -446,7 +456,7 @@ Return Value: Is tile ocean? true/false
 Status: Complete
 */
 BOOL __cdecl is_ocean(int xCoord, int yCoord) {
-	return (map_loc(xCoord, yCoord)->val1 & 0xE0) < ALT_SHORE_LINE;
+	return altitude_at(xCoord, yCoord) < ALT_SHORE_LINE;
 }
 
 /*
@@ -572,4 +582,94 @@ int __cdecl is_sensor(int xCoord, int yCoord) {
 		}
 	}
 	return 0; // No sensor found
+}
+
+/*
+Purpose: Check for any type of zone of control conflicts (base and/or veh).
+Original Offset: 005C89F0
+Return Value: zoc: factionID + 1; no zoc: 0 (however return seems to be treated as boolean)
+Status: Complete
+*/
+uint32_t __cdecl zoc_any(int xCoord, int yCoord, int factionID) {
+	for (uint32_t i = 0; i < 8; i++) {
+		int xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
+		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
+			&& xRadius < (int)*MapHorizontalBounds) {
+			int owner = anything_at(xRadius, yRadius);
+			if (owner >= 0 && owner != factionID 
+				&& !(PlayersData[factionID].diploStatus[owner] & DSTATE_PACT)) {
+				return owner + 1;
+			}
+		}
+	}
+	return 0;
+}
+
+/*
+Purpose: Check for Veh related zone of control conflicts.
+Original Offset: 005C8AC0
+Return Value: zoc: factionID + 1; no zoc: 0 (however return seems to be treated as boolean)
+Status: Complete
+*/
+uint32_t __cdecl zoc_veh(int xCoord, int yCoord, int factionID) {
+	uint32_t ret = 0;
+	for (uint32_t i = 0; i < 8; i++) {
+		int xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
+		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
+			&& xRadius < (int)*MapHorizontalBounds) {
+			int owner = veh_who(xRadius, yRadius);
+			if (owner >= 0 && owner != factionID
+				&& !(PlayersData[factionID].diploStatus[owner] & DSTATE_PACT)) {
+				owner++;
+				if (ret <= (uint32_t)owner) {
+					ret = owner; // any point in continuing after 1st instance of zoc is found?
+				}
+			}
+		}
+	}
+	return ret;
+}
+
+/*
+Purpose: Check for Veh related zone of control conflicts taking into account land or ocean.
+Original Offset: 005C8BA0
+Return Value: zoc: factionID + 1; no zoc: 0 (however return seems to be treated as boolean)
+Status: Complete
+*/
+uint32_t __cdecl zoc_sea(int xCoord, int yCoord, int factionID) {
+	BOOL isOcean = is_ocean(xCoord, yCoord);
+	for (uint32_t i = 0; i < 8; i++) {
+		int xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
+		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
+			&& xRadius < (int)*MapHorizontalBounds) {
+			int owner = veh_who(xRadius, yRadius);
+			if (owner >= 0 && owner != factionID && is_ocean(xRadius, yRadius) == isOcean
+				&& !(PlayersData[factionID].diploStatus[owner] & DSTATE_PACT)) {
+				for (int vehID = veh_at(xRadius, yRadius); vehID >= 0;
+					vehID = Veh[vehID].nextVehIDStack) {
+					if(Veh[vehID].factionID != factionID 
+						&& (Veh[vehID].visibleToFaction & (1 << factionID) 
+						|| (!*MultiplayerToggle && !(Veh[vehID].flags & VFLAG_INVISIBLE)))) {
+						return owner + 1;
+					}
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+/*
+Purpose: Check for Veh related zone of control conflicts when moving to non-base tile.
+Original Offset: 005C8D40
+Return Value: zoc: factionID + 1; no zoc: 0 (however return seems to be treated as boolean)
+Status: Complete
+*/
+uint32_t __cdecl zoc_move(int xCoord, int yCoord, int factionID) {
+	int owner;
+	if (!(bit_at(xCoord, yCoord) & BIT_BASE_IN_TILE)
+	|| ((owner = owner_at(xCoord, yCoord)), owner >= 8 || owner < 0)) {
+		return zoc_sea(xCoord, yCoord, factionID);
+	}
+	return 0;
 }

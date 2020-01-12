@@ -123,7 +123,7 @@ uint32_t __cdecl morale_alien(int vehID, int factionIDvsNative) {
 			int xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
 			if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
 				&& xRadius < (int)*MapHorizontalBounds && bit_at(xRadius, yRadius) & BIT_FUNGUS
-				&& ((map_loc(xRadius, yRadius)->val1 & 0xE0) >= ALT_OCEAN_SHELF)) {
+				&& altitude_at(xRadius, yRadius) >= ALT_OCEAN_SHELF) {
 				morale++;
 			}
 		}
@@ -669,16 +669,16 @@ int __cdecl abil_index(int abilityID) {
 Purpose: Calculate movement penalty/cost.
 Original Offset: 00593510
 Return Value: Movement cost
-Status: WIP
+Status: Complete
 */
-int __cdecl hex_cost(int protoID, int factionID, int xCoordSrc, int yCoordSrc, 
-	int xCoordDst, int yCoordDst, BOOL toggle) {
+int __cdecl hex_cost(int protoID, int factionID, int xCoordSrc, int yCoordSrc, int xCoordDst, 
+	int yCoordDst, BOOL toggle) {
 	uint32_t bitDst = bit_at(xCoordDst, yCoordDst);
 	if (is_ocean(xCoordDst, yCoordDst)) {
 		if (bitDst & BIT_FUNGUS
-			&& map_loc(xCoordDst, yCoordDst)->val1 == ALT_OCEAN_SHELF
+			&& altitude_at(xCoordDst, yCoordDst) == ALT_OCEAN_SHELF
 			&& Chassis[VehPrototype[protoID].chassisID].triad == TRIAD_SEA 
-			// SEALURK fix?
+			&& protoID != BSC_SEALURK // Bug fix
 			&& protoID != BSC_ISLE_OF_THE_DEEP && !has_project(SP_XENOEMPATYH_DOME, factionID)) {
 			return Rules->MoveRateRoads * 3;
 		}
@@ -687,9 +687,10 @@ int __cdecl hex_cost(int protoID, int factionID, int xCoordSrc, int yCoordSrc,
 	if (is_ocean(xCoordSrc, yCoordSrc)) {
 		return Rules->MoveRateRoads;
 	}
-	if (protoID >= 0 && Chassis[VehPrototype[protoID].chassisID].triad == TRIAD_LAND) {
+	if (protoID >= 0 && Chassis[VehPrototype[protoID].chassisID].triad != TRIAD_LAND) {
 		return Rules->MoveRateRoads;
 	}
+	// Land only conditions
 	uint32_t bitSrc = bit_at(xCoordSrc, yCoordSrc);
 	if (bitSrc & (BIT_MAGTUBE | BIT_BASE_IN_TILE) && bitDst & (BIT_MAGTUBE | BIT_BASE_IN_TILE)
 		&& factionID) {
@@ -700,11 +701,11 @@ int __cdecl hex_cost(int protoID, int factionID, int xCoordSrc, int yCoordSrc,
 		&& factionID) {
 		return 1;
 	}
-	if (factionID > 0 && has_project(SP_XENOEMPATYH_DOME, factionID) || !factionID
-		|| protoID == BSC_MIND_WORMS || protoID == BSC_SPORE_LAUNCHER && bitDst & BIT_FUNGUS) {
+	if (factionID >= 0 && (has_project(SP_XENOEMPATYH_DOME, factionID) || !factionID
+		|| protoID == BSC_MIND_WORMS || protoID == BSC_SPORE_LAUNCHER) && bitDst & BIT_FUNGUS) {
 		return 1;
 	}
-	if (bitDst & BIT_RIVER && bitDst & BIT_RIVER && cursor_dist(xCoordSrc, xCoordDst) == 1
+	if (bitSrc & BIT_RIVER && bitDst & BIT_RIVER && cursor_dist(xCoordSrc, xCoordDst) == 1
 		&& abs(yCoordSrc - yCoordDst) == 1 && factionID) {
 		return 1;
 	}
@@ -713,7 +714,7 @@ int __cdecl hex_cost(int protoID, int factionID, int xCoordSrc, int yCoordSrc,
 		return Rules->MoveRateRoads;
 	}
 	uint32_t cost = Rules->MoveRateRoads;
-	if (rocky_at(xCoordDst, yCoordDst) & TERRAIN_ROLLING & !toggle) {
+	if (rocky_at(xCoordDst, yCoordDst) > TERRAIN_ROLLING && !toggle) {
 		cost += Rules->MoveRateRoads;
 	}
 	if (bitDst & BIT_FOREST && !toggle) {
@@ -1045,10 +1046,10 @@ void __cdecl make_proto(int protoID, uint32_t chassisID, uint32_t weaponID, uint
 }
 
 /*
-Purpose: Move all Vehs in same tile as param to the destination coordinates.
+Purpose: Move all Veh(s) in same stack as Veh to the destination coordinates.
 Original Offset: 005B8AF0
 Return Value: n/a
-Status: WIP
+Status: Complete
 */
 void __cdecl stack_put(int vehID, int xCoord, int yCoord) {
 	int nextVehID = veh_top(vehID), vehIDLoop;
@@ -1062,23 +1063,84 @@ void __cdecl stack_put(int vehID, int xCoord, int yCoord) {
 }
 
 /*
-Purpose: 
+Purpose: Sort stack with transports moved to top.
 Original Offset: 005B8B60
 Return Value: n/a
-Status: WIP
+Status: Complete
 */
 void __cdecl stack_sort(int vehID) {
-	//
+	int16_t xCoord = Veh[vehID].xCoord, yCoord = Veh[vehID].yCoord;
+	int nextVehID = veh_top(vehID), vehIDPut = -1, vehIDLoop;
+	if (nextVehID >= 0) {
+		do {
+			vehIDLoop = Veh[nextVehID].nextVehIDStack; // removed redundant < 0 check
+			if (veh_cargo(nextVehID) || has_abil(Veh[nextVehID].protoID, ABL_CARRIER)) {
+				vehIDPut = nextVehID;
+				veh_drop(veh_lift(nextVehID), -3, -3);
+			}
+			nextVehID = vehIDLoop;
+		} while (vehIDLoop >= 0);
+		stack_put(vehIDPut, xCoord, yCoord);
+	}
 }
 
 /*
-Purpose:
+Purpose: Sort stack with colony pods at top followed by combat/offensive units.
 Original Offset: 005B8C90
 Return Value: n/a
-Status: WIP
+Status: Complete
 */
 void __cdecl stack_sort_2(int vehID) {
-	//
+	int16_t xCoord = Veh[vehID].xCoord, yCoord = Veh[vehID].yCoord;
+	int nextVehID = veh_top(vehID), vehIDPut = -1, vehIDLoop;
+	if (nextVehID >= 0) {
+		do {
+			vehIDLoop = Veh[nextVehID].nextVehIDStack; // removed redundant < 0 check
+			if (VehPrototype[Veh[nextVehID].protoID].plan == PLAN_COLONIZATION) { // Colony Pods
+				vehIDPut = nextVehID;
+				veh_drop(veh_lift(nextVehID), -3, -3);
+			}
+			nextVehID = vehIDLoop;
+		} while (vehIDLoop >= 0);
+	}
+	nextVehID = veh_at(xCoord, yCoord);
+	if (nextVehID >= 0) {
+		do {
+			vehIDLoop = Veh[nextVehID].nextVehIDStack; // removed redundant < 0 check
+			if (VehPrototype[Veh[nextVehID].protoID].plan <= PLAN_COMBAT) {
+				vehIDPut = nextVehID;
+				veh_drop(veh_lift(nextVehID), -3, -3);
+			}
+			nextVehID = vehIDLoop;
+		} while (vehIDLoop >= 0);
+	}
+	stack_put(vehIDPut, xCoord, yCoord);
+}
+
+/*
+Purpose: Refresh/fix stack. Used by DirectPlay multiplayer only.
+Original Offset: 005B8E10
+Return Value: vehID ; return is checked if >= 0
+Status: Complete
+*/
+int __cdecl stack_fix(int vehID) {
+	if (vehID < 0 || !*MultiplayerToggle
+		|| (Veh[vehID].nextVehIDStack < 0 && Veh[vehID].prevVehIDStack < 0)) {
+		return vehID; // invalid vehID, not DirectPlay MP or no stack
+	}
+	for (int i = 0; i < *VehCurrentCount; i++) {
+		// Bug fix: Original would compare against the exact same source coordinates (both vehID 
+		// instead of one being iterator) likely causing a performance hit.
+		if (Veh[vehID].xCoord == Veh[i].xCoord && Veh[vehID].yCoord == Veh[i].yCoord) {
+			veh_promote(i);
+			stack_sort(vehID);
+		}
+	}
+	int topVehID = vehID;
+	for (int i = Veh[topVehID].prevVehIDStack; i >= 0; i = Veh[i].prevVehIDStack) {
+		topVehID = i;
+	}
+	return topVehID;
 }
 
 /*

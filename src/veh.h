@@ -518,6 +518,7 @@ OPENSMACX_API void __cdecl make_proto(int protoID, uint32_t chassisID, uint32_t 
 OPENSMACX_API void __cdecl stack_put(int vehID, int xCoord, int yCoord);
 OPENSMACX_API void __cdecl stack_sort(int vehID);
 OPENSMACX_API void __cdecl stack_sort_2(int vehID);
+OPENSMACX_API int __cdecl stack_fix(int vehID);
 OPENSMACX_API BOOL __cdecl veh_avail(int protoID, int factionID, int baseID);
 OPENSMACX_API int __cdecl veh_at(int xCoord, int yCoord);
 OPENSMACX_API BOOL __cdecl has_abil(int protoID, int abilityID);

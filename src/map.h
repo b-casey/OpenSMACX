@@ -151,6 +151,7 @@ OPENSMACX_API void __cdecl temp_set(int xCoord, int yCoord, uint8_t temperature)
 OPENSMACX_API uint32_t __cdecl climate_at(int xCoord, int yCoord);
 OPENSMACX_API void __cdecl climate_set(int xCoord, int yCoord, uint8_t climate);
 OPENSMACX_API uint32_t __cdecl alt_at(int xCoord, int yCoord);
+OPENSMACX_API uint32_t __cdecl altitude_at(int xCoord, int yCoord);
 OPENSMACX_API uint32_t __cdecl alt_detail_at(int xCoord, int yCoord);
 OPENSMACX_API void __cdecl alt_put_detail(int xCoord, int yCoord, uint8_t detail);
 OPENSMACX_API uint32_t __cdecl owner_at(int xCoord, int yCoord);
@@ -182,3 +183,7 @@ OPENSMACX_API void __cdecl rebuild_base_bits();
 OPENSMACX_API int __cdecl cursor_dist(int xCoord1, int xCoord2);
 OPENSMACX_API int __cdecl anything_at(int xCoord, int yCoord);
 OPENSMACX_API int __cdecl is_sensor(int xCoord, int yCoord);
+OPENSMACX_API uint32_t __cdecl zoc_any(int xCoord, int yCoord, int factionID);
+OPENSMACX_API uint32_t __cdecl zoc_veh(int xCoord, int yCoord, int factionID);
+OPENSMACX_API uint32_t __cdecl zoc_sea(int xCoord, int yCoord, int factionID);
+OPENSMACX_API uint32_t __cdecl zoc_move(int xCoord, int yCoord, int factionID);

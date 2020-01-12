@@ -26,6 +26,7 @@
 #include "maininterface.h"
 #include "technology.h"
 #include "terraforming.h"
+#include "log.h"
 
 // built-in functions > used to prevent crash from mixed alloc/free SDKs
 typedef void *func1(size_t);
@@ -85,105 +86,36 @@ Filefind *FilefindPath = (Filefind *)0x009B8198;
 MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
 
 int __cdecl tester() {
-	/*
-	for (int i = 0; i < MaxPlayerNum; i++) {
-		for (int j = 0; j < *BaseCurrentCount; j++) {
-			for (int k = 0; k < *VehCurrentCount; k++) {
-				int protoID = Veh[k].protoID;
-				if(veh_avail(protoID, i, j) != veh_avail_OG(protoID, i, j)) {
-					char szError[150];
-					wsprintfA(szError,
-						"Aborting due to a heap shortage!\n"
-						"ProtoID: %d\n"
-						"FactionID: %d\n"
-						"BaseID: %d",
-						protoID, i, j);
-					MessageBoxA(NULL, szError, "FATAL ERROR", MB_ICONWARNING);
-				}
-			}
-			for (int l = 0; l < MaxVehProtoNum+5; l++) {
-				if (veh_avail(l, i, j) != veh_avail_OG(l, i, j)) {
-					char szError[150];
-					wsprintfA(szError,
-						"Aborting due to a heap shortage!\n"
-						"ProtoID: %d\n"
-						"FactionID: %d\n"
-						"BaseID: %d",
-						l, i, j);
-					MessageBoxA(NULL, szError, "FATAL ERROR", MB_ICONWARNING);
-				}
-			}
-		}
-	}
-
-	*SMACX_Enabled = false;
-	for (int i = 0; i < MaxPlayerNum; i++) {
-		for (int j = 0; j < *BaseCurrentCount; j++) {
-			for (int k = 0; k < *VehCurrentCount; k++) {
-				if (veh_avail(Veh[k].protoID, i, j) != veh_avail_OG(Veh[k].protoID, i, j)) {
-					char szError[150];
-					wsprintfA(szError,
-						"Aborting due to a heap shortage!\n"
-						"ProtoID: %d\n"
-						"FactionID: %d\n"
-						"BaseID: %d",
-						Veh[k].protoID, i, j);
-					MessageBoxA(NULL, szError, "FATAL ERROR", MB_ICONWARNING);
-				}
-			}
-			for (int l = 0; l < MaxVehProtoNum+5; l++) {
-				if (veh_avail(l, i, j) != veh_avail_OG(l, i, j)) {
-					char szError[150];
-					wsprintfA(szError,
-						"Aborting due to a heap shortage!\n"
-						"ProtoID: %d\n"
-						"FactionID: %d\n"
-						"BaseID: %d",
-						l, i, j);
-					MessageBoxA(NULL, szError, "FATAL ERROR", MB_ICONWARNING);
-				}
-			}
-		}
-	}
-	*/
-
-	// BOOL __cdecl veh_avail(int protoID, int factionID, int baseID)
-	
-
-	/*
-	for (int i = 0; i < *VehCurrentCount; i++) {
-		/*
-		int x = Veh[i].xCoord;
-		int y = Veh[i].yCoord;
-		veh_drop_OG(i, 9, 19);
-		veh_drop(i, x, y);
-		veh_drop(i, 9, 19);
-		veh_drop(i, x, y);
-		veh_drop_OG(i, 17, 61);
-		veh_drop(i, x, y);
-		veh_drop_OG(i, 30, 56);
-		veh_drop(i, x, y);
-		veh_drop_OG(i, 22, 62);
-		veh_drop(i, x, y);
-		veh_drop_OG(i, x, y);
-		veh_drop(i, x, y);
-		veh_drop(i, 17, 61);
-		veh_drop(i, 30, 56);
-		veh_drop(i, 22, 62);
-		veh_drop(i, x, y);
-		*/
-	//}
 	return 0;
 }
 
 void __cdecl testerMap() {
 	/*
-	for (int y = -1; y < (int)*MapVerticalBounds; y++) {
+	for (int y = -10; y < (int)*MapVerticalBounds; y++) {
 		for (int x = -1; x < (int)*MapHorizontalBounds; x++) {
-			for (int z = 0; z < 2; z++) {
-				if (is_coast(x, y, z) != is_coast_OG(x, y, z)) {
-					MessageBoxA(NULL, "is_coast Error", "FATAL ERROR", MB_ICONWARNING);
+			for (int f = -1; f < 10; f++) {
+				int FMTemp = *MapFlatToggle;
+				for (int t = 0; t < 2; t++) {
+					*MapFlatToggle = t;
+					BOOL MPtemp = *MultiplayerToggle;
+					for (int m = 0; m < 2; m++) {
+						*MultiplayerToggle = m;
+						if (zoc_any_OG(x, y, f) != zoc_any(x, y, f)) {
+							MessageBoxA(NULL, "zoc_any Error", "FATAL ERROR", MB_ICONWARNING);
+						}
+						if (zoc_veh_OG(x, y, f) != zoc_veh(x, y, f)) {
+							MessageBoxA(NULL, "zoc_veh Error", "FATAL ERROR", MB_ICONWARNING);
+						}
+						if (zoc_sea_OG(x, y, f) != zoc_sea(x, y, f)) {
+							MessageBoxA(NULL, "zoc_sea Error", "FATAL ERROR", MB_ICONWARNING);
+						}
+						if (zoc_move_OG(x, y, f) != zoc_move(x, y, f)) {
+							MessageBoxA(NULL, "zoc_move Error", "FATAL ERROR", MB_ICONWARNING);
+						}
+					}
+					*MultiplayerToggle = MPtemp;
 				}
+				*MapFlatToggle = FMTemp;
 			}
 		}
 	}
