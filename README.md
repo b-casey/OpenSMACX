@@ -7,9 +7,9 @@ settings. Source was also tested using Visual Studio 2015 Visual C++.
 Tested with CodeBlocks using GCC 8.1.0 compiler. Added project file (cbp) courtesy of induktio.
 
 v0.2
-* Veh, Map and Base related code that sets the groundwork to work on more complex functions.
+* Veh, Map and Base related code that sets the groundwork to break down more complex functions.
 * Engine classes: Font, Spot, Time.
-* Total decompiled and redirected function count: 308
+* Decompiled and redirected function count: 308
 
 Bug Fixes:
 * Added an additional check to facility_avail() that prevents the Caretakers from being given the 
@@ -36,7 +36,7 @@ Bug Fixes:
   the memory address value would match the Spore Launcher id. While it was unlikely this would be
   triggered by armor_proto() due to logic flow, added in a preventative bound check anyway.
 * Fixed a bug in Time::pulse(void(__cdecl *)(int), int, uint32_t, uint32_t) where the Timer event
-  could have persisted and executed continuously when it should have executed only once. The 
+  could have persisted and executed continuously when it should have executed only once. It seems 
   affected code branch was never used by the original game.
 * Miscellaneous additional error handling or bound checks to various functions (see source).
 
@@ -48,7 +48,7 @@ Enhancement:
   Ogre defaults can still be overridden.
   Ex. "Colony Pod,..., 00000000000000000000000000,4" will give Colony Pods a Singularity Engine.
 * Added some basic randomization for sea base name order. This mostly affects Pirates since 
-  the randomization method isn't great for a small list of names. Base name count increases once
+  the randomization method isn't great for small lists. Base name count increases once
   all names inside faction files and basename.txt are exhausted rather than stopping.
 
 v0.1
