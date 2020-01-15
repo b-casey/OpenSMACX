@@ -26,7 +26,7 @@ int Time::TimeInitCount;
 Purpose: Initialize instance of Time with single parameter callback.
 Original Offset: 00616260
 Return Value: n/a
-Status: Complete ; test pending
+Status: Complete
 */
 void Time::init(void (__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res) {
 	stop();
@@ -45,7 +45,7 @@ void Time::init(void (__cdecl *callback)(int), int param, uint32_t cnt, uint32_t
 Purpose: Initialize instance of Time with two parameter callback.
 Original Offset: 006162D0
 Return Value: n/a
-Status: Complete ; test pending
+Status: Complete
 */
 void Time::init(void (__cdecl *callback)(int, int), int param, int param2, 
 	uint32_t cnt, uint32_t res) {
@@ -65,7 +65,7 @@ void Time::init(void (__cdecl *callback)(int, int), int param, int param2,
 Purpose: Start instance of Time with single parameter callback.
 Original Offset: 00616350
 Return Value: Zero success, non-zero error
-Status: Complete ; test pending
+Status: Complete
 */
 uint32_t Time::start(void(__cdecl * callback)(int), int param, uint32_t cnt, uint32_t res) {
 	init(callback, param, cnt, res);
@@ -73,12 +73,12 @@ uint32_t Time::start(void(__cdecl * callback)(int), int param, uint32_t cnt, uin
 		return 7;
 	}
 	unkToggle = 0;
-	if (count >= 50) {
-		idEvent = SetTimer(*HandleMain, idEvent, count, (TIMERPROC)TimerProc);
+	if (count < 50) {
+		idEvent = timeSetEvent(count, resolution,
+			(LPTIMECALLBACK)MultimediaProc, (UINT_PTR)this, TIME_PERIODIC);
 	}
 	else {
-		idEvent = timeSetEvent(count, resolution, 
-			(LPTIMECALLBACK)MultimediaProc, idEvent, TIME_PERIODIC);
+		idEvent = SetTimer(*HandleMain, (UINT_PTR)this, count, (TIMERPROC)TimerProc);
 	}
 	return idEvent ? 0 : 2;
 }
@@ -87,7 +87,7 @@ uint32_t Time::start(void(__cdecl * callback)(int), int param, uint32_t cnt, uin
 Purpose: Start instance of Time with two parameter callback.
 Original Offset: 00616410
 Return Value: Zero success, non-zero error
-Status: Complete ; test pending
+Status: Complete
 */
 uint32_t Time::start(void(__cdecl * callback)(int, int), int param, int param2,
 	uint32_t cnt, uint32_t res) {
@@ -96,12 +96,12 @@ uint32_t Time::start(void(__cdecl * callback)(int, int), int param, int param2,
 		return 7;
 	}
 	unkToggle = 0;
-	if (count >= 50) {
-		idEvent = SetTimer(*HandleMain, idEvent, count, (TIMERPROC)TimerProc);
+	if (count < 50) {
+		idEvent = timeSetEvent(count, resolution,
+			(LPTIMECALLBACK)MultimediaProc, (UINT_PTR)this, TIME_PERIODIC);
 	}
 	else {
-		idEvent = timeSetEvent(count, resolution, 
-			(LPTIMECALLBACK)MultimediaProc, idEvent, TIME_PERIODIC);
+		idEvent = SetTimer(*HandleMain, (UINT_PTR)this, count, (TIMERPROC)TimerProc);
 	}
 	return idEvent ? 0 : 2;
 }
@@ -110,7 +110,7 @@ uint32_t Time::start(void(__cdecl * callback)(int, int), int param, int param2,
 Purpose: Start instance of Time with single parameter callback.
 Original Offset: 006164D0
 Return Value: Zero success, non-zero error
-Status: Complete ; test pending
+Status: Complete
 */
 uint32_t Time::pulse(void(__cdecl * callback)(int), int param, uint32_t cnt, uint32_t res) {
 	init(callback, param, cnt, res);
@@ -118,15 +118,15 @@ uint32_t Time::pulse(void(__cdecl * callback)(int), int param, uint32_t cnt, uin
 		return 7;
 	}
 	unkToggle = 0;
-	if (count >= 50) {
-		idEvent = SetTimer(*HandleMain, idEvent, count, (TIMERPROC)TimerProc);
+	if (count < 50) {
+		// Bug fix: Original code had fuEvent param set to TIME_PERIODIC, the same as start().
+		// Based on how the other pulse() functions work, this should be TIME_ONESHOT. It appears
+		// this code branch is never used in the original game.
+		idEvent = timeSetEvent(count, resolution,
+			(LPTIMECALLBACK)MultimediaProc, (UINT_PTR)this, TIME_ONESHOT);
 	}
 	else {
-		// Bug fix: Original code had fuEvent param set to TIME_PERIODIC, the same as start().
-		// Based on the rest of code of how pulse() should work, this should be TIME_ONESHOT.
-		// This code branch is never used in original game.
-		idEvent = timeSetEvent(count, resolution, 
-			(LPTIMECALLBACK)MultimediaProc, idEvent, TIME_ONESHOT);
+		idEvent = SetTimer(*HandleMain, (UINT_PTR)this, count, (TIMERPROC)TimerProc);
 	}
 	return idEvent ? 0 : 2;
 }
@@ -135,7 +135,7 @@ uint32_t Time::pulse(void(__cdecl * callback)(int), int param, uint32_t cnt, uin
 Purpose: Start instance of Time with two parameter callback.
 Original Offset: 00616590
 Return Value: Zero success, non-zero error
-Status: Complete ; test pending
+Status: Complete
 */
 uint32_t Time::pulse(void(__cdecl * callback)(int, int), int param, int param2,
 	uint32_t cnt, uint32_t res) {
@@ -143,12 +143,13 @@ uint32_t Time::pulse(void(__cdecl * callback)(int, int), int param, int param2,
 	if (!callback) {
 		return 7;
 	}
-	if (count >= 50) {
-		idEvent = SetTimer(*HandleMain, idEvent, count, (TIMERPROC)TimerProc);
+	if (count < 50) {
+		idEvent = timeSetEvent(count, resolution,
+			(LPTIMECALLBACK)MultimediaProc, (UINT_PTR)this, TIME_ONESHOT);
 	}
 	else {
-		idEvent = timeSetEvent(count, resolution, 
-			(LPTIMECALLBACK)MultimediaProc, idEvent, TIME_ONESHOT);
+		unkToggle = 1;
+		idEvent = SetTimer(*HandleMain, (UINT_PTR)this, count, (TIMERPROC)TimerProc);
 	}
 	return idEvent ? 0 : 2;
 }
@@ -157,19 +158,19 @@ uint32_t Time::pulse(void(__cdecl * callback)(int, int), int param, int param2,
 Purpose: Start instance of Time.
 Original Offset: 00616650
 Return Value: Zero success, non-zero error
-Status: Complete ; test pending
+Status: Complete
 */
 uint32_t Time::start() {
 	if (!callback1 && !callback2) {
 		return 7;
 	}
-	unkToggle &= ~2;
-	if (count >= 50) {
-		idEvent = SetTimer(*HandleMain, idEvent, count, (TIMERPROC)TimerProc);
+	unkToggle &= ~1;
+	if (count < 50) {
+		idEvent = timeSetEvent(count, resolution, (LPTIMECALLBACK)MultimediaProc, 
+			(UINT_PTR)this, TIME_PERIODIC);
 	}
 	else {
-		idEvent = timeSetEvent(count, resolution,
-			(LPTIMECALLBACK)MultimediaProc, idEvent, TIME_PERIODIC);
+		idEvent = SetTimer(*HandleMain, (UINT_PTR)this, count, (TIMERPROC)TimerProc);
 	}
 	return idEvent ? 0 : 2;
 }
@@ -178,19 +179,19 @@ uint32_t Time::start() {
 Purpose: Start instance of pulse Time.
 Original Offset: 006166C0
 Return Value: Zero success, non-zero error
-Status: Complete ; test pending
+Status: Complete
 */
 uint32_t Time::pulse() {
 	if (!callback1 && !callback2) {
 		return 7;
 	}
-	if (count >= 50) {
-		unkToggle = (unkToggle & ~2) | 1;
-		idEvent = SetTimer(*HandleMain, idEvent, count, (TIMERPROC)TimerProc);
+	if (count < 50) {
+		idEvent = timeSetEvent(count, resolution,
+			(LPTIMECALLBACK)MultimediaProc, (UINT_PTR)this, TIME_ONESHOT);
 	}
 	else {
-		idEvent = timeSetEvent(count, resolution,
-			(LPTIMECALLBACK)MultimediaProc, idEvent, TIME_ONESHOT);
+		unkToggle = (unkToggle & ~2) | 1;
+		idEvent = SetTimer(*HandleMain, (UINT_PTR)this, count, (TIMERPROC)TimerProc);
 	}
 	return idEvent ? 0 : 2;
 }
@@ -199,15 +200,15 @@ uint32_t Time::pulse() {
 Purpose: Stop timer.
 Original Offset: 00616730
 Return Value: n/a
-Status: Complete ; test pending
+Status: Complete
 */
 void Time::stop() {
 	if (idEvent) {
-		if (count >= 50) {
-			KillTimer(*HandleMain, idEvent);
+		if (count < 50) {
+			timeKillEvent(idEvent);
 		}
 		else {
-			timeKillEvent(idEvent);
+			KillTimer(*HandleMain, idEvent);
 		}
 		idEvent = 0;
 	}
@@ -220,7 +221,7 @@ void Time::stop() {
 Purpose: Close/shutdown instance of Time.
 Original Offset: 00616780
 Return Value: n/a
-Status: Complete ; test pending
+Status: Complete
 */
 void Time::close() {
 	stop();
@@ -235,20 +236,33 @@ void Time::close() {
 	unk2 = 0;
 }
 
-// 006167E0
-void Time::TimerProc(HWND hwnd, uint32_t msg, uint32_t *idEvent, uint32_t dwTime) {
-	/*
-	if (wParam && (!*TimeModal || (Time *)wParam == *TimeModal) && (Time *)wParam->unk1) {
-		PostMessageA(*HandleMain, 0x401, wParam, NULL);
-		(Time)wParam->unk1 = 1;
+/*
+Purpose: Callback function that processes WM_TIMER messages (SetTimer).
+Original Offset: 006167E0
+Return Value: n/a
+Status: Complete
+*/
+void Time::TimerProc(HWND hwnd, uint32_t msg, UINT_PTR idTimer, DWORD elapsed) {
+	if (idTimer && (!TimeModal || idTimer == (UINT_PTR)TimeModal) 
+		&& !reinterpret_cast<Time *>(idTimer)->unk1) {
+		PostMessageA(*HandleMain, WM_USER | WM_CREATE, idTimer, 0);
+		reinterpret_cast<Time *>(idTimer)->unk1 = 1;
 	}
-	*/
 }
 
-// 00616820
-void Time::MultimediaProc(uint32_t timerID, uint32_t msg, uint32_t *user, uint32_t *dw1, 
-	uint32_t *dw2) {
-	//
+/*
+Purpose: Callback function for the timeSetEvent. Effectively the same as TimerProc.
+Original Offset: 00616820
+Return Value: n/a
+Status: Complete
+*/
+void Time::MultimediaProc(uint32_t timerID, uint32_t msg, DWORD_PTR dwUser, DWORD_PTR dw1,
+	DWORD_PTR dw2) {
+	if (dwUser && (!TimeModal || dwUser == (DWORD_PTR)TimeModal)
+		&& !reinterpret_cast<Time *>(dwUser)->unk1) {
+		PostMessageA(*HandleMain, WM_USER | WM_CREATE, dwUser, 0);
+		reinterpret_cast<Time *>(dwUser)->unk1 = 1;
+	}
 }
 
 // global
@@ -263,38 +277,39 @@ Time *ConsoleTimer = (Time *)0x00939E88;
 Purpose: Start global timers.
 Original Offset: 0050F3D0
 Return Value: n/a
-Status: Complete ; test pending
+Status: Complete
 */
 void __cdecl start_timers() {
 	BlinkTimer->start(blink_timer, 1, 150, 150);
 	Blink2Timer->start(blink2_timer, 2, 100, 100);
 	LineTimer->start(line_timer, 3, 100, 100);
 	TurnTimer->start(turn_timer, 4, 500, 500);
+
 }
 
 /*
 Purpose: Stop global timers.
 Original Offset: 0050F440
 Return Value: n/a
-Status: Complete ; test pending
+Status: Complete
 */
 void __cdecl stop_timers() {
 	Blink2Timer->close();
 	BlinkTimer->close();
 	LineTimer->close();
-	// missing TurnTimer?
+	// missing MP TurnTimer. TODO: In future determine if timer should be closed on stop
 }
 
 /*
-Purpose: Clear timer message queue (?)
+Purpose: Clear timer message queue.
 Original Offset: 005FD370
 Return Value: n/a
-Status: Complete ; test pending
+Status: Complete
 */
 void __cdecl flush_timer() {
 	*MsgStatus |= 0x3F;
 	MSG uMsg;
-	if (PeekMessage(&uMsg, NULL, WM_USER|WM_CREATE, WM_USER|WM_CREATE, PM_REMOVE)) {
+	if (PeekMessage(&uMsg, NULL, WM_USER | WM_CREATE, WM_USER | WM_CREATE, PM_REMOVE)) {
 		do {
 			TranslateMessage(&uMsg);
 			DispatchMessage(&uMsg);

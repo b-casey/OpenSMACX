@@ -251,7 +251,7 @@ void __cdecl name_base(int factionID, LPSTR nameOut, BOOL isFinal, BOOL isSeaBas
 	}
 	// Land base names or generic
 	uint32_t offset = PlayersData[factionID].baseNameOffset + 1;
-	sprintf_s(nameOut, 25, "%s %d", get_noun(factionID), offset);
+	sprintf_s(nameOut, 25, "%s %d", get_noun(factionID), offset); // default if names exhausted
 	if (isFinal) {
 		PlayersData[factionID].baseNameOffset++;
 	}
@@ -611,11 +611,11 @@ BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID, int queue
 		case FAC_QUANTUM_CONVERTER:
 			return has_fac(FAC_ROBOTIC_ASSEMBLY_PLANT, baseID, queueCount); // Cumulative
 		case FAC_NAVAL_YARD:
-			return is_coast(Base[baseID].xCoord, Base[baseID].yCoord, FALSE); // needs ocean
+			return is_coast(Base[baseID].xCoord, Base[baseID].yCoord, false); // needs ocean
 		case FAC_AQUAFARM:
 		case FAC_SUBSEA_TRUNKLINE:
 		case FAC_THERMOCLINE_TRANSDUCER:
-			return *SMACX_Enabled && is_coast(Base[baseID].xCoord, Base[baseID].yCoord, FALSE);
+			return *SMACX_Enabled && is_coast(Base[baseID].xCoord, Base[baseID].yCoord, false);
 		case FAC_COVERT_OPS_CENTER:
 		case FAC_BROOD_PIT:
 		case FAC_FLECHETTE_DEFENSE_SYS:

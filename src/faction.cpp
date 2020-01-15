@@ -49,8 +49,7 @@ Return Value: Faction noun
 Status: Complete
 */
 LPSTR __cdecl get_noun(int factionID) {
-	*GenderDefault = Players[factionID].nounGender;
-	*PluralityDefault = Players[factionID].isNounPlural;
+	parse_set(Players[factionID].nounGender, Players[factionID].isNounPlural);
 	return Players[factionID].nounFaction;
 }
 

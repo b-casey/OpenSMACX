@@ -59,9 +59,9 @@ public:
 	// eventually make atomic for thread safety
 	static Time *TimeModal;
 	static int TimeInitCount;
-	static void TimerProc(HWND hwnd, uint32_t msg, uint32_t *idEvent, uint32_t dwTime);
-	static void MultimediaProc(uint32_t timerID, uint32_t msg, uint32_t *user, 
-		uint32_t *dw1, uint32_t *dw2);
+	static void TimerProc(HWND hwnd, uint32_t msg, UINT_PTR idTimer, DWORD elapsed);
+	static void MultimediaProc(uint32_t timerID, uint32_t msg, DWORD_PTR dwUser, DWORD_PTR dw1,
+		DWORD_PTR dw2);
 	static int __cdecl init_class() { ++TimeInitCount; return 0; } // 00616880
 	static void __cdecl close_class() { --TimeInitCount; } // 00616890
 };
