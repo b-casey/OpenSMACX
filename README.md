@@ -6,6 +6,51 @@ settings. Source was also tested using Visual Studio 2015 Visual C++.
 
 Tested with CodeBlocks using GCC 8.1.0 compiler. Added project file (cbp) courtesy of induktio.
 
+v0.2
+* Veh, Map and Base related code that sets the groundwork to work on more complex functions.
+* Engine classes: Font, Spot, Time.
+* Total decompiled and redirected function count: 308
+
+Bug Fixes:
+* Added an additional check to facility_avail() that prevents the Caretakers from being given the 
+  ability of selecting the secret project "Ascent to Transcendence". This goes against their core
+  philosophy and would cause them to declare war on themselves if initiated.
+* Sealurks no longer receive a movement penalty when moving through Sea Fungus. They are now treated 
+  the same as an "Isle of the Deep" as intended. This was likely an oversight to add the specific 
+  check to hex_cost().
+* Added a new check inside facility_avail() that prevents building Paradise Garden if you have
+  Punishment Sphere built or in queue. There is a check to prevent Punishment Sphere from being 
+  constructed if you have Paradise Garden but not vise versa. Paradise Garden and Punishment Sphere 
+  are antithetical facilities where you can build either one in any given base, but you were never 
+  suppose to be able to build both.
+* Fixed a bug in DirectPlay multiplayer that likely caused a performance hit when moving units due 
+  to a faulty coordinate check. Whenever the stack_fix() function was called by moving a unit or 
+  other actions, it would cause every stack of units on the map to be sorted in a certain way (at 
+  least temporarily) as well as redundantly sorting the same stack once for every unit on the map.
+* Removed an extra space displayed for certain prototype statistics (Ex. Transport Foil) shown in
+  the Military Command Nexus via say_stats() function.
+* Fixed logic inside offense_proto() and armor_proto() where under certain conditions the game 
+  would try to compare an arbitrary memory value against the Spore Launcher basic unit id. If they 
+  matched, non-PSI units would display incorrect offense and defense values. This happened any time 
+  you clicked on a non-PSI unit when calculating its offensive value. It was just incredibly rare 
+  the memory address value would match the Spore Launcher id. While it was unlikely this would be
+  triggered by armor_proto() due to logic flow, added in a preventative bound check anyway.
+* Fixed a bug in Time::pulse(void(__cdecl *)(int), int, uint32_t, uint32_t) where the Timer event
+  could have persisted and executed continuously when it should have executed only once. The 
+  affected code branch was never used by the original game.
+* Miscellaneous additional error handling or bound checks to various functions (see source).
+
+Enhancement:
+* Added the ability to set a reactor value (1-4) for #UNITS inside alpha/x.txt. To do so, add a 
+  comma after the Abil field with the value of the reactor you want for the unit. If no value or a 
+  value of 0 is set, it defaults to 1 (Fission Plant) like the original code.  For SMACX only, there 
+  are two exceptions where the default isn't 1 but 2 (Battle Ogre MK2) and 3 (Battle Ogre MK3). The 
+  Ogre defaults can still be overridden.
+  Ex. "Colony Pod,..., 00000000000000000000000000,4" will give Colony Pods a Singularity Engine.
+* Added some basic randomization for sea base name order. This mostly affects Pirates since 
+  the randomization method isn't great for a small list of names. Base name count increases once
+  all names inside faction files and basename.txt are exhausted rather than stopping.
+
 v0.1
 * Parsing in alpha/x.txt and faction text files complete
 
