@@ -2,7 +2,7 @@
 
 # v1.0 : initial
 
-import argparse, mmap, shutil, struct, subprocess # built-in libraries
+import argparse, mmap, os, shutil, struct, subprocess # built-in libraries
 import pefile # use pip to install
 
 count = 0 # functions patched
@@ -19,7 +19,7 @@ parser.add_argument("-e",    "--exe", help="Input exe", required=True)
 parser.add_argument("-d",    "--dll", help="Input dll", required=True)
 parser.add_argument("-o", "--output", help="Output folder path to write exe + dll to", required=True)
 args = parser.parse_args()
-exe_path = args.output + "\\terranx_opensmacx_v0.2.exe"
+exe_path = os.path.normpath(args.output) + "\\terranx_opensmacx_v0.2.exe"
 
 # copying exe+dll to SMACX directory
 shutil.copy2(args.exe, exe_path)

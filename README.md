@@ -6,6 +6,10 @@ settings. Source was also tested using Visual Studio 2015 Visual C++.
 
 Tested with CodeBlocks using GCC 8.1.0 compiler. Added project file (cbp) courtesy of induktio.
 
+The patcher script found under tools is compatible with the latest GOG version as well as the most
+recent version of my unofficial patch. For my patch there currently is one regression regarding 
+the FREEPROTO flag and Spartan retool strictness while I look into it more.
+
 v0.2
 * Veh, Map and Base related code that sets the groundwork to break down more complex functions.
 * Engine classes: Font, Spot, Time.
