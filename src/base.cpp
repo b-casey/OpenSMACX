@@ -313,8 +313,12 @@ int __cdecl base_making(int productionID, int baseID) {
 	uint32_t retool = Rules->RetoolStrictness;
 	uint32_t offset, mask;
 	bitmask(FAC_SKUNKWORKS, &offset, &mask);
-	if (Base[baseID].facilitiesPresentTable[offset] & mask && retool >= 1) {
-		retool = 1; // Skunkworks overrides retooling strictness to 'Free in Category'
+	int sknOff = facility_offset("Skunkworks");
+	if ((Base[baseID].facilitiesPresentTable[offset] & mask // has Skunkworks
+		|| (Players[Base[baseID].factionIDCurrent].ruleFlags & FLAG_FREEPROTO // bug fix
+			&& sknOff >= 0 && has_tech(Facility[sknOff].preqTech, Base[baseID].factionIDCurrent)))
+		&& retool >= 1) { // don't override if retool strictness is already set to always free (0)
+		retool = 1; // Skunkworks or FREEPROTO + prerequisite tech > 'Free in Category'
 	}
 	if (productionID < 0) { // facility or SP to build
 		int queueID = Base[baseID].queueProductionID[0]; // current production item
@@ -637,4 +641,22 @@ BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID, int queue
 			break;
 	}
 	return true;
+}
+
+/*
+Purpose: To assist with locating a facility based on a name rather than using hardcoded offsets.
+Original Offset: n/a
+Return Value: -1 if not found, otherwise offset value
+Status: Complete
+*/
+int facility_offset(LPCSTR facilSearch) {
+	int offset = -1;
+	for (uint32_t i = 0; i < MaxFacilityNum; i++) {
+		LPSTR facName = Facility[i].name;
+		if(facName && !_stricmp(facilSearch, facName)) {
+			offset = i;
+			break;
+		}
+	}
+	return offset;
 }

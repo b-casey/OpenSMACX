@@ -284,7 +284,6 @@ void __cdecl start_timers() {
 	Blink2Timer->start(blink2_timer, 2, 100, 100);
 	LineTimer->start(line_timer, 3, 100, 100);
 	TurnTimer->start(turn_timer, 4, 500, 500);
-
 }
 
 /*

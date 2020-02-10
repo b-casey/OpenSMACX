@@ -44,7 +44,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
 	bin_app = mmap.mmap(f.fileno(), 0)
-	# next: 308
+	# next: 315
 	#
 	
 	# ALPHA
@@ -160,7 +160,7 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x000E4700) # ?base_making@@YAHHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*282))
-	bin_app.seek(0x000E4700) # ?best_specialist@@YAIXZ
+	bin_app.seek(0x000E4020) # ?best_specialist@@YAIXZ
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*286))
 	bin_app.seek(0x000E4090) # ?name_base@@YAXHPADHH@Z
@@ -516,7 +516,25 @@ with open(exe_path, "r+b") as f:
 	bin_app.write(struct.pack("<L", addr+4*299))
 	bin_app.seek(0x001C8D40) # ?zoc_move@@YAIHHH@Z
 	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*300))	
+	bin_app.write(struct.pack("<L", addr+4*300))
+	bin_app.seek(0x000E3EF0) # ?whose_territory@@YAHHHHPAHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*309))
+	bin_app.seek(0x000E3FA0) # ?base_territory@@YAHHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*310))
+	bin_app.seek(0x001BF130) # ?has_temple@@YAHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*311))
+	bin_app.seek(0x00191F00) # ?minerals_at@@YAIHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*312))
+	bin_app.seek(0x00192030) # ?bonus_at@@YAIHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*313))
+	bin_app.seek(0x00192140) # ?goody_at@@YAIHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*314))
 	# RANDOM
 	bin_app.seek(0x00225730) # ??0Random@@QAE@XZ
 	patch_call_bytes(bin_app)
@@ -647,7 +665,11 @@ with open(exe_path, "r+b") as f:
 	# TERRAFORMING
 	bin_app.seek(0x001BAB40) # ?terrain_avail@@YAHHHH@Z
 	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*266))	
+	bin_app.write(struct.pack("<L", addr+4*266))
+	bin_app.seek(0x000ECB90) # ?crappy@@YAIHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*308))	
+	# 
 	# TEXT
 	bin_app.seek(0x001FD860) # ??0Text@@QAE@XZ
 	patch_call_bytes(bin_app)

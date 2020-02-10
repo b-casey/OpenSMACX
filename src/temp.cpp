@@ -55,6 +55,13 @@ func6 *X_pop = (func6 *)0x005BF310;
 // testing
 typedef int *func8(LPSTR, LPSTR);
 func8 *parse_string_OG = (func8 *)0x00625880;
+//
+typedef uint32_t func9(int, int);
+func9 *minerals_at_OG = (func9 *)0x00591F00;
+func9 *goody_at_OG = (func9 *)0x00592140;
+
+typedef uint32_t func10(int, int, int);
+func10* bonus_at_OG = (func10*)0x00592030;
 
 // Time
 typedef void func30(int);
@@ -86,10 +93,89 @@ Filefind *FilefindPath = (Filefind *)0x009B8198;
 MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
 
 int __cdecl tester() {
+	log_set_state(TRUE);
+	
 	return 0;
 }
 
 void __cdecl testerMap() {
+	log_set_state(TRUE);
+	log_say("Start test", 0, 0, 0);
+	for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
+		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
+			uint32_t goody = goody_at_OG(x, y);
+			if (goody_at(x, y) != goody) {
+				log_say("goody_at error: ", x, y, goody);
+			}
+			uint32_t rsc = bonus_at_OG(x, y, 0);
+			if (bonus_at(x, y, 0) != rsc) {
+				log_say("bonus_at error: ", x, y, rsc);
+			}
+			uint32_t min = minerals_at_OG(x, y);
+			if (minerals_at(x, y) != min) {
+				log_say("minerals_at error: ", x, y, min);
+			}
+			//if (goody) {
+			//	log_say("goody_at: ", x, y, goody);
+			//}
+			/*
+			uint32_t bit = bit_at(x, y);
+			if (bit & BIT_UNK_4000000) {
+				log_say("found BIT_UNK_4000000: ", x, y, bit);
+			}
+			if (bit & BIT_UNK_8000000) {
+				log_say("found BIT_UNK_8000000: ", x, y, bit);
+			}
+			/*
+			for (uint32_t alt = 0; alt < 8; alt++) {
+				map_loc(x, y)->val1 &= 0x1F;
+				map_loc(x, y)->val1 |= alt << 5;
+				uint32_t min = minerals_at_OG(x, y);
+				if (minerals_at(x, y) != min) {
+					log_say("minerals_at error: ", x, y, min);
+				}
+			}
+			*/
+			//for (int f = 0; f < MaxPlayerNum; f++) {
+				//
+			//}
+			//int goody = goody_at_OG(x, y);
+			//if (bonus != bonus_at_OG(x, y, 0)) {
+			//	MessageBoxA(NULL, "bonus_at Error", "FATAL ERROR", MB_ICONWARNING);
+			//}
+			//if (goody) {
+			//	log_say("goody_at: ", x, y, goody);
+			//}
+			/*
+			uint32_t bit = bit_at(x, y);
+			
+			
+			if (bit & BIT_UNK_200) {
+				log_say("BIT_UNK_200: ", x, y, bit);
+			}
+			if (bit & BIT_UNK_4000) {
+				log_say("BIT_UNK_4000: ", x, y, bit);
+			}
+			//if (bit & BIT_SUPPLY_REMOVE) {
+			//	log_say("BIT_SUPPLY_REMOVE: ", x, y, bit);
+			//}
+			if (bit & BIT_UNK_2000000) {
+				log_say("BIT_UNK_2000000: ", x, y, bit);
+			}
+			if (bit & BIT_UNK_4000000) {
+				log_say("BIT_UNK_4000000: ", x, y, bit);
+			}
+			if (bit & BIT_UNK_8000000) {
+				log_say("BIT_UNK_8000000: ", x, y, bit);
+			}
+			//if (bit & BIT_UNK_40000000) {
+			//	log_say("BIT_UNK_40000000: ", x, y, bit);
+			//}
+			*/
+		}
+	}
+	log_say("End test", 0, 0, 0);
+	log_set_state(FALSE);
 	/*
 	for (int y = -10; y < (int)*MapVerticalBounds; y++) {
 		for (int x = -1; x < (int)*MapHorizontalBounds; x++) {

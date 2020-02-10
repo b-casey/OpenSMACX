@@ -19,6 +19,8 @@
 #include "temp.h"
 #include "map.h"
 #include "base.h"
+#include "faction.h"
+#include "game.h"
 #include "veh.h"
 
 rules_natural *Natural = (rules_natural *)0x0094ADE0;
@@ -63,6 +65,48 @@ int __cdecl xrange(int xCoord) {
 		}
 	}
 	return xCoord;
+}
+
+/*
+Purpose: Check who owns a tile. Optional parameter to get closest base.
+Original Offset: 004E3EF0
+Return Value: factionID of territory's owner; -1 if no owner or unknown faction
+Status: Complete
+*/
+int __cdecl whose_territory(int factionID, int xCoord, int yCoord, int *baseID, BOOL ignoreComm) {
+	int owner = map_loc(xCoord, yCoord)->territory;
+	if (owner <= 0) {
+		return -1; // no owner
+	}
+	if (factionID != owner) {
+		if (!ignoreComm && !(*GameRules & TGL_OMNISCIENT_VIEW)
+			&& (PlayersData[factionID].diploStatus[owner] 
+				& (DSTATE_COMMLINK | DSTATE_UNK_0x8000000)) 
+			!= (DSTATE_COMMLINK | DSTATE_UNK_0x8000000)) {
+			return -1; // owner unknown to faction
+		}
+		if (baseID) {
+			*baseID = base_find(xCoord, yCoord, -1, region_at(xCoord, yCoord), -1, -1);
+		}
+	}
+	return owner;
+}
+
+/*
+Purpose: Find closest base to territory owned by another faction not at war with specified faction.
+Original Offset: 004E3FA0
+Return Value: baseID or -1
+Status: Complete
+*/
+int __cdecl base_territory(int factionID, int xCoord, int yCoord) {
+	int baseID;
+	int owner = whose_territory(factionID, xCoord, yCoord, &baseID, false);
+	if (owner >= 0 && owner != factionID && 
+		(FactionCurrentBitfield[0] & (1 << factionID) || FactionCurrentBitfield[0] & (1 << owner)) 
+		&& !(PlayersData[factionID].diploStatus[owner] & DSTATE_VENDETTA)) {
+		return baseID;
+	}
+	return -1;
 }
 
 /*
@@ -430,6 +474,115 @@ void __cdecl synch_bit(int xCoord, int yCoord, int factionID) {
 }
 
 /*
+Purpose: Determine tile's mineral count that translates to rockiness.
+Original Offset: 00591F00
+Return Value: 0 (Flat), 1 (Rolling), 2 (Rocky)
+Status: Complete
+*/
+uint32_t __cdecl minerals_at(int xCoord, int yCoord) {
+	if (!yCoord || (int)(*MapVerticalBounds - 1) == yCoord) {
+		return 2; // poles
+	}
+	uint32_t alt = alt_at(xCoord, yCoord);
+	uint32_t avg = (xCoord + yCoord) >> 1;
+	xCoord -= avg;
+	int val1 = (xCoord / 2) + *MapRandSeed + (xCoord - (xCoord % 2)) + (avg - (avg % 2));
+	int val2 = (val1 - 2 * (xCoord & 1) - (avg & 1)) & 3;
+	int type = abs((int)alt - ALT_SHORE_LINE);
+	if (alt < ALT_SHORE_LINE) {
+		type--;
+	}
+	switch (type) {
+	case 0:
+	{
+		switch (val2) {
+		case 0:
+			return 1;
+		case 1:
+		case 3:
+			return 0;
+		case 2:
+			return ((val1 & 4) != 0) + 1; // 1 or 2
+		default:
+			return ~val2 & 1;
+		}
+	}
+	case 1:
+		return (val2 < 0 || val2 > 2) ? 2 : (val2 == 2) ? 1 : val2;
+	case 2:
+		return (val2 < 0 || val2 > 1) ? 2 : val2;
+	case 3:
+		return (val2 < 0 || val2 > 1) ? 2 : 1;
+	default:
+		return ~val2 & 1;
+	}
+}
+
+/*
+Purpose: Determine if tile has a resource bonus. Last param is unused. It's set to 1 by two calls 
+         inside world_site(), otherwise all other calls have it set to  0.
+Original Offset: 00592030
+Return Value: 0 (no bonus), 1 (nutrient), 2 (mineral), 3 (energy)
+Status: Complete
+*/
+uint32_t __cdecl bonus_at(int xCoord, int yCoord, int unkVal) {
+	uint32_t bit = bit_at(xCoord, yCoord);
+	uint32_t alt = alt_at(xCoord, yCoord);
+	BOOL hasRscBonus = bit & BIT_RSC_BONUS;
+	if (!hasRscBonus && (!*MapRandSeed 
+		|| (alt >= ALT_SHORE_LINE && !(*GameRules2 & NO_UNITY_SCATTERING)))) {
+		return 0;
+	}
+	uint32_t avg = (xCoord + yCoord) >> 1;
+	xCoord -= avg;
+	uint32_t chk = (avg & 3) + 4 * (xCoord & 3);
+	if (!hasRscBonus && chk != ((*MapRandSeed + (-5 * (avg >> 2)) - 3 * (xCoord >> 2)) & 0xF)) {
+		return 0;
+	}
+	if (alt < ALT_OCEAN_SHELF) {
+		return 0;
+	}
+	uint32_t ret = (alt < ALT_SHORE_LINE) ? chk % 3 + 1 : (chk % 5) & 3;
+	if (!ret || bit & BIT_NUTRIENT_RSC) {
+		if (bit & BIT_ENERGY_RSC) {
+			return 3; // energy
+		}
+		return ((bit & BIT_MINERAL_RSC) != 0) + 1; // nutrient or mineral
+	}
+	return ret;
+}
+
+/*
+Purpose: Determine if tile has a supply pod and if so what type.
+Original Offset: 00592140
+Return Value: 0 (no supply pod), 1 (standard supply pod), 2 (unity pod?)
+Status: Complete
+*/
+uint32_t __cdecl goody_at(int xCoord, int yCoord) {
+	uint32_t bit = bit_at(xCoord, yCoord);
+	if (bit & (BIT_SUPPLY_REMOVE | BIT_MONOLITH)) {
+		return 0; // nothing, supply pod already opened or monolith
+	}
+	if (*GameRules2 & NO_UNITY_SCATTERING) {
+		return (bit & (BIT_UNK_4000000|BIT_UNK_8000000)) ? 2 : 0; // ?
+	}
+	if (bit & BIT_SUPPLY_POD) {
+		return 1; // supply pod
+	}
+	if (!MapRandSeed) {
+		return 0; // nothing
+	}
+	uint32_t avg = (xCoord + yCoord) >> 1;
+	int xCoordDiff = xCoord - avg;
+	uint32_t cmp = (avg & 3) + 4 * (xCoordDiff & 3);
+	if (!is_ocean(xCoord, yCoord) 
+		&& cmp == ((-5 * (avg >> 2) - 3 * (xCoordDiff >> 2) + *MapRandSeed) & 0xF)) {
+		return 2;
+	}
+	return cmp == ((11 * (avg / 4) + 61 * (xCoordDiff / 4) + *MapRandSeed + 8) & 0x1F); // 0 or 1
+}
+
+/*
 Purpose: Check if coordinates are considered near or on coast. Radius (excludes actual coordinates)
          can either be all the squares directly around the coordinates or same as Base '+' radius.
 Original Offset: 004E49D0
@@ -456,7 +609,7 @@ Return Value: Is tile ocean? true/false
 Status: Complete
 */
 BOOL __cdecl is_ocean(int xCoord, int yCoord) {
-	return altitude_at(xCoord, yCoord) < ALT_SHORE_LINE;
+	return altitude_at(xCoord, yCoord) < ALT_BIT_SHORE_LINE;
 }
 
 /*
@@ -582,6 +735,28 @@ int __cdecl is_sensor(int xCoord, int yCoord) {
 		}
 	}
 	return 0; // No sensor found
+}
+
+/*
+Purpose: Check if faction controls the initial tile (code offset 0) of the Manifold Nexus.
+Original Offset: 005BF130
+Return Value: Does faction control Nexus? true/false
+Status: Complete
+*/
+BOOL __cdecl has_temple(int factionID) {
+	for (uint32_t yCoord = 0; yCoord < *MapVerticalBounds; yCoord++) {
+		for (uint32_t xCoord = yCoord & 1; xCoord < *MapHorizontalBounds; xCoord += 2) {
+			uint32_t bit2 = bit2_at(xCoord, yCoord);
+			if ((bit2 & (0x80000000 | LM_NEXUS)) == LM_NEXUS && !(bit2 & 0xFF000000)) {
+				if (whose_territory(factionID, xCoord, yCoord, NULL, false) == factionID) {
+					if (map_loc(xCoord, yCoord)->visibility & (1 << factionID)) { // tile visible
+						return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
 }
 
 /*

@@ -1,14 +1,28 @@
 # OpenSMACX
 A project to decompile SMAC/X to C++ with the long term goal of creating a full open source clone.
 
-Source tested and compiled as an x86 DLL with Visual Studio 2017 using Visual C++ with default 
-settings. Source was also tested using Visual Studio 2015 Visual C++.
+Source tested and compiled as an x86 DLL with Visual Studio 2019 using Visual C++ with default 
+settings. Source was also tested using Visual Studio 2015/2017 Visual C++.
 
 Tested with CodeBlocks using GCC 8.1.0 compiler. Added project file (cbp) courtesy of induktio.
 
 The patcher script found under tools is compatible with the latest GOG version as well as the most
-recent version of my unofficial patch. For my patch there currently is one regression regarding 
-the FREEPROTO flag and Spartan retool strictness while I look into it more.
+recent version of my unofficial patch. Cursory testing shows it is compatible with PRACX.
+
+v0.2.1
+* Some additional map functions to get ready for working on Path class.
+* Miscellaneous clean up.
+* Fixed an issue with the patcher script incorrectly patching best_specialist() and base_making().
+* Decompiled and redirected function count: 315
+
+Bug Fixes:
+* Factions with the FREEPROTO flag (Spartans) will gain free retooling in their bases as long as the
+  production switch is within the same category (unit to unit, base facility to base facility) and
+  they've discovered the necessary tech for Skunkworks (default is "Advanced Subatomic Theory"). 
+  This is to resolve the issue with FREEPROTO factions never being able to gain the undocumented 
+  retooling ability of a Skunkworks found in base_making(). There is good indication this was likely
+  an oversight and that the FREEPROTO flag should be the equivalent to a free Skunkworks for 
+  the faction's bases.
 
 v0.2
 * Veh, Map and Base related code that sets the groundwork to break down more complex functions.

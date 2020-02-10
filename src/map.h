@@ -46,24 +46,35 @@ struct rules_natural {
 	LPSTR nameShort;
 };
 
-enum terrain_altitude {
-	ALT_OCEAN_TRENCH = 0x0,
-	ALT_OCEAN = 0x20,
-	ALT_OCEAN_SHELF = 0x40,
-	ALT_SHORE_LINE = 0x60,
-	ALT_1_LEVEL_ABOVE_SEA = 0x80,
-	ALT_2_LEVELS_ABOVE_SEA = 0xA0,
-	ALT_3_LEVELS_ABOVE_SEA = 0xC0,
-	ALT_4_LEVELS_ABOVE_SEA = 0xE0,
+enum terrain_altitude_bit {
+	ALT_BIT_OCEAN_TRENCH = 0x0,
+	ALT_BIT_OCEAN = 0x20,
+	ALT_BIT_OCEAN_SHELF = 0x40,
+	ALT_BIT_SHORE_LINE = 0x60,
+	ALT_BIT_1_LEVEL_ABOVE_SEA = 0x80,
+	ALT_BIT_2_LEVELS_ABOVE_SEA = 0xA0,
+	ALT_BIT_3_LEVELS_ABOVE_SEA = 0xC0,
+	ALT_BIT_4_LEVELS_ABOVE_SEA = 0xE0,
 };
 
-enum terrain_climate { // land modifiers only
+enum terrain_altitude {
+	ALT_OCEAN_TRENCH = 0,
+	ALT_OCEAN = 1,
+	ALT_OCEAN_SHELF = 2,
+	ALT_SHORE_LINE = 3,
+	ALT_1_LEVEL_ABOVE_SEA = 4,
+	ALT_2_LEVELS_ABOVE_SEA = 5,
+	ALT_3_LEVELS_ABOVE_SEA = 6,
+	ALT_4_LEVELS_ABOVE_SEA = 7,
+};
+
+enum terrain_climate_bit { // land modifiers only
 	CLIMATE_ARID = 0x0,
 	CLIMATE_MOIST = 0x8, // can only have one value set, otherwise tile glitches
 	CLIMATE_RAINY = 0x10, // " "
 };
 
-enum terrain_rock { // land modifiers only
+enum terrain_rock_bit { // land modifiers only
 	TERRAIN_FLAT = 0x0,
 	TERRAIN_ROLLING = 0x40, // can only have one value set, otherwise game will crash
 	TERRAIN_ROCKY = 0x80, // " "
@@ -78,13 +89,13 @@ enum terrain_bit {
 	BIT_FUNGUS        = 0x20,
 	BIT_SOLAR_TIDAL   = 0x40,
 	BIT_RIVER         = 0x80,
-	BIT_RIVER_SRC     = 0x100, // ?
-	//                  0x200,
+	BIT_RIVER_SRC     = 0x100,
+	BIT_UNK_200       = 0x200, // something related to cluster of rivers
 	BIT_RSC_BONUS     = 0x400, // Mineral, Nutrient, Energy
 	BIT_BUNKER        = 0x800,
-	//                = 0x1000, // base radius?
+	BIT_BASE_RADIUS   = 0x1000, // production radius; 21 tiles per base (20 surrounding + base tile)
 	BIT_MONOLITH      = 0x2000,
-	//                = 0x4000,
+	BIT_UNK_4000      = 0x4000, // continent + single tile island off coast, used by AI; boundary?
 	BIT_FARM          = 0x8000,
 	BIT_ENERGY_RSC    = 0x10000,
 	BIT_MINERAL_RSC   = 0x20000,
@@ -95,12 +106,12 @@ enum terrain_bit {
 	BIT_CONDENSER     = 0x400000,
 	BIT_ECH_MIRROR    = 0x800000,
 	BIT_THERMAL_BORE  = 0x1000000,
-	//                  0x2000000,
-	//                  0x4000000,
-	//                  0x8000000,
+	BIT_UNK_2000000   = 0x2000000, // ?
+	BIT_UNK_4000000   = 0x4000000, // ?
+	BIT_UNK_8000000   = 0x8000000, // ?
 	BIT_SUPPLY_POD    = 0x10000000,
 	BIT_NUTRIENT_RSC  = 0x20000000,
-	//                  0x40000000
+	BIT_UNK_40000000  = 0x40000000, // ?
 	BIT_SENSOR_ARRAY  = 0x80000000,
 };
 
@@ -144,6 +155,9 @@ extern map **Map;
 
 OPENSMACX_API BOOL __cdecl on_map(int xCoord, int yCoord);
 OPENSMACX_API int __cdecl xrange(int xCoord);
+OPENSMACX_API int __cdecl whose_territory(int factionID, int xCoord, int yCoord,
+	int *baseID, BOOL ignoreComm);
+OPENSMACX_API int __cdecl base_territory(int factionID, int xCoord, int yCoord);
 OPENSMACX_API int __cdecl x_dist(int xCoord, int yCoord);
 OPENSMACX_API map * __cdecl map_loc(int xCoord, int yCoord);
 OPENSMACX_API uint32_t __cdecl temp_at(int xCoord, int yCoord);
@@ -175,6 +189,9 @@ OPENSMACX_API void __cdecl bit2_set(int xCoord, int yCoord, uint32_t bit2, BOOL 
 OPENSMACX_API uint32_t __cdecl code_at(int xCoord, int yCoord);
 OPENSMACX_API void __cdecl code_set(int xCoord, int yCoord, uint32_t code);
 OPENSMACX_API void __cdecl synch_bit(int xCoord, int yCoord, int factionID);
+OPENSMACX_API uint32_t __cdecl minerals_at(int xCoord, int yCoord);
+OPENSMACX_API uint32_t __cdecl bonus_at(int xCoord, int yCoord, int unkVal);
+OPENSMACX_API uint32_t __cdecl goody_at(int xCoord, int yCoord);
 OPENSMACX_API BOOL __cdecl is_coast(int xCoord, int yCoord, BOOL isBaseRadius);
 OPENSMACX_API BOOL __cdecl is_ocean(int xCoord, int yCoord);
 OPENSMACX_API int __cdecl veh_who(int xCoord, int yCoord);
@@ -183,6 +200,7 @@ OPENSMACX_API void __cdecl rebuild_base_bits();
 OPENSMACX_API int __cdecl cursor_dist(int xCoord1, int xCoord2);
 OPENSMACX_API int __cdecl anything_at(int xCoord, int yCoord);
 OPENSMACX_API int __cdecl is_sensor(int xCoord, int yCoord);
+OPENSMACX_API BOOL __cdecl has_temple(int factionID);
 OPENSMACX_API uint32_t __cdecl zoc_any(int xCoord, int yCoord, int factionID);
 OPENSMACX_API uint32_t __cdecl zoc_veh(int xCoord, int yCoord, int factionID);
 OPENSMACX_API uint32_t __cdecl zoc_sea(int xCoord, int yCoord, int factionID);

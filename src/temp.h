@@ -53,6 +53,13 @@ extern func6 *X_pop;
 // testing
 typedef int *func8(LPSTR, LPSTR);
 extern func8 *parse_string_OG;
+//
+typedef uint32_t func9(int, int);
+extern func9 *minerals_at_OG;
+extern func9 *goody_at_OG;
+
+typedef uint32_t func10(int, int, int);
+extern func10* bonus_at_OG;
 
 // Time
 typedef void func30(int);

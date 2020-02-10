@@ -19,9 +19,32 @@
 #include "terraforming.h"
 #include "base.h"
 #include "game.h"
+#include "map.h"
 #include "technology.h"
 
 rules_terraforming *Terraforming = (rules_terraforming *)0x00691878;
+
+/*
+Purpose: Calculate the amount of poor quality terrain attributes the tile has for farming (?).
+Original Offset: 004ECB90
+Return Value: Quality of terrain, lower is better (0-2)
+Status: Complete
+*/
+uint32_t __cdecl crappy(int xCoord, int yCoord) {
+	uint32_t poorQuality = 0;
+	uint32_t climate = map_loc(xCoord, yCoord)->val1 & (CLIMATE_MOIST | CLIMATE_RAINY);
+	if (!climate) {
+		poorQuality = 1; // neither moist or rainy
+	}
+	uint32_t rocky = rocky_at(xCoord, yCoord);
+	if (rocky == TERRAIN_ROCKY) {
+		poorQuality++; // rocky
+	}
+	else if (rocky == TERRAIN_FLAT && climate < CLIMATE_RAINY) {
+		poorQuality++; // flat, moist or arid
+	}
+	return poorQuality;
+}
 
 /*
 Purpose: Check to see whether provided faction can construct specific terrain enhancement.

@@ -437,3 +437,4 @@ OPENSMACX_API BOOL __cdecl is_port(int baseID, BOOL isBaseRadius);
 OPENSMACX_API BOOL __cdecl redundant(int facilityID, int factionID);
 OPENSMACX_API BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID, 
 	int queueCount);
+OPENSMACX_API int facility_offset(LPCSTR facilSearch);

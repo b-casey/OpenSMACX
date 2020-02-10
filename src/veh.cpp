@@ -123,7 +123,7 @@ uint32_t __cdecl morale_alien(int vehID, int factionIDvsNative) {
 			int xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
 			if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
 				&& xRadius < (int)*MapHorizontalBounds && bit_at(xRadius, yRadius) & BIT_FUNGUS
-				&& altitude_at(xRadius, yRadius) >= ALT_OCEAN_SHELF) {
+				&& altitude_at(xRadius, yRadius) >= ALT_BIT_OCEAN_SHELF) {
 				morale++;
 			}
 		}
@@ -676,7 +676,7 @@ int __cdecl hex_cost(int protoID, int factionID, int xCoordSrc, int yCoordSrc, i
 	uint32_t bitDst = bit_at(xCoordDst, yCoordDst);
 	if (is_ocean(xCoordDst, yCoordDst)) {
 		if (bitDst & BIT_FUNGUS
-			&& altitude_at(xCoordDst, yCoordDst) == ALT_OCEAN_SHELF
+			&& altitude_at(xCoordDst, yCoordDst) == ALT_BIT_OCEAN_SHELF
 			&& Chassis[VehPrototype[protoID].chassisID].triad == TRIAD_SEA 
 			&& protoID != BSC_SEALURK // Bug fix
 			&& protoID != BSC_ISLE_OF_THE_DEEP && !has_project(SP_XENOEMPATYH_DOME, factionID)) {
