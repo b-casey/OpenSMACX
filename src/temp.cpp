@@ -37,6 +37,9 @@ typedef FILE *func3(LPCSTR, LPCSTR);
 func3 *_fopen = (func3 *)0x00645646;
 typedef void *func4(unsigned int);
 func4 *_srand = (func4 *)0x00646010;
+typedef int *func10(void *, size_t, size_t, FILE *);
+func10 *_fread = (func10 *)0x00646178;
+func10 *_fwrite = (func10 *)0x0064603F;
 //typedef void *func12(void *, size_t);
 //func12 *_realloc = (func12 *)0x00647132;
 //typedef int *func18(FILE *);
@@ -51,24 +54,21 @@ func5 *load_faction_art = (func5 *)0x00453710;
 // Next call to text_get() tries to access 009B7CF4 and the game crashes.
 typedef void *func6(char const *, int(*)(void));
 func6 *X_pop = (func6 *)0x005BF310;
+typedef void *func9(void);
+func9 *fixup_landmarks = (func9 *)0x00592940;
+func9 *mapwin_terrain_fixup = (func9 *)0x00471240;
+
+// Time
+typedef void func30(int);
+func30* blink_timer = (func30*)0x0050EA40;
+func30* blink2_timer = (func30*)0x0050EE30;
+func30* line_timer = (func30*)0x0050EE80;
+func30* turn_timer = (func30*)0x0050EF10;
 
 // testing
 typedef int *func8(LPSTR, LPSTR);
 func8 *parse_string_OG = (func8 *)0x00625880;
-//
-typedef uint32_t func9(int, int);
-func9 *minerals_at_OG = (func9 *)0x00591F00;
-func9 *goody_at_OG = (func9 *)0x00592140;
 
-typedef uint32_t func10(int, int, int);
-func10* bonus_at_OG = (func10*)0x00592030;
-
-// Time
-typedef void func30(int);
-func30 *blink_timer = (func30 *)0x0050EA40;
-func30 *blink2_timer = (func30 *)0x0050EE30;
-func30 *line_timer = (func30 *)0x0050EE80;
-func30 *turn_timer = (func30 *)0x0050EF10;
 
 ///
 char1032 *stringTemp = (char1032 *)0x009B86A0;
@@ -93,28 +93,17 @@ Filefind *FilefindPath = (Filefind *)0x009B8198;
 MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
 
 int __cdecl tester() {
-	log_set_state(TRUE);
-	
-	return 0;
-}
-
-void __cdecl testerMap() {
-	log_set_state(TRUE);
+	log_set_state(true);
 	log_say("Start test", 0, 0, 0);
 	for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
 		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
-			uint32_t goody = goody_at_OG(x, y);
-			if (goody_at(x, y) != goody) {
-				log_say("goody_at error: ", x, y, goody);
+			uint8_t att = abstract_at(x, y);
+			if (att) {
+				log_say("abstract_at: ", x, y, att);
+				//log_say("region:      ", x, y, region_at(x,y));
 			}
-			uint32_t rsc = bonus_at_OG(x, y, 0);
-			if (bonus_at(x, y, 0) != rsc) {
-				log_say("bonus_at error: ", x, y, rsc);
-			}
-			uint32_t min = minerals_at_OG(x, y);
-			if (minerals_at(x, y) != min) {
-				log_say("minerals_at error: ", x, y, min);
-			}
+			
+			
 			//if (goody) {
 			//	log_say("goody_at: ", x, y, goody);
 			//}
@@ -175,7 +164,7 @@ void __cdecl testerMap() {
 		}
 	}
 	log_say("End test", 0, 0, 0);
-	log_set_state(FALSE);
+	log_set_state(false);
 	/*
 	for (int y = -10; y < (int)*MapVerticalBounds; y++) {
 		for (int x = -1; x < (int)*MapHorizontalBounds; x++) {
@@ -206,4 +195,5 @@ void __cdecl testerMap() {
 		}
 	}
 	*/
+	return 0;
 }

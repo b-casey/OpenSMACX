@@ -140,18 +140,32 @@ constexpr int MaxLandmarkNum = 64;
 const int xRadiusOffset[] = { 1, 2, 1, 0, -1, -2, -1, 0, 2, 2, -2, -2, 1, 3, 3, 1, -1, -3, -3, -1 };
 const int yRadiusOffset[] = { -1, 0, 1, 2, 1, 0, -1, -2, -2, 2, 2, -2, -3, -1, 1, 3, 3, 1, -1, -3 };
 
-extern rules_natural *Natural;
+extern uint32_t* MapHorizontalBounds; // x
 extern uint32_t *MapVerticalBounds; // y
-extern uint32_t *MapHorizontalBounds; // x
 extern uint32_t *MapRandSeed;
 extern int *MapSeaLevel;
+extern int *MapSeaLevelCouncil; // Solar Shade (-3); Melt Polar Caps (+3)
 extern uint32_t *MapArea;
 extern uint32_t *MapAreaSqRoot;
-extern BOOL *MapFlatToggle;
+extern BOOL *MapIsFlat;
 extern uint32_t *MapLandmarkCount;
 extern landmark *MapLandmark;
-extern uint32_t *MapHorizontal;
+extern uint32_t *MapAbstractHorizBounds;
+extern uint32_t *MapAbstractVertBounds;
+extern uint32_t *MapAbstractArea;
+extern uint32_t *MapSizePlanet;
+extern uint32_t *MapOceanCoverage;
+extern uint32_t *MapLandCoverage; // 2 - MapOceanCoverage
+extern uint32_t *MapErosiveForces;
+extern uint32_t *MapPlanetaryOrbit; // affects temp
+extern uint32_t *MapCloudCover; // affects rainfall, rivers
+extern uint32_t *MapNativeLifeForms;
+extern LPSTR *MapFilePath;
 extern map **Map;
+extern uint8_t **MapAbstract;
+
+extern rules_natural* Natural;
+extern uint32_t* MapHorizontal;
 
 OPENSMACX_API BOOL __cdecl on_map(int xCoord, int yCoord);
 OPENSMACX_API int __cdecl xrange(int xCoord);
@@ -199,6 +213,13 @@ OPENSMACX_API void __cdecl rebuild_vehicle_bits();
 OPENSMACX_API void __cdecl rebuild_base_bits();
 OPENSMACX_API int __cdecl cursor_dist(int xCoord1, int xCoord2);
 OPENSMACX_API int __cdecl anything_at(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl map_shutdown();
+OPENSMACX_API BOOL __cdecl map_init();
+OPENSMACX_API void __cdecl map_wipe();
+OPENSMACX_API BOOL __cdecl map_write(FILE *mapFile);
+OPENSMACX_API BOOL __cdecl map_read(FILE *mapFile);
+OPENSMACX_API uint8_t __cdecl abstract_at(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl abstract_set(int xCoord, int yCoord, uint8_t val);
 OPENSMACX_API int __cdecl is_sensor(int xCoord, int yCoord);
 OPENSMACX_API BOOL __cdecl has_temple(int factionID);
 OPENSMACX_API uint32_t __cdecl zoc_any(int xCoord, int yCoord, int factionID);

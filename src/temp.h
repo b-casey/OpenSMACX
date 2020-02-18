@@ -37,6 +37,9 @@ typedef FILE *func3(LPCSTR, LPCSTR);
 extern func3 *_fopen;
 typedef void *func4(unsigned int);
 extern func4 *_srand;
+typedef int *func10(void *, size_t, size_t, FILE *);
+extern func10 *_fread;
+extern func10 *_fwrite;
 //typedef void *func12(void *, size_t);
 //extern func12 *_realloc;
 //typedef int *func18(FILE *);
@@ -49,24 +52,22 @@ typedef void *func5(int);
 extern func5 *load_faction_art;
 typedef void *func6(char const *, int(*)(void));
 extern func6 *X_pop;
+typedef void *func9(void);
+extern func9 *fixup_landmarks;
+extern func9 *mapwin_terrain_fixup;
+
+// Time
+typedef void func30(int);
+extern func30* blink_timer;
+extern func30* blink2_timer;
+extern func30* line_timer;
+extern func30* turn_timer;
 
 // testing
 typedef int *func8(LPSTR, LPSTR);
 extern func8 *parse_string_OG;
 //
-typedef uint32_t func9(int, int);
-extern func9 *minerals_at_OG;
-extern func9 *goody_at_OG;
 
-typedef uint32_t func10(int, int, int);
-extern func10* bonus_at_OG;
-
-// Time
-typedef void func30(int);
-extern func30 *blink_timer;
-extern func30 *blink2_timer;
-extern func30 *line_timer;
-extern func30 *turn_timer;
 
 ///
 extern char1032 *stringTemp;
@@ -90,4 +91,3 @@ extern Filefind *FilefindPath;
 extern MainInterface *MainInterfaceVar;
 
 OPENSMACX_API int __cdecl tester();
-OPENSMACX_API void __cdecl testerMap();

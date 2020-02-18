@@ -18,23 +18,40 @@
 #include "stdafx.h"
 #include "temp.h"
 #include "map.h"
+#include "alpha.h"
 #include "base.h"
 #include "faction.h"
 #include "game.h"
+#include "random.h"
 #include "veh.h"
 
-rules_natural *Natural = (rules_natural *)0x0094ADE0;
 uint32_t *MapHorizontalBounds = (uint32_t *)0x00949870;
 uint32_t *MapVerticalBounds = (uint32_t *)0x00949874;
 uint32_t *MapRandSeed = (uint32_t *)0x00949878;
 int *MapSeaLevel = (int *)0x0094987C;
+int *MapSeaLevelCouncil = (int *)0x00949880;
 uint32_t *MapArea = (uint32_t *)0x00949884;
 uint32_t *MapAreaSqRoot = (uint32_t *)0x00949888;
-BOOL *MapFlatToggle = (BOOL *)0x0094988C;
+BOOL *MapIsFlat = (BOOL *)0x0094988C;
 uint32_t *MapLandmarkCount = (uint32_t *)0x00949890;
 landmark *MapLandmark = (landmark *)0x00949894; // [64]
-uint32_t *MapHorizontal = (uint32_t *)0x0068FAF0;
+uint32_t *MapAbstractHorizBounds = (uint32_t *)0x0094A294;
+uint32_t *MapAbstractVertBounds = (uint32_t *)0x0094A298;
+uint32_t *MapAbstractArea = (uint32_t *)0x0094A29C;
+uint32_t *MapSizePlanet = (uint32_t *)0x0094A2A0;
+uint32_t *MapOceanCoverage = (uint32_t *)0x0094A2A4;
+uint32_t *MapLandCoverage = (uint32_t *)0x0094A2A8;
+uint32_t *MapErosiveForces = (uint32_t *)0x0094A2AC;
+uint32_t *MapPlanetaryOrbit = (uint32_t *)0x0094A2B0;
+uint32_t *MapCloudCover = (uint32_t *)0x0094A2B4;
+uint32_t *MapNativeLifeForms = (uint32_t *)0x0094A2B8;
+LPSTR *MapFilePath = (LPSTR *)0x0094A2BC;
 map **Map = (map **)0x0094A30C;
+uint8_t **MapAbstract = (uint8_t **)0x0094A310;
+
+rules_natural *Natural = (rules_natural *)0x0094ADE0;
+uint32_t *MapHorizontal = (uint32_t *)0x0068FAF0;
+LPCSTR MapExtension = "MP";
 
 /*
 Purpose: Check whether coordinates are on the map.
@@ -54,7 +71,7 @@ Return Value: xCoord
 Status: Complete
 */
 int __cdecl xrange(int xCoord) {
-	if (!*MapFlatToggle) {
+	if (!*MapIsFlat) {
 		if (xCoord >= 0) {
 			if (xCoord >= (int)*MapHorizontalBounds) {
 				xCoord -= *MapHorizontalBounds;
@@ -136,7 +153,7 @@ Return Value: Pointer to map tile
 Status: Complete
 */
 map * __cdecl map_loc(int xCoord, int yCoord) {
-	return &((*Map)[((xCoord >> 1) + yCoord * *MapHorizontal)]);
+	return &((*Map)[(xCoord >> 1) + yCoord * *MapHorizontal]);
 }
 
 /*
@@ -687,7 +704,7 @@ Status: Complete
 */
 int __cdecl cursor_dist(int xCoord1, int xCoord2) {
 	int dist = abs(xCoord1 - xCoord2);
-	if (!*MapFlatToggle && dist > (int)*MapHorizontal) {
+	if (!*MapIsFlat && dist > (int)*MapHorizontal) {
 		dist = *MapHorizontalBounds - dist;
 	}
 	return dist;
@@ -708,6 +725,133 @@ int __cdecl anything_at(int xCoord, int yCoord) {
 		}
 	}
 	return -1;
+}
+
+/*
+Purpose: Shutdown allocated map variables.
+Original Offset: 00590E90
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl map_shutdown() {
+	if (*Map) {
+		free(*Map);
+	}
+	if (*MapAbstract) {
+		free(*MapAbstract);
+	}
+	*Map = 0;
+	*MapAbstract = 0;
+}
+
+/*
+Purpose: Initialize map variables.
+Original Offset: 00590ED0
+Return Value: n/a
+Status: Complete
+*/
+BOOL __cdecl map_init() {
+	sprintf_s((LPSTR)MapFilePath, 80, "maps\\%s.%s", label_get(676), MapExtension);
+	*MapHorizontal = *MapHorizontalBounds / 2;
+	*MapArea = *MapHorizontal * *MapVerticalBounds;
+	*MapAreaSqRoot = quick_root(*MapArea);
+	*Map = 0;
+	*Map = (map *)mem_get(*MapArea * sizeof(map));
+	if (*Map) {
+		*MapAbstractHorizBounds = (*MapHorizontalBounds + 4) / 5;
+		*MapAbstractVertBounds = (*MapVerticalBounds + 4) / 5;
+		*MapAbstractArea = *MapAbstractVertBounds * ((*MapAbstractHorizBounds + 1) / 2);
+		*MapAbstract = (uint8_t *)mem_get(*MapAbstractArea);
+		if (*MapAbstract) {
+			mapwin_terrain_fixup();
+			return false;
+		}
+	}
+	map_shutdown();
+	return true;
+}
+
+/*
+Purpose: Reset map to blank state. Doesn't wipe unk1 and territory fields.
+Original Offset: 00591040
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl map_wipe() {
+	*MapSeaLevel = 0;
+	*MapSeaLevelCouncil = 0;
+	*MapLandmarkCount = 0;
+	*MapRandSeed = random(0, 0x7FFF) + 1;
+	for (uint32_t i = 0; i < *MapArea; i++) {
+		(*Map)[i].val1 = ALT_BIT_OCEAN;
+		(*Map)[i].altDetail = 20;
+		(*Map)[i].val2 = 0xF;
+		(*Map)[i].region = 0;
+		(*Map)[i].visibility = 0;
+		(*Map)[i].val3 = 0;
+		(*Map)[i].bit = 0;
+		(*Map)[i].bit2 = 0;
+		memset((*Map)[i].bitVisible, 0, sizeof((*Map)[i].bitVisible));
+	}
+}
+
+/*
+Purpose: Write map data to a file.
+Original Offset: 005910B0
+Return Value: Did an error occur? true/false
+Status: Complete
+*/
+BOOL __cdecl map_write(FILE *mapFile) {
+	if (_fwrite(&*MapHorizontalBounds, 2724, 1, mapFile) 
+		&& _fwrite(*Map, *MapArea * sizeof(map), 1, mapFile)
+		&& _fwrite(*MapAbstract, *MapAbstractArea, 1, mapFile)) {
+		return false;
+	}
+	return true;
+}
+
+/*
+Purpose: Read map data from a file and write it into memory.
+Original Offset: 00591130
+Return Value: Did an error occur? true/false
+Status: Complete
+*/
+BOOL __cdecl map_read(FILE *mapFile) {
+	map_shutdown();
+	if (!_fread(&*MapHorizontalBounds, 2724, 1, mapFile)) {
+		return true;
+	}
+	*Map = 0;
+	*MapAbstract = 0;
+	if (map_init()) {
+		return true;
+	}
+	if(!_fread(*Map, *MapArea * sizeof(map), 1, mapFile)
+		|| !_fread(*MapAbstract, *MapAbstractArea, 1, mapFile)) {
+		return true;
+	}
+	fixup_landmarks();
+	return false;
+}
+
+/*
+Purpose: Get abstract value for coordinates.
+Original Offset: 00591210
+Return Value: Abstract value
+Status: Complete
+*/
+uint8_t __cdecl abstract_at(int xCoord, int yCoord) {
+	return (*MapAbstract)[(xCoord >> 1) + yCoord * (*MapAbstractHorizBounds >> 1)];
+}
+
+/*
+Purpose: Set abstract value for coordinates. 
+Original Offset: 00591230
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl abstract_set(int xCoord, int yCoord, uint8_t val) {
+	(*MapAbstract)[(xCoord >> 1) + yCoord * (*MapAbstractHorizBounds >> 1)] = val;
 }
 
 /*

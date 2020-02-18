@@ -535,6 +535,27 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x00192140) # ?goody_at@@YAIHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*314))
+	bin_app.seek(0x00190ED0) # ?map_init@@YAHXZ
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*315))
+	bin_app.seek(0x00191130) # ?map_read@@YAHPAU_iobuf@@@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*316))
+	bin_app.seek(0x00190E90) # ?map_shutdown@@YAXXZ
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*317))	
+	bin_app.seek(0x00191040) # ?map_wipe@@YAXXZ
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*318))
+	bin_app.seek(0x001910B0) # ?map_write@@YAHPAU_iobuf@@@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*319))
+	bin_app.seek(0x00191210) # ?abstract_at@@YAEHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*320))
+	bin_app.seek(0x00191230) # ?abstract_set@@YAXHHE@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*321))
 	# RANDOM
 	bin_app.seek(0x00225730) # ??0Random@@QAE@XZ
 	patch_call_bytes(bin_app)
