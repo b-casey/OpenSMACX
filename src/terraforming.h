@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,5 +81,4 @@ constexpr int MaxTerrainNum = 20;
 
 extern rules_terraforming *Terraforming;
 
-OPENSMACX_API uint32_t __cdecl crappy(int xCoord, int yCoord);
 OPENSMACX_API BOOL __cdecl terrain_avail(int terraformID, BOOL isSea, int factionID);

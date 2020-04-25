@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,10 @@
 #include "stdafx.h"
 #include "temp.h"
 #include "alpha.h"
+#include "council.h"
 #include "faction.h"
 #include "general.h"
+#include "game.h"
 #include "base.h"
 #include "map.h"
 #include "veh.h"
@@ -29,47 +31,45 @@
 #include "log.h"
 
 // built-in functions > used to prevent crash from mixed alloc/free SDKs
-typedef void *func1(size_t);
 func1 *_malloc = (func1 *)0x006470A6;
-typedef void *func2(void *);
 func2 *_free = (func2 *)0x00644EF2;
-typedef FILE *func3(LPCSTR, LPCSTR);
 func3 *_fopen = (func3 *)0x00645646;
-typedef void *func4(unsigned int);
 func4 *_srand = (func4 *)0x00646010;
-typedef int *func10(void *, size_t, size_t, FILE *);
 func10 *_fread = (func10 *)0x00646178;
 func10 *_fwrite = (func10 *)0x0064603F;
-//typedef void *func12(void *, size_t);
+//func7 *__rand = (func7 *)0x0064601D;
 //func12 *_realloc = (func12 *)0x00647132;
-//typedef int *func18(FILE *);
 //func18 *_fclose = (func18 *)0x00645598;
-//typedef LPSTR *func19(LPSTR, int, FILE *);
 //func19 *_fgets = (func19 *)0x0064726A;
 
 // other
-typedef void *func5(int);
 func5 *load_faction_art = (func5 *)0x00453710;
 // TODO: crash bug; X_pop > ... > BasePop::start > text_close > NULLs 009B7CF4 (FILE *Txt.textFile)
 // Next call to text_get() tries to access 009B7CF4 and the game crashes.
-typedef void *func6(char const *, int(*)(void));
 func6 *X_pop = (func6 *)0x005BF310;
-typedef void *func9(void);
 func9 *fixup_landmarks = (func9 *)0x00592940;
 func9 *mapwin_terrain_fixup = (func9 *)0x00471240;
+func9 *do_video = (func9 *)0x00636300;
+func9 *check_net = (func9 *)0x0062D5D0;
+func9 *do_net = (func9 *)0x0062D5B0;
+func14 *base_at = (func14 *)0x004E3A50;
+
+func11 *wants_to_attack = (func11 *)0x0055BC80;
+func13 *tech_val_OG = (func13 *)0x005BCBE0;
 
 // Time
-typedef void func30(int);
 func30* blink_timer = (func30*)0x0050EA40;
 func30* blink2_timer = (func30*)0x0050EE30;
 func30* line_timer = (func30*)0x0050EE80;
 func30* turn_timer = (func30*)0x0050EF10;
 
 // testing
-typedef int *func8(LPSTR, LPSTR);
 func8 *parse_string_OG = (func8 *)0x00625880;
+//
+func12 *enemy_capabilities_OG = (func12 *)0x00560DD0;
 
-
+func15 *naval_base_OG = (func15 *)0x0050E3C0;
+func16 *get_there_og = (func16 *)0x0056B320;
 ///
 char1032 *stringTemp = (char1032 *)0x009B86A0;
 char256 *ParseStrBuffer = (char256 *)0x009BB5E8;
@@ -95,6 +95,306 @@ MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
 int __cdecl tester() {
 	log_set_state(true);
 	log_say("Start test", 0, 0, 0);
+
+	for (int i = 0; i < *BaseCurrentCount; i++) {
+		int bc1 = transport_base(i);
+		int bc2 = naval_base(i);
+		if (bc1 != bc2) {
+			log_say("miss_match_error: ", Base[i].nameString, i, bc1, bc2);
+			log_say("", Base[i].xCoord, Base[i].yCoord, 0);
+		}
+	}
+
+	
+	//uint32_t x = 50, y = 108, v = 373;
+	//log_say("get_there: ", get_there_og(x, y, v), 0, 0);
+	/*
+	for (int i = 0; i < *BaseCurrentCount; i++) {
+		int baseC1 = base_coast(i);
+		int baseC2 = base_coast_OG(i);
+		if (baseC1 != baseC2) {
+			log_say("base_coast_error: ", i, 0, 0);
+		}
+		else if(baseC1 == 92){
+			char temp[1024], temp2[100];
+			temp[0] = 0;
+			strcat_s(temp, 1024, "base_coast, ");
+			strcat_s(temp, 1024, Base[i].nameString);
+			strcat_s(temp, 1024, ", ");
+			_itoa_s(baseC1, temp2, 10);
+			strcat_s(temp, 1024, temp2);
+			strcat_s(temp, 1024, ", ");
+			log_say(temp, 0, 0, 0);
+		}
+		
+		
+	}
+	*/
+	/*
+	for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
+		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
+			for (int v = 0; v < *VehCurrentCount; v++) {
+				if (get_there_og(x, y, v)) {
+					log_say("get_there: ", x, y, v);
+				}
+				else {
+					log_say("cant_get_there: ", x, y, v);
+				}
+			}
+		}
+	}
+	*/
+	//for (int i = 0; i < MaxPlayerNum; i++) {
+		/*
+		for (int j = 0; j < 200; j++) {
+			for (int k = 0; k < 2; k++) {
+				int techVal1 = tech_val(j, i, k);
+				int techVal2 = tech_val_OG(j, i, k);
+				if (techVal1 != techVal2) {
+					log_say("tech_val error: ", j, i, k);
+				}
+			}
+		}
+		*/
+	//}
+	
+	/*
+	for (int i = 0; i < MaxPlayerNum; i++) {
+		log_say(Players[i].searchKey, "PSI Atk", weap_strat(WPN_PSI_ATTACK, i), 0, 0);
+		log_say(Players[i].searchKey, "PSI Def", arm_strat(ARM_PSI_DEFENSE, i), 0, 0);
+	}
+	*/
+	/*
+	for (int z = 0; z < 10; z++) {
+		for (int i = 1; i < MaxPlayerNum; i++) {
+			int t1 = PlayersData[i].enemyBestWeaponVal;
+			int t2 = PlayersData[i].enemyBestArmorVal;
+			int t3 = PlayersData[i].enemyBestLandSpeed;
+			int t4 = PlayersData[i].enemyBestPsiAtkVal;
+			int t5 = PlayersData[i].enemyBestPsiDefVal;
+			int t6 = PlayersData[i].bestLandSpeed;
+			int t7 = PlayersData[i].bestPsiDefVal;
+			int t8 = PlayersData[i].bestArmorVal;
+			int t9 = PlayersData[i].bestPsiAtkVal;
+			int t0 = PlayersData[i].bestWeaponVal;
+			enemy_capabilities_t(i);
+			int a1 = PlayersData[i].enemyBestWeaponVal;
+			int a2 = PlayersData[i].enemyBestArmorVal;
+			int a3 = PlayersData[i].enemyBestLandSpeed;
+			int a4 = PlayersData[i].enemyBestPsiAtkVal;
+			int a5 = PlayersData[i].enemyBestPsiDefVal;
+			int a6 = PlayersData[i].bestLandSpeed;
+			int a7 = PlayersData[i].bestPsiDefVal;
+			int a8 = PlayersData[i].bestArmorVal;
+			int a9 = PlayersData[i].bestPsiAtkVal;
+			int a0 = PlayersData[i].bestWeaponVal;
+			PlayersData[i].enemyBestWeaponVal = t1;
+			PlayersData[i].enemyBestArmorVal = t2;
+			PlayersData[i].enemyBestLandSpeed = t3;
+			PlayersData[i].enemyBestPsiAtkVal = t4;
+			PlayersData[i].enemyBestPsiDefVal = t5;
+			PlayersData[i].bestLandSpeed = t6;
+			PlayersData[i].bestPsiDefVal = t7;
+			PlayersData[i].bestArmorVal = t8;
+			PlayersData[i].bestPsiAtkVal = t9;
+			PlayersData[i].bestWeaponVal = t0;
+			enemy_capabilities_t(i);
+			int b1 = PlayersData[i].enemyBestWeaponVal;
+			int b2 = PlayersData[i].enemyBestArmorVal;
+			int b3 = PlayersData[i].enemyBestLandSpeed;
+			int b4 = PlayersData[i].enemyBestPsiAtkVal;
+			int b5 = PlayersData[i].enemyBestPsiDefVal;
+			int b6 = PlayersData[i].bestLandSpeed;
+			int b7 = PlayersData[i].bestPsiDefVal;
+			int b8 = PlayersData[i].bestArmorVal;
+			int b9 = PlayersData[i].bestPsiAtkVal;
+			int b0 = PlayersData[i].bestWeaponVal;
+
+			if (a1 != b1) {
+				log_say("enemyBestWeaponVal error", a1, b1, i);
+			}
+			if (a2 != b2) {
+				log_say("enemyBestArmorVal error", a2, b2, i);
+			}
+			if (a3 != b3) {
+				log_say("enemyBestLandSpeed error", a3, b3, i);
+			}
+			if (a4 != b4) {
+				log_say("enemyBestPsiAtkVal error", a4, b4, i);
+			}
+			if (a5 != b5) {
+				log_say("enemyBestPsiDefVal error", a5, b5, i);
+			}
+			if (a6 != b6) {
+				log_say("bestLandSpeed error", a6, b6, i);
+			}
+			if (a7 != b7) {
+				log_say("bestPsiDefVal error", a7, b7, i);
+			}
+			if (a8 != b8) {
+				log_say("bestArmorVal error", a8, b8, i);
+			}
+			if (a9 != b9) {
+				log_say("bestPsiAtkVal error", a9, b9, i);
+			}
+			if (a0 != b0) {
+				log_say("bestWeaponVal error", a0, b0, i);
+			}
+			log_say("results: ", i, a1, a2);
+			log_say("results: ", i, a3, a4);
+			log_say("results: ", i, a5, a6);
+			log_say("results: ", i, a7, a8);
+			log_say("results: ", i, a9, a0);
+		}
+	}
+	log_say("original start", 0, 0, 0);
+	for (int z = 0; z < 10; z++) {
+		for (int i = 1; i < MaxPlayerNum; i++) {
+			int t1 = PlayersData[i].enemyBestWeaponVal;
+			int t2 = PlayersData[i].enemyBestArmorVal;
+			int t3 = PlayersData[i].enemyBestLandSpeed;
+			int t4 = PlayersData[i].enemyBestPsiAtkVal;
+			int t5 = PlayersData[i].enemyBestPsiDefVal;
+			int t6 = PlayersData[i].bestLandSpeed;
+			int t7 = PlayersData[i].bestPsiDefVal;
+			int t8 = PlayersData[i].bestArmorVal;
+			int t9 = PlayersData[i].bestPsiAtkVal;
+			int t0 = PlayersData[i].bestWeaponVal;
+			enemy_capabilities_OG(i);
+			int a1 = PlayersData[i].enemyBestWeaponVal;
+			int a2 = PlayersData[i].enemyBestArmorVal;
+			int a3 = PlayersData[i].enemyBestLandSpeed;
+			int a4 = PlayersData[i].enemyBestPsiAtkVal;
+			int a5 = PlayersData[i].enemyBestPsiDefVal;
+			int a6 = PlayersData[i].bestLandSpeed;
+			int a7 = PlayersData[i].bestPsiDefVal;
+			int a8 = PlayersData[i].bestArmorVal;
+			int a9 = PlayersData[i].bestPsiAtkVal;
+			int a0 = PlayersData[i].bestWeaponVal;
+			PlayersData[i].enemyBestWeaponVal = t1;
+			PlayersData[i].enemyBestArmorVal = t2;
+			PlayersData[i].enemyBestLandSpeed = t3;
+			PlayersData[i].enemyBestPsiAtkVal = t4;
+			PlayersData[i].enemyBestPsiDefVal = t5;
+			PlayersData[i].bestLandSpeed = t6;
+			PlayersData[i].bestPsiDefVal = t7;
+			PlayersData[i].bestArmorVal = t8;
+			PlayersData[i].bestPsiAtkVal = t9;
+			PlayersData[i].bestWeaponVal = t0;
+			enemy_capabilities_OG(i);
+			int b1 = PlayersData[i].enemyBestWeaponVal;
+			int b2 = PlayersData[i].enemyBestArmorVal;
+			int b3 = PlayersData[i].enemyBestLandSpeed;
+			int b4 = PlayersData[i].enemyBestPsiAtkVal;
+			int b5 = PlayersData[i].enemyBestPsiDefVal;
+			int b6 = PlayersData[i].bestLandSpeed;
+			int b7 = PlayersData[i].bestPsiDefVal;
+			int b8 = PlayersData[i].bestArmorVal;
+			int b9 = PlayersData[i].bestPsiAtkVal;
+			int b0 = PlayersData[i].bestWeaponVal;
+
+			if (a1 != b1) {
+				log_say("enemyBestWeaponVal error", a1, b1, i);
+			}
+			if (a2 != b2) {
+				log_say("enemyBestArmorVal error", a2, b2, i);
+			}
+			if (a3 != b3) {
+				log_say("enemyBestLandSpeed error", a3, b3, i);
+			}
+			if (a4 != b4) {
+				log_say("enemyBestPsiAtkVal error", a4, b4, i);
+			}
+			if (a5 != b5) {
+				log_say("enemyBestPsiDefVal error", a5, b5, i);
+			}
+			if (a6 != b6) {
+				log_say("bestLandSpeed error", a6, b6, i);
+			}
+			if (a7 != b7) {
+				log_say("bestPsiDefVal error", a7, b7, i);
+			}
+			if (a8 != b8) {
+				log_say("bestArmorVal error", a8, b8, i);
+			}
+			if (a9 != b9) {
+				log_say("bestPsiAtkVal error", a9, b9, i);
+			}
+			if (a0 != b0) {
+				log_say("bestWeaponVal error", a0, b0, i);
+			}
+			log_say("results: ", i, a1, a2);
+			log_say("results: ", i, a3, a4);
+			log_say("results: ", i, a5, a6);
+			log_say("results: ", i, a7, a8);
+			log_say("results: ", i, a9, a0);
+		}
+	}
+
+
+	/*
+	for (int i = 0; i < MaxPlayerNum; i++) {
+		for (int j = 0; j < 128; j++) {
+			if (PlayersData[i].baseCountByRegion[j]) {
+				log_say(Players[i].searchKey, " ? baseCountByRegion ? ", j, PlayersData[i].baseCountByRegion[j], 0);
+			}
+		}
+	}
+	
+	for (int i = 0; i < MaxPlayerNum; i++) {
+		for (int j = 0; j < 128; j++) {
+			if (PlayersData[i].unk_81[j]) {
+				log_say(Players[i].searchKey, "? unk_81 ?", j, PlayersData[i].unk_81[j], 0);
+			}
+		}
+	}
+
+	for (int i = 0; i < MaxPlayerNum; i++) {
+		for (int j = 0; j < 128; j++) {
+			if (PlayersData[i].unk_84[j]) {
+				//log_say(Players[i].searchKey, "? unk_84 ? ", j, PlayersData[i].unk_84[j], 0);
+			}
+		}
+	}
+	
+	for (int i = 0; i < MaxPlayerNum; i++) {
+		//log_say(Players[i].searchKey, "unk_70 - sea?", PlayersData[i].unk_70, 0, 0);
+		//log_say(Players[i].searchKey, "unk_71", PlayersData[i].unk_72, 0, 0);
+		log_say(Players[i].searchKey, " ? unk_26 | earnedTechsSaved | techRanking ? ", PlayersData[i].unk_26, PlayersData[i].earnedTechsSaved, PlayersData[i].techRanking);
+
+		//log_say(Players[i].searchKey, "unk_48 - base support sum", PlayersData[i].unk_48, 0, 0);
+		//log_say(Players[i].searchKey, "? unk_49 - 4xecon dmg sum ? ", PlayersData[i].unk_49, 0, 0);
+		//log_say(Players[i].searchKey, "unk_48 - support", PlayersData[i].unk_48, 0, 0);
+	}
+	*/
+	/*
+	for (int i = 0; i < MaxBaseNum; i++) {
+		char szTemp[512];
+		szTemp[0] = 0;
+		strcat_s(szTemp, " - ");
+		strcat_s(szTemp, Players[Base[i].factionIDCurrent].nounFaction);
+		strcat_s(szTemp, " > unk3 > ");
+		log_say(Base[i].nameString, szTemp, Base[i].unk3, 0, 0);
+		/*
+		szTemp[0] = 0;
+		strcat_s(szTemp, " - ");
+		strcat_s(szTemp, Players[Base[i].factionIDCurrent].nounFaction);
+		strcat_s(szTemp, " - unk4 - ");
+		log_say(Base[i].nameString, szTemp, Base[i].unk4, 0, 0);
+		szTemp[0] = 0;
+		strcat_s(szTemp, " - ");
+		strcat_s(szTemp, Players[Base[i].factionIDCurrent].nounFaction);
+		strcat_s(szTemp, " - unk5 - ");
+		log_say(Base[i].nameString, szTemp, Base[i].unk5, 0, 0);
+		*/
+	//}
+	
+
+	//
+
+	log_say("End test", 0, 0, 0);
+	log_set_state(false);
+	/*
 	for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
 		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
 			uint8_t att = abstract_at(x, y);
@@ -161,10 +461,9 @@ int __cdecl tester() {
 			//	log_say("BIT_UNK_40000000: ", x, y, bit);
 			//}
 			*/
-		}
-	}
-	log_say("End test", 0, 0, 0);
-	log_set_state(false);
+		//}
+	//}
+	
 	/*
 	for (int y = -10; y < (int)*MapVerticalBounds; y++) {
 		for (int x = -1; x < (int)*MapHorizontalBounds; x++) {
@@ -196,4 +495,61 @@ int __cdecl tester() {
 	}
 	*/
 	return 0;
+}
+
+
+// 005FCA30
+BOOL __cdecl do_non_input() {
+	do_video();
+	check_net();
+	do_net();
+	MSG Msg;
+	/*
+	DWORD *msgTime = &Msg.time;
+	for (int i = 3; i > 0; i--) {
+		*msgTime = -1;
+		msgTime += 7;
+	}
+	*/
+	if (!PeekMessage(&Msg, 0, WM_NULL, WM_INPUT, PM_NOREMOVE) 
+		|| !PeekMessage(&Msg, 0, WM_UNICHAR, WM_KEYDOWN | WM_INPUT, PM_NOREMOVE)
+		|| !PeekMessage(&Msg, 0, WM_MOUSELAST, 0xFFFF, PM_NOREMOVE)) {
+		return false;
+	}
+	/*
+	DWORD *msgTime2 = &Msg.time;
+	for (uint32_t i = 1; i < 4; i++) {
+
+	}
+	*/
+	// PeekMessage
+	TranslateMessage(&Msg);
+	DispatchMessage(&Msg);
+	return true;
+}
+
+// 005FCB20
+void __cdecl do_all_non_input() {
+	do {
+		*MsgStatus = 32;
+	} while (do_non_input());
+	*MsgStatus = 0;
+	do_net();
+	check_net();
+}
+
+BOOL __cdecl do_draw() {
+	return false;
+}
+
+void __cdecl do_all_draws() {
+	//
+}
+
+BOOL __cdecl do_keyboard() {
+	return false;
+}
+
+void __cdecl do_all_keyboard() {
+	//
 }

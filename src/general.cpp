@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -942,7 +942,7 @@ Original Offset: 00628AF0
 Return Value: Position of character or null if not found.
 Status: Complete
 */
-const char *__cdecl memrchr(const char *start, const char *end, char value) {
+const char *__cdecl memrchr(LPCSTR start, LPCSTR end, char value) {
 	if (!start || !end || start == end) {
 		return 0;
 	}
@@ -965,4 +965,58 @@ int __cdecl quick_root(int input) {
 		temp = (temp + input / temp) >> 1;
 	} while (temp < root);
 	return root;
+}
+
+/*
+Purpose: Calculate offset & bitmask for input.
+Original Offset: 0050BA00
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl bitmask(uint32_t input, uint32_t *offset, uint32_t *mask) {
+	*offset = input / 8;
+	*mask = 1 << (input & 7);
+}
+
+/*
+Purpose: Calculate a basic XOR checksum for input data.
+Original Offset: 00539090
+Return Value: checksum
+Status: Complete
+*/
+uint8_t __cdecl checksum(uint8_t *buffer, uint32_t size, uint8_t seed) {
+	while (size--) seed ^= *buffer++;
+	return seed;
+}
+
+/*
+Purpose: Calculate a basic XOR checksum for a password string.
+Original Offset: 005390C0
+Return Value: checksum
+Status: Complete
+*/
+uint32_t __cdecl checksum_password(LPCSTR password) {
+	if (!strlen(password)) {
+		return 0;
+	}
+	char buffer[256];
+	strcpy_s(buffer, 256, password);
+	CharUpper(buffer); // incorrect results for Turkish/Azerbaijani 'i'
+	uint8_t chksum = 0;
+	uint32_t len = strlen(buffer);
+	if (len) {
+		chksum = checksum((LPBYTE)&buffer, len, 0);
+	}
+	return chksum + 1;
+}
+
+/*
+Purpose: Calculate a random value within provided bounds. The 2nd string parameter is unused. It
+         was possibly meant to have the random value append to it. Left in for compatibility.
+Original Offset: 00579770
+Return Value: Randomized value
+Status: Complete
+*/
+uint32_t __cdecl rnd(int bounds, LPSTR input) {
+	return (bounds - 1 > 0) ? rand() % bounds : 0;
 }

@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,8 +61,12 @@ OPENSMACX_API void __cdecl my_srand(uint32_t reseed);
 OPENSMACX_API void __cdecl swap(int *var1, int *var2);
 OPENSMACX_API void __cdecl swap(uint8_t *var1, uint8_t *var2);
 OPENSMACX_API int __cdecl fixed_div(int numer, int denom);
-OPENSMACX_API const char *__cdecl memrchr(const char *start, const char *end, char value);
+OPENSMACX_API const char *__cdecl memrchr(LPCSTR start, LPCSTR end, char value);
 OPENSMACX_API int __cdecl quick_root(int input);
+OPENSMACX_API void __cdecl bitmask(uint32_t input, uint32_t *offset, uint32_t *mask);
+OPENSMACX_API uint8_t __cdecl checksum(uint8_t *input, uint32_t length, uint8_t seed);
+OPENSMACX_API uint32_t __cdecl checksum_password(LPCSTR password);
+OPENSMACX_API uint32_t __cdecl rnd(int bounds, LPSTR input);
 
 // WIP
 int filefind_init(LPCSTR path, BOOL isComplete); 

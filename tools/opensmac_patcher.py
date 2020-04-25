@@ -44,7 +44,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
 	bin_app = mmap.mmap(f.fileno(), 0)
-	# next: 315
+	# next: 349
 	#
 	
 	# ALPHA
@@ -165,14 +165,42 @@ with open(exe_path, "r+b") as f:
 	bin_app.write(struct.pack("<L", addr+4*286))
 	bin_app.seek(0x000E4090) # ?name_base@@YAXHPADHH@Z
 	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*305))	
+	bin_app.write(struct.pack("<L", addr+4*305))
+	bin_app.seek(0x001AC680) # ?ascending@@YAHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*330))
+	bin_app.seek(0x001AC630) # ?transcending@@YAHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*331))
+	bin_app.seek(0x001AC060) # ?is_objective@@YAHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*334))
+	bin_app.seek(0x000F6510) # ?fac_maint@@YAHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*335))
+	bin_app.seek(0x000E4900) # ?has_fac_announced@@YAHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*338))
+	bin_app.seek(0x000E4960) # ?set_fac_announced@@YAXHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*339))
+	bin_app.seek(0x0010C4B0) # ?steal_energy@@YAHI@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*343))
 	# BASEBUTTON
 	bin_app.seek(0x00207550) # ?set_bubble_text@BaseButton@@QAEHPBD@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*242))
 	bin_app.seek(0x002074E0) # ?set_name@BaseButton@@QAEHPBD@Z
 	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*243))	
+	bin_app.write(struct.pack("<L", addr+4*243))
+	# COUNCIL
+	bin_app.seek(0x0012AE20) # ?eligible@@YAHI@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*325))
+	bin_app.seek(0x0012AD30) # ?council_votes@@YAII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*326))	
 	# FACTION
 	bin_app.seek(0x001B4730) # ?society_avail@@YAHHHH@Z
 	patch_call_bytes(bin_app)
@@ -183,6 +211,15 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x0010B930) # ?get_noun@@YAPADH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*290))
+	bin_app.seek(0x00139E40) # ?climactic_battle@@YAHXZ
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*332))
+	bin_app.seek(0x00139D40) # ?aah_ooga@@YAIHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*333))
+	bin_app.seek(0x001A96D0) # ?see_map_check@@YAXXZ
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*340))
 	# FILEMAP
 	bin_app.seek(0x00228380) # ??0Filemap@@QAE@XZ
 	patch_call_bytes(bin_app)
@@ -251,7 +288,10 @@ with open(exe_path, "r+b") as f:
 	bin_app.write(struct.pack("<L", addr+4*279))
 	bin_app.seek(0x001C89B0) # ?say_year@@YAXPAD@Z
 	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*280))	
+	bin_app.write(struct.pack("<L", addr+4*280))
+	bin_app.seek(0x001B38D0) # ?clear_scenario@@YAXXZ
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*324))
 	# GENERAL
 	bin_app.seek(0x00200780) # ?purge_trailing@@YAXPAD@Z
 	patch_call_bytes(bin_app)
@@ -328,27 +368,36 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x0010BA30) # ?bit_count@@YAII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*144))
-	bin_app.seek(0x00228AB0) # "?bit_count_signed@@YAIH@Z"
+	bin_app.seek(0x00228AB0) # ?bit_count_signed@@YAIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*272))
-	bin_app.seek(0x00138FB0) # "?my_srand@@YAXI@Z"
+	bin_app.seek(0x00138FB0) # ?my_srand@@YAXI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*273))
-	bin_app.seek(0x00228A50) # "?swap@@YAXPAH0@Z"
+	bin_app.seek(0x00228A50) # ?swap@@YAXPAH0@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*274))
-	bin_app.seek(0x00228A80) # "?swap@@YAXPAE0@Z"
+	bin_app.seek(0x00228A80) # ?swap@@YAXPAE0@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*275))
-	bin_app.seek(0x00228AD0) # "?fixed_div@@YAHHH@Z"
+	bin_app.seek(0x00228AD0) # ?fixed_div@@YAHHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*276))
-	bin_app.seek(0x00228AF0) # "?memrchr@@YAPBDPBD0D@Z"
+	bin_app.seek(0x00228AF0) # ?memrchr@@YAPBDPBD0D@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*277))
-	bin_app.seek(0x002290E0) # "?quick_root@@YAHH@Z"
+	bin_app.seek(0x002290E0) # ?quick_root@@YAHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*278))
+	bin_app.seek(0x00139090) # ?checksum@@YAEPAEIE@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*341))
+	bin_app.seek(0x001390C0) # ?checksum_password@@YAIPBD@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*342))
+	bin_app.seek(0x00179770) # ?rnd@@YAIHPAD@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*348))	
 	# HEAP
 	bin_app.seek(0x001D4560) # ??0Heap@@QAE@XZ
 	patch_call_bytes(bin_app)
@@ -493,7 +542,7 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x00132B70) # ?rebuild_base_bits@@YAXXZ
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*246))
-	bin_app.seek(0x001798E0) # ?anything_at@@YAHHH@Z
+	bin_app.seek(0x001798E0) # ?anything_at@@YAHII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*168))
 	bin_app.seek(0x000E49D0) # ?is_coast@@YAHHHH@Z
@@ -556,6 +605,28 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x00191230) # ?abstract_set@@YAXHHE@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*321))
+	bin_app.seek(0x001591C0) # ?bad_reg@@YAHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*329))
+	bin_app.seek(0x001919C0) # ?elev_at@@YAHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*344))
+	bin_app.seek(0x001918A0) # ?alt_natural@@YAIHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*345))
+	bin_app.seek(0x00179840) # ?is_known@@YAHIII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*346))	
+	bin_app.seek(0x001798A0) # ?base_who@@YAHII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*347))		
+	# PATH
+	bin_app.seek(0x0019A220) # ?init@Path@@QAEXXZ
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*322))
+	bin_app.seek(0x0019A2D0) # ?shutdown@Path@@QAEXXZ
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*323))
 	# RANDOM
 	bin_app.seek(0x00225730) # ??0Random@@QAE@XZ
 	patch_call_bytes(bin_app)
@@ -683,6 +754,15 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001B9C40) # ?say_tech@@YAXPADHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*296))
+	bin_app.seek(0x001BCB60) # ?tech_is_preq@@YAHHHI@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*327))
+	bin_app.seek(0x001BAE60) # ?tech_effects@@YAXH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*328))
+	bin_app.seek(0x001BDC10) # ?tech_ai@@YAHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*337))	
 	# TERRAFORMING
 	bin_app.seek(0x001BAB40) # ?terrain_avail@@YAHHHH@Z
 	patch_call_bytes(bin_app)
@@ -923,7 +1003,7 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x0017DAA0) # ?say_stats@@YAXPADH0@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*216))
-	bin_app.seek(0x0017EFA0) # ?best_reactor@@YAHH@Z
+	bin_app.seek(0x0017EFA0) # ?best_reactor@@YAIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*248))
 	bin_app.seek(0x0017EFF0) # ?pick_chassis@@YAHHHH@Z
@@ -1034,6 +1114,9 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001B8E10) # ?stack_fix@@YAHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*304))
-	
+	bin_app.seek(0x00160AD0) # ?go_to@@YAXHDHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*336))	
+	#
 	print("Functions redirected: %d" % count)
 	print("Done!")

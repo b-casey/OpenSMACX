@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 #include <string>
 #include "game.h"
 #include "base.h"
-#include "faction.h"
+#include "council.h"
 #include "general.h"
 #include "map.h"
 #include "strings.h"
@@ -796,13 +796,13 @@ BOOL __cdecl read_units() {
 				// There was a pointless explicit check for BSC_BATTLE_OGRE_MK1 to set reactor to 1
 				// The parameters set by check are no different than default
 				case BSC_BATTLE_OGRE_MK2:
-					reactorID = 2;
+					reactorID = RECT_FUSION;
 					break;
 				case BSC_BATTLE_OGRE_MK3:
-					reactorID = 3;
+					reactorID = RECT_QUANTUM;
 					break;
 				default:
-					reactorID = 1;
+					reactorID = RECT_FISSION;
 					break;
 			}
 		}

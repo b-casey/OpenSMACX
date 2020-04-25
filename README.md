@@ -9,6 +9,21 @@ Tested with CodeBlocks using GCC 8.1.0 compiler. Added project file (cbp) courte
 The patcher script found under tools is compatible with the latest GOG version as well as the most
 recent version of my unofficial patch. Cursory testing shows it is compatible with PRACX.
 
+You can follow development progress, discuss ideas or issues here:
+https://alphacentauri2.info/index.php?board=23.0
+
+v0.2.2
+* Fixed a bug under certain conditions that the end game function to determine whether a faction is
+  nearing a diplomatic win (Supreme Leader) would return incorrect results. The function aah_ooga() 
+  is called with the 2nd parameter set to -1 in certain instances. The original code would then 
+  attempt to use this value to check the pact status within the player_data structure of the 1st 
+  faction parameter. In these instances, it would actually be trying to do the diplomacy check 
+  against tutorialMoreBases value. There was a check to skip the pact check if the 2nd parameter 
+  was 0.  The fix now accepts -1 or 0 to skip the pact check.
+* Various clean up and optimization of existing code.
+* Functions across every game related area with focus on Map.
+* Decompiled and redirected function count: 349
+
 v0.2.1
 * Some additional map functions to get ready for working on Path class.
 * Miscellaneous clean up.

@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,15 +21,19 @@
   * Game related objects, variables and functions.
   */
 
-enum game_rules_general_set1_bitfield {
+enum game_state_bitfield {
+	TGL_IS_SCENARIO = 0x10,
 	TGL_SCENARIO_CHEATED_FLAG = 0x20,
 	TGL_SCENARIO_EDITOR = 0x40,
 	TGL_OMNISCIENT_VIEW = 0x80,
 	TGL_DEBUG_MODE = 0x1000,
+	VICTORY_CONQUER = 0x2000,
 	SCN_VICT_TERRITORY_COUNT_OBJ = 0x8000,
 	SCN_VICT_ALL_ARTIFACTS_OBJ_UNIT = 0x40000,
 	SCN_VICT_HIGHEST_AC_SCORE_WINS = 0x80000,
 	TGL_PERIHELION_ACTIVE = 0x100000,
+	VICTORY_DIPLOMATIC = 0x200000,
+	VICTORY_ECONOMIC = 0x400000,
 	RAND_FAC_LEADER_PERSONALITIES = 0x800000,
 	RAND_FAC_LEADER_SOCIAL_AGENDA = 0x1000000,
 	SCN_VICT_TERRAIN_ENH_COUNT_OBJ = 0x2000000,
@@ -39,7 +43,7 @@ enum game_rules_general_set1_bitfield {
 	SCN_VICT_CREDITS_COUNT_OBJ = 0x80000000,
 };
 
-enum game_rules_general_set2_bitfield {
+enum game_rules_bitfield {
 	DO_OR_DIE = 0x1,
 	VICTORY_TOTAL_WAR = 0x2,
 	VICTORY_MINE_ALL_MINE = 0x4,
@@ -67,6 +71,7 @@ enum game_rules_general_set2_bitfield {
 	SCENRULE_FORCE_CURRENT_DIFF_LEVEL = 0x1000000,
 	SCENRULE_NO_TECH_TRADING = 0x2000000,
 	SCENRULE_NO_TECH_ADVANCES = 0x4000000,
+	TGL_EDITOR_ONLY_MODE = 0x8000000,
 	SCN_VICT_OBJ_UNITS_REACH_FRIEND_OBJ_BASE = 0x8000000,
 	SCN_VICT_OBJ_UNITS_REACH_FRIEND_HQ_BASE = 0x10000000,
 	SCN_VICT_ALL_BASE_COUNT_OBJ = 0x20000000,
@@ -84,14 +89,24 @@ enum game_difficulty_level {
 };
 
 extern BOOL *SMACX_Enabled;
+extern uint32_t *GameState; // bitfield
 extern uint32_t *GameRules; // bitfield
-extern uint32_t *GameRules2; // bitfield
 extern int *DiffLevelCurrent;
 extern int *TurnCurrentNum;
+extern uint32_t *ObjectiveReqVictory;
+extern uint32_t *ObjectivesSuddenDeathVictory;
+extern uint32_t *ObjectiveAchievePts;
+extern uint32_t *VictoryAchieveBonusPts;
 extern uint32_t *MissionYearCurrent;
 extern uint32_t *StartingMissionYear;
 extern uint32_t *EndingMissionYear;
 extern uint32_t *TectonicDetonationCount;
 
+extern int *SunspotDuration;
+extern uint32_t *MountPlanetXCoord;
+extern uint32_t *MountPlanetYCoord;
+extern int *DustCloudDuration;
+
+OPENSMACX_API void __cdecl clear_scenario();
 OPENSMACX_API uint32_t __cdecl game_year(int turn);
 OPENSMACX_API void __cdecl say_year(LPSTR output);

@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include "game.h"
 #include "random.h"
 #include "veh.h"
+#include "log.h"
 
 uint32_t *MapHorizontalBounds = (uint32_t *)0x00949870;
 uint32_t *MapVerticalBounds = (uint32_t *)0x00949874;
@@ -49,8 +50,10 @@ LPSTR *MapFilePath = (LPSTR *)0x0094A2BC;
 map **Map = (map **)0x0094A30C;
 uint8_t **MapAbstract = (uint8_t **)0x0094A310;
 
+continent *Continents = (continent *)0x009AA730; // [128]
 rules_natural *Natural = (rules_natural *)0x0094ADE0;
 uint32_t *MapHorizontal = (uint32_t *)0x0068FAF0;
+uint32_t *AltNatural = (uint32_t *)0x0068FB4C;
 LPCSTR MapExtension = "MP";
 
 /*
@@ -96,10 +99,10 @@ int __cdecl whose_territory(int factionID, int xCoord, int yCoord, int *baseID, 
 		return -1; // no owner
 	}
 	if (factionID != owner) {
-		if (!ignoreComm && !(*GameRules & TGL_OMNISCIENT_VIEW)
+		if (!ignoreComm && !(*GameState & TGL_OMNISCIENT_VIEW)
 			&& (PlayersData[factionID].diploStatus[owner] 
-				& (DSTATE_COMMLINK | DSTATE_UNK_0x8000000)) 
-			!= (DSTATE_COMMLINK | DSTATE_UNK_0x8000000)) {
+				& (DSTATUS_COMMLINK | DSTATUS_UNK_0x8000000)) 
+			!= (DSTATUS_COMMLINK | DSTATUS_UNK_0x8000000)) {
 			return -1; // owner unknown to faction
 		}
 		if (baseID) {
@@ -120,10 +123,32 @@ int __cdecl base_territory(int factionID, int xCoord, int yCoord) {
 	int owner = whose_territory(factionID, xCoord, yCoord, &baseID, false);
 	if (owner >= 0 && owner != factionID && 
 		(FactionCurrentBitfield[0] & (1 << factionID) || FactionCurrentBitfield[0] & (1 << owner)) 
-		&& !(PlayersData[factionID].diploStatus[owner] & DSTATE_VENDETTA)) {
+		&& !(PlayersData[factionID].diploStatus[owner] & DSTATUS_VENDETTA)) {
 		return baseID;
 	}
 	return -1;
+}
+
+/*
+Purpose: For the specified tile, calculate the quality of the terrain.
+Original Offset: 004ECB90
+Return Value: Quality of terrain, lower is better (0-2)
+Status: Complete
+*/
+uint32_t __cdecl crappy(int xCoord, int yCoord) {
+	uint32_t poorQuality = 0;
+	uint32_t rainfall = map_loc(xCoord, yCoord)->climate & (RAINFALL_MOIST | RAINFALL_RAINY);
+	if (!rainfall) {
+		poorQuality = 1; // neither moist or rainy
+	}
+	uint32_t rocky = rocky_at(xCoord, yCoord);
+	if (rocky == TERRAIN_ROCKY) {
+		poorQuality++; // rocky
+	}
+	else if (rocky == TERRAIN_FLAT && rainfall < RAINFALL_RAINY) {
+		poorQuality++; // flat, moist or arid
+	}
+	return poorQuality;
 }
 
 /*
@@ -147,6 +172,283 @@ int __cdecl x_dist(int xCoord, int yCoord) {
 }
 
 /*
+Purpose: Check whether there is a path between two regions. Seems to only take into account land
+		 destinations. TODO: Revisit in the future once Continent/Path is more defined.
+Original Offset: 0050DDC0
+Return Value: Is there path? true/false
+Status: Complete
+*/
+BOOL __cdecl sea_coast(uint32_t regionDst, uint32_t regionSrc) {
+	uint32_t offset, mask;
+	bitmask(regionSrc & RegionBounds, &offset, &mask);
+	return (Continents[regionDst].unk6[offset] & mask) != 0;
+}
+
+/*
+Purpose: Count number of paths from source region. Seems to only take into account land source
+		 and destination ranges. TODO: Revisit in the future once Continent/Path is more defined.
+Original Offset: 0050DE00
+Return Value: Sea coasts valid path count
+Status: Complete
+*/
+uint32_t __cdecl sea_coasts(uint32_t regionSrc) {
+	uint32_t seaCoastCount = 0;
+	for (int i = 1; i < RegionBounds; i++) {
+		if (sea_coast(i, regionSrc)) {
+			seaCoastCount++;
+		}
+	}
+	return seaCoastCount;
+}
+
+/*
+Purpose: Check to see whether base is within a one tile radius of a sea tile with specified region.
+		 If you pass a land region (<63) as the 2nd parameter, it is possible to get collision
+		 behavior due to region bounding. TODO: Revisit in the future to see whether to remove them.
+Original Offset: 0050DE50
+Return Value: Is base connected to specified sea region? true/false
+Status: Complete
+*/
+BOOL __cdecl base_on_sea(uint32_t baseID, uint32_t regionSea) {
+	regionSea &= RegionBounds;
+	if (regionSea >= RegionBounds) { // change to equals since already bounded?
+		return false; // skips poles (land or ocean)
+	}
+	int xCoord = Base[baseID].xCoord, yCoord = Base[baseID].yCoord;
+	for (uint32_t i = 0; i < 8; i++) {
+		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
+		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
+			&& xRadius < (int)*MapHorizontalBounds && is_ocean(xRadius, yRadius)
+			&& (region_at(xRadius, yRadius) & RegionBounds) == regionSea) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/*
+Purpose: Determine the ocean region for coastal bases. There is an issue if a base is connected to
+         more than one ocean region, it will only return the last checked region based on the base 
+		 radius clockwise order. This could cause the AI to make incorrect calculations for what to
+		 prioritize building at the base. An example could be a base that is connected to a small
+		 water body as well as the much larger ocean. Depending on where these bodies of water are 
+		 positioned, the AI might make assumptions not to prioritize building naval units. Also,
+		 the Continents compare logic isn't used by anything. This might be the root cause of
+		 outlined bug. TODO: Revisit in the future once more is known about Continent structure.
+Original Offset: 0050DF30
+Return Value: Ocean region or -1 if landlocked
+Status: Complete
+*/
+int __cdecl base_coast(uint32_t baseID) {
+	int region = -1;
+	int val = 0;
+	int xCoord = Base[baseID].xCoord, yCoord = Base[baseID].yCoord;
+	for (uint32_t i = 0; i < 8; i++) { // is_coast()
+		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
+		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
+			&& xRadius < (int)*MapHorizontalBounds && is_ocean(xRadius, yRadius)) {
+			region = region_at(xRadius, yRadius);
+			int compare = (region >= 127) ? 1 : Continents[region].unk1;
+			if (compare >= val) {
+				val = compare; // value isn't used?
+			}
+			i += (2 - (i & 1)); // skips adjacent tiles
+		}
+	}
+	return region;
+}
+
+/*
+Purpose: Check to see if a port base shares a common body of water with destination coastal region.
+Original Offset: 0050E030
+Return Value: Is port and coastal region accessible by water to each other? true/false
+Status: Complete
+*/
+BOOL __cdecl port_to_coast(uint32_t baseID, uint32_t region) {
+	int xCoord = Base[baseID].xCoord, yCoord = Base[baseID].yCoord;
+	if (region_at(xCoord, yCoord) == region) {
+		return true;
+	}
+	for (uint32_t i = 0; i < 8; i++) { // is_coast()
+		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
+		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
+			&& xRadius < (int)*MapHorizontalBounds && is_ocean(xRadius, yRadius)) {
+			if (sea_coast(region, region_at(xRadius, yRadius))) {
+				return true;
+			}
+			i += (2 - (i & 1)); // skips adjacent tiles
+		}
+	}
+	return false;
+}
+
+/*
+Purpose: Check to see if two port bases share a common body of water determined by region.
+Original Offset: 0050E160
+Return Value: Are both ports accessible by water to each other? true/false
+Status: Complete
+*/
+BOOL __cdecl port_to_port(uint32_t baseIDSrc, uint32_t baseIDDst) {
+	int xCoord = Base[baseIDSrc].xCoord, yCoord = Base[baseIDSrc].yCoord, lastRegion = -1;
+	for (uint32_t i = 0; i < 8; i++) { // is_coast()
+		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
+		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
+			&& xRadius < (int)*MapHorizontalBounds && is_ocean(xRadius, yRadius)) {
+			int regionSrc = region_at(xRadius, yRadius);
+			if (regionSrc != lastRegion) { // reduce redundant checks especially sea bases
+				lastRegion = regionSrc;
+				if (base_on_sea(baseIDDst, regionSrc)) {
+					return true;
+				}
+			}
+		}
+
+	}
+	return false;
+}
+
+/*
+Purpose: Determine if a base has access to ports or more than one coastal region. This helps 
+         prioritize whether naval transports should be built.
+Original Offset: 0050E310
+Return Value: Should base build naval transports? true/false
+Status: Complete - test
+*/
+BOOL __cdecl transport_base(uint32_t baseID) {
+	int region = base_coast(baseID);
+	if (region < 0) {
+		return false; // landlocked
+	}
+	if (is_ocean(Base[baseID].xCoord, Base[baseID].yCoord)) {
+		return true; // ocean base
+	}
+	return (sea_coasts(region) > 1);
+}
+
+/*
+Purpose: Determine if there are other faction's ports in the vicinity of the specified base.
+Original Offset: 0050E3C0
+Return Value: Is base considered naval? true/false
+Status: Complete - test
+*/
+BOOL __cdecl naval_base(uint32_t baseID) {
+	if (base_coast(baseID) < 0 || *BaseCurrentCount <= 0) {
+		return false; // landlocked base or no bases
+	}
+	uint32_t factionID = Base[baseID].factionIDCurrent;
+	for (int i = 0; i < *BaseCurrentCount; i++) {
+		if (factionID != Base[i].factionIDCurrent) {
+			if (port_to_port(baseID, i)) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+/*
+Purpose: Determine if specified veh can set up a convoy route with specified base.
+Original Offset: 0050E5C0
+Return Value: Is convoy route possible? true/false
+Status: Complete - test
+*/
+BOOL __cdecl convoy(uint32_t vehID, uint32_t baseID) {
+	int homeBaseID = Veh[vehID].homeBaseID;
+	if (homeBaseID < 0 || baseID == (uint32_t)homeBaseID) {
+		return false;
+	}
+	uint32_t triad = Chassis[VehPrototype[Veh[vehID].protoID].chassisID].triad;
+	if (triad == TRIAD_AIR) {
+		return true; // air
+	}
+	uint32_t regionBase = region_at(Base[baseID].xCoord, Base[baseID].yCoord);
+	if (region_at(Base[homeBaseID].xCoord, Base[homeBaseID].yCoord) == regionBase 
+		&& ((regionBase >= 64) == (triad == TRIAD_SEA))) {
+		return true; // sea or ground
+	}
+	if (triad) {
+		return port_to_port(baseID, homeBaseID); // sea
+	}
+	return false;
+}
+
+/*
+Purpose: Validate region bounds. Bad regions include: 0, 63, 64, 127, 128.
+Original Offset: 005591C0
+Return Value: Is region bad? true/false
+Status: Complete
+*/
+BOOL __cdecl bad_reg(int region) {
+	return (region & RegionBounds) == RegionBounds || !(region & RegionBounds);
+}
+
+/*
+Purpose: Check whether specified veh can reach provided coordinates.
+Original Offset: 0056B320
+Return Value: Can veh reach coordinates? true/false
+Status: Complete - test
+*/
+BOOL __cdecl get_there(uint32_t vehID, int xCoordDst, int yCoordDst) {
+	uint32_t triad = Chassis[VehPrototype[Veh[vehID].protoID].chassisID].triad;
+	if (triad == TRIAD_AIR) {
+		return true;
+	}
+	int xCoordSrc = Veh[vehID].xCoord, yCoordSrc = Veh[vehID].yCoord;
+	uint32_t regionSrc = region_at(xCoordSrc, yCoordSrc),
+		regionDst = region_at(xCoordDst, yCoordDst);
+	if (!triad) { // TRIAD_LAND
+		return regionSrc == regionDst;
+	}
+	int baseIDSrc = base_at(xCoordSrc, yCoordSrc), baseIDDst = base_at(xCoordDst, yCoordDst);
+	if (baseIDDst >= 0) {
+		if (baseIDSrc < 0) {
+			return base_on_sea(baseIDDst, regionSrc);
+		}
+		else {
+			return port_to_port(baseIDSrc, baseIDDst);
+		}
+	}
+	if (is_ocean(xCoordDst, yCoordDst)) {
+		if (baseIDSrc < 0) {
+			return regionSrc == regionDst;
+		}
+		else {
+			return base_on_sea(baseIDSrc, regionDst);
+		}
+	}
+	if (baseIDDst < 0) {
+		return sea_coast(regionDst, regionSrc);
+	}
+	else {
+		return port_to_coast(baseIDSrc, regionDst);
+	}
+}
+
+/*
+Purpose: Determine whether tile is coast or border. ?
+Original Offset: 0056B480
+Return Value: Is border? true ; Coast:false
+Status: Complete - test
+*/
+BOOL __cdecl coast_or_border(int xCoordPtA, int yCoordPtA, int xCoordPtB, int yCoordPtB,
+	int factionID) {
+	if (factionID != whose_territory(factionID, xCoordPtA, yCoordPtA, NULL, false)) {
+		return false;
+	}
+	uint32_t region = region_at(xCoordPtB, yCoordPtB);
+	for (uint32_t i = 1; i < 9; i++) {
+		int xRadius = xrange(xCoordPtA + xRadiusOffset[i]), yRadius = yCoordPtA + yRadiusOffset[i];
+		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
+			&& xRadius < (int)*MapHorizontalBounds && is_ocean(xRadius, yRadius)
+			&& (whose_territory(factionID, xRadius, yRadius, NULL, false) != factionID 
+				|| region_at(xRadius, yRadius) != region)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/*
 Purpose: Get map tile based on coords. Optimized out of original code, helps reduce code complexity.
 Original Offset: n/a
 Return Value: Pointer to map tile
@@ -163,7 +465,7 @@ Return Value: Temperature
 Status: Complete
 */
 uint32_t __cdecl temp_at(int xCoord, int yCoord) {
-	return map_loc(xCoord, yCoord)->val1 & 7;
+	return map_loc(xCoord, yCoord)->climate & 7;
 }
 
 /*
@@ -174,32 +476,51 @@ Status: Complete
 */
 void __cdecl temp_set(int xCoord, int yCoord, uint8_t temperature) {
 	map *tile = map_loc(xCoord, yCoord);
-	tile->val1 &= 0xF8;
-	tile->val1 |= temperature & 7;
+	tile->climate &= 0xF8;
+	tile->climate |= temperature & 7;
 }
 
 /*
-Purpose: Get climate of tile at coordinates.
-Original Offset: n/a
-Return Value: Climate
-Status: Complete
-*/
-uint32_t __cdecl climate_at(int xCoord, int yCoord) {
-	return (map_loc(xCoord, yCoord)->val1 >> 3) & 3;
-}
-
-/*
-Purpose: Set climate of tile at coordinates.
+Purpose: Set climate rainfall of tile at coordinates.
 Original Offset: 00591A80
 Return Value: n/a
 Status: Complete
 */
-void __cdecl climate_set(int xCoord, int yCoord, uint8_t climate) {
+void __cdecl climate_set(int xCoord, int yCoord, uint8_t rainfall) {
 	map *tile = map_loc(xCoord, yCoord);
-	tile->val1 &= 0xE7;
-	tile->val1 |= (climate & 3) << 3;
+	tile->climate &= 0xE7;
+	tile->climate |= (rainfall & 3) << 3;
 	tile->bit2 |= 0x400000; // TODO: identify value
 	*UnkBitfield1 |= 1; // TODO: identify global + value
+}
+
+/*
+Purpose: Calculate elevation for tile at coordinates.
+Original Offset: 005919C0
+Return Value: Elevation (bounds: -3000 to 3500)
+Status: Complete
+*/
+int __cdecl elev_at(int xCoord, int yCoord) {
+	uint32_t contour = alt_detail_at(xCoord, yCoord);
+	int elev = 50 * (contour - ElevDetail[3] - *MapSeaLevel);
+	elev += (contour <= ElevDetail[alt_at(xCoord, yCoord)]) ? 10
+		: (xCoord * 113 + yCoord * 217 + *MapSeaLevel * 301) % 50;
+	return range(elev, -3000, 3500);
+}
+
+/*
+Purpose: Calculate natural altitude of tile at coordinates.
+Original Offset: 005918A0
+Return Value: Natural altitude on a scale from 0 (ocean trench) to 6 (mountain tops)
+Status: Complete
+*/
+uint32_t __cdecl alt_natural(int xCoord, int yCoord) {
+	uint32_t contour = alt_detail_at(xCoord, yCoord) - *MapSeaLevel;
+	uint32_t natural = 6;
+	while (contour < AltNatural[natural] && natural) {
+		natural--;
+	}
+	return natural;
 }
 
 /*
@@ -209,7 +530,7 @@ Return Value: Altitude
 Status: Complete
 */
 uint32_t __cdecl alt_at(int xCoord, int yCoord) {
-	return map_loc(xCoord, yCoord)->val1 >> 5;
+	return map_loc(xCoord, yCoord)->climate >> 5;
 }
 
 /*
@@ -219,7 +540,7 @@ Return Value: Altitude
 Status: Complete
 */
 uint32_t __cdecl altitude_at(int xCoord, int yCoord) {
-	return map_loc(xCoord, yCoord)->val1 & 0xE0;
+	return map_loc(xCoord, yCoord)->climate & 0xE0;
 }
 
 /*
@@ -229,7 +550,7 @@ Return Value: Altitude detail
 Status: Complete
 */
 uint32_t __cdecl alt_detail_at(int xCoord, int yCoord) {
-	return map_loc(xCoord, yCoord)->altDetail;
+	return map_loc(xCoord, yCoord)->contour;
 }
 
 /*
@@ -239,7 +560,7 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl alt_put_detail(int xCoord, int yCoord, uint8_t detail) {
-	map_loc(xCoord, yCoord)->altDetail = detail;
+	map_loc(xCoord, yCoord)->contour = detail;
 }
 
 /*
@@ -277,7 +598,7 @@ void __cdecl site_set(int xCoord, int yCoord, int site) {
 }
 
 /*
-Purpose: Get region of tile at coordinates.
+Purpose: Get region of tile at coordinates. 
 Original Offset: 00500220
 Return Value: Region
 Status: Complete
@@ -547,7 +868,7 @@ uint32_t __cdecl bonus_at(int xCoord, int yCoord, int unkVal) {
 	uint32_t alt = alt_at(xCoord, yCoord);
 	BOOL hasRscBonus = bit & BIT_RSC_BONUS;
 	if (!hasRscBonus && (!*MapRandSeed 
-		|| (alt >= ALT_SHORE_LINE && !(*GameRules2 & NO_UNITY_SCATTERING)))) {
+		|| (alt >= ALT_SHORE_LINE && !(*GameRules & NO_UNITY_SCATTERING)))) {
 		return 0;
 	}
 	uint32_t avg = (xCoord + yCoord) >> 1;
@@ -580,7 +901,7 @@ uint32_t __cdecl goody_at(int xCoord, int yCoord) {
 	if (bit & (BIT_SUPPLY_REMOVE | BIT_MONOLITH)) {
 		return 0; // nothing, supply pod already opened or monolith
 	}
-	if (*GameRules2 & NO_UNITY_SCATTERING) {
+	if (*GameRules & NO_UNITY_SCATTERING) {
 		return (bit & (BIT_UNK_4000000|BIT_UNK_8000000)) ? 2 : 0; // ?
 	}
 	if (bit & BIT_SUPPLY_POD) {
@@ -609,8 +930,7 @@ Status: Complete
 BOOL __cdecl is_coast(int xCoord, int yCoord, BOOL isBaseRadius) {
 	uint32_t radius = isBaseRadius ? 21 : 9;
 	for (uint32_t i = 1; i < radius; i++) {
-		int xRadius = xrange(xCoord + xRadiusOffset[i - 1]), 
-			yRadius = yCoord + yRadiusOffset[i - 1];
+		int xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
 		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0 
 			&& xRadius < (int)*MapHorizontalBounds && is_ocean(xRadius, yRadius)) {
 			return true; // modified original that would return i, all calls check return as boolean
@@ -711,16 +1031,44 @@ int __cdecl cursor_dist(int xCoord1, int xCoord2) {
 }
 
 /*
-Purpose: Get owner of tile if there is a Veh or Base in it.
+Purpose: Check whether faction can see tile at specified coordinates.
+Original Offset: 00579840
+Return Value: Is tile visible/known to faction? true/false
+Status: Complete
+*/
+BOOL __cdecl is_known(uint32_t xCoord, uint32_t yCoord, uint32_t factionID) {
+	return (PlayersData[factionID].playerFlags & PFLAG_MAP_REVEALED
+		|| map_loc(xCoord, yCoord)->visibility & (1 << factionID));
+}
+
+/*
+Purpose: Get owner of the tile if a base exists at the specified coordinates.
+Original Offset: 005798A0
+Return Value: Owner/factionID or -1
+Status: Complete
+*/
+int __cdecl base_who(uint32_t xCoord, uint32_t yCoord) {
+	map *tile = map_loc(xCoord, yCoord);
+	if (tile->bit & BIT_BASE_IN_TILE) {
+		uint32_t owner = tile->val2 & 0xF;
+		if (owner < MaxPlayerNum) {
+			return owner;
+		}
+	}
+	return -1;
+}
+
+/*
+Purpose: Get owner of tile if there is a veh or base on it.
 Original Offset: 005798E0
 Return Value: Owner/factionID or -1
 Status: Complete
 */
-int __cdecl anything_at(int xCoord, int yCoord) {
+int __cdecl anything_at(uint32_t xCoord, uint32_t yCoord) {
 	map *tile = map_loc(xCoord, yCoord);
 	if (tile->bit & (BIT_VEH_IN_TILE | BIT_BASE_IN_TILE)) {
 		uint32_t owner = tile->val2 & 0xF;
-		if (owner < 8) {
+		if (owner < MaxPlayerNum) {
 			return owner;
 		}
 	}
@@ -783,8 +1131,8 @@ void __cdecl map_wipe() {
 	*MapLandmarkCount = 0;
 	*MapRandSeed = random(0, 0x7FFF) + 1;
 	for (uint32_t i = 0; i < *MapArea; i++) {
-		(*Map)[i].val1 = ALT_BIT_OCEAN;
-		(*Map)[i].altDetail = 20;
+		(*Map)[i].climate = ALT_BIT_OCEAN;
+		(*Map)[i].contour = 20;
 		(*Map)[i].val2 = 0xF;
 		(*Map)[i].region = 0;
 		(*Map)[i].visibility = 0;
@@ -870,9 +1218,7 @@ int __cdecl is_sensor(int xCoord, int yCoord) {
 		if (!distX || distX == 2) { // removed unnecessary duplicate calculation of distX
 			int distY = abs(yCoord - Base[baseID].yCoord);
 			if (!distY || distY == 2) {
-				uint32_t geoOffset, geoMask;
-				bitmask(FAC_GEOSYNC_SURVEY_POD, &geoOffset, &geoMask);
-				if (Base[baseID].facilitiesPresentTable[geoOffset] & geoMask) {
+				if (has_fac_built(FAC_GEOSYNC_SURVEY_POD, baseID)) {
 					return 2; // Geosynchronous Survey Pod
 				}
 			}
@@ -911,12 +1257,12 @@ Status: Complete
 */
 uint32_t __cdecl zoc_any(int xCoord, int yCoord, int factionID) {
 	for (uint32_t i = 0; i < 8; i++) {
-		int xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
+		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
 		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
 			&& xRadius < (int)*MapHorizontalBounds) {
 			int owner = anything_at(xRadius, yRadius);
 			if (owner >= 0 && owner != factionID 
-				&& !(PlayersData[factionID].diploStatus[owner] & DSTATE_PACT)) {
+				&& !(PlayersData[factionID].diploStatus[owner] & DSTATUS_PACT)) {
 				return owner + 1;
 			}
 		}
@@ -933,12 +1279,12 @@ Status: Complete
 uint32_t __cdecl zoc_veh(int xCoord, int yCoord, int factionID) {
 	uint32_t ret = 0;
 	for (uint32_t i = 0; i < 8; i++) {
-		int xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
+		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
 		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
 			&& xRadius < (int)*MapHorizontalBounds) {
 			int owner = veh_who(xRadius, yRadius);
 			if (owner >= 0 && owner != factionID
-				&& !(PlayersData[factionID].diploStatus[owner] & DSTATE_PACT)) {
+				&& !(PlayersData[factionID].diploStatus[owner] & DSTATUS_PACT)) {
 				owner++;
 				if (ret <= (uint32_t)owner) {
 					ret = owner; // any point in continuing after 1st instance of zoc is found?
@@ -958,12 +1304,12 @@ Status: Complete
 uint32_t __cdecl zoc_sea(int xCoord, int yCoord, int factionID) {
 	BOOL isOcean = is_ocean(xCoord, yCoord);
 	for (uint32_t i = 0; i < 8; i++) {
-		int xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
+		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
 		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
 			&& xRadius < (int)*MapHorizontalBounds) {
 			int owner = veh_who(xRadius, yRadius);
 			if (owner >= 0 && owner != factionID && is_ocean(xRadius, yRadius) == isOcean
-				&& !(PlayersData[factionID].diploStatus[owner] & DSTATE_PACT)) {
+				&& !(PlayersData[factionID].diploStatus[owner] & DSTATUS_PACT)) {
 				for (int vehID = veh_at(xRadius, yRadius); vehID >= 0;
 					vehID = Veh[vehID].nextVehIDStack) {
 					if(Veh[vehID].factionID != factionID 

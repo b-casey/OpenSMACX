@@ -1,6 +1,6 @@
 ﻿/*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,9 @@ typedef FILE *func3(LPCSTR, LPCSTR);
 extern func3 *_fopen;
 typedef void *func4(unsigned int);
 extern func4 *_srand;
+//typedef int func7(void);
+//extern func7 *__rand;
+
 typedef int *func10(void *, size_t, size_t, FILE *);
 extern func10 *_fread;
 extern func10 *_fwrite;
@@ -48,13 +51,24 @@ extern func10 *_fwrite;
 //extern func19 *_fgets;
 
 // other
-typedef void *func5(int);
+typedef void func5(int);
 extern func5 *load_faction_art;
 typedef void *func6(char const *, int(*)(void));
 extern func6 *X_pop;
 typedef void *func9(void);
 extern func9 *fixup_landmarks;
 extern func9 *mapwin_terrain_fixup;
+extern func9 *do_video;
+extern func9 *check_net;
+extern func9 *do_net;
+typedef int func14(int, int);
+extern func14 *base_at;
+
+typedef int func11(int, int, int);
+extern func11 *wants_to_attack;
+typedef int func13(int, int, BOOL);
+extern func13 *tech_val_OG;
+
 
 // Time
 typedef void func30(int);
@@ -67,8 +81,13 @@ extern func30* turn_timer;
 typedef int *func8(LPSTR, LPSTR);
 extern func8 *parse_string_OG;
 //
+typedef void func12(int);
+extern func12 *enemy_capabilities_OG;
 
-
+typedef BOOL func15(uint32_t);
+extern func15 *naval_base_OG;
+typedef BOOL func16(uint32_t, uint32_t, uint32_t);
+extern func16 *get_there_og;
 ///
 extern char1032 *stringTemp;
 extern char256 *ParseStrBuffer;
@@ -91,3 +110,10 @@ extern Filefind *FilefindPath;
 extern MainInterface *MainInterfaceVar;
 
 OPENSMACX_API int __cdecl tester();
+
+OPENSMACX_API BOOL __cdecl do_non_input();
+OPENSMACX_API void __cdecl do_all_non_input();
+OPENSMACX_API BOOL __cdecl do_draw();
+OPENSMACX_API void __cdecl do_all_draws();
+OPENSMACX_API BOOL __cdecl do_keyboard();
+OPENSMACX_API void __cdecl do_all_keyboard();

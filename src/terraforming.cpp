@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,28 +25,6 @@
 rules_terraforming *Terraforming = (rules_terraforming *)0x00691878;
 
 /*
-Purpose: Calculate the amount of poor quality terrain attributes the tile has for farming (?).
-Original Offset: 004ECB90
-Return Value: Quality of terrain, lower is better (0-2)
-Status: Complete
-*/
-uint32_t __cdecl crappy(int xCoord, int yCoord) {
-	uint32_t poorQuality = 0;
-	uint32_t climate = map_loc(xCoord, yCoord)->val1 & (CLIMATE_MOIST | CLIMATE_RAINY);
-	if (!climate) {
-		poorQuality = 1; // neither moist or rainy
-	}
-	uint32_t rocky = rocky_at(xCoord, yCoord);
-	if (rocky == TERRAIN_ROCKY) {
-		poorQuality++; // rocky
-	}
-	else if (rocky == TERRAIN_FLAT && climate < CLIMATE_RAINY) {
-		poorQuality++; // flat, moist or arid
-	}
-	return poorQuality;
-}
-
-/*
 Purpose: Check to see whether provided faction can construct specific terrain enhancement.
 Original Offset: 005BAB40
 Return Value: Is terrain enhancement available to faction? true/false
@@ -55,7 +33,7 @@ Status: Complete
 BOOL __cdecl terrain_avail(int terraformID, BOOL isSea, int factionID) {
 	int preqTech = *(&Terraforming[terraformID].preqTech + isSea);
 	if (preqTech < TechNone || ((terraformID == TERRA_RAISE_LAND || terraformID == TERRA_LOWER_LAND) 
-		&& *GameRules2 & SCENRULE_NO_TERRAFORMING)) {
+		&& *GameRules & SCENRULE_NO_TERRAFORMING)) {
 		return false;
 	}
 	if (terraformID >= TERRA_CONDENSER && terraformID <= TERRA_LEVEL_TERRAIN

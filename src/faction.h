@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,36 +65,64 @@ enum player_rule_flag_bitfield {
 	FLAG_MORALE = 0x8000,
 };
 
-enum diplomacy_state_bitfield {
-	DSTATE_PACT = 0x1,
-	DSTATE_TREATY = 0x2,
-	DSTATE_TRUCE = 0x4,
-	DSTATE_COMMLINK = 0x8,
-	DSTATE_VENDETTA = 0x10,
-	DSTATE_WANT_REVENGE = 0x20,
-	DSTATE_UNK_0x40 = 0x40,
-	DSTATE_UNK_0x80 = 0x80,
-	DSTATE_UNK_0x100 = 0x100,
-	DSTATE_UNK_0x200 = 0x200,
-	DSTATE_SHALL_BETRAY = 0x400,
-	DSTATE_UNK_0x800 = 0x800,
-	DSTATE_HAVE_INFILTRATOR = 0x1000,
-	DSTATE_WANT_TO_TALK = 0x2000,
-	DSTATE_UNK_0x4000 = 0x4000,
-	DSTATE_UNK_0x8000 = 0x8000,
-	DSTATE_UNK_0x10000 = 0x10000,
-	DSTATE_UNK_0x20000 = 0x20000,
-	DSTATE_ATROCITY_VICTIM = 0x40000,
-	DSTATE_UNK_0x80000 = 0x80000,
-	DSTATE_UNK_0x100000 = 0x100000,
-	DSTATE_UNK_0x200000 = 0x200000,
-	DSTATE_UNK_0x400000 = 0x400000,
-	DSTATE_UNK_0x800000 = 0x800000,
-	DSTATE_UNK_0x1000000 = 0x1000000,
-	DSTATE_HAVE_SURRENDERED = 0x2000000,
-	DSTATE_UNK_0x4000000 = 0x4000000,
-	DSTATE_UNK_0x8000000 = 0x8000000,
-	DSTATE_UNK_0x10000000 = 0x10000000,
+enum diplomacy_status_bitfield {
+	DSTATUS_PACT = 0x1,
+	DSTATUS_TREATY = 0x2,
+	DSTATUS_TRUCE = 0x4,
+	DSTATUS_COMMLINK = 0x8,
+	DSTATUS_VENDETTA = 0x10,
+	DSTATUS_WANT_REVENGE = 0x20,
+	DSTATUS_UNK_0x40 = 0x40,
+	DSTATUS_UNK_0x80 = 0x80,
+	DSTATUS_UNK_0x100 = 0x100,
+	DSTATUS_UNK_0x200 = 0x200,
+	DSTATUS_SHALL_BETRAY = 0x400,
+	DSTATUS_UNK_0x800 = 0x800,
+	DSTATUS_HAVE_INFILTRATOR = 0x1000,
+	DSTATUS_WANT_TO_TALK = 0x2000,
+	DSTATUS_UNK_0x4000 = 0x4000,
+	DSTATUS_UNK_0x8000 = 0x8000,
+	DSTATUS_UNK_0x10000 = 0x10000,
+	DSTATUS_UNK_0x20000 = 0x20000,
+	DSTATUS_ATROCITY_VICTIM = 0x40000,
+	DSTATUS_UNK_0x80000 = 0x80000,
+	DSTATUS_UNK_0x100000 = 0x100000,
+	DSTATUS_UNK_0x200000 = 0x200000,
+	DSTATUS_UNK_0x400000 = 0x400000,
+	DSTATUS_UNK_0x800000 = 0x800000,
+	DSTATUS_UNK_0x1000000 = 0x1000000,
+	DSTATUS_HAVE_SURRENDERED = 0x2000000,
+	DSTATUS_UNK_0x4000000 = 0x4000000,
+	DSTATUS_UNK_0x8000000 = 0x8000000,
+	DSTATUS_UNK_0x10000000 = 0x10000000,
+	DSTATUS_UNK_0x20000000 = 0x20000000,
+	DSTATUS_UNK_0x40000000 = 0x40000000,
+	DSTATUS_UNK_0x80000000 = 0x80000000,
+};
+
+enum player_flags_bitfield {
+	PFLAG_MAP_REVEALED = 0x200,
+	PFLAG_STRAT_ATK_ENEMY_HQ = 0x200000,
+	PFLAG_COOP_WITH_HUMAN = 0x400000,
+	PFLAG_TEAM_UP_VS_HUMAN = 0x800000,
+	PLFAG_COMMIT_ATROCIT_WANTONLY = 0x1000000,
+	PFLAG_OBLIT_CAPTURED_BASES = 0x2000000,
+	PFLAG_EMPHASIZE_LAND_POWER = 0x4000000,
+	PFLAG_EMPHASIZE_SEA_POWER = 0x8000000,
+	PFLAG_EMPHASIZE_AIR_POWER = 0x10000000,
+	PFLAG_STRAT_SEARCH_OBJECTIVES = 0x20000000,
+	PFLAG_STRAT_DEF_OBJECTIVES = 0x40000000,
+	PFLAG_STRAT_ATK_OBJECTIVES = 0x80000000,
+};
+
+enum player_flags_extended_bitfield {
+	PFLAGEXT_STRAT_LOTS_COLONY_PODS = 0x1,
+	PFLAGEXT_STRAT_LOTS_TERRAFORMERS = 0x2,
+	PFLAGEXT_STRAT_LOTS_SEA_BASES = 0x4,
+	PFLAGEXT_STRAT_LOTS_PROBE_TEAMS = 0x8,
+	PFLAGEXT_STRAT_LOTS_MISSILES = 0x10,
+	PFLAGEXT_SHAMELESS_BETRAY_HUMANS = 0x20,
+	PFLAGEXT_STRAT_LOTS_ARTILLERY = 0x40,
 };
 
 struct rules_social_effect {
@@ -127,12 +155,6 @@ struct rules_social_category {
 struct rules_might {
 	LPSTR adjStart;
 	LPSTR adj;
-};
-
-struct rules_proposal {
-	LPSTR name;
-	LPSTR description;
-	int preqTech;
 };
 
 struct rules_bonusname {
@@ -201,7 +223,7 @@ struct player {
 };
 
 struct player_data {
-	int diploFlags;
+	uint32_t playerFlags;
 	int ranking;
 	int diffLevel;
 	uint32_t baseNameOffset;
@@ -288,40 +310,40 @@ struct player_data {
 	int SE_ResearchBase;
 	int unk_13;
 	int unk_14;
-	int techCommerceBonus;
-	int unk_16;
+	int techCommerceBonus; // Increases commerce income
+	int turnCommerceIncome;
 	int unk_17;
 	int unk_18;
-	int techFungusNutrient;
-	int techFungusMineral;
-	int techFungusEnergy;
-	int unk_22;
+	int techFungusNutrient; // Increases NUTRIENT production in fungus
+	int techFungusMineral; // Increases MINERALS production in fungus
+	int techFungusEnergy; // Increases ENERGY production in fungus
+	int techFungusUnk; // PSI? Dropped mechanic?
 	int SE_AllocPsych;
 	int SE_AllocLabs;
 	int unk_25;
 	char gap_330[44];
 	int techRanking;
 	int unk_26;
-	int ODP_Deployed;
+	uint32_t satODPDeployed;
 	int theoryOfEverything;
 	char techTradeSource[92];
 	int techAccumulated;
-	int techResearchingId;
+	int techIDResearching;
 	int techCost;
 	int earnedTechsSaved;
 	int netRandomEvent;
-	int AI_Fight;
-	int AI_Growth;
-	int AI_Tech;
-	int AI_Wealth;
-	int AI_Power;
+	int AI_Fight; // -1, 0, 1
+	BOOL AI_Growth;
+	BOOL AI_Tech;
+	BOOL AI_Wealth;
+	BOOL AI_Power;
 	int target_xCoord;
 	int target_yCoord;
 	int unk_28;
 	int councilCallTurn;
 	int unk_29[11];
 	int unk_30[11];
-	int unk_31;
+	uint8_t facilityAnnounced[4]; // bitfield - used to determine one time play of fac audio blurb
 	int unk_32;
 	char unk_33;
 	char unk_34;
@@ -347,22 +369,22 @@ struct player_data {
 	int unk_47;
 	int unk_48;
 	int unk_49;
-	int unk_50;
+	uint32_t nutrientSurplusTotal;
 	int labsTotal;
-	int satellitesNutrient;
-	int satellitesMineral;
-	int satellitesEnergy;
-	int ODP_Total;
-	int bestWeaponValue;
-	int unk_55;
-	int unk_56;
-	int bestArmorValue;
-	int unk_58;
-	int unk_59; // see enemy_capabilities()
-	int unk_60; // see enemy_capabilities()
-	int unk_61;
-	int unk_62;
-	int unk_63;
+	uint32_t satSkyHydroLab; // +1 Nutrients per Lab
+	uint32_t satNessusMiningStat; // +1 Minerals per Station
+	uint32_t satOrbitalPwrTrans; // +1 Energy per Transmitter
+	uint32_t satODPTotal;
+	int bestWeaponVal;
+	int bestPsiAtkVal;
+	int bestPsiDefVal;
+	int bestArmorVal;
+	int bestLandSpeed;
+	int enemyBestWeaponVal;
+	int enemyBestArmorVal;
+	int enemyBestLandSpeed;
+	int enemyBestPsiAtkVal;
+	int enemyBestPsiDefVal;
 	int unk_64;
 	int unk_65;
 	int unk_66;
@@ -373,7 +395,7 @@ struct player_data {
 	uint8_t protoID_Queue[512];
 	int16_t protoID_Lost[512];
 	int totalMilVeh;
-	int currentNumBases;
+	uint32_t currentNumBases;
 	int milStrength_1;
 	int milStrength_2;
 	int popTotal;
@@ -382,7 +404,7 @@ struct player_data {
 	int unk_71;
 	int unk_72;
 	int16_t unk_73[128];
-	char unk_74[128];
+	uint8_t baseCountByRegion[128]; // 1-62 (land), 65-126 (sea)
 	char unk_75[128];
 	int16_t unk_76[128];
 	int16_t unk_77[128];
@@ -392,7 +414,7 @@ struct player_data {
 	int16_t unk_81[128];
 	char unk_82[128];
 	char unk_83[128];
-	char unk_84[128];
+	uint8_t basePlanByRegion[128]; // visible in map UI with omni view + debug mode under base name
 	goal goals_1[75];
 	goal goals_2[25];
 	int unk_93;
@@ -409,7 +431,7 @@ struct player_data {
 	int unk_101;
 	int unk_102;
 	int unk_103;
-	int unk_104;
+	uint32_t playerFlagsExt;
 	int unk_105;
 	int unk_106;
 	int unk_107;
@@ -445,7 +467,6 @@ constexpr int MaxSocialEffectNum = 11;
 constexpr int MaxMoodNum = 9;
 constexpr int MaxReputeNum = 8;
 constexpr int MaxMightNum = 7;
-constexpr int MaxProposalNum = 11;
 constexpr int MaxBonusNameNum = 41;
 constexpr int MaxPlayerNum = 8;
 
@@ -454,7 +475,6 @@ extern rules_social_effect *SocialEffect;
 extern LPSTR *Mood;
 extern LPSTR *Repute;
 extern rules_might *Might;
-extern rules_proposal *Proposal;
 extern rules_bonusname *BonusName;
 extern player *Players; // Players[0] is AI native life faction
 extern player_data *PlayersData;
@@ -463,4 +483,7 @@ extern uint8_t *FactionCurrentBitfield;
 
 OPENSMACX_API LPSTR __cdecl get_adjective(int factionID);
 OPENSMACX_API LPSTR __cdecl get_noun(int factionID);
+OPENSMACX_API uint32_t __cdecl aah_ooga(int factionID, int pactFactionID);
+OPENSMACX_API BOOL __cdecl climactic_battle();
+OPENSMACX_API void __cdecl see_map_check();
 OPENSMACX_API BOOL __cdecl society_avail(int socCategory, int socModel, int factionID);

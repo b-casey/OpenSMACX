@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -300,6 +300,13 @@ enum veh_chassis_type {
 	CHSI_MISSILE = 8,
 };
 
+enum veh_reactor_id {
+	RECT_FISSION = 1,
+	RECT_FUSION = 2,
+	RECT_QUANTUM = 3,
+	RECT_SINGULARITY = 4,
+};
+
 struct rules_chassis {
 	LPSTR offsv1Name;
 	LPSTR offsv2Name;
@@ -380,7 +387,7 @@ struct veh {
 	uint8_t movesExpended;
 	int8_t unknown5;
 	uint8_t unknown6;
-	uint8_t unknown7;
+	uint8_t moveToAIType;
 	uint8_t unknown8;
 	int8_t unknown9;
 	int16_t homeBaseID;
@@ -400,8 +407,8 @@ struct veh_prototype {
 	uint8_t plan;
 	int8_t unk1; // some kind of internal prototype category?
 	int8_t unk2; // factions that have created prototype? maybe retired?
-	int8_t unk3; // which faction "knows" about unit prototype? seemed to only be used by battle_fight
-			   // to set it after initial value in make_proto()
+	int8_t unk3; // which faction "knows" about unit prototype? seemed to only be used by
+			     // battle_fight to set it after initial value in make_proto()
 	int8_t iconOffset;
 	int8_t padding; // unused
 	uint16_t flags;
@@ -486,6 +493,9 @@ OPENSMACX_API uint32_t __cdecl planet_buster(int vehID);
 OPENSMACX_API uint32_t __cdecl morale_alien(int vehID, int factionIDvsNative);
 OPENSMACX_API int __cdecl psi_factor(int combatRatio, int factionID, BOOL isAttack, 
 	BOOL isFungalTower);
+OPENSMACX_API void __cdecl go_to(int vehID, char type, int xCoord, int yCoord);
+OPENSMACX_API void __cdecl enemy_capabilities(int factionID);
+OPENSMACX_API void __cdecl enemy_capabilities_t(int factionID);
 OPENSMACX_API int __cdecl veh_top(int vehID);
 OPENSMACX_API uint32_t __cdecl veh_moves(int vehID);
 OPENSMACX_API uint32_t __cdecl proto_power(int vehID);
@@ -501,7 +511,7 @@ OPENSMACX_API void __cdecl say_stats_3(LPSTR stat, int protoID);
 OPENSMACX_API void __cdecl say_stats_3(int protoID);
 OPENSMACX_API void __cdecl say_stats_2(LPSTR stat, int protoID);
 OPENSMACX_API void __cdecl say_stats(LPSTR stat, int protoID, LPSTR customSpacer);
-OPENSMACX_API int __cdecl best_reactor(int factionID);
+OPENSMACX_API uint32_t __cdecl best_reactor(int factionID);
 OPENSMACX_API int __cdecl pick_chassis(int factionID, int triadChk, int speedChk);
 OPENSMACX_API int __cdecl weapon_budget(int factionID, int condition, BOOL checkMode);
 OPENSMACX_API int __cdecl armor_budget(int factionID, int maxCost);

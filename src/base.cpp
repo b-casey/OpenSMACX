@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include "strings.h"
 #include "text.h"
 #include "technology.h" // has_tech()
+#include "veh.h" // best_reactor()
 
 rules_facility *Facility = (rules_facility *)0x009A4B68;
 rules_citizen *Citizen = (rules_citizen *)0x00946020;
@@ -33,6 +34,7 @@ int *BaseIDCurrentSelected = (int *)0x00689370;
 int *BaseCurrentCount = (int *)0x009A64CC;
 int *BaseFindDist = (int *)0x0090EA04;
 base **BaseCurrent = (base **)0x0090EA30;
+uint32_t *ScnVictFacilityObj = (uint32_t *)0x009A6814;
 
 /*
 Purpose: Check if the base already has a particular facility built or if it's in the queue.
@@ -44,9 +46,7 @@ BOOL __cdecl has_fac(int facilityID, int baseID, int queueCount) {
 	if (facilityID >= FAC_SKY_HYDRO_LAB) {
 		return false;
 	}
-	uint32_t offset, mask;
-	bitmask(facilityID, &offset, &mask);
-	BOOL isBuilt = (Base[baseID].facilitiesPresentTable[offset] & mask) != 0;
+	BOOL isBuilt = has_fac_built(facilityID, baseID);
 	if (isBuilt || !queueCount) {
 		return isBuilt;
 	}
@@ -153,7 +153,7 @@ int __cdecl base_find(int xCoord, int yCoord, int factionID, int region, int fac
 		if (region < 0 || region_at(Base[i].xCoord, Base[i].yCoord) == (uint32_t)region) {
 			if (factionID < 0 ? (factionID2 < 0 || Base[i].factionIDCurrent != factionID2) 
 				: (factionID == Base[i].factionIDCurrent || (factionID2 == -2 
-					? PlayersData[factionID].diploStatus[Base[i].factionIDCurrent] & DSTATE_PACT 
+					? PlayersData[factionID].diploStatus[Base[i].factionIDCurrent] & DSTATUS_PACT 
 					: (factionID2 >= 0 && factionID2 == Base[i].factionIDCurrent)))) {
 				if (factionID3 < 0 || Base[i].factionIDCurrent == factionID3 
 					|| ((1 << factionID3) & Base[i].unk2)) {
@@ -311,10 +311,8 @@ Status: Complete
 */
 int __cdecl base_making(int productionID, int baseID) {
 	uint32_t retool = Rules->RetoolStrictness;
-	uint32_t offset, mask;
-	bitmask(FAC_SKUNKWORKS, &offset, &mask);
 	int sknOff = facility_offset("Skunkworks");
-	if ((Base[baseID].facilitiesPresentTable[offset] & mask // has Skunkworks
+	if ((has_fac_built(FAC_SKUNKWORKS, baseID) // has Skunkworks
 		|| (Players[Base[baseID].factionIDCurrent].ruleFlags & FLAG_FREEPROTO // bug fix
 			&& sknOff >= 0 && has_tech(Facility[sknOff].preqTech, Base[baseID].factionIDCurrent)))
 		&& retool >= 1) { // don't override if retool strictness is already set to always free (0)
@@ -324,11 +322,8 @@ int __cdecl base_making(int productionID, int baseID) {
 		int queueID = Base[baseID].queueProductionID[0]; // current production item
 		if (queueID < 0) { // non-Veh
 			queueID = -queueID;
-			if (queueID < FAC_SKY_HYDRO_LAB) {
-				bitmask(queueID, &offset, &mask);
-				if (Base[baseID].facilitiesPresentTable[offset] & mask) {
-					return -1; // fac completed outside normal process, no retool penalty to change
-				}
+			if (queueID < FAC_SKY_HYDRO_LAB && has_fac_built(queueID, baseID)) {
+				return -1; // facility completed outside normal process, no retool penalty to change
 			}
 		}
 	}
@@ -387,6 +382,38 @@ void __cdecl set_fac(int facilityID, int baseID, BOOL set) {
 }
 
 /*
+Purpose: Check whether facility audio blurb announcement has played for faction.
+Original Offset: 004E4900
+Return Value: Has facility audio blurb played? true/false
+Status: Complete
+*/
+BOOL __cdecl has_fac_announced(int factionID, int facilityID) {
+	if (facilityID > FacilitySPStart) {
+		return true;
+	}
+	uint32_t offset, mask;
+	bitmask(facilityID, &offset, &mask);
+	return (PlayersData[factionID].facilityAnnounced[offset] & mask) != 0;
+}
+
+/*
+Purpose: Set or unset whether a particular facility audio blurb has played for specified faction.
+Original Offset: 004E4960
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl set_fac_announced(int factionID, int facilityID, BOOL set) {
+	uint32_t offset, mask;
+	bitmask(facilityID, &offset, &mask);
+	if (set) {
+		PlayersData[factionID].facilityAnnounced[offset] |= mask;
+	}
+	else {
+		PlayersData[factionID].facilityAnnounced[offset] &= ~mask;
+	}
+}
+
+/*
 Purpose: Check what facility (if any) a base needs for additional population growth. Stand alone
          function unused in original game and likely optimized out.
 Original Offset: 004EEF80
@@ -397,19 +424,11 @@ uint32_t __cdecl pop_goal_fac(int baseID) {
 	uint32_t factionID = Base[baseID].factionIDCurrent;
 	uint32_t limitMod = has_project(SP_ASCETIC_VIRTUES, factionID) ? 2 : 0;
 	int pop = Base[baseID].populationSize - limitMod + Players[factionID].rulePopulation;
-	if (pop >= Rules->PopLimitSansHabComplex) {
-		uint32_t offset, mask;
-		bitmask(FAC_HAB_COMPLEX, &offset, &mask);
-		if (!(Base[baseID].facilitiesPresentTable[offset] & mask)) {
-			return FAC_HAB_COMPLEX;
-		}
+	if (pop >= Rules->PopLimitSansHabComplex && !has_fac_built(FAC_HAB_COMPLEX, baseID)) {
+		return FAC_HAB_COMPLEX;
 	}
-	if (pop >= Rules->PopLimitSansHabDome) {
-		uint32_t offset, mask;
-		bitmask(FAC_HABITATION_DOME, &offset, &mask);
-		if (!(Base[baseID].facilitiesPresentTable[offset] & mask)) {
-			return FAC_HABITATION_DOME;
-		}
+	if (pop >= Rules->PopLimitSansHabDome && !has_fac_built(FAC_HABITATION_DOME, baseID)) {
+		return FAC_HABITATION_DOME;
 	}
 	return 0; // Pop hasn't reached capacity or Base already has Hab Complex and Dome
 }
@@ -427,22 +446,46 @@ uint32_t __cdecl pop_goal(int baseID) {
 	if (goal <= 6) {
 		goal = 6;
 	}
-	uint32_t offset, mask;
-	bitmask(FAC_HAB_COMPLEX, &offset, &mask);
-	if (!(Base[baseID].facilitiesPresentTable[offset] & mask)) {
+	if (!has_fac_built(FAC_HAB_COMPLEX, baseID)) {
 		int compare = Rules->PopLimitSansHabComplex - Players[factionID].rulePopulation + limitMod;
 		if (goal >= compare) {
 			goal = compare;
 		}
 	}
-	bitmask(FAC_HABITATION_DOME, &offset, &mask);
-	if (!(Base[baseID].facilitiesPresentTable[offset] & mask)) {
+	if (!has_fac_built(FAC_HABITATION_DOME, baseID)) {
 		int compare = Rules->PopLimitSansHabDome - Players[factionID].rulePopulation + limitMod;
 		if (goal >= compare) {
 			goal = compare;
 		}
 	}
 	return goal;
+}
+
+/*
+Purpose: Calculate facility maintenance cost for specified faction.
+Original Offset: 004F6510
+Return Value: Facility maintenance cost
+Status: Complete
+*/
+int __cdecl fac_maint(int facilityID, int factionID) {
+	if (facilityID == FAC_COMMAND_CENTER) {
+		int reactor = best_reactor(factionID);
+		int diff = (PlayersData[factionID].diffLevel + 1) / 2;
+		if (reactor < 0 || diff < 0) {
+			return 0;
+		}
+		return (reactor > diff) ? diff : reactor;
+	}
+	int bonusCount = Players[factionID].factionBonusCount;
+	for (int i = 0; i < bonusCount; i++) {
+		int bonusID = Players[factionID].factionBonusID[i];
+		if ((bonusID == RULE_FACILITY || (bonusID == RULE_FREEFAC 
+			&& has_tech(Facility[Players[factionID].factionBonusVal1[i]].preqTech, factionID)))
+			&& Players[factionID].factionBonusVal1[i] == facilityID) {
+			return 0;
+		}
+	}
+	return Facility[facilityID].maint;
 }
 
 /*
@@ -469,9 +512,19 @@ BOOL __cdecl has_fac_built(uint32_t facilityID) {
 	if (facilityID >= FAC_SKY_HYDRO_LAB) {
 		return false;
 	}
+	return has_fac_built(facilityID, *BaseIDCurrentSelected);
+}
+
+/*
+Purpose: Check if the base already has a particular facility built.
+Original Offset: n/a
+Return Value: Does base have facility built? true/false
+Status: Complete
+*/
+BOOL __cdecl has_fac_built(uint32_t facilityID, uint32_t baseID) {
 	uint32_t offset, mask;
 	bitmask(facilityID, &offset, &mask);
-	return (Base[*BaseIDCurrentSelected].facilitiesPresentTable[offset] & mask) != 0;
+	return (Base[baseID].facilitiesPresentTable[offset] & mask) != 0;
 }
 
 /*
@@ -485,14 +538,16 @@ int __cdecl base_project(uint32_t projectID) {
 }
 
 /*
-Purpose: Calculate offset & bitmask from facilityID.
-Original Offset: 0050BA00
-Return Value: n/a
+Purpose: Calculate the amount of energy that can be stolen from a base based on its population.
+Original Offset: 0050C4B0
+Return Value: Energy
 Status: Complete
 */
-void __cdecl bitmask(uint32_t facilityID, uint32_t *offset, uint32_t *mask) {
-	*offset = facilityID / 8;
-	*mask = 1 << (facilityID & 7);
+int __cdecl steal_energy(uint32_t baseID) {
+	uint32_t factionID = Base[baseID].factionIDCurrent;
+	int energy = PlayersData[factionID].energyCredits;
+	return (energy <= 0) ? 0 :
+		((energy * Base[baseID].populationSize) / (PlayersData[factionID].popTotal + 1));
 }
 
 /*
@@ -503,6 +558,60 @@ Status: Complete
 */
 BOOL __cdecl is_port(int baseID, BOOL isBaseRadius) {
 	return is_coast(Base[baseID].xCoord, Base[baseID].yCoord, isBaseRadius);
+}
+
+/*
+Purpose: Check whether specified base is considered an objective.
+Original Offset: 005AC060
+Return Value: Is base an objective? true/false
+Status: Complete
+*/
+BOOL __cdecl is_objective(int baseID) {
+	if (*GameRules & SCN_VICT_ALL_BASE_COUNT_OBJ || Base[baseID].event & BEVENT_OBJECTIVE) {
+		return true;
+	}
+	if (*GameRules & SCN_VICT_SP_COUNT_OBJ) {
+		for (int i = 0; i < MaxSecretProjectNum; i++) {
+			if (base_project(i) == baseID) {
+				return true;
+			}
+		}
+	}
+	if (*GameState & SCN_VICT_BASE_FACIL_COUNT_OBJ && has_fac(*ScnVictFacilityObj, baseID, 0)) {
+		return true;
+	}
+	return false;
+}
+
+/*
+Purpose: Check if specified faction is currently building Ascent to Transcendence. This code isn't 
+         used by original game. There was also a bug where it compares to a non-negative queue id.
+Original Offset: 005AC630
+Return Value: Is faction transcending? true/false
+Status: Complete
+*/
+BOOL __cdecl transcending(int factionID) {
+	if (!ascending(factionID)) {
+		return false;
+	}
+	for (int i = 0; i < *BaseCurrentCount; i++) {
+		if (Base[i].factionIDCurrent == factionID
+			&& Base[i].queueProductionID[0] == -FAC_ASCENT_TO_TRANSCENDENCE) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/*
+Purpose: Check if Voice of Planet has been built that starts the Ascent to Transcendence sequence.
+         The factionID parameter is unused and left in for compatibility.
+Original Offset: 005AC680
+Return Value: Has Voice of Planet been built? true/false
+Status: Complete
+*/
+BOOL __cdecl ascending(int factionID) {
+	return base_project(SP_VOICE_OF_PLANET) != SP_Unbuilt;
 }
 
 /*
@@ -552,11 +661,11 @@ Status: Complete
 BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID, int queueCount) {
 	// initial checks
 	if (!facilityID || (facilityID == FAC_SKUNKWORKS && *DiffLevelCurrent <= DLVL_SPECIALIST)
-		|| (facilityID >= FAC_HUMAN_GENOME_PROJ && *GameRules2 & SCENRULE_NO_BUILDING_SP)) {
+		|| (facilityID >= FAC_HUMAN_GENOME_PROJ && *GameRules & SCENRULE_NO_BUILDING_SP)) {
 		return false; // Skunkworks removed if there are no prototype costs
 	}
 	if (facilityID == FAC_ASCENT_TO_TRANSCENDENCE) { // at top since anyone can build it
-		return (base_project(SP_VOICE_OF_PLANET) != SP_Unbuilt) && *GameRules2 & VICTORY_HIGHER_GOAL
+		return ascending(factionID) && *GameRules & VICTORY_HIGHER_GOAL
 			&& _stricmp(Players[factionID].filename, "CARETAKE"); // bug fix for Caretakers
 	}
 	if (!has_tech(Facility[facilityID].preqTech, factionID)) { // Check tech for facility + SP

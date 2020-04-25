@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -233,6 +233,17 @@ enum base_status_bitfield {
 	BSTATUS_PRODUCTION_HURRIED = 0x40000000,
 };
 
+enum base_event_bitfield {
+	BEVENT_UNK_100 = 0x100,
+	BEVENT_BUMPER = 0x200,
+	BEVENT_FAMINE = 0x400,
+	BEVENT_INDUSTRY = 0x800,
+	BEVENT_BUST = 0x1000,
+	BEVENT_HEAT_WAVE = 0x2000,
+	BEVENT_CLOUD_COVER = 0x4000,
+	BEVENT_OBJECTIVE = 0x8000,
+};
+
 struct base {
 	int16_t xCoord;
 	int16_t yCoord;
@@ -256,7 +267,7 @@ struct base {
 	int ecoDamage;
 	int queueSize;
 	int queueProductionID[10];
-	int resourceSquares;
+	int resourceSqrRadius;
 	int specialistTotal;
 	int unk3;
 	int unk4;
@@ -399,7 +410,8 @@ struct base_secret_project {
 };
 
 constexpr int MaxBaseNum = 512;
-constexpr int MaxFacilityNum = 134;
+constexpr int MaxFacilityNum = 134; // 0 slot unused
+constexpr int MaxSecretProjectNum = 64;
 constexpr int FacilitySPStart = 70; // Special Project start offset
 constexpr int MaxCitizenNum = 10;
 constexpr int MaxSpecialistNum = 7;
@@ -414,6 +426,7 @@ extern int *BaseIDCurrentSelected;
 extern int *BaseCurrentCount;
 extern int *BaseFindDist;
 extern base **BaseCurrent;
+extern uint32_t *ScnVictFacilityObj;
 
 OPENSMACX_API BOOL __cdecl has_fac(int facilityID, int baseID, int queueCount);
 OPENSMACX_API void __cdecl set_base(int baseID);
@@ -427,13 +440,20 @@ OPENSMACX_API void __cdecl name_base(int factionID, LPSTR nameOut, BOOL isFinal,
 OPENSMACX_API int __cdecl base_making(int productionID, int baseID);
 OPENSMACX_API int __cdecl base_lose_minerals(int baseID, int productionID);
 OPENSMACX_API void __cdecl set_fac(int facilityID, int baseID, BOOL set);
+OPENSMACX_API BOOL __cdecl has_fac_announced(int factionID, int facilityID);
+OPENSMACX_API void __cdecl set_fac_announced(int factionID, int facilityID, BOOL set);
 OPENSMACX_API uint32_t __cdecl pop_goal_fac(int baseID);
 OPENSMACX_API uint32_t __cdecl pop_goal(int baseID);
+OPENSMACX_API int __cdecl fac_maint(int facilityID, int factionID);
 OPENSMACX_API BOOL __cdecl has_project(uint32_t projectID, uint32_t factionID);
 OPENSMACX_API BOOL __cdecl has_fac_built(uint32_t facilityID);
+OPENSMACX_API BOOL __cdecl has_fac_built(uint32_t facilityID, uint32_t baseID);
 OPENSMACX_API int __cdecl base_project(uint32_t projectID);
-OPENSMACX_API void __cdecl bitmask(uint32_t facilityID, uint32_t *offset, uint32_t *mask);
+OPENSMACX_API int __cdecl steal_energy(uint32_t baseID);
 OPENSMACX_API BOOL __cdecl is_port(int baseID, BOOL isBaseRadius);
+OPENSMACX_API BOOL __cdecl is_objective(int baseID);
+OPENSMACX_API BOOL __cdecl transcending(int factionID);
+OPENSMACX_API BOOL __cdecl ascending(int factionID);
 OPENSMACX_API BOOL __cdecl redundant(int facilityID, int factionID);
 OPENSMACX_API BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID, 
 	int queueCount);
