@@ -24,7 +24,6 @@
 #include "game.h"
 #include "random.h"
 #include "veh.h"
-#include "log.h"
 
 uint32_t *MapHorizontalBounds = (uint32_t *)0x00949870;
 uint32_t *MapVerticalBounds = (uint32_t *)0x00949874;
@@ -312,7 +311,7 @@ Purpose: Determine if a base has access to ports or more than one coastal region
          prioritize whether naval transports should be built.
 Original Offset: 0050E310
 Return Value: Should base build naval transports? true/false
-Status: Complete - test
+Status: Complete
 */
 BOOL __cdecl transport_base(uint32_t baseID) {
 	int region = base_coast(baseID);
@@ -328,8 +327,8 @@ BOOL __cdecl transport_base(uint32_t baseID) {
 /*
 Purpose: Determine if there are other faction's ports in the vicinity of the specified base.
 Original Offset: 0050E3C0
-Return Value: Is base considered naval? true/false
-Status: Complete - test
+Return Value: Does base have a strategic naval importance? true/false
+Status: Complete
 */
 BOOL __cdecl naval_base(uint32_t baseID) {
 	if (base_coast(baseID) < 0 || *BaseCurrentCount <= 0) {
@@ -347,10 +346,10 @@ BOOL __cdecl naval_base(uint32_t baseID) {
 }
 
 /*
-Purpose: Determine if specified veh can set up a convoy route with specified base.
+Purpose: Determine if specified Veh can set up a convoy route with specified base.
 Original Offset: 0050E5C0
 Return Value: Is convoy route possible? true/false
-Status: Complete - test
+Status: Complete
 */
 BOOL __cdecl convoy(uint32_t vehID, uint32_t baseID) {
 	int homeBaseID = Veh[vehID].homeBaseID;
@@ -364,7 +363,7 @@ BOOL __cdecl convoy(uint32_t vehID, uint32_t baseID) {
 	uint32_t regionBase = region_at(Base[baseID].xCoord, Base[baseID].yCoord);
 	if (region_at(Base[homeBaseID].xCoord, Base[homeBaseID].yCoord) == regionBase 
 		&& ((regionBase >= 64) == (triad == TRIAD_SEA))) {
-		return true; // sea or ground
+		return true; // same region, by land or sea
 	}
 	if (triad) {
 		return port_to_port(baseID, homeBaseID); // sea
@@ -383,10 +382,10 @@ BOOL __cdecl bad_reg(int region) {
 }
 
 /*
-Purpose: Check whether specified veh can reach provided coordinates.
+Purpose: Determine whether specified Veh can physically reach the destination coordinates.
 Original Offset: 0056B320
-Return Value: Can veh reach coordinates? true/false
-Status: Complete - test
+Return Value: Can Veh reach tile? true/false
+Status: Complete
 */
 BOOL __cdecl get_there(uint32_t vehID, int xCoordDst, int yCoordDst) {
 	uint32_t triad = Chassis[VehPrototype[Veh[vehID].protoID].chassisID].triad;
@@ -397,52 +396,41 @@ BOOL __cdecl get_there(uint32_t vehID, int xCoordDst, int yCoordDst) {
 	uint32_t regionSrc = region_at(xCoordSrc, yCoordSrc),
 		regionDst = region_at(xCoordDst, yCoordDst);
 	if (!triad) { // TRIAD_LAND
-		return regionSrc == regionDst;
+		return (regionSrc == regionDst);
 	}
 	int baseIDSrc = base_at(xCoordSrc, yCoordSrc), baseIDDst = base_at(xCoordDst, yCoordDst);
 	if (baseIDDst >= 0) {
-		if (baseIDSrc < 0) {
-			return base_on_sea(baseIDDst, regionSrc);
-		}
-		else {
-			return port_to_port(baseIDSrc, baseIDDst);
-		}
+		return (baseIDSrc < 0) ? base_on_sea(baseIDDst, regionSrc)
+			: port_to_port(baseIDSrc, baseIDDst);
 	}
 	if (is_ocean(xCoordDst, yCoordDst)) {
-		if (baseIDSrc < 0) {
-			return regionSrc == regionDst;
-		}
-		else {
-			return base_on_sea(baseIDSrc, regionDst);
-		}
+		return (baseIDSrc < 0) ? (regionSrc == regionDst) : base_on_sea(baseIDSrc, regionDst);
 	}
-	if (baseIDDst < 0) {
-		return sea_coast(regionDst, regionSrc);
-	}
-	else {
-		return port_to_coast(baseIDSrc, regionDst);
-	}
+	return (baseIDSrc < 0) ? sea_coast(regionDst, regionSrc) : port_to_coast(baseIDSrc, regionDst);
 }
 
 /*
-Purpose: Determine whether tile is coast or border. ?
+Purpose: Determine whether point A is a coast or border tile. It seems that the point B check is 
+         effectively disabled since usage of this function passes same coordinates for both points.
+		 Modified return value to boolean rather than returning i. It is always treated as boolean
+		 and makes a lot more sense than returning iterator position.
 Original Offset: 0056B480
-Return Value: Is border? true ; Coast:false
-Status: Complete - test
+Return Value: Is point A considered a border or coast? true/false
+Status: Complete
 */
 BOOL __cdecl coast_or_border(int xCoordPtA, int yCoordPtA, int xCoordPtB, int yCoordPtB,
 	int factionID) {
 	if (factionID != whose_territory(factionID, xCoordPtA, yCoordPtA, NULL, false)) {
-		return false;
+		return false; // faction doesn't control point A
 	}
-	uint32_t region = region_at(xCoordPtB, yCoordPtB);
+	uint32_t regionA = region_at(xCoordPtA, yCoordPtA), regionB = region_at(xCoordPtB, yCoordPtB);
 	for (uint32_t i = 1; i < 9; i++) {
 		int xRadius = xrange(xCoordPtA + xRadiusOffset[i]), yRadius = yCoordPtA + yRadiusOffset[i];
 		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-			&& xRadius < (int)*MapHorizontalBounds && is_ocean(xRadius, yRadius)
-			&& (whose_territory(factionID, xRadius, yRadius, NULL, false) != factionID 
-				|| region_at(xRadius, yRadius) != region)) {
-			return true;
+			&& xRadius < (int)*MapHorizontalBounds && (is_ocean(xRadius, yRadius)
+			|| whose_territory(factionID, xRadius, yRadius, NULL, false) != factionID
+				|| regionA != regionB)) { // not sure about reason for this
+			return true; // modified to boolean rather than returning i
 		}
 	}
 	return false;
@@ -1059,7 +1047,7 @@ int __cdecl base_who(uint32_t xCoord, uint32_t yCoord) {
 }
 
 /*
-Purpose: Get owner of tile if there is a veh or base on it.
+Purpose: Get owner of tile if there is a Veh or Base on it.
 Original Offset: 005798E0
 Return Value: Owner/factionID or -1
 Status: Complete
@@ -1250,18 +1238,18 @@ BOOL __cdecl has_temple(int factionID) {
 }
 
 /*
-Purpose: Check for any type of zone of control conflicts (base and/or veh).
+Purpose: Check for any type of zone of control conflicts (Base and/or Veh).
 Original Offset: 005C89F0
 Return Value: zoc: factionID + 1; no zoc: 0 (however return seems to be treated as boolean)
 Status: Complete
 */
-uint32_t __cdecl zoc_any(int xCoord, int yCoord, int factionID) {
+uint32_t __cdecl zoc_any(int xCoord, int yCoord, uint32_t factionID) {
 	for (uint32_t i = 0; i < 8; i++) {
 		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
 		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
 			&& xRadius < (int)*MapHorizontalBounds) {
 			int owner = anything_at(xRadius, yRadius);
-			if (owner >= 0 && owner != factionID 
+			if (owner >= 0 && owner != (int)factionID 
 				&& !(PlayersData[factionID].diploStatus[owner] & DSTATUS_PACT)) {
 				return owner + 1;
 			}
@@ -1276,14 +1264,14 @@ Original Offset: 005C8AC0
 Return Value: zoc: factionID + 1; no zoc: 0 (however return seems to be treated as boolean)
 Status: Complete
 */
-uint32_t __cdecl zoc_veh(int xCoord, int yCoord, int factionID) {
+uint32_t __cdecl zoc_veh(int xCoord, int yCoord, uint32_t factionID) {
 	uint32_t ret = 0;
 	for (uint32_t i = 0; i < 8; i++) {
 		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
 		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
 			&& xRadius < (int)*MapHorizontalBounds) {
 			int owner = veh_who(xRadius, yRadius);
-			if (owner >= 0 && owner != factionID
+			if (owner >= 0 && owner != (int)factionID
 				&& !(PlayersData[factionID].diploStatus[owner] & DSTATUS_PACT)) {
 				owner++;
 				if (ret <= (uint32_t)owner) {
@@ -1301,14 +1289,14 @@ Original Offset: 005C8BA0
 Return Value: zoc: factionID + 1; no zoc: 0 (however return seems to be treated as boolean)
 Status: Complete
 */
-uint32_t __cdecl zoc_sea(int xCoord, int yCoord, int factionID) {
+uint32_t __cdecl zoc_sea(int xCoord, int yCoord, uint32_t factionID) {
 	BOOL isOcean = is_ocean(xCoord, yCoord);
 	for (uint32_t i = 0; i < 8; i++) {
 		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
 		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
 			&& xRadius < (int)*MapHorizontalBounds) {
 			int owner = veh_who(xRadius, yRadius);
-			if (owner >= 0 && owner != factionID && is_ocean(xRadius, yRadius) == isOcean
+			if (owner >= 0 && owner != (int)factionID && is_ocean(xRadius, yRadius) == isOcean
 				&& !(PlayersData[factionID].diploStatus[owner] & DSTATUS_PACT)) {
 				for (int vehID = veh_at(xRadius, yRadius); vehID >= 0;
 					vehID = Veh[vehID].nextVehIDStack) {
@@ -1330,7 +1318,7 @@ Original Offset: 005C8D40
 Return Value: zoc: factionID + 1; no zoc: 0 (however return seems to be treated as boolean)
 Status: Complete
 */
-uint32_t __cdecl zoc_move(int xCoord, int yCoord, int factionID) {
+uint32_t __cdecl zoc_move(int xCoord, int yCoord, uint32_t factionID) {
 	int owner;
 	if (!(bit_at(xCoord, yCoord) & BIT_BASE_IN_TILE)
 	|| ((owner = owner_at(xCoord, yCoord)), owner >= 8 || owner < 0)) {

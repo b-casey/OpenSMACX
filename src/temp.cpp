@@ -53,9 +53,7 @@ func9 *do_video = (func9 *)0x00636300;
 func9 *check_net = (func9 *)0x0062D5D0;
 func9 *do_net = (func9 *)0x0062D5B0;
 func14 *base_at = (func14 *)0x004E3A50;
-
 func11 *wants_to_attack = (func11 *)0x0055BC80;
-func13 *tech_val_OG = (func13 *)0x005BCBE0;
 
 // Time
 func30* blink_timer = (func30*)0x0050EA40;
@@ -65,11 +63,9 @@ func30* turn_timer = (func30*)0x0050EF10;
 
 // testing
 func8 *parse_string_OG = (func8 *)0x00625880;
-//
+func13 *tech_val_OG = (func13 *)0x005BCBE0;
 func12 *enemy_capabilities_OG = (func12 *)0x00560DD0;
 
-func15 *naval_base_OG = (func15 *)0x0050E3C0;
-func16 *get_there_og = (func16 *)0x0056B320;
 ///
 char1032 *stringTemp = (char1032 *)0x009B86A0;
 char256 *ParseStrBuffer = (char256 *)0x009BB5E8;
@@ -96,54 +92,6 @@ int __cdecl tester() {
 	log_set_state(true);
 	log_say("Start test", 0, 0, 0);
 
-	for (int i = 0; i < *BaseCurrentCount; i++) {
-		int bc1 = transport_base(i);
-		int bc2 = naval_base(i);
-		if (bc1 != bc2) {
-			log_say("miss_match_error: ", Base[i].nameString, i, bc1, bc2);
-			log_say("", Base[i].xCoord, Base[i].yCoord, 0);
-		}
-	}
-
-	
-	//uint32_t x = 50, y = 108, v = 373;
-	//log_say("get_there: ", get_there_og(x, y, v), 0, 0);
-	/*
-	for (int i = 0; i < *BaseCurrentCount; i++) {
-		int baseC1 = base_coast(i);
-		int baseC2 = base_coast_OG(i);
-		if (baseC1 != baseC2) {
-			log_say("base_coast_error: ", i, 0, 0);
-		}
-		else if(baseC1 == 92){
-			char temp[1024], temp2[100];
-			temp[0] = 0;
-			strcat_s(temp, 1024, "base_coast, ");
-			strcat_s(temp, 1024, Base[i].nameString);
-			strcat_s(temp, 1024, ", ");
-			_itoa_s(baseC1, temp2, 10);
-			strcat_s(temp, 1024, temp2);
-			strcat_s(temp, 1024, ", ");
-			log_say(temp, 0, 0, 0);
-		}
-		
-		
-	}
-	*/
-	/*
-	for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
-		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
-			for (int v = 0; v < *VehCurrentCount; v++) {
-				if (get_there_og(x, y, v)) {
-					log_say("get_there: ", x, y, v);
-				}
-				else {
-					log_say("cant_get_there: ", x, y, v);
-				}
-			}
-		}
-	}
-	*/
 	//for (int i = 0; i < MaxPlayerNum; i++) {
 		/*
 		for (int j = 0; j < 200; j++) {

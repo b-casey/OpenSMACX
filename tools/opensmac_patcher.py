@@ -44,7 +44,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
 	bin_app = mmap.mmap(f.fileno(), 0)
-	# next: 349
+	# next: 360
 	#
 	
 	# ALPHA
@@ -554,16 +554,16 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x00179790) # ?cursor_dist@@YAHHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*284))
-	bin_app.seek(0x001C89F0) # ?zoc_any@@YAIHHH@Z
+	bin_app.seek(0x001C89F0) # ?zoc_any@@YAIHHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*297))
-	bin_app.seek(0x001C8AC0) # ?zoc_veh@@YAIHHH@Z
+	bin_app.seek(0x001C8AC0) # ?zoc_veh@@YAIHHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*298))
-	bin_app.seek(0x001C8BA0) # ?zoc_sea@@YAIHHH@Z
+	bin_app.seek(0x001C8BA0) # ?zoc_sea@@YAIHHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*299))
-	bin_app.seek(0x001C8D40) # ?zoc_move@@YAIHHH@Z
+	bin_app.seek(0x001C8D40) # ?zoc_move@@YAIHHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*300))
 	bin_app.seek(0x000E3EF0) # ?whose_territory@@YAHHHHPAHH@Z
@@ -619,7 +619,40 @@ with open(exe_path, "r+b") as f:
 	bin_app.write(struct.pack("<L", addr+4*346))	
 	bin_app.seek(0x001798A0) # ?base_who@@YAHII@Z
 	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*347))		
+	bin_app.write(struct.pack("<L", addr+4*347))
+	bin_app.seek(0x0010DDC0) # ?sea_coast@@YAHII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*349))
+	bin_app.seek(0x0010DE00) # ?sea_coasts@@YAII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*350))
+	bin_app.seek(0x0010DE50) # ?base_on_sea@@YAHII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*351))
+	bin_app.seek(0x0010DF30) # ?base_coast@@YAHI@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*352))
+	bin_app.seek(0x0010E030) # ?port_to_coast@@YAHII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*353))
+	bin_app.seek(0x0010E160) # ?port_to_port@@YAHII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*354))
+	bin_app.seek(0x0010E310) # ?transport_base@@YAHI@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*355))
+	bin_app.seek(0x0010E3C0) # ?naval_base@@YAHI@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*356))
+	bin_app.seek(0x0010E5C0) # ?convoy@@YAHII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*357))
+	bin_app.seek(0x0016B320) # ?get_there@@YAHIHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*358))	
+	bin_app.seek(0x0016B480) # ?coast_or_border@@YAHHHHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*359))
 	# PATH
 	bin_app.seek(0x0019A220) # ?init@Path@@QAEXXZ
 	patch_call_bytes(bin_app)
