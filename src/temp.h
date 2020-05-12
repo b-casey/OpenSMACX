@@ -74,7 +74,7 @@ extern func30* turn_timer;
 typedef int *func8(LPSTR, LPSTR);
 extern func8 *parse_string_OG;
 //
-typedef int func11(int, int, int);
+typedef BOOL func11(int, int, int);
 extern func11 *wants_to_attack;
 typedef int func13(int, int, BOOL);
 extern func13 *tech_val_OG;

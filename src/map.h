@@ -157,6 +157,7 @@ constexpr int MaxNaturalNum = 16;
 constexpr int MaxLandmarkNum = 64;
 constexpr int RegionBounds = 63;
 constexpr int MaxContinentNum = 128;
+constexpr int MaxRegionLandNum = 64;
 
 const uint32_t RadiusRange[] = { 1, 9, 25, 49, 81, 121, 169, 225, 289 };
 const int xRadiusBase[] = { 1, 2, 1, 0, -1, -2, -1, 0, 2, 2, -2, -2, 1, 3, 3, 1, -1, -3, -3, -1 };

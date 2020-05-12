@@ -91,20 +91,34 @@ MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
 int __cdecl tester() {
 	log_set_state(true);
 	log_say("Start test", 0, 0, 0);
-
-	//for (int i = 0; i < MaxPlayerNum; i++) {
-		/*
-		for (int j = 0; j < 200; j++) {
+	
+	for (int i = 0; i < MaxPlayerNum; i++) {
+		for (int j = 0; j < MaxTechnologyNum; j++) {
 			for (int k = 0; k < 2; k++) {
 				int techVal1 = tech_val(j, i, k);
 				int techVal2 = tech_val_OG(j, i, k);
 				if (techVal1 != techVal2) {
 					log_say("tech_val error: ", j, i, k);
+					log_say("good:", techVal2, 0, 0);
+					log_say("bad: ", techVal1, 0, 0);
+					log_say(Players[i].searchKey, Technology[j].name, techVal1, k, 0);
 				}
 			}
 		}
-		*/
-	//}
+		for (int j = 89; j < 609; j++) {
+			int techVal1 = tech_val(j, i, 0);
+			int techVal2 = tech_val_OG(j, i, 0);
+			if (techVal1 != techVal2) {
+				log_say("tech_val error: ", j, i, 0);
+				if (j < 97) {
+					log_say(Players[i].searchKey, Players[j - 89].searchKey, techVal1, techVal2, 0);
+				}
+				else {
+					log_say(Players[i].searchKey, VehPrototype[j - 97].vehName, techVal1, techVal2, 0);
+				}
+			}
+		}
+	}
 	
 	/*
 	for (int i = 0; i < MaxPlayerNum; i++) {
@@ -443,6 +457,46 @@ int __cdecl tester() {
 	}
 	*/
 	return 0;
+}
+
+void tech_calc_output() {
+	for (int i = 0; i < MaxPlayerNum; i++) {
+		for (int j = 0; j < MaxTechnologyNum; j++) {
+			for (int k = 0; k < 2; k++) {
+				int techVal1 = tech_val(j, i, k);
+				int techVal2 = tech_val_OG(j, i, k);
+				if (techVal1 != techVal2) {
+					log_say("tech_val error: ", j, i, k);
+					log_say("good:", techVal2, 0, 0);
+					log_say("bad: ", techVal1, 0, 0);
+				}
+				else {
+					log_say(Players[i].searchKey, Technology[j].name, techVal1, k, 0);
+				}
+			}
+		}
+		for (int j = 89; j < 609; j++) {
+			int techVal1 = tech_val(j, i, 0);
+			int techVal2 = tech_val_OG(j, i, 0);
+			if (techVal1 != techVal2) {
+				log_say("tech_val error: ", j, i, 0);
+				if (j < 97) {
+					log_say(Players[i].searchKey, Players[j - 89].searchKey, techVal1, techVal2, 0);
+				}
+				else {
+					log_say(Players[i].searchKey, VehPrototype[j - 97].vehName, techVal1, techVal2, 0);
+				}
+			}
+			else {
+				if (j < 97) {
+					log_say(Players[i].searchKey, Players[j - 89].searchKey, techVal1, 0, 0);
+				}
+				else {
+					log_say(Players[i].searchKey, VehPrototype[j - 97].vehName, techVal1, 0, 0);
+				}
+			}
+		}
+	}
 }
 
 

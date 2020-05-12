@@ -164,7 +164,7 @@ OPENSMACX_API int __cdecl tech_category(int techID);
 OPENSMACX_API BOOL __cdecl tech_avail(int techID, int factionID);
 OPENSMACX_API void __cdecl tech_effects(int factionID);
 OPENSMACX_API BOOL __cdecl tech_is_preq(int preTechID, int techID, uint32_t range);
-OPENSMACX_API int __cdecl tech_val(int techID, int factionID, BOOL tgl);
+OPENSMACX_API int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc);
 OPENSMACX_API int __cdecl tech_ai(int factionID);
 OPENSMACX_API int __cdecl tech_mil(int techID);
 OPENSMACX_API int __cdecl tech_tech(int techID);
