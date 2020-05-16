@@ -63,8 +63,10 @@ func30* turn_timer = (func30*)0x0050EF10;
 
 // testing
 func8 *parse_string_OG = (func8 *)0x00625880;
-func13 *tech_val_OG = (func13 *)0x005BCBE0;
 func12 *enemy_capabilities_OG = (func12 *)0x00560DD0;
+
+func16 *tech_rate_OG = (func16 *)0x005BE6B0;
+func17 *wants_prototype_OG = (func17 *)0x005BE100;
 
 ///
 char1032 *stringTemp = (char1032 *)0x009B86A0;
@@ -91,35 +93,39 @@ MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
 int __cdecl tester() {
 	log_set_state(true);
 	log_say("Start test", 0, 0, 0);
-	
-	for (int i = 0; i < MaxPlayerNum; i++) {
-		for (int j = 0; j < MaxTechnologyNum; j++) {
-			for (int k = 0; k < 2; k++) {
-				int techVal1 = tech_val(j, i, k);
-				int techVal2 = tech_val_OG(j, i, k);
-				if (techVal1 != techVal2) {
-					log_say("tech_val error: ", j, i, k);
-					log_say("good:", techVal2, 0, 0);
-					log_say("bad: ", techVal1, 0, 0);
-					log_say(Players[i].searchKey, Technology[j].name, techVal1, k, 0);
-				}
-			}
-		}
-		for (int j = 89; j < 609; j++) {
-			int techVal1 = tech_val(j, i, 0);
-			int techVal2 = tech_val_OG(j, i, 0);
-			if (techVal1 != techVal2) {
-				log_say("tech_val error: ", j, i, 0);
-				if (j < 97) {
-					log_say(Players[i].searchKey, Players[j - 89].searchKey, techVal1, techVal2, 0);
-				}
-				else {
-					log_say(Players[i].searchKey, VehPrototype[j - 97].vehName, techVal1, techVal2, 0);
-				}
-			}
-		}
+
+
+	for (int k = 0; k < MaxVehProtoNum; k++) {
+		//if (VehPrototype[k].flags & 4) {
+			//
+		//}
+	//	log_say(Players[k / 64].searchKey, VehPrototype[k].vehName, VehPrototype[k].unk1, k, 0);
 	}
-	
+
+	for (int i = 0; i < MaxPlayerNum; i++) {
+		for (int k = 0; k < MaxVehProtoNum; k++) {
+
+			BOOL val5 = wants_prototype(k, i);
+			BOOL val6 = wants_prototype_OG(k, i);
+			if (val5 != val6) {
+				log_say("wants_prototype error: ", k, i, 0);
+				log_say("good : bad:", val6, val5, 0);
+			}
+		}
+		
+		/*
+		PlayersData[i].techCost = -1;
+		uint32_t val3 = tech_rate_OG(i);
+		PlayersData[i].techCost = -1;
+		uint32_t val4 = tech_rate(i);
+		if (val3 != val4) {
+			log_say("tech_rate error: ", i, 0, 0);
+			log_say("good : bad:", val3, val4, 0);
+		}
+		*/
+	}
+
+	//tech_calc_output();
 	/*
 	for (int i = 0; i < MaxPlayerNum; i++) {
 		log_say(Players[i].searchKey, "PSI Atk", weap_strat(WPN_PSI_ATTACK, i), 0, 0);
@@ -459,6 +465,8 @@ int __cdecl tester() {
 	return 0;
 }
 
+// tech_val output
+func13 *tech_val_OG = (func13 *)0x005BCBE0;
 void tech_calc_output() {
 	for (int i = 0; i < MaxPlayerNum; i++) {
 		for (int j = 0; j < MaxTechnologyNum; j++) {

@@ -111,6 +111,8 @@ enum veh_ability_flag_bitfield {
 
 enum veh_prototype_flag_bitfield {
 	PROTO_ACTIVE = 0x1, // if this bit is zero, prototype has been retired
+	PROTO_CUSTOM_NAME_SET = 0x2,
+	PROTO_TYPED_COMPLETE = 0x4,
 };
 
 enum veh_orders {
@@ -371,7 +373,7 @@ struct veh {
 	uint32_t state;
 	uint16_t flags;
 	int16_t protoID;
-	uint16_t unknown1;
+	uint16_t unk1;
 	uint8_t factionID;
 	uint8_t yearEndLurking;
 	uint8_t dmgIncurred;
@@ -385,11 +387,11 @@ struct veh {
 	uint8_t orderAutoType; // see veh_orders_auto_type enum
 	uint8_t visibleToFaction; // bitfield (1 << (1 to 7))
 	uint8_t movesExpended;
-	int8_t unknown5;
-	uint8_t unknown6;
+	int8_t unk5;
+	uint8_t unk6;
 	uint8_t moveToAIType;
-	uint8_t unknown8;
-	int8_t unknown9;
+	uint8_t unk8;
+	int8_t unk9;
 	int16_t homeBaseID;
 	int16_t nextVehIDStack;
 	int16_t prevVehIDStack;
@@ -406,7 +408,7 @@ struct veh_prototype {
 	uint8_t cost;
 	uint8_t plan;
 	int8_t unk1; // some kind of internal prototype category?
-	int8_t unk2; // factions that have created prototype? maybe retired?
+	uint8_t obsoleteFactions; //  (1 << factionID)
 	int8_t unk3; // which faction "knows" about unit prototype? seemed to only be used by
 			     // battle_fight to set it after initial value in make_proto()
 	int8_t iconOffset;
@@ -530,6 +532,7 @@ OPENSMACX_API void __cdecl stack_sort(int vehID);
 OPENSMACX_API void __cdecl stack_sort_2(int vehID);
 OPENSMACX_API int __cdecl stack_fix(int vehID);
 OPENSMACX_API BOOL __cdecl veh_avail(int protoID, int factionID, int baseID);
+OPENSMACX_API BOOL __cdecl wants_prototype(uint32_t protoID, uint32_t factionID);
 OPENSMACX_API int __cdecl veh_at(int xCoord, int yCoord);
 OPENSMACX_API BOOL __cdecl has_abil(int protoID, int abilityID);
 OPENSMACX_API int __cdecl veh_lift(int vehID);

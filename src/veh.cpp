@@ -1145,7 +1145,8 @@ void __cdecl make_proto(int protoID, uint32_t chassisID, uint32_t weaponID, uint
 			if (flagsCheck & PROTO_ACTIVE) {
 				if ((protoIDLoop <= MaxVehProtoFactionNum &&
 					has_tech(VehPrototype[protoIDLoop].preqTech, protoID / MaxVehProtoFactionNum))
-					|| (protoIDLoop > MaxVehProtoFactionNum && (flagsCheck & 4))) {
+					|| (protoIDLoop > MaxVehProtoFactionNum 
+						&& (flagsCheck & PROTO_TYPED_COMPLETE))) {
 					uint32_t loopWeaponID = VehPrototype[protoIDLoop].weaponID;
 					if (loopWeaponID == weaponID) {
 						cond1 = true;
@@ -1268,7 +1269,7 @@ void __cdecl make_proto(int protoID, uint32_t chassisID, uint32_t weaponID, uint
 		}
 	}
 	// set final values
-	VehPrototype[protoID].unk2 = 0;
+	VehPrototype[protoID].obsoleteFactions = 0;
 	VehPrototype[protoID].unk3 = (protoID >= MaxVehProtoFactionNum) ?
 		1 << (protoID / MaxVehProtoFactionNum) : -1;
 	VehPrototype[protoID].flags = unkLocal1 ? ((unkLocal1 & 2) ? 0x115 : 0x105) : PROTO_ACTIVE;
@@ -1382,7 +1383,7 @@ Status: Complete
 */
 BOOL __cdecl veh_avail(int protoID, int factionID, int baseID) {
 	if (!(VehPrototype[protoID].flags & PROTO_ACTIVE)
-		|| (VehPrototype[protoID].unk2 & (1 << factionID))) {
+		|| (VehPrototype[protoID].obsoleteFactions & (1 << factionID))) {
 		return false;
 	}
 	if (protoID < MaxVehProtoFactionNum) {
@@ -1416,6 +1417,49 @@ BOOL __cdecl veh_avail(int protoID, int factionID, int baseID) {
 		return true;
 	}
 	return (protoID / MaxVehProtoFactionNum) == factionID;
+}
+
+/*
+Purpose: Determine whether a faction might want specified protoID based on the faction's current 
+         prototype designs.
+Original Offset: 005BE100
+Return Value: Does faction want prototype? true/false
+Status: Complete - testing
+*/
+BOOL __cdecl wants_prototype(uint32_t protoID, uint32_t factionID) {
+	uint32_t flags = VehPrototype[protoID].flags;
+	if (!(flags & PROTO_ACTIVE) || !(flags & PROTO_TYPED_COMPLETE)) {
+		return false;
+	}
+	uint32_t protoOffset = factionID * MaxVehProtoFactionNum;
+	for (uint32_t i = 0; i < MaxVehProtoFactionNum; i++) {
+		uint32_t protoIDCmp = protoOffset + i;
+		uint8_t chas = VehPrototype[protoID].chassisID, 
+			chasCmp = VehPrototype[protoIDCmp].chassisID;
+		uint32_t flagsCmp = VehPrototype[protoIDCmp].flags;
+		if (flagsCmp & PROTO_ACTIVE && flagsCmp & PROTO_TYPED_COMPLETE
+			&& VehPrototype[protoID].plan == VehPrototype[protoIDCmp].plan 
+			&& Chassis[chas].triad == Chassis[chasCmp].triad) {
+			uint8_t weapIDCmp = VehPrototype[protoIDCmp].weaponID;
+			uint8_t modeCmp = Weapon[weapIDCmp].mode;
+			int8_t offRating, offRatingCmp;
+			if ((modeCmp > WPN_MODE_MISSILE)
+				? (modeCmp == Weapon[VehPrototype[protoID].weaponID].mode)
+				: (offRating = Weapon[weapIDCmp].offenseRating, offRating < 0)
+				? (offRating == Weapon[VehPrototype[protoID].weaponID].offenseRating) 
+				: (offRating >= Weapon[VehPrototype[protoID].weaponID].offenseRating)) {
+				uint8_t armID = VehPrototype[protoIDCmp].armorID;
+				if ((Armor[armID].defenseRating > 0)
+					? (armor_val(protoIDCmp, factionID) >= armor_val(protoID, factionID))
+					: (armID == VehPrototype[protoID].armorID)) {
+					if (Chassis[chasCmp].speed >= Chassis[chas].speed) {
+						return false;
+					}
+				}
+			}
+		}
+	}
+	return true;
 }
 
 /*
@@ -1627,7 +1671,7 @@ void __cdecl veh_clear(int vehID, int protoID, int factionID) {
 	Veh[vehID].xCoord = -4;
 	Veh[vehID].yCoord = -4;
 	Veh[vehID].yearEndLurking = 0;
-	Veh[vehID].unknown1 = 0;
+	Veh[vehID].unk1 = 0;
 	Veh[vehID].flags = 0;
 	Veh[vehID].factionID = (uint8_t)factionID;
 	Veh[vehID].protoID = (int16_t)protoID;
@@ -1645,21 +1689,21 @@ void __cdecl veh_clear(int vehID, int protoID, int factionID) {
 	Veh[vehID].dmgIncurred = 0;
 	Veh[vehID].orderAutoType = 0;
 	Veh[vehID].terraformingTurns = 0;
-	Veh[vehID].unknown6 = 0;
+	Veh[vehID].unk6 = 0;
 	Veh[vehID].moveToAIType = 0;
 	Veh[vehID].visibleToFaction = 0;
 	Veh[vehID].homeBaseID = -1;
 	Veh[vehID].morale = (uint8_t)(Players[factionID].ruleMorale + 1);
-	Veh[vehID].unknown5 = 2;
-	Veh[vehID].unknown8 = 0;
-	Veh[vehID].unknown9 = 0;
+	Veh[vehID].unk5 = 2;
+	Veh[vehID].unk8 = 0;
+	Veh[vehID].unk9 = 0;
 }
 
 /*
 Purpose: Check if unit can perform artillery combat. The 2nd parameter determines how sea units
          are treated.
 Original Offset: 005C0DB0
-Return Value: Has artillery ability? True/False
+Return Value: Has artillery ability? true/false
 Status: Complete
 */
 BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn) {

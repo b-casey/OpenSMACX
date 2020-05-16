@@ -13,6 +13,13 @@ You can follow development progress, discuss ideas or issues here:
 https://alphacentauri2.info/index.php?board=23.0
 
 v0.2.2
+* Lots of clean up and optimization of the existing code base.
+* Initial work on the Path class.
+* Added some Council related functions.
+* 50 new functions across almost every game related area with a focus on Map and Technology.
+* Decompiled and redirected function count: 362
+
+Bug Fixes:
 * Fixed a bug under certain conditions that the end game function to determine whether a faction is
   nearing a diplomatic win (Supreme Leader) would return incorrect results. The function aah_ooga() 
   is called with the 2nd parameter set to -1 in certain instances. The original code would then 
@@ -20,9 +27,6 @@ v0.2.2
   faction parameter. In these instances, it would actually be trying to do the diplomacy check 
   against tutorialMoreBases value. There was a check to skip the pact check if the 2nd parameter 
   was 0.  The fix now accepts -1 or 0 to skip the pact check.
-* Various clean up and optimization of existing code.
-* Functions across every game related area with focus on Map.
-* Decompiled and redirected function count: 349
 
 v0.2.1
 * Some additional map functions to get ready for working on Path class.

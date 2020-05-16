@@ -46,6 +46,42 @@ void __cdecl say_tech(int techID, BOOL categoryLvl) {
 }
 
 /*
+Purpose: Determine whether a faction is able to jump up the tech tree for the specified tech.
+Original Offset: 0057CE50
+Return Value: Is a tech leap possible? true/false
+Status: Complete
+*/
+BOOL __cdecl valid_tech_leap(uint32_t techID, int factionID) {
+	int preq1 = Technology[techID].preqTech1;
+	if (preq1 >= 0 && !(has_tech(Technology[preq1].preqTech1, factionID)
+		&& has_tech(Technology[preq1].preqTech2, factionID))) {
+		return false; // doesn't have 1st prerequisite prerequisites
+	}
+	int preq2 = Technology[techID].preqTech2;
+	if (preq2 >= 0 && !(has_tech(Technology[preq2].preqTech1, factionID)
+		&& has_tech(Technology[preq2].preqTech2, factionID))) {
+		return false; // doesn't have 2nd prerequisite prerequisites
+	}
+	if (preq1 <= TechDisabled || preq2 <= TechDisabled) {
+		return false; // disabled
+	}
+	for (uint32_t i = 0; i < MaxReactorNum; i++) {
+		if ((int)techID == Reactor[i].preqTech) {
+			return false; // leap not possible for reactor tech
+		}
+	}
+	for (uint32_t i = 0; i < MaxWeaponNum; i++) {
+		if (Weapon[i].preqTech == (int)techID) { // may end early if two weapons have the same preq
+			return (PlayersData[factionID].ranking <= 2 // lowest two ranking factions
+				// this line is an odd comparison (offensive rating <= best weapon id + 2)
+				// however it might be to prevent leaps for later weapon tech
+				&& Weapon[i].offenseRating <= (weapon_budget(factionID, 99, false) + 2));
+		}
+	}
+	return true;
+}
+
+/*
 Purpose: Craft an output string related to a specific technology. For techIDs outside the standard
          range, craft a string related to world map, comm links or prototypes.
 Original Offset: 005B9C40
@@ -506,7 +542,7 @@ int __cdecl tech_ai(int factionID) {
 	BOOL isHuman = ((1 << factionID) & FactionCurrentBitfield[0]) != 0;
 	for (int i = 0; i < MaxTechnologyNum; i++) {
 		if (tech_avail(i, factionID)) {
-			int techValue = tech_val(i, factionID, FALSE), compare;
+			int techValue = tech_val(i, factionID, false), compare;
 			if (*GameRules & BLIND_RESEARCH) {
 				if (isHuman && (PlayersData[factionID].AI_Growth 
 					|| PlayersData[factionID].AI_Wealth) 
@@ -577,4 +613,78 @@ int __cdecl tech_colonize(int techID) {
 		return 1;
 	}
 	return *(&Technology[techID].growthValue);
+}
+
+/*
+Purpose: Calculate how much researching tech will cost the specified faction.
+Original Offset: 005BE6B0
+Return Value: tech rate / tech cost
+Status: Complete - testing
+*/
+uint32_t __cdecl tech_rate(uint32_t factionID) {
+	if (PlayersData[factionID].techCost >= 0) {
+		return PlayersData[factionID].techCost;
+	}
+	if (!Rules->TechDiscovRatePctStd) {
+		return 999999999;
+	}
+	uint32_t value = range((PlayersData[factionID].earnedTechsSaved * 2) 
+		- PlayersData[factionID].unk_26 + PlayersData[factionID].techRanking, 2, 9999);
+	uint32_t search = 0;
+	for (uint32_t i = 1; i < MaxPlayerNum; i++) {
+		uint32_t compare = PlayersData[i].earnedTechsSaved * 2 + PlayersData[i].techRanking;
+		if (compare > search) {
+			search = compare;
+		}
+	
+	}
+	value /= 2;
+	search /= 2;
+	BOOL isHuman = ((1 << factionID) & FactionCurrentBitfield[0]) != 0;
+	uint32_t diffLvl = isHuman ? PlayersData[factionID].diffLevel : *DiffLevelCurrent;
+	uint32_t value2 = (diffLvl < DLVL_LIBRARIAN) + diffLvl;
+	uint32_t value3 = !isHuman ? *DiffLevelCurrent : 3;
+	uint32_t value4 = isHuman ? value2 * 4 + 8 : 29 - value2 * 3;
+	int maxVal = value + 12;
+	int minVal = 12 - value;
+	if ((int)value4 < minVal || maxVal < minVal) {
+		value4 = minVal;
+	}
+	else if ((int)value4 > maxVal) {
+		value4 = maxVal;
+	}
+	uint32_t techStagnation = *GameRules & TECH_STAGNATION;
+	uint32_t value5 = techStagnation | 0x40;
+	int value6 = (value4 * (value5 >> 5)) >> 1;
+	int cmpVal = value - (*TurnCurrentNum / (value5 >> 3));
+	
+	if (cmpVal < 0 || value6 < 0) {
+		value6 = 0;
+	}
+	else if (cmpVal <= value6) {
+		value6 = cmpVal;
+	}
+	uint32_t value7 = value6 + value4;
+	uint32_t cmpVal2 = value3 * value7 / 10 + 1;
+	uint32_t value8 = (search - value3 - value + 7) / (8 - value3);
+	if (value8 < 0 || cmpVal2 < 0) {
+		value8 = 0;
+	}
+	else if (value8 > cmpVal2) {
+		value8 = value3 * value7 / 10 + 1;
+	}
+	int v20 = PlayersData[factionID].SE_ResearchBase;
+	uint32_t value9 = (value7 - value8) 
+		* range(value - ((v20 <= 0) ? (v20 >= 0) - 1 : 1), 1, 99999);
+	if (Rules->TechDiscovRatePctStd != 100) {
+		value9 = 100 * value9 / Rules->TechDiscovRatePctStd;
+	}
+	if (Players[factionID].ruleTechcost != 100) {
+		value9 = value9 * Players[factionID].ruleTechcost / 100;
+	}
+	uint32_t rate = (value9 * *MapAreaSqRoot) / 56;
+	if (techStagnation) {
+		rate += rate / 2;
+	}
+	return range(rate, 1, 99999999);
 }

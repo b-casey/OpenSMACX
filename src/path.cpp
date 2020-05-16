@@ -98,7 +98,7 @@ int Path::zoc_path(int xCoord, int yCoord, int factionID) {
  Purpose: Find path between points and conditions?
  Original Offset: 0059A530
  Return Value: 
- Status:
+ Status: wip
 */
 int Path::find(int xCoordSrc, int yCoordSrc, int xCoordDst, int yCoordDst, int protoID, 
     int factionID, int unk1, int unk2) {
@@ -106,20 +106,20 @@ int Path::find(int xCoordSrc, int yCoordSrc, int xCoordDst, int yCoordDst, int p
 }
 
 /*
- Purpose:
+ Purpose: TBD
  Original Offset: 0059BC10
  Return Value:
- Status:
+ Status: wip
 */
 int Path::move(int vehID, int factionID) {
     return 0;
 }
 
 /*
- Purpose:
+ Purpose: TBD
  Original Offset: 0059C200
  Return Value: n/a
- Status:
+ Status: wip
 */
 void Path::make_abstract() {
     for (uint32_t y = 0; y < *MapAbstractVertBounds; y++) {
@@ -141,7 +141,7 @@ void Path::make_abstract() {
  Purpose: Fixup of region values? Merge continents?
  Original Offset: 0059C340
  Return Value: n/a
- Status:
+ Status: wip
 */
 void Path::UNK1(uint32_t region1, uint32_t region2) {
     Continents[region2].unk1 += Continents[region1].unk1;
@@ -154,10 +154,10 @@ void Path::UNK1(uint32_t region1, uint32_t region2) {
 }
 
 /*
- Purpose:
+ Purpose: TBD
  Original Offset: 0059C3C0
  Return Value: n/a
- Status:
+ Status: wip
 */
 void Path::territory(int xCoord, int yCoord, int region, int factionID) {
     if (is_ocean(xCoord, yCoord)) {
@@ -191,10 +191,10 @@ void Path::territory(int xCoord, int yCoord, int region, int factionID) {
 }
 
 /*
- Purpose:
+ Purpose: TBD
  Original Offset: 0059C520
  Return Value: n/a
- Status:
+ Status: wip
 */
 void Path::continent(int xCoord, int yCoord, uint32_t region) {
     Continents[region].unk1 = 0;
@@ -239,20 +239,20 @@ void Path::continent(int xCoord, int yCoord, uint32_t region) {
 }
 
 /*
- Purpose:
+ Purpose: TBD
  Original Offset: 0059C790
  Return Value: n/a
- Status:
+ Status: wip
 */
 void Path::continents() {
     //
 }
 
 /*
- Purpose:
+ Purpose: TBD
  Original Offset: 0059CCA0
  Return Value: n/a
- Status:
+ Status: wip
 */
 void Path::sensors(int factionID, int *xCoordOut, int *yCoordOut) {
     //

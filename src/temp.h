@@ -76,11 +76,14 @@ extern func8 *parse_string_OG;
 //
 typedef BOOL func11(int, int, int);
 extern func11 *wants_to_attack;
-typedef int func13(int, int, BOOL);
-extern func13 *tech_val_OG;
 
 typedef void func12(int);
 extern func12 *enemy_capabilities_OG;
+
+typedef uint32_t func16(uint32_t);
+extern func16 *tech_rate_OG;
+typedef BOOL func17(uint32_t, uint32_t);
+extern func17 *wants_prototype_OG;
 ///
 extern char1032 *stringTemp;
 extern char256 *ParseStrBuffer;
@@ -110,3 +113,8 @@ OPENSMACX_API BOOL __cdecl do_draw();
 OPENSMACX_API void __cdecl do_all_draws();
 OPENSMACX_API BOOL __cdecl do_keyboard();
 OPENSMACX_API void __cdecl do_all_keyboard();
+
+// tech_val output
+typedef int func13(int, int, BOOL);
+extern func13 *tech_val_OG;
+OPENSMACX_API void __cdecl tech_calc_output();

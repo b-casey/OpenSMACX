@@ -2,10 +2,17 @@
 
 # v1.0 : initial
 
-import argparse, mmap, os, shutil, struct, subprocess # built-in libraries
-import pefile # use pip to install
+# built-in libraries
+import argparse
+import mmap
+import os
+import shutil
+import struct
+import subprocess
+# use pip to install
+import pefile
 
-count = 0 # functions patched
+count = 0 # functions patched counter
 
 def patch_call_bytes(file):
 	file.write_byte(0xFF)
@@ -44,7 +51,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
 	bin_app = mmap.mmap(f.fileno(), 0)
-	# next: 360
+	# next: 362
 	#
 	
 	# ALPHA
@@ -795,7 +802,13 @@ with open(exe_path, "r+b") as f:
 	bin_app.write(struct.pack("<L", addr+4*328))
 	bin_app.seek(0x001BDC10) # ?tech_ai@@YAHH@Z
 	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*337))	
+	bin_app.write(struct.pack("<L", addr+4*337))
+	bin_app.seek(0x001BCBE0) # ?tech_val@@YAHHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*360))
+	bin_app.seek(0x0017CE50) # ?valid_tech_leap@@YAHIH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*361))
 	# TERRAFORMING
 	bin_app.seek(0x001BAB40) # ?terrain_avail@@YAHHHH@Z
 	patch_call_bytes(bin_app)

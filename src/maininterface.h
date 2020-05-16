@@ -27,7 +27,6 @@
   * MainInterface class
   */
 class OPENSMACX_API MainInterface: GraphicWin {
-
 	public: // narrow down what can be private vs protected vs public
 		uint32_t field_A14;
 		uint32_t field_A18;

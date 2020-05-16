@@ -245,7 +245,6 @@ void __cdecl name_base(int factionID, LPSTR nameOut, BOOL isFinal, BOOL isSeaBas
 				text_close();
 				return;
 			}
-			
 		}
 		text_close();
 	}

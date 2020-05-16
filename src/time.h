@@ -23,7 +23,6 @@
   * Time class
   */
 class OPENSMACX_API Time {
-
 private:
 	int unkToggle; // some kind of toggle or type
 	UINT_PTR idEvent;

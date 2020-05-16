@@ -156,6 +156,7 @@ extern int *TechCommerceCount;
 extern char TechName[80];
 
 OPENSMACX_API void __cdecl say_tech(int techID, BOOL categoryLvl);
+OPENSMACX_API BOOL __cdecl valid_tech_leap(uint32_t techID, int factionID);
 OPENSMACX_API void __cdecl say_tech(LPSTR output, int techID, BOOL categoryLvl);
 OPENSMACX_API LPSTR __cdecl tech_name(int techID, BOOL categoryLvl);
 OPENSMACX_API BOOL __cdecl has_tech(int techID, int factionID);
@@ -170,3 +171,4 @@ OPENSMACX_API int __cdecl tech_mil(int techID);
 OPENSMACX_API int __cdecl tech_tech(int techID);
 OPENSMACX_API int __cdecl tech_infra(int techID);
 OPENSMACX_API int __cdecl tech_colonize(int techID);
+OPENSMACX_API uint32_t __cdecl tech_rate(uint32_t factionID);

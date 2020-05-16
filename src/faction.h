@@ -224,7 +224,7 @@ struct player {
 
 struct player_data {
 	uint32_t playerFlags;
-	int ranking;
+	uint32_t ranking; // 0 (lowest) to 7 (highest)
 	int diffLevel;
 	uint32_t baseNameOffset;
 	uint32_t baseSeaNameOffset;

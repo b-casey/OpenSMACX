@@ -332,6 +332,7 @@ class OPENSMACX_API BasePop : GraphicWin {
 	LPSTR okText;
 	LPSTR cancelText;
 	uint32_t field_322C;
+
 public:
 	BasePop() { ; }
 	~BasePop() { ; }

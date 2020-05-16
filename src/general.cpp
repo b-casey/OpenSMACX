@@ -618,7 +618,6 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
 				}
 				// unfinished
 				*/
-
 			}
 			break;
 			case 'L': // done -> needs testing

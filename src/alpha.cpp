@@ -32,6 +32,7 @@
 #include "veh.h"
 
 LPCSTR AlphaxFileID = "ALPHAX";
+LPCSTR ScriptTxtID = "SCRIPT";
 LPSTR *Compass = (LPSTR *)0x00945D48;
 LPSTR *Difficulty = (LPSTR *)0x0096C85C;
 label *Label = (label *)0x009B90F8;
@@ -835,7 +836,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		return true;
 	}
 	text_clear_index();
-	text_make_index("SCRIPT");
+	text_make_index(ScriptTxtID);
 	text_make_index(AlphaxFileID);
 	// Technology; Rules; Terrain
 	if (read_tech() || read_basic_rules() || text_open(AlphaxFileID, "TERRAIN")) {
