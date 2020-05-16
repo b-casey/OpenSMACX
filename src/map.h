@@ -75,7 +75,7 @@ enum terrain_bit {
 	BIT_MINERAL_RSC = 0x20000,
 	BIT_AIRBASE = 0x40000,
 	BIT_SOIL_ENRICHER = 0x80000,
-	BIT_SUPPLY_REMOVE = 0x100000, // ?
+	BIT_SUPPLY_REMOVE = 0x100000, // Prevent randomly generated pods from appearing here
 	BIT_FOREST = 0x200000,
 	BIT_CONDENSER = 0x400000,
 	BIT_ECH_MIRROR = 0x800000,
