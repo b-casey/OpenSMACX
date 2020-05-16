@@ -20,6 +20,29 @@
  /*
   * Terraforming related objects, variables and functions.
   */
+enum terraform_id {
+	TERRA_FARM = 0x0,
+	TERRA_SOIL_ENRICHER = 0x1,
+	TERRA_MINE = 0x2,
+	TERRA_SOLAR_COLLECTOR_TIDAL = 0x3,
+	TERRA_FOREST = 0x4,
+	TERRA_ROAD = 0x5,
+	TERRA_MAGTUBE = 0x6,
+	TERRA_BUNKER = 0x7,
+	TERRA_AIRBASE = 0x8,
+	TERRA_SENSOR = 0x9,
+	TERRA_FUNGUS_REMOVE = 0xA,
+	TERRA_FUNGUS_PLANT = 0xB,
+	TERRA_CONDENSER = 0xC,
+	TERRA_ECHELON_MIRROR = 0xD,
+	TERRA_THERMAL_BOREHOLE = 0xE,
+	TERRA_AQUIFER = 0xF,
+	TERRA_RAISE_LAND = 0x10,
+	TERRA_LOWER_LAND = 0x11,
+	TERRA_LEVEL_TERRAIN = 0x12,
+	TERRA_MONOLITH = 0x13,
+};
+
 struct rules_terraforming {
 	LPSTR name;
 	LPSTR nameSea;
@@ -52,29 +75,6 @@ const uint32_t flagsTerraforming[] = { // land, sea
 	         0,          0, // lower land 
            	 0,          0, // level terrain
 	    0x2000, 0x30000400, // monolith
-};
-
-enum terraform_id {
-	TERRA_FARM = 0x0,
-	TERRA_SOIL_ENRICHER = 0x1,
-	TERRA_MINE = 0x2,
-	TERRA_SOLAR_COLLECTOR_TIDAL = 0x3,
-	TERRA_FOREST = 0x4,
-	TERRA_ROAD = 0x5,
-	TERRA_MAGTUBE = 0x6,
-	TERRA_BUNKER = 0x7,
-	TERRA_AIRBASE = 0x8,
-	TERRA_SENSOR = 0x9,
-	TERRA_FUNGUS_REMOVE = 0xA,
-	TERRA_FUNGUS_PLANT = 0xB,
-	TERRA_CONDENSER = 0xC,
-	TERRA_ECHELON_MIRROR = 0xD,
-	TERRA_THERMAL_BOREHOLE = 0xE,
-	TERRA_AQUIFER = 0xF,
-	TERRA_RAISE_LAND = 0x10,
-	TERRA_LOWER_LAND = 0x11,
-	TERRA_LEVEL_TERRAIN = 0x12,
-	TERRA_MONOLITH = 0x13,
 };
 
 constexpr int MaxTerrainNum = 20;

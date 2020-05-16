@@ -20,6 +20,93 @@
  /*
   * Map related objects, variables and functions.
   */
+enum terrain_altitude_bit {
+	ALT_BIT_OCEAN_TRENCH = 0x0,
+	ALT_BIT_OCEAN = 0x20,
+	ALT_BIT_OCEAN_SHELF = 0x40,
+	ALT_BIT_SHORE_LINE = 0x60,
+	ALT_BIT_1_LEVEL_ABOVE_SEA = 0x80,
+	ALT_BIT_2_LEVELS_ABOVE_SEA = 0xA0,
+	ALT_BIT_3_LEVELS_ABOVE_SEA = 0xC0,
+	ALT_BIT_4_LEVELS_ABOVE_SEA = 0xE0,
+};
+
+enum terrain_altitude {
+	ALT_OCEAN_TRENCH = 0,
+	ALT_OCEAN = 1,
+	ALT_OCEAN_SHELF = 2,
+	ALT_SHORE_LINE = 3,
+	ALT_1_LEVEL_ABOVE_SEA = 4,
+	ALT_2_LEVELS_ABOVE_SEA = 5,
+	ALT_3_LEVELS_ABOVE_SEA = 6,
+	ALT_4_LEVELS_ABOVE_SEA = 7,
+};
+
+enum terrain_rainfall_bit { // land modifiers only
+	RAINFALL_ARID = 0x0,
+	RAINFALL_MOIST = 0x8, // can only have one value set, otherwise tile glitches
+	RAINFALL_RAINY = 0x10, // " "
+};
+
+enum terrain_rock_bit { // land modifiers only
+	TERRAIN_FLAT = 0x0,
+	TERRAIN_ROLLING = 0x40, // can only have one value set, otherwise game will crash
+	TERRAIN_ROCKY = 0x80, // " "
+};
+
+enum terrain_bit {
+	BIT_BASE_IN_TILE = 0x1,
+	BIT_VEH_IN_TILE = 0x2,
+	BIT_ROAD = 0x4,
+	BIT_MAGTUBE = 0x8,
+	BIT_MINE = 0x10,
+	BIT_FUNGUS = 0x20,
+	BIT_SOLAR_TIDAL = 0x40,
+	BIT_RIVER = 0x80,
+	BIT_RIVER_SRC = 0x100,
+	BIT_UNK_200 = 0x200, // something related to cluster of rivers
+	BIT_RSC_BONUS = 0x400, // Mineral, Nutrient, Energy
+	BIT_BUNKER = 0x800,
+	BIT_BASE_RADIUS = 0x1000, // production radius; 21 tiles per base (20 surrounding + base tile)
+	BIT_MONOLITH = 0x2000,
+	BIT_UNK_4000 = 0x4000, // continent + single tile island off coast, used by AI; boundary?
+	BIT_FARM = 0x8000,
+	BIT_ENERGY_RSC = 0x10000,
+	BIT_MINERAL_RSC = 0x20000,
+	BIT_AIRBASE = 0x40000,
+	BIT_SOIL_ENRICHER = 0x80000,
+	BIT_SUPPLY_REMOVE = 0x100000, // ?
+	BIT_FOREST = 0x200000,
+	BIT_CONDENSER = 0x400000,
+	BIT_ECH_MIRROR = 0x800000,
+	BIT_THERMAL_BORE = 0x1000000,
+	BIT_UNK_2000000 = 0x2000000, // ?
+	BIT_UNK_4000000 = 0x4000000, // ?
+	BIT_UNK_8000000 = 0x8000000, // ?
+	BIT_SUPPLY_POD = 0x10000000,
+	BIT_NUTRIENT_RSC = 0x20000000,
+	BIT_UNK_40000000 = 0x40000000, // ?
+	BIT_SENSOR_ARRAY = 0x80000000,
+};
+
+enum terrain_landmark_bit2 {
+	LM_CRATER = 0x1,
+	LM_VOLCANO = 0x2,
+	LM_JUNGLE = 0x4,
+	LM_URANIUM = 0x8,
+	LM_SARGASSO = 0x10,
+	LM_RUINS = 0x20,
+	LM_DUNES = 0x40,
+	LM_FRESH = 0x80,
+	LM_MESA = 0x100,
+	LM_CANYON = 0x200,
+	LM_GEOTHERMAL = 0x400,
+	LM_RIDGE = 0x800,
+	LM_BOREHOLE = 0x1000,
+	LM_NEXUS = 0x2000,
+	LM_UNITY = 0x4000,
+	LM_FOSSIL = 0x8000,
+};
 
 /*
 Region notes:
@@ -63,94 +150,6 @@ struct continent {
 struct rules_natural {
 	LPSTR name;
 	LPSTR nameShort;
-};
-
-enum terrain_altitude_bit {
-	ALT_BIT_OCEAN_TRENCH = 0x0,
-	ALT_BIT_OCEAN = 0x20,
-	ALT_BIT_OCEAN_SHELF = 0x40,
-	ALT_BIT_SHORE_LINE = 0x60,
-	ALT_BIT_1_LEVEL_ABOVE_SEA = 0x80,
-	ALT_BIT_2_LEVELS_ABOVE_SEA = 0xA0,
-	ALT_BIT_3_LEVELS_ABOVE_SEA = 0xC0,
-	ALT_BIT_4_LEVELS_ABOVE_SEA = 0xE0,
-};
-
-enum terrain_altitude {
-	ALT_OCEAN_TRENCH = 0,
-	ALT_OCEAN = 1,
-	ALT_OCEAN_SHELF = 2,
-	ALT_SHORE_LINE = 3,
-	ALT_1_LEVEL_ABOVE_SEA = 4,
-	ALT_2_LEVELS_ABOVE_SEA = 5,
-	ALT_3_LEVELS_ABOVE_SEA = 6,
-	ALT_4_LEVELS_ABOVE_SEA = 7,
-};
-
-enum terrain_rainfall_bit { // land modifiers only
-	RAINFALL_ARID = 0x0,
-	RAINFALL_MOIST = 0x8, // can only have one value set, otherwise tile glitches
-	RAINFALL_RAINY = 0x10, // " "
-};
-
-enum terrain_rock_bit { // land modifiers only
-	TERRAIN_FLAT = 0x0,
-	TERRAIN_ROLLING = 0x40, // can only have one value set, otherwise game will crash
-	TERRAIN_ROCKY = 0x80, // " "
-};
-
-enum terrain_bit {
-	BIT_BASE_IN_TILE  = 0x1,
-	BIT_VEH_IN_TILE   = 0x2,
-	BIT_ROAD          = 0x4,
-	BIT_MAGTUBE       = 0x8,
-	BIT_MINE          = 0x10,
-	BIT_FUNGUS        = 0x20,
-	BIT_SOLAR_TIDAL   = 0x40,
-	BIT_RIVER         = 0x80,
-	BIT_RIVER_SRC     = 0x100,
-	BIT_UNK_200       = 0x200, // something related to cluster of rivers
-	BIT_RSC_BONUS     = 0x400, // Mineral, Nutrient, Energy
-	BIT_BUNKER        = 0x800,
-	BIT_BASE_RADIUS   = 0x1000, // production radius; 21 tiles per base (20 surrounding + base tile)
-	BIT_MONOLITH      = 0x2000,
-	BIT_UNK_4000      = 0x4000, // continent + single tile island off coast, used by AI; boundary?
-	BIT_FARM          = 0x8000,
-	BIT_ENERGY_RSC    = 0x10000,
-	BIT_MINERAL_RSC   = 0x20000,
-	BIT_AIRBASE       = 0x40000,
-	BIT_SOIL_ENRICHER = 0x80000,
-	BIT_SUPPLY_REMOVE = 0x100000, // ?
-	BIT_FOREST        = 0x200000,
-	BIT_CONDENSER     = 0x400000,
-	BIT_ECH_MIRROR    = 0x800000,
-	BIT_THERMAL_BORE  = 0x1000000,
-	BIT_UNK_2000000   = 0x2000000, // ?
-	BIT_UNK_4000000   = 0x4000000, // ?
-	BIT_UNK_8000000   = 0x8000000, // ?
-	BIT_SUPPLY_POD    = 0x10000000,
-	BIT_NUTRIENT_RSC  = 0x20000000,
-	BIT_UNK_40000000  = 0x40000000, // ?
-	BIT_SENSOR_ARRAY  = 0x80000000,
-};
-
-enum terrain_landmark_bit2 {
-	LM_CRATER = 0x1,
-	LM_VOLCANO = 0x2,
-	LM_JUNGLE = 0x4,
-	LM_URANIUM = 0x8,
-	LM_SARGASSO = 0x10,
-	LM_RUINS = 0x20,
-	LM_DUNES = 0x40,
-	LM_FRESH = 0x80,
-	LM_MESA = 0x100,
-	LM_CANYON = 0x200,
-	LM_GEOTHERMAL = 0x400,
-	LM_RIDGE = 0x800,
-	LM_BOREHOLE = 0x1000,
-	LM_NEXUS = 0x2000,
-	LM_UNITY = 0x4000,
-	LM_FOSSIL = 0x8000,
 };
 
 constexpr int MaxNaturalNum = 16;

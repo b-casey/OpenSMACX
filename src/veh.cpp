@@ -1053,7 +1053,7 @@ uint32_t __cdecl proto_cost(uint32_t chassisID, uint32_t weaponID, uint32_t armo
 				// 010000000000 - Cost increased for land units; Deep Radar
 				// Shifted flag check into main ability loop rather than its 
 				// own loop at 1st triad checks
-				if (Ability[i].flags & COST_INC_LAND_UNIT && triad == TRIAD_LAND) {
+				if (Ability[i].flags & AFLAG_COST_INC_LAND_UNIT && triad == TRIAD_LAND) {
 					// separate variable keeps logic same (two abilities, both with cost 0, 
 					// one with cost increase flag will trigger above "if (abilModifier)" if 
 					// this is directly abilModifier++)
@@ -1391,7 +1391,8 @@ BOOL __cdecl veh_avail(int protoID, int factionID, int baseID) {
 			return false;
 		}
 	}
-	if (VehPrototype[protoID].plan == PLAN_COLONIZATION && *GameRules & SCENRULE_NO_COLONY_PODS) {
+	if (VehPrototype[protoID].plan == PLAN_COLONIZATION 
+		&& *GameRules & RULES_SCENRULE_NO_COLONY_PODS) {
 		return false;
 	}
 	if (baseID >= 0 && Chassis[VehPrototype[protoID].chassisID].triad == TRIAD_SEA 
@@ -1442,7 +1443,7 @@ BOOL __cdecl wants_prototype(uint32_t protoID, uint32_t factionID) {
 			&& Chassis[chas].triad == Chassis[chasCmp].triad) {
 			uint8_t weapIDCmp = VehPrototype[protoIDCmp].weaponID;
 			uint8_t modeCmp = Weapon[weapIDCmp].mode;
-			int8_t offRating, offRatingCmp;
+			int8_t offRating;
 			if ((modeCmp > WPN_MODE_MISSILE)
 				? (modeCmp == Weapon[VehPrototype[protoID].weaponID].mode)
 				: (offRating = Weapon[weapIDCmp].offenseRating, offRating < 0)
@@ -1485,7 +1486,7 @@ int __cdecl veh_at(int xCoord, int yCoord) {
 	if (!*VehBitError) {
 		log_say("Vehicle Bit Error  (x, y)", xCoord, yCoord, 0);
 	}
-	if (*GameState & TGL_SCENARIO_EDITOR || *GameState & TGL_DEBUG_MODE || *MultiplayerToggle) {
+	if (*GameState & STATE_SCENARIO_EDITOR || *GameState & STATE_DEBUG_MODE || *MultiplayerToggle) {
 		if (*VehBitError) {
 			return -1;
 		}
@@ -1509,7 +1510,7 @@ BOOL __cdecl has_abil(int protoID, int abilityID) {
 	if (!factionID) {
 		return false; // skip basic prototypes from #UNITS
 	}
-	if (Players[factionID].ruleFlags & FLAG_ALIEN && abilityID == ABL_DEEP_RADAR) {
+	if (Players[factionID].ruleFlags & RFLAG_ALIEN && abilityID == ABL_DEEP_RADAR) {
 		return true; // Caretakers + Usurpers > "Deep Radar" ability for all units
 	}
 	for (int i = 0; i < Players[factionID].factionBonusCount; i++) {
@@ -1738,7 +1739,7 @@ uint32_t __cdecl morale_veh(int vehID, BOOL checkDroneRiot, int factionIDvsNativ
 		int probeMorale = range(PlayersData[factionID].SE_Probe, 0, 3);
 		probeMorale += has_project(SP_TELEPATHIC_MATRIX, factionID) ? 2 : 0;
 		for (int i = 0; i < MaxTechnologyNum; i++) {
-			if (Technology[i].flags & IMPROVED_PROBES && has_tech(i, factionID)) {
+			if (Technology[i].flags & TFLAG_IMPROVED_PROBES && has_tech(i, factionID)) {
 				probeMorale++;
 			}
 		}
@@ -1773,7 +1774,7 @@ uint32_t __cdecl morale_veh(int vehID, BOOL checkDroneRiot, int factionIDvsNativ
 	if (ruleMorale > 0) {
 		morale += ruleMorale;
 	}
-	BOOL moraleFlag = Players[factionID].ruleFlags & FLAG_MORALE;
+	BOOL moraleFlag = Players[factionID].ruleFlags & RFLAG_MORALE;
 	if (moraleFlag && morale < 0) {
 		morale = 0;
 	}
@@ -1951,7 +1952,7 @@ Status: Complete
 */
 uint32_t __cdecl prototype_factor(int protoID) {
 	uint32_t factionID = protoID / MaxVehProtoFactionNum;
-	if (Players[factionID].ruleFlags & FLAG_FREEPROTO 
+	if (Players[factionID].ruleFlags & RFLAG_FREEPROTO 
 		|| PlayersData[factionID].diffLevel <= DLVL_SPECIALIST) {
 		return 0;
 	}

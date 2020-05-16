@@ -228,16 +228,16 @@ void __cdecl tech_effects(int factionID) {
 	for (uint32_t techID = 0; techID < MaxTechnologyNum; techID++) {
 		if (has_tech(techID, factionID)) {
 			uint32_t flags = Technology[techID].flags;
-			if (flags & INC_FUNGUS_ENERGY) {
+			if (flags & TFLAG_INC_FUNGUS_ENERGY) {
 				PlayersData[factionID].techFungusEnergy++;
 			}
-			if (flags & INC_FUNGUS_MINERALS) {
+			if (flags & TFLAG_INC_FUNGUS_MINERALS) {
 				PlayersData[factionID].techFungusMineral++;
 			}
-			if (flags & INC_FUNGUS_NUTRIENT) {
+			if (flags & TFLAG_INC_FUNGUS_NUTRIENT) {
 				PlayersData[factionID].techFungusNutrient++;
 			}
-			if (flags & INC_COMMERCE) {
+			if (flags & TFLAG_INC_COMMERCE) {
 				PlayersData[factionID].techCommerceBonus++;
 			}
 		}
@@ -313,7 +313,7 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 		}
 		uint32_t factorAI = 1;
 		if (!simpleCalc) {
-			factorAI = (*GameRules & BLIND_RESEARCH) ? 4 : 2;
+			factorAI = (*GameRules & RULES_BLIND_RESEARCH) ? 4 : 2;
 		}
 		BOOL aiGrowth = PlayersData[factionID].AI_Growth, aiPower = PlayersData[factionID].AI_Power,
 			aiWealth = PlayersData[factionID].AI_Wealth, aiTech = PlayersData[factionID].AI_Tech;
@@ -417,8 +417,8 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 		if ((aiWealth || !*MapCloudCover) && tech_is_preq(techID, TECH_ENVECON, 9999)) {
 			valueRet *= 2;
 		}
-		if (Technology[techID].flags & SECRETS && !GameTechDiscovered[techID] 
-			&& !(*GameRules & BLIND_RESEARCH)) {
+		if (Technology[techID].flags & TFLAG_SECRETS && !GameTechDiscovered[techID]
+			&& !(*GameRules & RULES_BLIND_RESEARCH)) {
 			valueRet *= (aiPower + 1) * 2;
 		}
 		if (Players[factionID].rulePsi > 0) {
@@ -437,7 +437,7 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 			if (tech_is_preq(techID, preqTechFusion, 9999)) {
 				valueRet++;
 			}
-			if (tech_is_preq(techID, preqTechFusion, 1) && !(*GameRules & BLIND_RESEARCH)) {
+			if (tech_is_preq(techID, preqTechFusion, 1) && !(*GameRules & RULES_BLIND_RESEARCH)) {
 				valueRet *= 2;
 			}
 		}
@@ -472,7 +472,7 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 		}
 		if (aiTech || !aiPower) {
 			for (int i = 0; i < MaxTechnologyNum; i++) {
-				if (!has_tech(i, factionID) && Technology[i].flags & SECRETS 
+				if (!has_tech(i, factionID) && Technology[i].flags & TFLAG_SECRETS
 					&& !GameTechDiscovered[i] && tech_is_preq(techID, i, 1)) {
 					valueRet *= 3;
 				}
@@ -543,7 +543,7 @@ int __cdecl tech_ai(int factionID) {
 	for (int i = 0; i < MaxTechnologyNum; i++) {
 		if (tech_avail(i, factionID)) {
 			int techValue = tech_val(i, factionID, false), compare;
-			if (*GameRules & BLIND_RESEARCH) {
+			if (*GameRules & RULES_BLIND_RESEARCH) {
 				if (isHuman && (PlayersData[factionID].AI_Growth 
 					|| PlayersData[factionID].AI_Wealth) 
 					&& i == VehPrototype[BSC_FORMERS].preqTech) {
@@ -653,7 +653,7 @@ uint32_t __cdecl tech_rate(uint32_t factionID) {
 	else if ((int)value4 > maxVal) {
 		value4 = maxVal;
 	}
-	uint32_t techStagnation = *GameRules & TECH_STAGNATION;
+	uint32_t techStagnation = *GameRules & RULES_TECH_STAGNATION;
 	uint32_t value5 = techStagnation | 0x40;
 	int value6 = (value4 * (value5 >> 5)) >> 1;
 	int cmpVal = value - (*TurnCurrentNum / (value5 >> 3));

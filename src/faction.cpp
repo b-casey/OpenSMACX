@@ -64,7 +64,7 @@ Return Value: factionID nearing diplomatic victory or zero
 Status: Complete
 */
 uint32_t __cdecl aah_ooga(int factionID, int pactFactionID) {
-	if (!(*GameRules & VICTORY_PEACE_IN_OUR_TIME)) {
+	if (!(*GameRules & RULES_VICTORY_DIPLOMATIC)) {
 		return 0; // Diplomatic Victory not allowed
 	}
 	uint32_t votesTotal = 0;
@@ -75,7 +75,7 @@ uint32_t __cdecl aah_ooga(int factionID, int pactFactionID) {
 	for (int i = 1; i < MaxPlayerNum; i++) {
 		if (i != pactFactionID 
 			&& (pactFactionID <= 0 || !(PlayersData[i].diploStatus[pactFactionID] & DSTATUS_PACT) 
-				|| !(*GameRules & VICTORY_ONE_FOR_ALL))) {
+				|| !(*GameRules & RULES_VICTORY_COOPERATIVE))) {
 			uint32_t proposalPreq = Proposal[PROP_UNITE_SUPREME_LEADER].preqTech;
 			if ((has_tech(proposalPreq, factionID)
 				|| (proposalPreq >= 0 && (has_tech(Technology[proposalPreq].preqTech1, factionID)
@@ -135,7 +135,7 @@ void __cdecl see_map_check() {
 		}
 		if (!(PlayersData[factionID].playerFlags & PFLAG_MAP_REVEALED)) { // skip Tech check if set
 			for (int techID = 0; techID < MaxTechnologyNum; techID++) {
-				if (Technology[techID].flags & REVEALS_MAP && has_tech(techID, factionID)) {
+				if (Technology[techID].flags & TFLAG_REVEALS_MAP && has_tech(techID, factionID)) {
 					PlayersData[factionID].playerFlags |= PFLAG_MAP_REVEALED;
 				}
 			}

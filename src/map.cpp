@@ -98,7 +98,7 @@ int __cdecl whose_territory(int factionID, int xCoord, int yCoord, int *baseID, 
 		return -1; // no owner
 	}
 	if (factionID != owner) {
-		if (!ignoreComm && !(*GameState & TGL_OMNISCIENT_VIEW)
+		if (!ignoreComm && !(*GameState & STATE_OMNISCIENT_VIEW)
 			&& (PlayersData[factionID].diploStatus[owner] 
 				& (DSTATUS_COMMLINK | DSTATUS_UNK_0x8000000)) 
 			!= (DSTATUS_COMMLINK | DSTATUS_UNK_0x8000000)) {
@@ -856,7 +856,7 @@ uint32_t __cdecl bonus_at(int xCoord, int yCoord, int unkVal) {
 	uint32_t alt = alt_at(xCoord, yCoord);
 	BOOL hasRscBonus = bit & BIT_RSC_BONUS;
 	if (!hasRscBonus && (!*MapRandSeed 
-		|| (alt >= ALT_SHORE_LINE && !(*GameRules & NO_UNITY_SCATTERING)))) {
+		|| (alt >= ALT_SHORE_LINE && !(*GameRules & RULES_NO_UNITY_SCATTERING)))) {
 		return 0;
 	}
 	uint32_t avg = (xCoord + yCoord) >> 1;
@@ -889,7 +889,7 @@ uint32_t __cdecl goody_at(int xCoord, int yCoord) {
 	if (bit & (BIT_SUPPLY_REMOVE | BIT_MONOLITH)) {
 		return 0; // nothing, supply pod already opened or monolith
 	}
-	if (*GameRules & NO_UNITY_SCATTERING) {
+	if (*GameRules & RULES_NO_UNITY_SCATTERING) {
 		return (bit & (BIT_UNK_4000000|BIT_UNK_8000000)) ? 2 : 0; // ?
 	}
 	if (bit & BIT_SUPPLY_POD) {

@@ -33,7 +33,7 @@ Status: Complete
 BOOL __cdecl terrain_avail(int terraformID, BOOL isSea, int factionID) {
 	int preqTech = *(&Terraforming[terraformID].preqTech + isSea);
 	if (preqTech < TechNone || ((terraformID == TERRA_RAISE_LAND || terraformID == TERRA_LOWER_LAND) 
-		&& *GameRules & SCENRULE_NO_TERRAFORMING)) {
+		&& *GameRules & RULES_SCENRULE_NO_TERRAFORMING)) {
 		return false;
 	}
 	if (terraformID >= TERRA_CONDENSER && terraformID <= TERRA_LEVEL_TERRAIN

@@ -312,7 +312,7 @@ int __cdecl base_making(int productionID, int baseID) {
 	uint32_t retool = Rules->RetoolStrictness;
 	int sknOff = facility_offset("Skunkworks");
 	if ((has_fac_built(FAC_SKUNKWORKS, baseID) // has Skunkworks
-		|| (Players[Base[baseID].factionIDCurrent].ruleFlags & FLAG_FREEPROTO // bug fix
+		|| (Players[Base[baseID].factionIDCurrent].ruleFlags & RFLAG_FREEPROTO // bug fix
 			&& sknOff >= 0 && has_tech(Facility[sknOff].preqTech, Base[baseID].factionIDCurrent)))
 		&& retool >= 1) { // don't override if retool strictness is already set to always free (0)
 		retool = 1; // Skunkworks or FREEPROTO + prerequisite tech > 'Free in Category'
@@ -566,17 +566,18 @@ Return Value: Is base an objective? true/false
 Status: Complete
 */
 BOOL __cdecl is_objective(int baseID) {
-	if (*GameRules & SCN_VICT_ALL_BASE_COUNT_OBJ || Base[baseID].event & BEVENT_OBJECTIVE) {
+	if (*GameRules & RULES_SCN_VICT_ALL_BASE_COUNT_OBJ || Base[baseID].event & BEVENT_OBJECTIVE) {
 		return true;
 	}
-	if (*GameRules & SCN_VICT_SP_COUNT_OBJ) {
+	if (*GameRules & RULES_SCN_VICT_SP_COUNT_OBJ) {
 		for (int i = 0; i < MaxSecretProjectNum; i++) {
 			if (base_project(i) == baseID) {
 				return true;
 			}
 		}
 	}
-	if (*GameState & SCN_VICT_BASE_FACIL_COUNT_OBJ && has_fac(*ScnVictFacilityObj, baseID, 0)) {
+	if (*GameState & STATE_SCN_VICT_BASE_FACIL_COUNT_OBJ
+		&& has_fac(*ScnVictFacilityObj, baseID, 0)) {
 		return true;
 	}
 	return false;
@@ -660,11 +661,11 @@ Status: Complete
 BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID, int queueCount) {
 	// initial checks
 	if (!facilityID || (facilityID == FAC_SKUNKWORKS && *DiffLevelCurrent <= DLVL_SPECIALIST)
-		|| (facilityID >= FAC_HUMAN_GENOME_PROJ && *GameRules & SCENRULE_NO_BUILDING_SP)) {
+		|| (facilityID >= FAC_HUMAN_GENOME_PROJ && *GameRules & RULES_SCENRULE_NO_BUILDING_SP)) {
 		return false; // Skunkworks removed if there are no prototype costs
 	}
 	if (facilityID == FAC_ASCENT_TO_TRANSCENDENCE) { // at top since anyone can build it
-		return ascending(factionID) && *GameRules & VICTORY_HIGHER_GOAL
+		return ascending(factionID) && *GameRules & RULES_VICTORY_TRANSCENDENCE
 			&& _stricmp(Players[factionID].filename, "CARETAKE"); // bug fix for Caretakers
 	}
 	if (!has_tech(Facility[facilityID].preqTech, factionID)) { // Check tech for facility + SP
@@ -699,7 +700,7 @@ BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID, int queue
 			return has_fac(FAC_PERIMETER_DEFENSE, baseID, queueCount)
 				|| has_project(SP_CITIZENS_DEFENSE_FORCE, factionID); // Cumulative
 		case FAC_SKUNKWORKS:
-			return !(Players[factionID].ruleFlags & FLAG_FREEPROTO); // no prototype costs? skip
+			return !(Players[factionID].ruleFlags & RFLAG_FREEPROTO); // no prototype costs? skip
 		case FAC_HOLOGRAM_THEATRE:
 			return has_fac(FAC_RECREATION_COMMONS, baseID, queueCount) // not documented in manual
 				&& !has_project(SP_VIRTUAL_WORLD, factionID); // Network Nodes replaces Theater
@@ -744,7 +745,7 @@ BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID, int queue
 				|| has_project(SP_CLOUDBASE_ACADEMY, factionID)
 				|| has_project(SP_SPACE_ELEVATOR, factionID);
 		case FAC_SUBSPACE_GENERATOR: // Progenitor factions only
-			return *SMACX_Enabled && (Players[factionID].ruleFlags & FLAG_ALIEN);
+			return *SMACX_Enabled && (Players[factionID].ruleFlags & RFLAG_ALIEN);
 		default:
 			break;
 	}

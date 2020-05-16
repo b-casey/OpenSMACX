@@ -337,7 +337,7 @@ BOOL __cdecl read_tech() {
 		if (Technology[i].preqTech1 != DisabledValue
 			&& Technology[i].preqTech2 != DisabledValue) {
 			*TechValidCount += 1;
-			if (Technology[i].flags & INC_COMMERCE) {
+			if (Technology[i].flags & TFLAG_INC_COMMERCE) {
 				*TechCommerceCount += 1;
 			}
 		}
@@ -406,12 +406,12 @@ void __cdecl read_faction(player *Player, int toggle) {
 	strcpy_s(Player->nounFaction, 24, text_item());
 	Player->nounFaction[23] = 0;
 	LPSTR gender = text_item();
-	Player->nounGender = MALE_GENDER;
+	Player->nounGender = GENDER_MALE;
 	if (gender[0] == 'F' || gender[0] == 'f') {
-		Player->nounGender = FEMALE_GENDER;
+		Player->nounGender = GENDER_FEMALE;
 	}
 	else if (gender[0] == 'N' || gender[0] == 'n') {
-		Player->nounGender = NEUTRAL_GENDER;
+		Player->nounGender = GENDER_NEUTRAL;
 	}
 	Player->isNounPlural = range(text_item_number() - 1, false, true); // original value: 1 or 2
 	strcpy_s(Player->nameLeader, 24, text_item());
@@ -452,7 +452,7 @@ void __cdecl read_faction(player *Player, int toggle) {
 			Player->ruleMorale = atoi(parseParameter);
 			// 0 indicates an exemption from negative modifiers from other sources
 			if (!Player->ruleMorale) {
-				Player->ruleFlags |= FLAG_MORALE;
+				Player->ruleFlags |= RFLAG_MORALE;
 			}
 		}
 		// FACILITY
@@ -474,7 +474,7 @@ void __cdecl read_faction(player *Player, int toggle) {
 			Player->ruleEnergy = atoi(parseParameter);
 		}
 		else if (!_stricmp(parseRule, BonusName[8].key)) { // INTEREST
-			Player->ruleFlags |= FLAG_INTEREST;
+			Player->ruleFlags |= RFLAG_INTEREST;
 			Player->ruleInterest = atoi(parseParameter);
 		}
 		else if (!_stricmp(parseRule, BonusName[9].key)) { // COMMERCE
@@ -501,7 +501,7 @@ void __cdecl read_faction(player *Player, int toggle) {
 			Player->ruleSharetech = atoi(parseParameter);
 		}
 		else if (!_stricmp(parseRule, BonusName[15].key)) { // TERRAFORM
-			Player->ruleFlags |= FLAG_TERRAFORM;
+			Player->ruleFlags |= RFLAG_TERRAFORM;
 		}
 		// SOCIAL, ROBUST, IMMUNITY; Moved factionBonusCount check to start rather than inner loop
 		else if ((!_stricmp(parseRule, BonusName[16].key) || !_stricmp(parseRule, BonusName[17].key)
@@ -565,13 +565,13 @@ void __cdecl read_faction(player *Player, int toggle) {
 			Player->factionBonusCount++;
 		}
 		else if (!_stricmp(parseRule, BonusName[24].key)) { // COMMFREQ
-			Player->ruleFlags |= FLAG_COMMFREQ;
+			Player->ruleFlags |= RFLAG_COMMFREQ;
 		}
 		else if (!_stricmp(parseRule, BonusName[25].key)) { // MINDCONTROL
-			Player->ruleFlags |= FLAG_MINDCONTROL;
+			Player->ruleFlags |= RFLAG_MINDCONTROL;
 		}
 		else if (!_stricmp(parseRule, BonusName[26].key)) { // FANATIC
-			Player->ruleFlags |= FLAG_FANATIC;
+			Player->ruleFlags |= RFLAG_FANATIC;
 		}
 		// VOTES
 		else if (!_stricmp(parseRule, BonusName[27].key) && Player->factionBonusCount < 8) {
@@ -580,13 +580,13 @@ void __cdecl read_faction(player *Player, int toggle) {
 			Player->factionBonusCount++;
 		}
 		else if (!_stricmp(parseRule, BonusName[28].key)) { // FREEPROTO
-			Player->ruleFlags |= FLAG_FREEPROTO;
+			Player->ruleFlags |= RFLAG_FREEPROTO;
 		}
 		else if (!_stricmp(parseRule, BonusName[29].key)) { // AQUATIC
-			Player->ruleFlags |= FLAG_AQUATIC;
+			Player->ruleFlags |= RFLAG_AQUATIC;
 		}
 		else if (!_stricmp(parseRule, BonusName[30].key)) { // ALIEN
-			Player->ruleFlags |= FLAG_ALIEN;
+			Player->ruleFlags |= RFLAG_ALIEN;
 		}
 		// FREEFAC
 		else if (!_stricmp(parseRule, BonusName[31].key) && Player->factionBonusCount < 8) {
@@ -607,7 +607,7 @@ void __cdecl read_faction(player *Player, int toggle) {
 			Player->factionBonusCount++;
 		}
 		else if (!_stricmp(parseRule, BonusName[34].key)) { // WORMPOLICE
-			Player->ruleFlags |= FLAG_WORMPOLICE;
+			Player->ruleFlags |= RFLAG_WORMPOLICE;
 		}
 		// FREEABIL
 		else if (!_stricmp(parseRule, BonusName[35].key) && Player->factionBonusCount < 8) {
@@ -634,11 +634,11 @@ void __cdecl read_faction(player *Player, int toggle) {
 			Player->factionBonusCount++;
 		}
 		else if (!_stricmp(parseRule, BonusName[39].key)) { // TECHSHARE
-			Player->ruleFlags |= FLAG_TECHSHARE;
+			Player->ruleFlags |= RFLAG_TECHSHARE;
 			Player->ruleSharetech = atoi(parseParameter);
 		}
 		else if (!_stricmp(parseRule, BonusName[40].key)) { // TECHSTEAL
-			Player->ruleFlags |= FLAG_TECHSTEAL;
+			Player->ruleFlags |= RFLAG_TECHSTEAL;
 		}
 		parseRuleCheck = text_item();
 		len = strlen(parseRuleCheck);
