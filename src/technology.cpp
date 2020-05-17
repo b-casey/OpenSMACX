@@ -616,75 +616,54 @@ int __cdecl tech_colonize(int techID) {
 }
 
 /*
-Purpose: Calculate how much researching tech will cost the specified faction.
+Purpose: Calculate how much researching a tech will cost the specified faction.
 Original Offset: 005BE6B0
-Return Value: tech rate / tech cost
-Status: Complete - testing
+Return Value: tech rate/cost
+Status: Complete
 */
 uint32_t __cdecl tech_rate(uint32_t factionID) {
 	if (PlayersData[factionID].techCost >= 0) {
-		return PlayersData[factionID].techCost;
+		return PlayersData[factionID].techCost; // already set
 	}
 	if (!Rules->TechDiscovRatePctStd) {
-		return 999999999;
+		return 999999999; // max cost
 	}
-	uint32_t value = range((PlayersData[factionID].earnedTechsSaved * 2) 
+	uint32_t playerFactor = range(PlayersData[factionID].earnedTechsSaved * 2
 		- PlayersData[factionID].unk_26 + PlayersData[factionID].techRanking, 2, 9999);
-	uint32_t search = 0;
+	uint32_t topFactor = 0;
 	for (uint32_t i = 1; i < MaxPlayerNum; i++) {
 		uint32_t compare = PlayersData[i].earnedTechsSaved * 2 + PlayersData[i].techRanking;
-		if (compare > search) {
-			search = compare;
+		if (compare > topFactor) {
+			topFactor = compare;
 		}
 	
 	}
-	value /= 2;
-	search /= 2;
+	playerFactor /= 2;
+	topFactor /= 2;
 	BOOL isHuman = ((1 << factionID) & FactionCurrentBitfield[0]) != 0;
-	uint32_t diffLvl = isHuman ? PlayersData[factionID].diffLevel : *DiffLevelCurrent;
-	uint32_t value2 = (diffLvl < DLVL_LIBRARIAN) + diffLvl;
-	uint32_t value3 = !isHuman ? *DiffLevelCurrent : 3;
-	uint32_t value4 = isHuman ? value2 * 4 + 8 : 29 - value2 * 3;
-	int maxVal = value + 12;
-	int minVal = 12 - value;
-	if ((int)value4 < minVal || maxVal < minVal) {
-		value4 = minVal;
-	}
-	else if ((int)value4 > maxVal) {
-		value4 = maxVal;
-	}
+	uint32_t diffFactor = isHuman ? PlayersData[factionID].diffLevel : *DiffLevelCurrent;
+	diffFactor += (diffFactor < DLVL_LIBRARIAN);
+	uint32_t diffLvl = !isHuman ? *DiffLevelCurrent : DLVL_LIBRARIAN;
+	diffFactor = isHuman ? diffFactor * 4 + 8 : 29 - diffFactor * 3;
+	diffFactor = range(diffFactor, 12 - playerFactor, playerFactor + 12);
 	uint32_t techStagnation = *GameRules & RULES_TECH_STAGNATION;
-	uint32_t value5 = techStagnation | 0x40;
-	int value6 = (value4 * (value5 >> 5)) >> 1;
-	int cmpVal = value - (*TurnCurrentNum / (value5 >> 3));
-	
-	if (cmpVal < 0 || value6 < 0) {
-		value6 = 0;
-	}
-	else if (cmpVal <= value6) {
-		value6 = cmpVal;
-	}
-	uint32_t value7 = value6 + value4;
-	uint32_t cmpVal2 = value3 * value7 / 10 + 1;
-	uint32_t value8 = (search - value3 - value + 7) / (8 - value3);
-	if (value8 < 0 || cmpVal2 < 0) {
-		value8 = 0;
-	}
-	else if (value8 > cmpVal2) {
-		value8 = value3 * value7 / 10 + 1;
-	}
-	int v20 = PlayersData[factionID].SE_ResearchBase;
-	uint32_t value9 = (value7 - value8) 
-		* range(value - ((v20 <= 0) ? (v20 >= 0) - 1 : 1), 1, 99999);
+	uint32_t ruleFactor = techStagnation | 0x40; // 64 or 96
+	uint32_t finFactor = range(playerFactor - (*TurnCurrentNum / (ruleFactor >> 3)),
+		0, (diffFactor * (ruleFactor >> 5)) >> 1) + diffFactor;
+	int reschBase = range(PlayersData[factionID].SE_ResearchBase, -1, 1);
+	uint32_t discovRate = (finFactor 
+		- range((topFactor - diffLvl - playerFactor + 7) / (8 - diffLvl), 
+			0, diffLvl * finFactor / 10 + 1)) 
+		* range(playerFactor - reschBase, 1, 99999);
 	if (Rules->TechDiscovRatePctStd != 100) {
-		value9 = 100 * value9 / Rules->TechDiscovRatePctStd;
+		discovRate = 100 * discovRate / Rules->TechDiscovRatePctStd;
 	}
 	if (Players[factionID].ruleTechcost != 100) {
-		value9 = value9 * Players[factionID].ruleTechcost / 100;
+		discovRate = discovRate * Players[factionID].ruleTechcost / 100;
 	}
-	uint32_t rate = (value9 * *MapAreaSqRoot) / 56;
+	uint32_t cost = (discovRate * *MapAreaSqRoot) / 56;
 	if (techStagnation) {
-		rate += rate / 2;
+		cost += cost / 2; // Slower Rate of Research Discoveries
 	}
-	return range(rate, 1, 99999999);
+	return range(cost, 1, 99999999);
 }

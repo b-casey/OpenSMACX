@@ -51,7 +51,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
 	bin_app = mmap.mmap(f.fileno(), 0)
-	# next: 362
+	# next: 365
 	#
 	
 	# ALPHA
@@ -227,6 +227,9 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001A96D0) # ?see_map_check@@YAXXZ
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*340))
+	bin_app.seek(0x00160D50) # ?guard_check@@YAIII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*364))
 	# FILEMAP
 	bin_app.seek(0x00228380) # ??0Filemap@@QAE@XZ
 	patch_call_bytes(bin_app)
@@ -809,6 +812,9 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x0017CE50) # ?valid_tech_leap@@YAHIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*361))
+	bin_app.seek(0x001BE6B0) # ?tech_rate@@YAII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*362))	
 	# TERRAFORMING
 	bin_app.seek(0x001BAB40) # ?terrain_avail@@YAHHHH@Z
 	patch_call_bytes(bin_app)
@@ -1162,7 +1168,9 @@ with open(exe_path, "r+b") as f:
 	bin_app.write(struct.pack("<L", addr+4*304))
 	bin_app.seek(0x00160AD0) # ?go_to@@YAXHDHH@Z
 	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*336))	
-	#
+	bin_app.write(struct.pack("<L", addr+4*336))
+	bin_app.seek(0x001BE100) # ?wants_prototype@@YAHII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*363))
 	print("Functions redirected: %d" % count)
 	print("Done!")

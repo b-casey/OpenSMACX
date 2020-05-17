@@ -63,6 +63,8 @@ extern func9 *check_net;
 extern func9 *do_net;
 typedef int func14(int, int);
 extern func14 *base_at;
+typedef BOOL func11(int, int, int);
+extern func11 *wants_to_attack;
 // Time
 typedef void func30(int);
 extern func30* blink_timer;
@@ -73,17 +75,9 @@ extern func30* turn_timer;
 // testing
 typedef int *func8(LPSTR, LPSTR);
 extern func8 *parse_string_OG;
-//
-typedef BOOL func11(int, int, int);
-extern func11 *wants_to_attack;
 
 typedef void func12(int);
 extern func12 *enemy_capabilities_OG;
-
-typedef uint32_t func16(uint32_t);
-extern func16 *tech_rate_OG;
-typedef BOOL func17(uint32_t, uint32_t);
-extern func17 *wants_prototype_OG;
 ///
 extern char1032 *stringTemp;
 extern char256 *ParseStrBuffer;

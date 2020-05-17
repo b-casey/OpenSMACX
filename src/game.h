@@ -21,7 +21,7 @@
   * Game related objects, variables and functions.
   */
 
-enum game_state_bitfield {
+enum game_state_bitfield { // used by GameState
 	// 0x1
 	// 0x2
 	// 0x4
@@ -56,7 +56,7 @@ enum game_state_bitfield {
 	STATE_SCN_VICT_CREDITS_COUNT_OBJ = 0x80000000,
 };
 
-enum game_rules_bitfield {
+enum game_rules_bitfield { // used by GameRules
 	RULES_DO_OR_DIE = 0x1,
 	RULES_VICTORY_CONQUEST = 0x2,// allow 'Total War'
 	RULES_VICTORY_ECONOMIC = 0x4, // allow 'Mine, All Mine'

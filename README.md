@@ -17,7 +17,7 @@ v0.2.2
 * Initial work on the Path class.
 * Added some Council related functions.
 * 50 new functions across almost every game related area with a focus on Map and Technology.
-* Decompiled and redirected function count: 362
+* Decompiled and redirected function count: 365
 
 Bug Fixes:
 * Fixed a bug under certain conditions that the end game function to determine whether a faction is

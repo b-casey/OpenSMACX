@@ -496,8 +496,8 @@ OPENSMACX_API uint32_t __cdecl morale_alien(int vehID, int factionIDvsNative);
 OPENSMACX_API int __cdecl psi_factor(int combatRatio, int factionID, BOOL isAttack, 
 	BOOL isFungalTower);
 OPENSMACX_API void __cdecl go_to(int vehID, char type, int xCoord, int yCoord);
-OPENSMACX_API void __cdecl enemy_capabilities(int factionID);
-OPENSMACX_API void __cdecl enemy_capabilities_t(int factionID);
+OPENSMACX_API void __cdecl enemy_capabilities(uint32_t factionID);
+OPENSMACX_API void __cdecl enemy_capabilities_t(uint32_t factionID);
 OPENSMACX_API int __cdecl veh_top(int vehID);
 OPENSMACX_API uint32_t __cdecl veh_moves(int vehID);
 OPENSMACX_API uint32_t __cdecl proto_power(int vehID);

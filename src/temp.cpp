@@ -65,9 +65,6 @@ func30* turn_timer = (func30*)0x0050EF10;
 func8 *parse_string_OG = (func8 *)0x00625880;
 func12 *enemy_capabilities_OG = (func12 *)0x00560DD0;
 
-func16 *tech_rate_OG = (func16 *)0x005BE6B0;
-func17 *wants_prototype_OG = (func17 *)0x005BE100;
-
 ///
 char1032 *stringTemp = (char1032 *)0x009B86A0;
 char256 *ParseStrBuffer = (char256 *)0x009BB5E8;
@@ -95,44 +92,14 @@ int __cdecl tester() {
 	log_say("Start test", 0, 0, 0);
 
 
-	for (int k = 0; k < MaxVehProtoNum; k++) {
-		//if (VehPrototype[k].flags & 4) {
-			//
-		//}
-	//	log_say(Players[k / 64].searchKey, VehPrototype[k].vehName, VehPrototype[k].unk1, k, 0);
-	}
-
-	for (int i = 0; i < MaxPlayerNum; i++) {
-		for (int k = 0; k < MaxVehProtoNum; k++) {
-
-			BOOL val5 = wants_prototype(k, i);
-			BOOL val6 = wants_prototype_OG(k, i);
-			if (val5 != val6) {
-				log_say("wants_prototype error: ", k, i, 0);
-				log_say("good : bad:", val6, val5, 0);
-			}
-		}
-		
-		/*
-		PlayersData[i].techCost = -1;
-		uint32_t val3 = tech_rate_OG(i);
-		PlayersData[i].techCost = -1;
-		uint32_t val4 = tech_rate(i);
-		if (val3 != val4) {
-			log_say("tech_rate error: ", i, 0, 0);
-			log_say("good : bad:", val3, val4, 0);
-		}
-		*/
-	}
-
 	//tech_calc_output();
+
 	/*
 	for (int i = 0; i < MaxPlayerNum; i++) {
 		log_say(Players[i].searchKey, "PSI Atk", weap_strat(WPN_PSI_ATTACK, i), 0, 0);
 		log_say(Players[i].searchKey, "PSI Def", arm_strat(ARM_PSI_DEFENSE, i), 0, 0);
 	}
-	*/
-	/*
+	
 	for (int z = 0; z < 10; z++) {
 		for (int i = 1; i < MaxPlayerNum; i++) {
 			int t1 = PlayersData[i].enemyBestWeaponVal;
@@ -166,7 +133,7 @@ int __cdecl tester() {
 			PlayersData[i].bestArmorVal = t8;
 			PlayersData[i].bestPsiAtkVal = t9;
 			PlayersData[i].bestWeaponVal = t0;
-			enemy_capabilities_t(i);
+			enemy_capabilities_OG(i);
 			int b1 = PlayersData[i].enemyBestWeaponVal;
 			int b2 = PlayersData[i].enemyBestArmorVal;
 			int b3 = PlayersData[i].enemyBestLandSpeed;
@@ -215,6 +182,7 @@ int __cdecl tester() {
 			log_say("results: ", i, a9, a0);
 		}
 	}
+	/*
 	log_say("original start", 0, 0, 0);
 	for (int z = 0; z < 10; z++) {
 		for (int i = 1; i < MaxPlayerNum; i++) {
@@ -298,7 +266,7 @@ int __cdecl tester() {
 			log_say("results: ", i, a9, a0);
 		}
 	}
-
+	*/
 
 	/*
 	for (int i = 0; i < MaxPlayerNum; i++) {

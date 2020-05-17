@@ -21,7 +21,9 @@
 #include "base.h"
 #include "council.h"
 #include "game.h"
+#include "map.h"
 #include "technology.h"
+#include "veh.h"
 
 player *Players = (player *)0x00946A50;
 player_data *PlayersData = (player_data *)0x0096C9E0;
@@ -114,6 +116,30 @@ BOOL __cdecl climactic_battle() {
 		}
 	}
 	return false;
+}
+
+/*
+Purpose: Determine ideal unit count to protect faction's bases in the specified land region.
+Original Offset: 00560D50
+Return Value: Amount of defensive/offensive (?) units needed to guard region
+Status: Complete
+*/
+uint32_t __cdecl guard_check(uint32_t factionID, uint32_t region) {
+	if (region >= MaxRegionLandNum) {
+		return 0;
+	}
+	int factor = 2 - PlayersData[factionID].AI_Fight;
+	int planRegion = PlayersData[factionID].basePlanByRegion[region];
+	if (planRegion == PLAN_COLONIZATION) {
+		factor += 2;
+	}
+	else if (planRegion == PLAN_DEFENSIVE) {
+		factor = 1; // 1-1 unit per base ratio
+	}
+	if (PlayersData[factionID].playerFlags & PFLAG_STRAT_DEF_OBJECTIVES) {
+		factor = 1; // 1-1 unit per base ratio
+	}
+	return (PlayersData[factionID].baseCountByRegion[region] + factor - 1) / factor;
 }
 
 /*

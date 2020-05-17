@@ -485,5 +485,6 @@ OPENSMACX_API LPSTR __cdecl get_adjective(int factionID);
 OPENSMACX_API LPSTR __cdecl get_noun(int factionID);
 OPENSMACX_API uint32_t __cdecl aah_ooga(int factionID, int pactFactionID);
 OPENSMACX_API BOOL __cdecl climactic_battle();
+OPENSMACX_API uint32_t __cdecl guard_check(uint32_t factionID, uint32_t region);
 OPENSMACX_API void __cdecl see_map_check();
 OPENSMACX_API BOOL __cdecl society_avail(int socCategory, int socModel, int factionID);
