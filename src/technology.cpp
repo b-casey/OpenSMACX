@@ -326,7 +326,7 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 			&& (!wealthVal || !aiWealth) && (!growthVal || !aiGrowth && baseCount >= 4)) {
 			valueRet = (valueRet + 1) / 2;
 		}
-		BOOL isHuman = ((1 << factionID) & FactionCurrentBitfield[0]) != 0;
+		BOOL isHuman = is_human(factionID);
 		if (!isHuman && !has_tech(techID, factionID) && simpleCalc) {
 			uint32_t discoverCount = bit_count(GameTechDiscovered[techID]);
 			if (discoverCount > 1) {
@@ -539,7 +539,7 @@ Status: Complete
 */
 int __cdecl tech_ai(int factionID) {
 	int techID = -1, search = -999;
-	BOOL isHuman = ((1 << factionID) & FactionCurrentBitfield[0]) != 0;
+	BOOL isHuman = is_human(factionID);
 	for (int i = 0; i < MaxTechnologyNum; i++) {
 		if (tech_avail(i, factionID)) {
 			int techValue = tech_val(i, factionID, false), compare;
@@ -640,7 +640,7 @@ uint32_t __cdecl tech_rate(uint32_t factionID) {
 	}
 	playerFactor /= 2;
 	topFactor /= 2;
-	BOOL isHuman = ((1 << factionID) & FactionCurrentBitfield[0]) != 0;
+	BOOL isHuman = is_human(factionID);
 	uint32_t diffFactor = isHuman ? PlayersData[factionID].diffLevel : *DiffLevelCurrent;
 	diffFactor += (diffFactor < DLVL_LIBRARIAN);
 	uint32_t diffLvl = !isHuman ? *DiffLevelCurrent : DLVL_LIBRARIAN;

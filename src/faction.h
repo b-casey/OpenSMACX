@@ -481,6 +481,7 @@ extern player_data *PlayersData;
 extern faction_art *FactionArt;
 extern uint8_t *FactionCurrentBitfield;
 
+OPENSMACX_API BOOL is_human(uint32_t factionID);
 OPENSMACX_API LPSTR __cdecl get_adjective(int factionID);
 OPENSMACX_API LPSTR __cdecl get_noun(int factionID);
 OPENSMACX_API uint32_t __cdecl aah_ooga(int factionID, int pactFactionID);

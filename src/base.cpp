@@ -352,8 +352,7 @@ Status: Complete
 */
 int __cdecl base_lose_minerals(int baseID, int productionID) {
 	int minAccumal;
-	if (Rules->RetoolPctPenProdChg
-		&& FactionCurrentBitfield[0] & (1 << Base[baseID].factionIDCurrent)
+	if (Rules->RetoolPctPenProdChg && is_human(Base[baseID].factionIDCurrent)
 		&& base_making(Base[baseID].productionIDLast, baseID)
 		!= base_making(Base[baseID].queueProductionID[0], baseID)
 		&& (minAccumal = Base[baseID].mineralsAccumulated2, minAccumal > Rules->RetoolExemption)) {

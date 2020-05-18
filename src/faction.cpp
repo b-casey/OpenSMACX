@@ -34,7 +34,17 @@ LPSTR *Mood = (LPSTR *)0x0094C9E4;
 LPSTR *Repute = (LPSTR *)0x00946A30;
 rules_might *Might = (rules_might *)0x0094C558;
 rules_bonusname *BonusName = (rules_bonusname *)0x009461A8;
-uint8_t *FactionCurrentBitfield = (uint8_t *)0x009A64E8; // Human controlled player bitfield?
+uint8_t *FactionCurrentBitfield = (uint8_t *)0x009A64E8; // Human player bitfield [0], ? [1]
+
+/*
+Purpose: Check whether specified faction is a human player or computer controlled AI.
+Original Offset: n/a
+Return Value: Is faction a human? true/false
+Status: Complete
+*/
+BOOL is_human(uint32_t factionID) {
+	return FactionCurrentBitfield[0] & (1 << factionID);
+}
 
 /*
 Purpose: Get Player's faction name adjective.
@@ -97,9 +107,8 @@ Return Value: Is human player nearing endgame? true/false
 Status: Complete
 */
 BOOL __cdecl climactic_battle() {
-	uint32_t factionBits = FactionCurrentBitfield[0];
 	for (uint32_t i = 1; i < MaxPlayerNum; i++) {
-		if (factionBits & (1 << i) && PlayersData[i].cornerMarketTurn > *TurnCurrentNum) {
+		if (is_human(i) && PlayersData[i].cornerMarketTurn > *TurnCurrentNum) {
 			return true; // Human controlled player initiated Corner Global Energy Market 
 		}
 	}
@@ -109,7 +118,7 @@ BOOL __cdecl climactic_battle() {
 	}
 	if (ascending(0)) {
 		for (uint32_t i = 1; i < MaxPlayerNum; i++) {
-			if (factionBits & (1 << i) && (has_tech(Facility[FAC_PSI_GATE].preqTech, i)
+			if (is_human(i) && (has_tech(Facility[FAC_PSI_GATE].preqTech, i)
 				|| has_tech(Facility[FAC_VOICE_OF_PLANET].preqTech, i))) {
 				return true; // Human controlled player has tech to build PSI Gates or VoP
 			}

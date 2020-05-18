@@ -120,8 +120,7 @@ Status: Complete
 int __cdecl base_territory(int factionID, int xCoord, int yCoord) {
 	int baseID;
 	int owner = whose_territory(factionID, xCoord, yCoord, &baseID, false);
-	if (owner >= 0 && owner != factionID && 
-		(FactionCurrentBitfield[0] & (1 << factionID) || FactionCurrentBitfield[0] & (1 << owner)) 
+	if (owner >= 0 && owner != factionID && (is_human(factionID) || is_human(owner))
 		&& !(PlayersData[factionID].diploStatus[owner] & DSTATUS_VENDETTA)) {
 		return baseID;
 	}

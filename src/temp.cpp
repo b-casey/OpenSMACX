@@ -92,6 +92,7 @@ int __cdecl tester() {
 	log_say("Start test", 0, 0, 0);
 
 
+
 	//tech_calc_output();
 
 	/*
@@ -447,7 +448,7 @@ void tech_calc_output() {
 					log_say("bad: ", techVal1, 0, 0);
 				}
 				else {
-					log_say(Players[i].searchKey, Technology[j].name, techVal1, k, 0);
+					log_say(Players[i].nameFaction, Technology[j].name, techVal1, k, 0);
 				}
 			}
 		}
@@ -457,18 +458,18 @@ void tech_calc_output() {
 			if (techVal1 != techVal2) {
 				log_say("tech_val error: ", j, i, 0);
 				if (j < 97) {
-					log_say(Players[i].searchKey, Players[j - 89].searchKey, techVal1, techVal2, 0);
+					log_say(Players[i].nameFaction, Players[j - 89].nameFaction, techVal1, techVal2, 0);
 				}
 				else {
-					log_say(Players[i].searchKey, VehPrototype[j - 97].vehName, techVal1, techVal2, 0);
+					log_say(Players[i].nameFaction, VehPrototype[j - 97].vehName, techVal1, techVal2, 0);
 				}
 			}
 			else {
 				if (j < 97) {
-					log_say(Players[i].searchKey, Players[j - 89].searchKey, techVal1, 0, 0);
+					log_say(Players[i].nameFaction, Players[j - 89].nameFaction, techVal1, 0, 0);
 				}
 				else {
-					log_say(Players[i].searchKey, VehPrototype[j - 97].vehName, techVal1, 0, 0);
+					log_say(Players[i].nameFaction, VehPrototype[j - 97].vehName, techVal1, 0, 0);
 				}
 			}
 		}
