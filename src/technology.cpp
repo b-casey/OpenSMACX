@@ -307,7 +307,7 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 	if (techID < MaxTechnologyNum) {
 		uint32_t vendettaCount = 0;
 		for (int i = 1; i < MaxPlayerNum; i++) {
-			if (i != factionID && PlayersData[factionID].diploStatus[i] & DSTATUS_VENDETTA) {
+			if (i != factionID && PlayersData[factionID].diploTreaties[i] & DTREATY_VENDETTA) {
 				vendettaCount++;
 			}
 		}
@@ -373,9 +373,9 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 						for (int i = 1; i < MaxPlayerNum; i++) {
 							if (i != factionID && PlayersData[i].baseCountByRegion[region]
 								&& PlayersData[factionID].baseCountByRegion[region] && 
-								(diplo = PlayersData[factionID].diploStatus[i], 
-									diplo & DSTATUS_COMMLINK && (!(diplo & (DSTATUS_PACT
-									| DSTATUS_TREATY)) || diplo & DSTATUS_WANT_REVENGE))) {
+								(diplo = PlayersData[factionID].diploTreaties[i],
+									diplo & DTREATY_COMMLINK && (!(diplo & (DTREATY_PACT
+									| DTREATY_TREATY)) || diplo & DTREATY_WANT_REVENGE))) {
 								valueRet += (pwrBase / (baseCount  * (isHuman + 1)));
 							}
 						}

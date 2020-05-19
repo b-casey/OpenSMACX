@@ -153,7 +153,7 @@ int __cdecl base_find(int xCoord, int yCoord, int factionID, int region, int fac
 		if (region < 0 || region_at(Base[i].xCoord, Base[i].yCoord) == (uint32_t)region) {
 			if (factionID < 0 ? (factionID2 < 0 || Base[i].factionIDCurrent != factionID2) 
 				: (factionID == Base[i].factionIDCurrent || (factionID2 == -2 
-					? PlayersData[factionID].diploStatus[Base[i].factionIDCurrent] & DSTATUS_PACT 
+					? PlayersData[factionID].diploTreaties[Base[i].factionIDCurrent] & DTREATY_PACT
 					: (factionID2 >= 0 && factionID2 == Base[i].factionIDCurrent)))) {
 				if (factionID3 < 0 || Base[i].factionIDCurrent == factionID3 
 					|| ((1 << factionID3) & Base[i].unk2)) {
@@ -543,9 +543,69 @@ Status: Complete
 */
 int __cdecl steal_energy(uint32_t baseID) {
 	uint32_t factionID = Base[baseID].factionIDCurrent;
-	int energy = PlayersData[factionID].energyCredits;
+	int energy = PlayersData[factionID].energyReserves;
 	return (energy <= 0) ? 0 :
 		((energy * Base[baseID].populationSize) / (PlayersData[factionID].popTotal + 1));
+}
+
+/*
+Purpose: TBD
+Original Offset: 00560B30
+Return Value: TBD
+Status: Complete - testing
+*/
+uint32_t __cdecl garrison_check(uint32_t baseID) {
+	int xCoord = Base[baseID].xCoord, yCoord = Base[baseID].yCoord;
+	uint32_t factionID = Base[baseID].factionIDCurrent;
+	uint32_t spCount = 0;
+	for (uint32_t i = 0; i < MaxSecretProjectNum; i++) {
+		if (base_project(i) == (int)baseID) {
+			spCount++;
+		}
+	}
+	int garrison = (spCount + 2) / 3 + (Base[baseID].populationSize + 1) / 4 + 1;
+	BOOL isObj = is_objective(baseID);
+	if (has_fac_built(FAC_HEADQUARTERS, baseID) || bit_at(xCoord, yCoord) & BIT_UNK_40000000
+		|| isObj) {
+		garrison++;
+	}
+	if (isObj && PlayersData[factionID].playerFlags & PFLAG_STRAT_DEF_OBJECTIVES) {
+		garrison++;
+	}
+	if (PlayersData[factionID].basePlanByRegion[region_at(xCoord, yCoord)] == PLAN_COLONIZATION) {
+		garrison--;
+	}
+	int seaFactionID = zoc_sea(xCoord, yCoord, factionID) - 1;
+	if (seaFactionID > 0 && (PlayersData[factionID].diploTreaties[seaFactionID]
+		& (DTREATY_VENDETTA | DTREATY_WANT_REVENGE) 
+		|| PlayersData[seaFactionID].diploTreaties[factionID] & DTREATY_WANT_REVENGE
+		|| PlayersData[seaFactionID].integrityBlemishes > 4)) {
+		garrison++;
+	}
+	if (PlayersData[factionID].SE_SupportPending <= -4) {
+		garrison--;
+	}
+	if (PlayersData[factionID].SE_SupportPending <= -4 && garrison > 2) {
+		garrison--;
+	}
+	return range(garrison, 1, 10);
+}
+
+/*
+Purpose: TBD
+Original Offset: 00560D30
+Return Value: TBD
+Status: Complete - testing
+*/
+uint32_t __cdecl defensive_check(uint32_t baseID) {
+	uint32_t defenses = garrison_check(baseID);
+	if (defenses > 5) {
+		defenses--;
+	}
+	if (defenses > 2) {
+		defenses--;
+	}
+	return defenses;
 }
 
 /*

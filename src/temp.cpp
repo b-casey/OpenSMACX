@@ -91,7 +91,44 @@ int __cdecl tester() {
 	log_set_state(true);
 	log_say("Start test", 0, 0, 0);
 
-
+	for (int i = 0; i < MaxPlayerNum; i++) {
+		log_say(Players[i].nameFaction, "global rep", PlayersData[i].globalReputation, 0, 0);
+	}
+	for (int i = 0; i < MaxPlayerNum; i++) {
+		log_say(Players[i].nameFaction, "energy cost", PlayersData[i].energyCost, 0, 0);
+	}
+	/*
+	for (int i = 0; i < MaxPlayerNum; i++) {
+		for (int j = 0; j < MaxPlayerNum; j++) {
+			int val = PlayersData[i].diploUnk3[j];
+			if (val) {
+				char szTemp[100];
+				sprintf_s(szTemp, 100, "combat_diplo_unk3: %s for %s", Players[i].nameFaction, Players[j].nameFaction);
+				log_say(szTemp, val, 0, 0);
+			}
+		}
+	}
+	for (int i = 0; i < MaxPlayerNum; i++) {
+		for (int j = 0; j < MaxPlayerNum; j++) {
+			int val = PlayersData[i].diploUnk4[j];
+			if (val) {
+				char szTemp[100];
+				sprintf_s(szTemp, 100, "combat_diplo_unk4: %s for %s", Players[i].nameFaction, Players[j].nameFaction);
+				log_say(szTemp, val, 0, 0);
+			}
+		}
+	}
+	*/
+	for (int i = 0; i < MaxPlayerNum; i++) {
+		for (int j = 0; j < MaxPlayerNum; j++) {
+			int val = PlayersData[i].diploUnk1[j];
+			if (val) {
+				char szTemp[100];
+				sprintf_s(szTemp, 100, "diploUnk1: %s for %s", Players[i].nameFaction, Players[j].nameFaction);
+				log_say(szTemp, val, 0, 0);
+			}
+		}
+	}
 
 	//tech_calc_output();
 

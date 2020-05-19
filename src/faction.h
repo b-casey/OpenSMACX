@@ -66,38 +66,38 @@ enum player_rule_flag_bitfield {
 };
 
 enum diplomacy_status_bitfield {
-	DSTATUS_PACT = 0x1,
-	DSTATUS_TREATY = 0x2,
-	DSTATUS_TRUCE = 0x4,
-	DSTATUS_COMMLINK = 0x8,
-	DSTATUS_VENDETTA = 0x10,
-	DSTATUS_WANT_REVENGE = 0x20,
-	DSTATUS_UNK_0x40 = 0x40,
-	DSTATUS_UNK_0x80 = 0x80,
-	DSTATUS_UNK_0x100 = 0x100,
-	DSTATUS_UNK_0x200 = 0x200,
-	DSTATUS_SHALL_BETRAY = 0x400,
-	DSTATUS_UNK_0x800 = 0x800,
-	DSTATUS_HAVE_INFILTRATOR = 0x1000,
-	DSTATUS_WANT_TO_TALK = 0x2000,
-	DSTATUS_UNK_0x4000 = 0x4000,
-	DSTATUS_UNK_0x8000 = 0x8000,
-	DSTATUS_UNK_0x10000 = 0x10000,
-	DSTATUS_UNK_0x20000 = 0x20000,
-	DSTATUS_ATROCITY_VICTIM = 0x40000,
-	DSTATUS_UNK_0x80000 = 0x80000,
-	DSTATUS_UNK_0x100000 = 0x100000,
-	DSTATUS_UNK_0x200000 = 0x200000,
-	DSTATUS_UNK_0x400000 = 0x400000,
-	DSTATUS_UNK_0x800000 = 0x800000,
-	DSTATUS_UNK_0x1000000 = 0x1000000,
-	DSTATUS_HAVE_SURRENDERED = 0x2000000,
-	DSTATUS_UNK_0x4000000 = 0x4000000,
-	DSTATUS_UNK_0x8000000 = 0x8000000,
-	DSTATUS_UNK_0x10000000 = 0x10000000,
-	DSTATUS_UNK_0x20000000 = 0x20000000,
-	DSTATUS_UNK_0x40000000 = 0x40000000,
-	DSTATUS_UNK_0x80000000 = 0x80000000,
+	DTREATY_PACT = 0x1,
+	DTREATY_TREATY = 0x2,
+	DTREATY_TRUCE = 0x4,
+	DTREATY_COMMLINK = 0x8,
+	DTREATY_VENDETTA = 0x10,
+	DTREATY_WANT_REVENGE = 0x20,
+	DTREATY_UNK_0x40 = 0x40,
+	DTREATY_UNK_0x80 = 0x80,
+	DTREATY_UNK_0x100 = 0x100,
+	DTREATY_UNK_0x200 = 0x200,
+	DTREATY_SHALL_BETRAY = 0x400,
+	DTREATY_UNK_0x800 = 0x800,
+	DTREATY_HAVE_INFILTRATOR = 0x1000,
+	DTREATY_WANT_TO_TALK = 0x2000,
+	DTREATY_UNK_0x4000 = 0x4000,
+	DTREATY_UNK_0x8000 = 0x8000,
+	DTREATY_UNK_0x10000 = 0x10000,
+	DTREATY_UNK_0x20000 = 0x20000,
+	DTREATY_ATROCITY_VICTIM = 0x40000,
+	DTREATY_UNK_0x80000 = 0x80000,
+	DTREATY_UNK_0x100000 = 0x100000,
+	DTREATY_UNK_0x200000 = 0x200000,
+	DTREATY_UNK_0x400000 = 0x400000,
+	DTREATY_UNK_0x800000 = 0x800000,
+	DTREATY_UNK_0x1000000 = 0x1000000,
+	DTREATY_HAVE_SURRENDERED = 0x2000000,
+	DTREATY_UNK_0x4000000 = 0x4000000,
+	DTREATY_UNK_0x8000000 = 0x8000000,
+	DTREATY_UNK_0x10000000 = 0x10000000,
+	DTREATY_UNK_0x20000000 = 0x20000000,
+	DTREATY_UNK_0x40000000 = 0x40000000,
+	DTREATY_UNK_0x80000000 = 0x80000000,
 };
 
 enum player_flags_bitfield {
@@ -223,38 +223,38 @@ struct player {
 };
 
 struct player_data {
-	uint32_t playerFlags;
-	uint32_t ranking; // 0 (lowest) to 7 (highest)
+	uint32_t playerFlags; // see player_flags_bitfield
+	uint32_t ranking; // 0 (lowest) to 7 (highest) rank
 	int diffLevel;
-	uint32_t baseNameOffset;
-	uint32_t baseSeaNameOffset;
-	int tutorialMoreBases;
-	int diploStatus[8];
+	uint32_t baseNameOffset; // keep track which base names have been used
+	uint32_t baseSeaNameOffset; // keep track which sea base names have been used
+	int lastBaseTurn; // turn for last built, captured or acquired (drone riot) base
+	int diploTreaties[8];
 	int diploAgenda[8];
-	int diploFriction_1[8];
-	int diploTurnCheck[8];
-	int diploTreatyTurns[8];
-	char diploFriction_2[8];
-	int sanctionTurns;
-	int loanYears[8];
-	int loanPayment[8];
+	int diploFriction[8];
+	int diploSpoke[8]; // Turn for the last player-to-AI communication; -1 for never
+	int diploMerc[8]; // mercifulness (?)
+	char diploPatience[8]; // AI-to-player
+	int sanctionTurns; // Turns left for economic sanctions imposed by other factions for atrocities
+	int loanBalance[8]; // Loan balance remaining this faction owes another to be paid over term
+	int loanPayment[8]; // The per turn payment amount this faction owes another faction
 	char gap_104[32];
-	int minorAtrocities;
-	int globalReputation;
-	int diploUnk1[8];
-	int diploUnk2[8];
-	int diploBackstabs[8];
-	int diploUnk3[8];
-	int diploUnk4[8];
-	int mapTradeDone;
-	int governorDefFlags;
-	int unk_2;
-	int majorAtrocities;
-	int unk_3;
-	int unk_4[8];
-	int unk_5[8];
-	int energyCredits;
-	int energyCost;
+	int integrityBlemishes;
+	int globalReputation; // ? integrity? related to signing treaties, freeing faction
+	int diploUnk1[8]; // ? rights (vs wrongs below)? gift, bribe
+	int diploWrongs[8]; // factions wronged by faction
+	int diploDblCrossedBy[8]; // factions that double crossed faction
+	int diploUnk3[8]; // ? combat related
+	int diploUnk4[8]; // ? combat related
+	int tradedMaps; // bitfield of other factions that have traded maps with faction
+	int baseGovernorAdv; // default advanced Governor settings; see governor_base_bitfield
+	int atrocities; // count committed by faction
+	int majorAtrocities; // count committed by faction
+	int unk_3; // ? probe: mind control base (+4) / subvert unit (+1) total
+	int unk_4[8]; // ? probe: mind control base (+4) / subvert unit (+1) per faction
+	int stolenDataCount[8]; // probe: successfully procured research data (tech/map) per faction
+	int energyReserves; // current energy credits
+	int energyCost; // ?
 	int SE_PoliticsPending;
 	int SE_EconomicsPending;
 	int SE_ValuesPending;

@@ -244,6 +244,41 @@ enum base_event_bitfield {
 	BEVENT_OBJECTIVE = 0x8000,
 };
 
+enum governor_base_bitfield {
+	GOV_MANAGES_PRODUCTION = 0x1,
+	// 0x2
+	// 0x4
+	// 0x8
+	// 0x10
+	GOV_MAY_HURRY_PRODUCTION = 0x20,
+	GOV_MANAGES_CITIZENS_SPECS = 0x40, // incl. drone riots
+	GOV_NEW_VEH_FULLY_AUTO = 0x80,
+	// 0x100
+	GOV_MAY_PROD_LAND_COMBAT = 0x200,
+	GOV_MAY_PROD_NAVAL_COMBAT = 0x400,
+	GOV_MAY_PROD_AIR_COMBAT = 0x800,
+	GOV_MAY_PROD_LAND_DEFENS = 0x1000,
+	GOV_MAY_PROD_AIR_DEFENS = 0x2000,
+	// 0x4000 ; Naval defense?
+	GOV_MAY_PROD_TERRAFORMS = 0x8000,
+	GOV_MAY_PROD_FACILITIES = 0x10000,
+	GOV_MAY_PROD_COLONY_POD = 0x20000,
+	GOV_MAY_PROD_SP = 0x40000,
+	GOV_MAY_PROD_PROTOTYPE = 0x80000,
+	GOV_MAY_PROD_PROBES = 0x100000,
+	GOV_MULTI_PRIORITIES = 0x200000, // or no priorities
+	GOV_MAY_PROD_EXPLR_VEH = 0x400000, // scout/exploration units
+	GOV_MAY_PROD_TRANSPORT = 0x800000,
+	GOV_PRIORITY_EXPLORE = 0x1000000,
+	GOV_PRIORITY_DISCOVER = 0x2000000,
+	GOV_PRIORITY_BUILD = 0x4000000,
+	GOV_PRIORITY_CONQUER = 0x8000000,
+	// 0x10000000
+	// 0x20000000
+	GOV_UNK_0x40000000 = 0x40000000,
+	GOV_ACTIVE = 0x80000000,
+};
+
 struct base {
 	int16_t xCoord;
 	int16_t yCoord;
@@ -450,6 +485,8 @@ OPENSMACX_API BOOL __cdecl has_fac_built(uint32_t facilityID);
 OPENSMACX_API BOOL __cdecl has_fac_built(uint32_t facilityID, uint32_t baseID);
 OPENSMACX_API int __cdecl base_project(uint32_t projectID);
 OPENSMACX_API int __cdecl steal_energy(uint32_t baseID);
+OPENSMACX_API uint32_t __cdecl garrison_check(uint32_t baseID);
+OPENSMACX_API uint32_t __cdecl defensive_check(uint32_t baseID);
 OPENSMACX_API BOOL __cdecl is_port(int baseID, BOOL isBaseRadius);
 OPENSMACX_API BOOL __cdecl is_objective(int baseID);
 OPENSMACX_API BOOL __cdecl transcending(int factionID);

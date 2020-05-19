@@ -86,7 +86,7 @@ uint32_t __cdecl aah_ooga(int factionID, int pactFactionID) {
 	uint32_t factionIDRet = 0;
 	for (int i = 1; i < MaxPlayerNum; i++) {
 		if (i != pactFactionID 
-			&& (pactFactionID <= 0 || !(PlayersData[i].diploStatus[pactFactionID] & DSTATUS_PACT) 
+			&& (pactFactionID <= 0 || !(PlayersData[i].diploTreaties[pactFactionID] & DTREATY_PACT)
 				|| !(*GameRules & RULES_VICTORY_COOPERATIVE))) {
 			uint32_t proposalPreq = Proposal[PROP_UNITE_SUPREME_LEADER].preqTech;
 			if ((has_tech(proposalPreq, factionID)

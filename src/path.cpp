@@ -76,7 +76,8 @@ int Path::zoc_path(int xCoord, int yCoord, int factionID) {
 			&& xRadius < (int)*MapHorizontalBounds) {
 			int owner = veh_who(xRadius, yRadius);
 			if (owner >= 0 && owner != factionID && is_ocean(xRadius, yRadius) == isOcean
-				&& !(PlayersData[factionID].diploStatus[owner] & (DSTATUS_VENDETTA | DSTATUS_PACT))) {
+				&& !(PlayersData[factionID].diploTreaties[owner] 
+                    & (DTREATY_VENDETTA | DTREATY_PACT))) {
                 if (is_human(factionID)) {
                     return owner + 1;
                 }

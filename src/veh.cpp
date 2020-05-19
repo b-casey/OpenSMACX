@@ -259,13 +259,13 @@ void __cdecl enemy_capabilities(uint32_t factionID) {
 		// 2nd pass: no treaty, has commlink
 		// 3rd pass: has commlink
 		// 4th pass: any non-pact faction
-		for (uint32_t j = 1, diploStat; j < MaxPlayerNum; j++) {
+		for (uint32_t j = 1, treaties; j < MaxPlayerNum; j++) {
 			if (j != factionID 
-				&& (diploStat = PlayersData[i].diploStatus[j], !(diploStat & DSTATUS_PACT))
-				&& ((!i && diploStat & DSTATUS_VENDETTA && !(diploStat & DSTATUS_TREATY) 
-					&& diploStat & DSTATUS_COMMLINK)
-					|| (i == 1 && !(diploStat & DSTATUS_TREATY) && diploStat & DSTATUS_COMMLINK)
-					|| (i == 2 && diploStat & DSTATUS_COMMLINK) || (i == 3))) {
+				&& (treaties = PlayersData[i].diploTreaties[j], !(treaties & DTREATY_PACT))
+				&& ((!i && treaties & DTREATY_VENDETTA && !(treaties & DTREATY_TREATY)
+					&& treaties & DTREATY_COMMLINK)
+					|| (i == 1 && !(treaties & DTREATY_TREATY) && treaties & DTREATY_COMMLINK)
+					|| (i == 2 && treaties & DTREATY_COMMLINK) || (i == 3))) {
 				if (PlayersData[factionID].enemyBestWeaponVal < PlayersData[j].bestWeaponVal) {
 					PlayersData[factionID].enemyBestWeaponVal = PlayersData[j].bestWeaponVal;
 				}
@@ -336,13 +336,13 @@ void __cdecl enemy_capabilities_t(uint32_t factionID) {
 		// 2nd pass: no treaty, has commlink
 		// 3rd pass: has commlink
 		// 4th pass: any non-pact faction
-		for (uint32_t j = 1, diploStat; j < MaxPlayerNum; j++) {
+		for (uint32_t j = 1, treaties; j < MaxPlayerNum; j++) {
 			if (j != factionID
-				&& (diploStat = PlayersData[i].diploStatus[j], !(diploStat & DSTATUS_PACT))
-				&& ((!i && diploStat & DSTATUS_VENDETTA && !(diploStat & DSTATUS_TREATY)
-					&& diploStat & DSTATUS_COMMLINK)
-					|| (i == 1 && !(diploStat & DSTATUS_TREATY) && diploStat & DSTATUS_COMMLINK)
-					|| (i == 2 && diploStat & DSTATUS_COMMLINK) || (i == 3))) {
+				&& (treaties = PlayersData[i].diploTreaties[j], !(treaties & DTREATY_PACT))
+				&& ((!i && treaties & DTREATY_VENDETTA && !(treaties & DTREATY_TREATY)
+					&& treaties & DTREATY_COMMLINK)
+					|| (i == 1 && !(treaties & DTREATY_TREATY) && treaties & DTREATY_COMMLINK)
+					|| (i == 2 && treaties & DTREATY_COMMLINK) || (i == 3))) {
 				if (PlayersData[factionID].enemyBestWeaponVal < PlayersData[j].bestWeaponVal) {
 					PlayersData[factionID].enemyBestWeaponVal = PlayersData[j].bestWeaponVal;
 				}
@@ -390,13 +390,13 @@ void __cdecl enemy_capabilities_t(uint32_t factionID) {
 		// 2nd pass: no treaty, has commlink
 		// 3rd pass: has commlink
 		// 4th pass: any non-pact faction
-		for (uint32_t j = 1, diploStat; j < MaxPlayerNum; j++) {
+		for (uint32_t j = 1, treaties; j < MaxPlayerNum; j++) {
 			if (j != factionID
-				&& (diploStat = PlayersData[i].diploStatus[j], !(diploStat & DSTATUS_PACT))
-				&& ((!i && diploStat & DSTATUS_VENDETTA && !(diploStat & DSTATUS_TREATY)
-					&& diploStat & DSTATUS_COMMLINK)
-					|| (i == 1 && !(diploStat & DSTATUS_TREATY) && diploStat & DSTATUS_COMMLINK)
-					|| (i == 2 && diploStat & DSTATUS_COMMLINK) || (i == 3))) {
+				&& (treaties = PlayersData[i].diploTreaties[j], !(treaties & DTREATY_PACT))
+				&& ((!i && treaties & DTREATY_VENDETTA && !(treaties & DTREATY_TREATY)
+					&& treaties & DTREATY_COMMLINK)
+					|| (i == 1 && !(treaties & DTREATY_TREATY) && treaties & DTREATY_COMMLINK)
+					|| (i == 2 && treaties & DTREATY_COMMLINK) || (i == 3))) {
 				if (PlayersData[factionID].enemyBestPsiAtkVal < PlayersData[j].bestPsiAtkVal) {
 					PlayersData[factionID].enemyBestPsiAtkVal = PlayersData[j].bestPsiAtkVal;
 				}
