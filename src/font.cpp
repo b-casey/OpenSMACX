@@ -115,7 +115,7 @@ Return Value: n/a
 Status: Complete
 */
 void Font::close() {
-	unk1 = -1;
+	unk_1 = -1;
 	lineHeight = 0;
 	height = 0;
 	ascent = 0;

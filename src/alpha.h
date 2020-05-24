@@ -26,6 +26,18 @@ struct label {
 	int count;
 };
 
+enum rules_resourceinfo_id {
+	RSCINFO_OCEAN_SQ = 0,
+	RSCINFO_BASE_SQ = 1,
+	RSCINFO_BONUS_SQ = 2,
+	RSCINFO_FOREST_SQ = 3,
+	RSCINFO_RECYCLING_TANKS = 4,
+	RSCINFO_IMPROVED_LAND = 5,
+	RSCINFO_IMPROVED_SEA = 6,
+	RSCINFO_MONOLITH = 7,
+	RSCINFO_BOREHOLE_SQ = 8,
+};
+
 struct rules_resourceinfo {
 	int nutrients;
 	int minerals;

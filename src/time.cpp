@@ -36,9 +36,9 @@ void Time::init(void (__cdecl *callback)(int), int param, uint32_t cnt, uint32_t
 	cbParam2 = 0;
 	cbParam1 = param;
 	count = cnt;
-	unk1 = 0;
+	unk_1 = 0;
 	resolution = res;
-	unk2 = 0;
+	unk_2 = 0;
 }
 
 /*
@@ -56,9 +56,9 @@ void Time::init(void (__cdecl *callback)(int, int), int param, int param2,
 	cbParam2 = param2;
 	cbParam1 = param;
 	count = cnt;
-	unk1 = 0;
+	unk_1 = 0;
 	resolution = res;
-	unk2 = 0;
+	unk_2 = 0;
 }
 
 /*
@@ -231,9 +231,9 @@ void Time::close() {
 	cbParam2 = 0;
 	cbParam1 = 0;
 	count = 0;
-	unk1 = 0;
+	unk_1 = 0;
 	resolution = 5;
-	unk2 = 0;
+	unk_2 = 0;
 }
 
 /*
@@ -244,9 +244,9 @@ Status: Complete
 */
 void Time::TimerProc(HWND hwnd, uint32_t msg, UINT_PTR idTimer, DWORD elapsed) {
 	if (idTimer && (!TimeModal || idTimer == (UINT_PTR)TimeModal) 
-		&& !reinterpret_cast<Time *>(idTimer)->unk1) {
+		&& !reinterpret_cast<Time *>(idTimer)->unk_1) {
 		PostMessageA(*HandleMain, WM_USER | WM_CREATE, idTimer, 0);
-		reinterpret_cast<Time *>(idTimer)->unk1 = 1;
+		reinterpret_cast<Time *>(idTimer)->unk_1 = 1;
 	}
 }
 
@@ -259,9 +259,9 @@ Status: Complete
 void Time::MultimediaProc(uint32_t timerID, uint32_t msg, DWORD_PTR dwUser, DWORD_PTR dw1,
 	DWORD_PTR dw2) {
 	if (dwUser && (!TimeModal || dwUser == (DWORD_PTR)TimeModal)
-		&& !reinterpret_cast<Time *>(dwUser)->unk1) {
+		&& !reinterpret_cast<Time *>(dwUser)->unk_1) {
 		PostMessageA(*HandleMain, WM_USER | WM_CREATE, dwUser, 0);
-		reinterpret_cast<Time *>(dwUser)->unk1 = 1;
+		reinterpret_cast<Time *>(dwUser)->unk_1 = 1;
 	}
 }
 

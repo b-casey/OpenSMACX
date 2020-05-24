@@ -21,7 +21,7 @@
   * Font class
   */
 class OPENSMACX_API Font {
-	int unk1; // height offset? set outside of class functions
+	int unk_1; // height offset? set outside of class functions
 	BOOL isFotSet; // used only by both init() functions
 	HFONT fontObj;
 	int lineHeight;
@@ -33,7 +33,7 @@ class OPENSMACX_API Font {
 	LPSTR fotFileName;
 
 public:
-	Font() : unk1(-1), isFotSet(0), fontObj(0), lineHeight(0), height(0), ascent(0), descent(0),
+	Font() : unk_1(-1), isFotSet(0), fontObj(0), lineHeight(0), height(0), ascent(0), descent(0),
 		fotFileName(0)  { } // 00618EA0
 	Font(LPSTR fontName, int height, int style) { init(fontName, height, style); } // 00618EC0
 	~Font() { close(); } // 00618EE0

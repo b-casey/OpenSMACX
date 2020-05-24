@@ -27,13 +27,12 @@ enum technology_flag_bitfield {
 	TFLAG_REVEALS_MAP = 0x8,
 	TFLAG_ALLOW_GENE_WARFARE = 0x10,
 	TFLAG_INC_GENE_WARFARE_DEFENSE = 0x20,
-	TFLAG_INC_FUNGUS_ENERGY = 0x40,
-	TFLAG_INC_FUNGUS_MINERALS = 0x80,
-	TFLAG_INC_FUNGUS_NUTRIENT = 0x100,
+	TFLAG_INC_ENERGY_FUNGUS = 0x40,
+	TFLAG_INC_MINERALS_FUNGUS = 0x80,
+	TFLAG_INC_NUTRIENT_FUNGUS = 0x100,
 };
 
-enum technology_id {
-	TECH_DISABLED = -1,
+enum technology {
 	TECH_BIOGEN = 0,
 	TECH_INDUST = 1,
 	TECH_INFNET = 2,
@@ -122,14 +121,14 @@ enum technology_id {
 	TECH_NEWMISS = 85,
 	TECH_BFG9000 = 86,
 	TECH_USER = 87,
-	TECH_TRANT = 88
+	TECH_TRANT = 88,
 };
 
 struct rules_technology {
 	uint32_t flags;
 	LPSTR name;
-	char id[8];
-	int padding; // unused value
+	char id[8]; // short name up to 7 characters in length
+	int padding; // unused
 	int growthValue;
 	int techValue;
 	int wealthValue;

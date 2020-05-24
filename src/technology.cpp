@@ -111,7 +111,7 @@ void __cdecl say_tech(LPSTR output, int techID, BOOL categoryLvl) {
 				get_noun(techID - 89));
 		}
 		else {
-			sprintf_s(&output[strlen(output)], 80, "%s %s", Players[techID - 89].nameAdjFaction,
+			sprintf_s(&output[strlen(output)], 80, "%s %s", Players[techID - 89].adjNameFaction,
 				label_get(487)); // 'Comm Frequency'
 		}
 	}
@@ -228,13 +228,13 @@ void __cdecl tech_effects(int factionID) {
 	for (uint32_t techID = 0; techID < MaxTechnologyNum; techID++) {
 		if (has_tech(techID, factionID)) {
 			uint32_t flags = Technology[techID].flags;
-			if (flags & TFLAG_INC_FUNGUS_ENERGY) {
+			if (flags & TFLAG_INC_ENERGY_FUNGUS) {
 				PlayersData[factionID].techFungusEnergy++;
 			}
-			if (flags & TFLAG_INC_FUNGUS_MINERALS) {
+			if (flags & TFLAG_INC_MINERALS_FUNGUS) {
 				PlayersData[factionID].techFungusMineral++;
 			}
-			if (flags & TFLAG_INC_FUNGUS_NUTRIENT) {
+			if (flags & TFLAG_INC_NUTRIENT_FUNGUS) {
 				PlayersData[factionID].techFungusNutrient++;
 			}
 			if (flags & TFLAG_INC_COMMERCE) {
@@ -356,8 +356,8 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 			for (int region = 1; region < MaxRegionLandNum; region++) {
 				if (!bad_reg(region)) {
 					uint32_t diplo;
-					uint32_t pwrBase = PlayersData[factionID].baseCountByRegion[region] * powerVal;
-					uint8_t plan = PlayersData[factionID].basePlanByRegion[region];
+					uint32_t pwrBase = PlayersData[factionID].regionTotalBases[region] * powerVal;
+					uint8_t plan = PlayersData[factionID].regionBasePlan[region];
 					if (plan == PLAN_NAVAL_TRANSPORT && vendettaCount && !isHuman) {
 						valueRet += (pwrBase / baseCount);
 					}
@@ -365,14 +365,14 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 						valueRet += (pwrBase * 4) / (baseCount * (isHuman + 1));
 					}
 					else if (plan == PLAN_OFFENSIVE) {
-						valueRet += (pwrBase * ((PlayersData[factionID].bestWeaponVal
-								>= PlayersData[factionID].enemyBestWeaponVal) ? 2 : 4)) 
+						valueRet += (pwrBase * ((PlayersData[factionID].bestWeaponValue
+								>= PlayersData[factionID].enemyBestWeaponValue) ? 2 : 4)) 
 							/ (baseCount * (isHuman + 1));
 					}
 					else {
 						for (int i = 1; i < MaxPlayerNum; i++) {
-							if (i != factionID && PlayersData[i].baseCountByRegion[region]
-								&& PlayersData[factionID].baseCountByRegion[region] && 
+							if (i != factionID && PlayersData[i].regionTotalBases[region]
+								&& PlayersData[factionID].regionTotalBases[region] &&
 								(diplo = PlayersData[factionID].diploTreaties[i],
 									diplo & DTREATY_COMMLINK && (!(diplo & (DTREATY_PACT
 									| DTREATY_TREATY)) || diplo & DTREATY_WANT_REVENGE))) {
@@ -489,15 +489,15 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 			&& !has_tech(Chassis[CHSI_FOIL].preqTech, factionID)) {
 			BOOL search = false;
 			for (int region = 1; region < MaxRegionLandNum; region++) {
-				if (PlayersData[factionID].baseCountByRegion[region]) {
+				if (PlayersData[factionID].regionTotalBases[region]) {
 					for (int i = 1; i < MaxPlayerNum; i++) {
-						if (factionID != i && !PlayersData[i].baseCountByRegion[region]) {
+						if (factionID != i && !PlayersData[i].regionTotalBases[region]) {
 							search = true;
 							break;
 						}
 					}
 					if (search 
-						&& PlayersData[factionID].unk_79[region] >= Continents[region].unk1) {
+						&& PlayersData[factionID].unk_79[region] >= Continents[region].unk_1) {
 						valueRet *= 3;
 						if (isHuman) {
 							valueRet *= 2;
@@ -636,7 +636,6 @@ uint32_t __cdecl tech_rate(uint32_t factionID) {
 		if (compare > topFactor) {
 			topFactor = compare;
 		}
-	
 	}
 	playerFactor /= 2;
 	topFactor /= 2;

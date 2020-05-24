@@ -30,7 +30,7 @@ enum veh_morale {
 	MORALE_ELITE = 6,
 };
 
-enum veh_basic_id {
+enum veh_basic {
 	BSC_COLONY_POD = 0,
 	BSC_FORMERS = 1,
 	BSC_SCOUT_PATROL = 2,
@@ -143,9 +143,9 @@ enum veh_orders {
 	ORDER_MOVE_TO = 24,          // (G); Move unit to here, Go to Base, Group go to, Patrol
 	ORDER_MOVE = 25,             // (>); Only used in a few places, seems to be buggy mechanic
 	ORDER_EXPLORE = 26,          // (/); not set via shortcut, AI related?
-	ORDER_ROADS_TO = 27,         // (r)
+	ORDER_ROAD_TO = 27,          // (r)
 	ORDER_MAGTUBE_TO = 28,       // (t)
-	// 29                        // max value, seems to be unused
+	// 29                        // max value for normal orders, seems to be unused
 	ORDER_AI_GO_TO = 88,         //  - ; ORDER_GO_TO (0x18) | 0x40 > 0x58 ? only used by AI funcs
 };
 
@@ -179,7 +179,7 @@ enum veh_flags_bitfield {
 	VFLAG_INVISIBLE = 0x400,
 };
 
-enum veh_state {
+enum veh_state_bitfield {
 	VSTATE_UNK_1 = 0x1,
 	VSTATE_UNK_2 = 0x2,
 	VSTATE_UNK_4 = 0x4,
@@ -244,7 +244,7 @@ enum veh_plan {
 	PLAN_FUNGAL_MISSILE = 14,
 };
 
-enum veh_weapon_id {
+enum veh_weapon {
 	WPN_HAND_WEAPONS = 0,
 	WPN_LASER = 1,
 	WPN_PARTICLE_IMPACTOR = 2,
@@ -273,7 +273,7 @@ enum veh_weapon_id {
 	WPN_FUNGAL_PAYLOAD = 25,
 };
 
-enum veh_armor_id {
+enum veh_armor {
 	ARM_NO_ARMOR = 0,
 	ARM_SYNTHMETAL_ARMOR = 1,
 	ARM_PLASMA_STEEL_ARMOR = 2,
@@ -290,7 +290,7 @@ enum veh_armor_id {
 	ARM_RESONANCE_8_ARMOR = 13,
 };
 
-enum veh_chassis_type {
+enum veh_chassis {
 	CHSI_INFANTRY = 0,
 	CHSI_SPEEDER = 1,
 	CHSI_HOVERTANK = 2,
@@ -302,11 +302,24 @@ enum veh_chassis_type {
 	CHSI_MISSILE = 8,
 };
 
-enum veh_reactor_id {
+enum veh_reactor {
 	RECT_FISSION = 1,
 	RECT_FUSION = 2,
 	RECT_QUANTUM = 3,
 	RECT_SINGULARITY = 4,
+};
+
+enum probe_primary_action {
+	PRB_INFILTRATE_DATALINKS = 0,
+	PRB_PROCURE_RESEARCH_DATA = 1,
+	PRB_ACTIVATE_SABOTAGE_VIRUS = 2,
+	PRB_DRAIN_ENERGY_RESERVES = 3,
+	PRB_INCITE_DRONE_RIOTS = 4,
+	PRB_ASSASSINATE_PROMINENT_RESEARCHERS = 5,
+	PRB_MIND_CONTROL_CITY = 6,
+	PRB_INTRODUCE_GENETIC_PLAGUE = 7,
+	PRB_FREE_CAPTURED_FACTION_LEADER = 8,
+	PRB_MIND_CONTROL_VEH = -1,
 };
 
 struct rules_chassis {
@@ -332,7 +345,7 @@ struct rules_chassis {
 	uint8_t triad;
 	uint8_t range;
 	uint8_t cargo;
-	uint8_t cost; // expand to uint32_t eventually
+	uint8_t cost; // TODO: expand to uint32_t in future
 	uint8_t missile;
 	uint8_t spriteFlagXOff[8];
 	uint8_t spriteFlagYOff[8];
@@ -370,28 +383,31 @@ struct rules_armor {
 struct veh {
 	int16_t xCoord;
 	int16_t yCoord;
-	uint32_t state;
-	uint16_t flags;
+	uint32_t state; // see veh_state_bitfield
+	uint16_t flags; // see veh_flags_bitfield
 	int16_t protoID;
-	uint16_t unk1;
+	uint16_t unk_1; // seems to only be set by veh_clear()
 	uint8_t factionID;
 	uint8_t yearEndLurking;
-	uint8_t dmgIncurred;
-	int8_t orders; // see veh_orders enum
+	uint8_t dmgIncurred; // damaged taken
+	int8_t orders; // see veh_orders
 	uint8_t waypointCount;
 	uint8_t patrolCurrentPoint;
 	int16_t waypoint_xCoord[4]; // ...xCoord[0] duals as transport vehID if veh is sentry/board
 	int16_t waypoint_yCoord[4];
 	uint8_t morale;
 	uint8_t terraformingTurns;
-	uint8_t orderAutoType; // see veh_orders_auto_type enum
-	uint8_t visibleToFaction; // bitfield (1 << (1 to 7))
-	uint8_t movesExpended;
-	int8_t unk5;
-	uint8_t unk6;
-	uint8_t moveToAIType;
-	uint8_t unk8;
-	int8_t unk9;
+	uint8_t orderAutoType; // see veh_orders_auto_type
+	uint8_t visibility; // faction bitfield of who can currently see Veh excluding owner
+	uint8_t movesExpended; // stored as road moves (x3)
+	int8_t unk_5; // related to movement
+	uint8_t unk_6; // automated action iterator count
+	uint8_t moveToAIType; // shown as status icon with debug mode active
+	// 000 00 000 : framed faction : secondary options : primary action id (0-7)
+	// secondary options: THOUGHTMENU, ADVVIRUS, DECIPHER, SUBVERTMENU
+	// 000 0 0000 : framed faction : n/a : probe action id (8) ; Freeing Captured Leaders only
+	uint8_t probeAction; // see above and probe_primary_action, last action taken by probe team
+	uint8_t probeSabotageID; // for targeted sabotage: production: 0, abort: 99, or facilityID
 	int16_t homeBaseID;
 	int16_t nextVehIDStack;
 	int16_t prevVehIDStack;
@@ -407,14 +423,13 @@ struct veh_prototype {
 	uint8_t carryCapacity;
 	uint8_t cost;
 	uint8_t plan;
-	int8_t unk1; // some kind of internal prototype category?
-	uint8_t obsoleteFactions; //  (1 << factionID)
-	int8_t unk3; // which faction "knows" about unit prototype? seemed to only be used by
-			     // battle_fight to set it after initial value in make_proto()
+	int8_t unk_1; // some kind of internal prototype category?
+	uint8_t obsoleteFactions; // faction bitfield of those who marked this prototype obsolete
+	int8_t combatFactions; // faction bitfield for those that have seen protoID in combat (atk/def)
 	int8_t iconOffset;
 	int8_t padding; // unused
-	uint16_t flags;
-	int16_t preqTech; // only set by read_units() for predefined units
+	uint16_t flags; // see veh_prototype_flag_bitfield
+	int16_t preqTech; // only set for predefined alpha/x.txt units
 };
 
 struct rules_reactor {
@@ -429,7 +444,7 @@ struct rules_ability {
 	LPSTR description;
 	LPSTR abbreviation;
 	int costFactor;
-	int unkVal; // only referenced in NetDaemon::synch?
+	int unk_1; // only referenced in NetDaemon::synch
 	uint32_t flags;
 	int16_t preqTech;
 	uint16_t padding;
@@ -496,8 +511,6 @@ OPENSMACX_API uint32_t __cdecl morale_alien(int vehID, int factionIDvsNative);
 OPENSMACX_API int __cdecl psi_factor(int combatRatio, int factionID, BOOL isAttack, 
 	BOOL isFungalTower);
 OPENSMACX_API void __cdecl go_to(int vehID, char type, int xCoord, int yCoord);
-OPENSMACX_API void __cdecl enemy_capabilities(uint32_t factionID);
-OPENSMACX_API void __cdecl enemy_capabilities_t(uint32_t factionID);
 OPENSMACX_API int __cdecl veh_top(int vehID);
 OPENSMACX_API uint32_t __cdecl veh_moves(int vehID);
 OPENSMACX_API uint32_t __cdecl proto_power(int vehID);

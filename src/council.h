@@ -30,7 +30,7 @@ enum council_proposals {
 	PROP_INCREASE_SOLAR_SHADE = 6,
 	PROP_MELT_POLAR_CAPS = 7,
 	PROP_REPEAL_UN_CHARTER = 8,
-	PROP_REINSTATE_UN_CHARTER = 9
+	PROP_REINSTATE_UN_CHARTER = 9,
 };
 
 struct rules_proposal {

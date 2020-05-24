@@ -85,7 +85,7 @@ int Path::zoc_path(int xCoord, int yCoord, int factionID) {
                     vehID = Veh[vehID].nextVehIDStack) {
 					if ((Veh[vehID].factionID == factionID && ((Veh[vehID].flags 
                         & (VFLAG_INVISIBLE | VFLAG_LURKER)) != (VFLAG_INVISIBLE | VFLAG_LURKER))) 
-                        || Veh[vehID].visibleToFaction & (1 << factionID)) {
+                        || Veh[vehID].visibility & (1 << factionID)) {
 						return owner + 1;
 					}
 				}
@@ -145,8 +145,8 @@ void Path::make_abstract() {
  Status: wip
 */
 void Path::UNK1(uint32_t region1, uint32_t region2) {
-    Continents[region2].unk1 += Continents[region1].unk1;
-    Continents[region1].unk1 = 0;
+    Continents[region2].unk_1 += Continents[region1].unk_1;
+    Continents[region1].unk_1 = 0;
     for (uint32_t i = 0; i < *MapArea; i++) {
         if ((uint32_t)Map[i]->region == region1) {
             Map[i]->region = (uint8_t)region2;
@@ -178,9 +178,9 @@ void Path::territory(int xCoord, int yCoord, int region, int factionID) {
 			if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
 				&& xRadius < (int)*MapHorizontalBounds) {
 				if (yCoordIt && yCoordIt != ((int)*MapVerticalBounds - 1) 
-                    && !is_ocean(xCoordIt, yCoordIt) && !map_loc(xCoordIt, yCoordIt)->unk1
+                    && !is_ocean(xCoordIt, yCoordIt) && !map_loc(xCoordIt, yCoordIt)->unk_1
 					&& map_loc(xCoord, yCoord)->territory == factionID) {
-					map_loc(xCoordIt, yCoordIt)->unk1 = 1;
+					map_loc(xCoordIt, yCoordIt)->unk_1 = 1;
 					xCoordTable[index1] = xCoordIt;
 					yCoordTable[index1] = yCoordIt;
 					index1++;
@@ -198,7 +198,7 @@ void Path::territory(int xCoord, int yCoord, int region, int factionID) {
  Status: wip
 */
 void Path::continent(int xCoord, int yCoord, uint32_t region) {
-    Continents[region].unk1 = 0;
+    Continents[region].unk_1 = 0;
 	index1 = 0; index2 = 0;
     uint32_t oceanCount = 0;
 	xCoordTable[index1] = (int16_t)xCoord;
@@ -210,7 +210,7 @@ void Path::continent(int xCoord, int yCoord, uint32_t region) {
 	for (int16_t xCoordIt, yCoordIt; index2 && index1 != index2;) {
 		xCoordIt = xCoordTable[index2], yCoordIt = yCoordTable[index2];
 		index2++;
-        Continents[region].unk1++;
+        Continents[region].unk_1++;
 		for (uint32_t i = 0; i < 8; i++) {
 			int xRadius = xrange(xCoordIt + xRadiusBase[i]);
 			int yRadius = yCoordIt + yRadiusBase[i];
@@ -231,10 +231,10 @@ void Path::continent(int xCoord, int yCoord, uint32_t region) {
 		}
 	}
     if (oceanCount) {
-        BOOL setBit = (int)oceanCount < ((Continents[region].unk1 * 3) / 4);
-        for (uint32_t i = 0; i < *MapVerticalBounds; i++) {
+        //BOOL setBit = (int)oceanCount < ((Continents[region].unk_1 * 3) / 4);
+        //for (uint32_t i = 0; i < *MapVerticalBounds; i++) {
             //
-        }
+        //}
     }
     do_all_non_input();
 }

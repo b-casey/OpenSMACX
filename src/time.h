@@ -31,13 +31,13 @@ private:
 	int cbParam2; // callback 2nd parameter
 	int cbParam1; // callback 1st parameter
 	uint32_t count; // either delay (timeSetEvent) or elapsed (SetTimer) value
-	int unk1;
+	int unk_1; // BOOL? related to Timer/Multimedia Proc? one time execution?
 	uint32_t resolution;
-	int unk2;
+	int unk_2;
 
 public:
 	Time(): unkToggle(0), idEvent(0), callback1(0), callback2(0), cbParam2(0), cbParam1(0), 
-		count(0), unk1(0), resolution(5), unk2(0) { } // 006161D0
+		count(0), unk_1(0), resolution(5), unk_2(0) { } // 006161D0
 	~Time() { close(); } // 00616200
 
 	void init(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res);

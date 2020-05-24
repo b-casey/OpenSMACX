@@ -47,7 +47,7 @@ enum faction_special_rules {
 	RULE_FREEABIL = 15,
 	RULE_PROBECOST = 16,
 	RULE_DEFENSE = 17,
-	RULE_OFFSENSE = 18,
+	RULE_OFFENSE = 18,
 };
 
 enum player_rule_flag_bitfield {
@@ -65,39 +65,48 @@ enum player_rule_flag_bitfield {
 	RFLAG_MORALE = 0x8000,
 };
 
-enum diplomacy_status_bitfield {
+enum diplomacy_treaty_bitfield {
 	DTREATY_PACT = 0x1,
 	DTREATY_TREATY = 0x2,
 	DTREATY_TRUCE = 0x4,
 	DTREATY_COMMLINK = 0x8,
 	DTREATY_VENDETTA = 0x10,
 	DTREATY_WANT_REVENGE = 0x20,
-	DTREATY_UNK_0x40 = 0x40,
-	DTREATY_UNK_0x80 = 0x80,
-	DTREATY_UNK_0x100 = 0x100,
-	DTREATY_UNK_0x200 = 0x200,
+	DTREATY_UNK_40 = 0x40,
+	DTREATY_UNK_80 = 0x80,
+	DTREATY_UNK_100 = 0x100,
+	DTREATY_UNK_200 = 0x200,
 	DTREATY_SHALL_BETRAY = 0x400,
-	DTREATY_UNK_0x800 = 0x800,
+	DTREATY_UNK_800 = 0x800,
 	DTREATY_HAVE_INFILTRATOR = 0x1000,
 	DTREATY_WANT_TO_TALK = 0x2000,
-	DTREATY_UNK_0x4000 = 0x4000,
-	DTREATY_UNK_0x8000 = 0x8000,
-	DTREATY_UNK_0x10000 = 0x10000,
-	DTREATY_UNK_0x20000 = 0x20000,
+	DTREATY_UNK_4000 = 0x4000,
+	DTREATY_UNK_8000 = 0x8000,
+	DTREATY_UNK_10000 = 0x10000,
+	DTREATY_UNK_20000 = 0x20000,
 	DTREATY_ATROCITY_VICTIM = 0x40000,
-	DTREATY_UNK_0x80000 = 0x80000,
-	DTREATY_UNK_0x100000 = 0x100000,
-	DTREATY_UNK_0x200000 = 0x200000,
-	DTREATY_UNK_0x400000 = 0x400000,
-	DTREATY_UNK_0x800000 = 0x800000,
-	DTREATY_UNK_0x1000000 = 0x1000000,
+	DTREATY_UNK_80000 = 0x80000,
+	DTREATY_UNK_100000 = 0x100000,
+	DTREATY_UNK_200000 = 0x200000,
+	DTREATY_UNK_400000 = 0x400000,
+	DTREATY_UNK_800000 = 0x800000,
+	DTREATY_UNK_1000000 = 0x1000000,
 	DTREATY_HAVE_SURRENDERED = 0x2000000,
-	DTREATY_UNK_0x4000000 = 0x4000000,
-	DTREATY_UNK_0x8000000 = 0x8000000,
-	DTREATY_UNK_0x10000000 = 0x10000000,
-	DTREATY_UNK_0x20000000 = 0x20000000,
-	DTREATY_UNK_0x40000000 = 0x40000000,
-	DTREATY_UNK_0x80000000 = 0x80000000,
+	DTREATY_UNK_4000000 = 0x4000000,
+	DTREATY_UNK_8000000 = 0x8000000,
+	DTREATY_UNK_10000000 = 0x10000000,
+	DTREATY_UNK_20000000 = 0x20000000,
+	DTREATY_UNK_40000000 = 0x40000000,
+	DTREATY_UNK_80000000 = 0x80000000,
+};
+
+enum diplo_agenda {
+	DIPLO_AGENDA_UNK_1 = 0x1,
+	DIPLO_AGENDA_UNK_4 = 0x4,
+	DIPLO_FIGHT_TO_DEATH = 0x8,
+	DIPLO_AGENDA_UNK_80 = 0x80,
+	DIPLO_AGENDA_UNK_200 = 0x200,
+	DIPLO_PERMANENT = 0x2000,
 };
 
 enum player_flags_bitfield {
@@ -123,6 +132,39 @@ enum player_flags_extended_bitfield {
 	PFLAGEXT_STRAT_LOTS_MISSILES = 0x10,
 	PFLAGEXT_SHAMELESS_BETRAY_HUMANS = 0x20,
 	PFLAGEXT_STRAT_LOTS_ARTILLERY = 0x40,
+};
+
+enum social_effect {
+	SE_ECONOMY = 0,
+	SE_EFFIC = 1,
+	SE_SUPPORT = 2,
+	SE_TALENT = 3,
+	SE_MORALE = 4,
+	SE_POLICE = 5,
+	SE_GROWTH = 6,
+	SE_PLANET = 7,
+	SE_PROBE = 8,
+	SE_INDUSTRY = 9,
+	SE_RESEARCH = 10,
+};
+
+enum ai_goal_types {
+	AI_GOAL_UNUSED = -1,
+	AI_GOAL_ATTACK = 0, // 'a', red
+	AI_GOAL_DEFEND = 2, // 'd', yellow                               0000 0010
+	AI_GOAL_SCOUT = 3, // 's', pink                                  0000 0011
+	AI_GOAL_UNK_1 = 6, // 'n', blue ; related to tile visibility     0000 0110
+	AI_GOAL_UNK_2 = 7, // related to movement                        0000 0111
+	AI_GOAL_COLONIZE = 8, // 'c', teal                               0000 1000
+	AI_GOAL_TERRAFORM_LAND = 9, // 'f', green ' ;                    0000 1001
+	AI_GOAL_UNK_3 = 11, // related to combat                         0000 1011
+	AI_GOAL_ECHELON_MIRROR = 13,                                  // 0000 1101
+	AI_GOAL_PRIORITY_COMBAT = 16, // possibly artillery related      0001 0000
+	AI_GOAL_TERRAFORM_WATER = 25,                                 // 0001 1001
+	AI_GOAL_LANDING_SITE = 41, // '^', white                         0010 1001
+	AI_GOAL_CONDENSER = 73,                                       // 0100 1001
+	AI_GOAL_THERMAL_BOREHOLE = 105,                               // 0110 1001
+	AI_GOAL_SENSOR_ARRAY = 121,                                   // 0111 1001
 };
 
 struct rules_social_effect {
@@ -161,9 +203,15 @@ struct rules_bonusname {
 	char key[24];
 };
 
+/*
+Goals overlay is visible with debug mode activated. Color is based on goal type.
+Shortcut: Shift-%
+Format without omniscient view: <One letter type, see ai_goal_types><priority>
+Format with omniscient view: <1st letter of faction><One letter type, see ai_goal_types><priority>
+*/
 struct goal {
 	int16_t type;
-	int16_t unk1;
+	int16_t priority;
 	int xCoord;
 	int yCoord;
 	int baseID;
@@ -183,8 +231,8 @@ struct player {
 	char nounFaction[24];
 	int nounGender;
 	BOOL isNounPlural;
-	char nameAdjFaction[128]; // drops 2nd entry on line (abbreviation value?)
-	char nameFaction[40];
+	char adjNameFaction[128]; // drops 2nd entry on line (abbreviation value?), non-English forms?
+	char formalNameFaction[40];
 	char insultLeader[24];
 	char descNameFaction[24];
 	char assistantName[24];
@@ -209,17 +257,17 @@ struct player {
 	int factionBonusID[8];
 	int factionBonusVal1[8];
 	int factionBonusVal2[8];
-	int AI_IntrestFight;
-	BOOL AI_IntrestGrowth;
-	BOOL AI_IntrestTech;
-	BOOL AI_IntrestWealth;
-	BOOL AI_IntrestPower;
-	int socIdeologyCategory;
-	int socAntiIdeologyCategory;
-	int socIdeologyModel;
-	int socAntiIdeologyModel;
-	int socIdeologyEffect; // Emphasis
-	int socAntiIdeologyEffect; // unused, never set in default factions
+	int AI_Fight; // willingness to use force to achieve goals (-1, 0, 1)
+	BOOL AI_Growth; // interest in population growth
+	BOOL AI_Tech; // interest in knowledge
+	BOOL AI_Wealth; // interest in wealth
+	BOOL AI_Power; // interest in power
+	int socIdeologyCategory; // priority
+	int socAntiIdeologyCategory; // opposition
+	int socIdeologyModel; // priority
+	int socAntiIdeologyModel; // opposition
+	int socIdeologyEffect; // emphasis/priority
+	int socAntiIdeologyEffect; // opposition ; unused, never set in default factions
 };
 
 struct player_data {
@@ -233,7 +281,7 @@ struct player_data {
 	int diploAgenda[8];
 	int diploFriction[8];
 	int diploSpoke[8]; // Turn for the last player-to-AI communication; -1 for never
-	int diploMerc[8]; // mercifulness (?)
+	int diploMerc[8]; // mercifulness? Possibly higher values indicate willingness for deal-making
 	char diploPatience[8]; // AI-to-player
 	int sanctionTurns; // Turns left for economic sanctions imposed by other factions for atrocities
 	int loanBalance[8]; // Loan balance remaining this faction owes another to be paid over term
@@ -241,18 +289,20 @@ struct player_data {
 	char gap_104[32];
 	int integrityBlemishes;
 	int globalReputation; // ? integrity? related to signing treaties, freeing faction
-	int diploUnk1[8]; // ? rights (vs wrongs below)? gift, bribe
-	int diploWrongs[8]; // factions wronged by faction
-	int diploDblCrossedBy[8]; // factions that double crossed faction
-	int diploUnk3[8]; // ? combat related
-	int diploUnk4[8]; // ? combat related
+	int diploUnk_1[8]; // ? rights (vs wrongs below)? gift, bribe; Gifts and bribes we have received
+	int diploWrongs[8]; // number of times the player has double crossed (wronged) this faction
+	int diploBetrayed[8]; // number of times the player has been double crossed by this faction
+	int diploUnk_3[8]; // ? combat related
+	int diploUnk_4[8]; // ? combat related
 	int tradedMaps; // bitfield of other factions that have traded maps with faction
 	int baseGovernorAdv; // default advanced Governor settings; see governor_base_bitfield
 	int atrocities; // count committed by faction
 	int majorAtrocities; // count committed by faction
-	int unk_3; // ? probe: mind control base (+4) / subvert unit (+1) total
-	int unk_4[8]; // ? probe: mind control base (+4) / subvert unit (+1) per faction
-	int stolenDataCount[8]; // probe: successfully procured research data (tech/map) per faction
+	// mind control action value: mind/thought control base (+4) or successfully subvert unit (+1)
+	// TODO: possible issue with thought control still increasing variables on failure
+	uint32_t mindControlTotal; // running sum of mind control actions above against other factions
+	uint32_t diploMindControl[8]; // total action value against this player by each faction
+	uint32_t stolenDataCount[8]; // probe successfully procured research data (tech/map) per faction
 	int energyReserves; // current energy credits
 	int energyCost; // ?
 	int SE_PoliticsPending;
@@ -322,7 +372,7 @@ struct player_data {
 	int SE_AllocLabs;
 	int unk_25;
 	char gap_330[44];
-	int techRanking;
+	int techRanking; // Twice the number of techs discovered
 	int unk_26;
 	uint32_t satODPDeployed;
 	int theoryOfEverything;
@@ -341,8 +391,8 @@ struct player_data {
 	int target_yCoord;
 	int unk_28;
 	int councilCallTurn;
-	int unk_29[11];
-	int unk_30[11];
+	int unk_29[11]; // used by council code related to buying votes; vote id?
+	int unk_30[11]; // used by council code related to buying votes; factionID
 	uint8_t facilityAnnounced[4]; // bitfield - used to determine one time play of fac audio blurb
 	int unk_32;
 	char unk_33;
@@ -351,40 +401,31 @@ struct player_data {
 	int unk_35;
 	int unk_36;
 	int unk_37;
-	char gap_470[192];
-	int savedQueueSize[8];
-	int savedQueueItems[78];
-	int unk_38;
-	char unk_39[4];
-	int unk_40;
-	char unk_41[12];
-	int unk_42;
-	char unk_43[12];
-	int unk_44;
-	char gap_6B4[80];
-	int unk_45;
-	char gap_708[200];
-	int unk_46;
-	char gap_7D4[32];
+	char savedQueueName[8][24]; // queue template
+	int savedQueueSize[8]; // queue template
+	int savedQueueItems[8][10]; // queue template
+	int unk_38[8];
+	int unk_39[8][9];
+	int unk_46[9];
 	int unk_47;
 	int unk_48;
 	int unk_49;
 	uint32_t nutrientSurplusTotal;
 	int labsTotal;
-	uint32_t satSkyHydroLab; // +1 Nutrients per Lab
-	uint32_t satNessusMiningStat; // +1 Minerals per Station
-	uint32_t satOrbitalPwrTrans; // +1 Energy per Transmitter
-	uint32_t satODPTotal;
-	int bestWeaponVal;
-	int bestPsiAtkVal;
-	int bestPsiDefVal;
-	int bestArmorVal;
+	uint32_t satellitesNutrient; // +1 Nutrients per Sky Hydroponics Lab
+	uint32_t satellitesMineral; // +1 Minerals per Nessus Mining Station
+	uint32_t satellitesEnergy; // +1 Energy per Orbital Power Transmitter
+	uint32_t satellitesODPTotal; // Orbital Defense Pod count
+	int bestWeaponValue;
+	int bestPsiOffense;
+	int bestPsiDefense;
+	int bestArmorValue;
 	int bestLandSpeed;
-	int enemyBestWeaponVal;
-	int enemyBestArmorVal;
+	int enemyBestWeaponValue; // Enemy refers here to any non-pact faction
+	int enemyBestArmorValue;
 	int enemyBestLandSpeed;
-	int enemyBestPsiAtkVal;
-	int enemyBestPsiDefVal;
+	int enemyBestPsiOffense;
+	int enemyBestPsiDefense;
 	int unk_64;
 	int unk_65;
 	int unk_66;
@@ -394,29 +435,34 @@ struct player_data {
 	uint8_t protoID_Active[512];
 	uint8_t protoID_Queue[512];
 	int16_t protoID_Lost[512];
-	int totalMilVeh;
+	int totalMilVeh; // total combat units
 	uint32_t currentNumBases;
 	int milStrength_1;
 	int milStrength_2;
 	int popTotal;
-	int unk_70;
+	int unk_70; // AI total TRIAD_SEA Veh?
 	int planetBusters;
 	int unk_71;
 	int unk_72;
-	int16_t unk_73[128];
-	uint8_t baseCountByRegion[128]; // 1-62 (land), 65-126 (sea)
-	char unk_75[128];
-	int16_t unk_76[128];
-	int16_t unk_77[128];
-	int16_t unk_78[128];
-	int16_t unk_79[128];
-	int16_t unk_80[128];
-	int16_t unk_81[128];
-	char unk_82[128];
-	char unk_83[128];
-	uint8_t basePlanByRegion[128]; // visible in map UI with omni view + debug mode under base name
+	/*
+	* AI planning variables that relate to faction units in specific disjoint land/water areas.
+	* All of these are indexed by the region value in Map struct (see for more details).
+	*/
+	uint16_t regionTotalCombatVehs[128];
+	uint8_t regionTotalBases[128];
+	uint8_t regionTotalOffensiveVehs[128];
+	uint16_t regionForceRating[128]; // Combined offensive/morale rating of all units in the area
+	uint16_t unk_77[128]; // Movement planning flags
+	uint16_t unk_78[128]; // controlled territory by region?
+	uint16_t unk_79[128]; // territory related to scenario obj or visible by region?
+	uint16_t unk_80[128]; // good quality controlled territory count by region?
+	uint16_t unk_81[128]; // something to do with territory / base radius by region?
+	uint8_t unk_82[128]; // world site territory by region?
+	uint8_t unk_83[128]; // related to goody_at()?
+	uint8_t regionBasePlan[128]; // visible in map UI with omni view + debug mode under base name
+	/* End of block */
 	goal goals_1[75];
-	goal goals_2[25];
+	goal goals_2[25]; // sites?
 	int unk_93;
 	int unk_94;
 	int unk_95;
@@ -489,3 +535,5 @@ OPENSMACX_API BOOL __cdecl climactic_battle();
 OPENSMACX_API uint32_t __cdecl guard_check(uint32_t factionID, uint32_t region);
 OPENSMACX_API void __cdecl see_map_check();
 OPENSMACX_API BOOL __cdecl society_avail(int socCategory, int socModel, int factionID);
+OPENSMACX_API void __cdecl enemy_capabilities(uint32_t factionID);
+OPENSMACX_API void __cdecl enemy_capabilities_t(uint32_t factionID);

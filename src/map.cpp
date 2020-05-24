@@ -100,8 +100,8 @@ int __cdecl whose_territory(int factionID, int xCoord, int yCoord, int *baseID, 
 	if (factionID != owner) {
 		if (!ignoreComm && !(*GameState & STATE_OMNISCIENT_VIEW)
 			&& (PlayersData[factionID].diploTreaties[owner]
-				& (DTREATY_COMMLINK | DTREATY_UNK_0x8000000)) 
-			!= (DTREATY_COMMLINK | DTREATY_UNK_0x8000000)) {
+				& (DTREATY_COMMLINK | DTREATY_UNK_8000000)) 
+			!= (DTREATY_COMMLINK | DTREATY_UNK_8000000)) {
 			return -1; // owner unknown to faction
 		}
 		if (baseID) {
@@ -179,7 +179,7 @@ Status: Complete
 BOOL __cdecl sea_coast(uint32_t regionDst, uint32_t regionSrc) {
 	uint32_t offset, mask;
 	bitmask(regionSrc & RegionBounds, &offset, &mask);
-	return (Continents[regionDst].unk6[offset] & mask) != 0;
+	return (Continents[regionDst].unk_6[offset] & mask) != 0;
 }
 
 /*
@@ -246,7 +246,7 @@ int __cdecl base_coast(uint32_t baseID) {
 		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
 			&& xRadius < (int)*MapHorizontalBounds && is_ocean(xRadius, yRadius)) {
 			region = region_at(xRadius, yRadius);
-			int compare = (region >= 127) ? 1 : Continents[region].unk1;
+			int compare = (region >= 127) ? 1 : Continents[region].unk_1;
 			if (compare >= val) {
 				val = compare; // value isn't used?
 			}
@@ -300,7 +300,6 @@ BOOL __cdecl port_to_port(uint32_t baseIDSrc, uint32_t baseIDDst) {
 				}
 			}
 		}
-
 	}
 	return false;
 }
@@ -1107,7 +1106,7 @@ BOOL __cdecl map_init() {
 }
 
 /*
-Purpose: Reset map to blank state. Doesn't wipe unk1 and territory fields.
+Purpose: Reset map to blank state. Doesn't wipe unk_1 and territory fields.
 Original Offset: 00591040
 Return Value: n/a
 Status: Complete
@@ -1300,7 +1299,7 @@ uint32_t __cdecl zoc_sea(int xCoord, int yCoord, uint32_t factionID) {
 				for (int vehID = veh_at(xRadius, yRadius); vehID >= 0;
 					vehID = Veh[vehID].nextVehIDStack) {
 					if(Veh[vehID].factionID != factionID 
-						&& (Veh[vehID].visibleToFaction & (1 << factionID) 
+						&& (Veh[vehID].visibility & (1 << factionID)
 						|| (!*MultiplayerToggle && !(Veh[vehID].flags & VFLAG_INVISIBLE)))) {
 						return owner + 1;
 					}

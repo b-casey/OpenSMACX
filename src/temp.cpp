@@ -90,7 +90,26 @@ MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
 int __cdecl tester() {
 	log_set_state(true);
 	log_say("Start test", 0, 0, 0);
+	//
+	
+	for (int i = 0; i < MaxPlayerNum; i++) {
+		for (int j = 0; j < 75; j++) {
+			int type = PlayersData[i].goals_1[j].type;
+			if (type != AI_GOAL_UNUSED) {
+				PlayersData[i].goals_1[j].type = AI_GOAL_UNK_1;
+				/*
+				if (type == 6) {
+					char szTemp[100];
+					sprintf_s(szTemp, 100, "goal1 - xCoord: %d, yCoord: %d", 
+					PlayersData[i].goals_1[j].xCoord, PlayersData[i].goals_1[j].yCoord);
+					log_say(szTemp, 0, 0, 0);
+				}
+				*/
+			}
+		}
+	}
 
+	/*
 	for (int i = 0; i < MaxPlayerNum; i++) {
 		log_say(Players[i].nameFaction, "global rep", PlayersData[i].globalReputation, 0, 0);
 	}
@@ -118,7 +137,6 @@ int __cdecl tester() {
 			}
 		}
 	}
-	*/
 	for (int i = 0; i < MaxPlayerNum; i++) {
 		for (int j = 0; j < MaxPlayerNum; j++) {
 			int val = PlayersData[i].diploUnk1[j];
@@ -485,7 +503,7 @@ void tech_calc_output() {
 					log_say("bad: ", techVal1, 0, 0);
 				}
 				else {
-					log_say(Players[i].nameFaction, Technology[j].name, techVal1, k, 0);
+					log_say(Players[i].formalNameFaction, Technology[j].name, techVal1, k, 0);
 				}
 			}
 		}
@@ -495,18 +513,18 @@ void tech_calc_output() {
 			if (techVal1 != techVal2) {
 				log_say("tech_val error: ", j, i, 0);
 				if (j < 97) {
-					log_say(Players[i].nameFaction, Players[j - 89].nameFaction, techVal1, techVal2, 0);
+					log_say(Players[i].formalNameFaction, Players[j - 89].formalNameFaction, techVal1, techVal2, 0);
 				}
 				else {
-					log_say(Players[i].nameFaction, VehPrototype[j - 97].vehName, techVal1, techVal2, 0);
+					log_say(Players[i].formalNameFaction, VehPrototype[j - 97].vehName, techVal1, techVal2, 0);
 				}
 			}
 			else {
 				if (j < 97) {
-					log_say(Players[i].nameFaction, Players[j - 89].nameFaction, techVal1, 0, 0);
+					log_say(Players[i].formalNameFaction, Players[j - 89].formalNameFaction, techVal1, 0, 0);
 				}
 				else {
-					log_say(Players[i].nameFaction, VehPrototype[j - 97].vehName, techVal1, 0, 0);
+					log_say(Players[i].formalNameFaction, VehPrototype[j - 97].vehName, techVal1, 0, 0);
 				}
 			}
 		}

@@ -20,143 +20,143 @@
  /*
   * Base related objects, variables and functions.
   */
-enum facility_id {
-	FAC_HEADQUARTERS = 0x1,
-	FAC_CHILDREN_CRECHE = 0x2,
-	FAC_RECYCLING_TANKS = 0x3,
-	FAC_PERIMETER_DEFENSE = 0x4,
-	FAC_TACHYON_FIELD = 0x5,
-	FAC_RECREATION_COMMONS = 0x6,
-	FAC_ENERGY_BANK = 0x7,
-	FAC_NETWORK_NODE = 0x8,
-	FAC_BIOLOGY_LAB = 0x9,
-	FAC_SKUNKWORKS = 0xA,
-	FAC_HOLOGRAM_THEATRE = 0xB,
-	FAC_PARADISE_GARDEN = 0xC,
-	FAC_TREE_FARM = 0xD,
-	FAC_HYBRID_FOREST = 0xE,
-	FAC_FUSION_LAB = 0xF,
-	FAC_QUANTUM_LAB = 0x10,
-	FAC_RESEARCH_HOSPITAL = 0x11,
-	FAC_NANOHOSPITAL = 0x12,
-	FAC_ROBOTIC_ASSEMBLY_PLANT = 0x13,
-	FAC_NANOREPLICATOR = 0x14,
-	FAC_QUANTUM_CONVERTER = 0x15,
-	FAC_GENEJACK_FACTORY = 0x16,
-	FAC_PUNISHMENT_SPHERE = 0x17,
-	FAC_HAB_COMPLEX = 0x18,
-	FAC_HABITATION_DOME = 0x19,
-	FAC_PRESSURE_DOME = 0x1A,
-	FAC_COMMAND_CENTER = 0x1B,
-	FAC_NAVAL_YARD = 0x1C,
-	FAC_AEROSPACE_COMPLEX = 0x1D,
-	FAC_BIOENHANCEMENT_CENTER = 0x1E,
-	FAC_CENTAURI_PRESERVE = 0x1F,
-	FAC_TEMPLE_OF_PLANET = 0x20,
-	FAC_PSI_GATE = 0x21,
-	FAC_COVERT_OPS_CENTER = 0x22,
-	FAC_BROOD_PIT = 0x23,
-	FAC_AQUAFARM = 0x24,
-	FAC_SUBSEA_TRUNKLINE = 0x25,
-	FAC_THERMOCLINE_TRANSDUCER = 0x26,
-	FAC_FLECHETTE_DEFENSE_SYS = 0x27,
-	FAC_SUBSPACE_GENERATOR = 0x28,
-	FAC_GEOSYNC_SURVEY_POD = 0x29,
-	FAC_EMPTY_FACILITY_42 = 0x2A,
-	FAC_EMPTY_FACILITY_43 = 0x2B,
-	FAC_EMPTY_FACILITY_44 = 0x2C,
-	FAC_EMPTY_FACILITY_45 = 0x2D,
-	FAC_EMPTY_FACILITY_46 = 0x2E,
-	FAC_EMPTY_FACILITY_47 = 0x2F,
-	FAC_EMPTY_FACILITY_48 = 0x30,
-	FAC_EMPTY_FACILITY_49 = 0x31,
-	FAC_EMPTY_FACILITY_50 = 0x32,
-	FAC_EMPTY_FACILITY_51 = 0x33,
-	FAC_EMPTY_FACILITY_52 = 0x34,
-	FAC_EMPTY_FACILITY_53 = 0x35,
-	FAC_EMPTY_FACILITY_54 = 0x36,
-	FAC_EMPTY_FACILITY_55 = 0x37,
-	FAC_EMPTY_FACILITY_56 = 0x38,
-	FAC_EMPTY_FACILITY_57 = 0x39,
-	FAC_EMPTY_FACILITY_58 = 0x3A,
-	FAC_EMPTY_FACILITY_59 = 0x3B,
-	FAC_EMPTY_FACILITY_60 = 0x3C,
-	FAC_EMPTY_FACILITY_61 = 0x3D,
-	FAC_EMPTY_FACILITY_62 = 0x3E,
-	FAC_EMPTY_FACILITY_63 = 0x3F,
-	FAC_EMPTY_FACILITY_64 = 0x40,
-	FAC_SKY_HYDRO_LAB = 0x41,
-	FAC_NESSUS_MINING_STATION = 0x42,
-	FAC_ORBITAL_POWER_TRANS = 0x43,
-	FAC_ORBITAL_DEFENSE_POD = 0x44,
-	FAC_STOCKPILE_ENERGY = 0x45,
-	FAC_HUMAN_GENOME_PROJ = 0x46,
-	FAC_COMMAND_NEXUS = 0x47,
-	FAC_WEATHER_PARADIGM = 0x48,
-	FAC_MERCHANT_EXCHANGE = 0x49,
-	FAC_EMPATH_GUILD = 0x4A,
-	FAC_CITIZENS_DEFENSE_FORCE = 0x4B,
-	FAC_VIRTUAL_WORLD = 0x4C,
-	FAC_PLANETARY_TRANS_SYS = 0x4D,
-	FAC_XENOEMPATYH_DOME = 0x4E,
-	FAC_NEURAL_AMPLIFIER = 0x4F,
-	FAC_MARITIME_CONTROL_CENTER = 0x50,
-	FAC_PLANETARY_DATALINKS = 0x51,
-	FAC_SUPERCOLLIDER = 0x52,
-	FAC_ASCETIC_VIRTUES = 0x53,
-	FAC_LONGEVITY_VACCINE = 0x54,
-	FAC_HUNTER_SEEKER_ALGO = 0x55,
-	FAC_PHOLUS_MUTAGEN = 0x56,
-	FAC_CYBORG_FACTORY = 0x57,
-	FAC_THEORY_OF_EVERYTHING = 0x58,
-	FAC_DREAM_TWISTER = 0x59,
-	FAC_UNIVERSAL_TRANSLATOR = 0x5A,
-	FAC_NETWORK_BACKBONE = 0x5B,
-	FAC_NANO_FACTORY = 0x5C,
-	FAC_LIVING_REFINERY = 0x5D,
-	FAC_CLONING_VATS = 0x5E,
-	FAC_SELF_AWARE_COLONY = 0x5F,
-	FAC_CLINICAL_IMMORTALITY = 0x60,
-	FAC_SPACE_ELEVATOR = 0x61,
-	FAC_SINGULARITY_INDUCTOR = 0x62,
-	FAC_BULK_MATTER_TRANSMITTER = 0x63,
-	FAC_TELEPATHIC_MATRIX = 0x64,
-	FAC_VOICE_OF_PLANET = 0x65,
-	FAC_ASCENT_TO_TRANSCENDENCE = 0x66,
-	FAC_MANIFOLD_HARMONICS = 0x67,
-	FAC_NETHACK_TERMINUS = 0x68,
-	FAC_CLOUDBASE_ACADEMY = 0x69,
-	FAC_PLANETARY_ENERGY_GRID = 0x6A,
-	FAC_EMPTY_SP_38 = 0x6B,
-	FAC_EMPTY_SP_39 = 0x6C,
-	FAC_EMPTY_SP_40 = 0x6D,
-	FAC_EMPTY_SP_41 = 0x6E,
-	FAC_EMPTY_SP_42 = 0x6F,
-	FAC_EMPTY_SP_43 = 0x70,
-	FAC_EMPTY_SP_44 = 0x71,
-	FAC_EMPTY_SP_45 = 0x72,
-	FAC_EMPTY_SP_46 = 0x73,
-	FAC_EMPTY_SP_47 = 0x74,
-	FAC_EMPTY_SP_48 = 0x75,
-	FAC_EMPTY_SP_49 = 0x76,
-	FAC_EMPTY_SP_50 = 0x77,
-	FAC_EMPTY_SP_51 = 0x78,
-	FAC_EMPTY_SP_52 = 0x79,
-	FAC_EMPTY_SP_53 = 0x7A,
-	FAC_EMPTY_SP_54 = 0x7B,
-	FAC_EMPTY_SP_55 = 0x7C,
-	FAC_EMPTY_SP_56 = 0x7D,
-	FAC_EMPTY_SP_57 = 0x7E,
-	FAC_EMPTY_SP_58 = 0x7F,
-	FAC_EMPTY_SP_59 = 0x80,
-	FAC_EMPTY_SP_60 = 0x81,
-	FAC_EMPTY_SP_61 = 0x82,
-	FAC_EMPTY_SP_62 = 0x83,
-	FAC_EMPTY_SP_63 = 0x84,
-	FAC_EMPTY_SP_64 = 0x85,
+enum facility {
+	FAC_HEADQUARTERS = 1,
+	FAC_CHILDREN_CRECHE = 2,
+	FAC_RECYCLING_TANKS = 3,
+	FAC_PERIMETER_DEFENSE = 4,
+	FAC_TACHYON_FIELD = 5,
+	FAC_RECREATION_COMMONS = 6,
+	FAC_ENERGY_BANK = 7,
+	FAC_NETWORK_NODE = 8,
+	FAC_BIOLOGY_LAB = 9,
+	FAC_SKUNKWORKS = 10,
+	FAC_HOLOGRAM_THEATRE = 11,
+	FAC_PARADISE_GARDEN = 12,
+	FAC_TREE_FARM = 13,
+	FAC_HYBRID_FOREST = 14,
+	FAC_FUSION_LAB = 15,
+	FAC_QUANTUM_LAB = 16,
+	FAC_RESEARCH_HOSPITAL = 17,
+	FAC_NANOHOSPITAL = 18,
+	FAC_ROBOTIC_ASSEMBLY_PLANT = 19,
+	FAC_NANOREPLICATOR = 20,
+	FAC_QUANTUM_CONVERTER = 21,
+	FAC_GENEJACK_FACTORY = 22,
+	FAC_PUNISHMENT_SPHERE = 23,
+	FAC_HAB_COMPLEX = 24,
+	FAC_HABITATION_DOME = 25,
+	FAC_PRESSURE_DOME = 26,
+	FAC_COMMAND_CENTER = 27,
+	FAC_NAVAL_YARD = 28,
+	FAC_AEROSPACE_COMPLEX = 29,
+	FAC_BIOENHANCEMENT_CENTER = 30,
+	FAC_CENTAURI_PRESERVE = 31,
+	FAC_TEMPLE_OF_PLANET = 32,
+	FAC_PSI_GATE = 33,
+	FAC_COVERT_OPS_CENTER = 34,
+	FAC_BROOD_PIT = 35,
+	FAC_AQUAFARM = 36,
+	FAC_SUBSEA_TRUNKLINE = 37,
+	FAC_THERMOCLINE_TRANSDUCER = 38,
+	FAC_FLECHETTE_DEFENSE_SYS = 39,
+	FAC_SUBSPACE_GENERATOR = 40,
+	FAC_GEOSYNC_SURVEY_POD = 41,
+	FAC_EMPTY_FACILITY_42 = 42,
+	FAC_EMPTY_FACILITY_43 = 43,
+	FAC_EMPTY_FACILITY_44 = 44,
+	FAC_EMPTY_FACILITY_45 = 45,
+	FAC_EMPTY_FACILITY_46 = 46,
+	FAC_EMPTY_FACILITY_47 = 47,
+	FAC_EMPTY_FACILITY_48 = 48,
+	FAC_EMPTY_FACILITY_49 = 49,
+	FAC_EMPTY_FACILITY_50 = 50,
+	FAC_EMPTY_FACILITY_51 = 51,
+	FAC_EMPTY_FACILITY_52 = 52,
+	FAC_EMPTY_FACILITY_53 = 53,
+	FAC_EMPTY_FACILITY_54 = 54,
+	FAC_EMPTY_FACILITY_55 = 55,
+	FAC_EMPTY_FACILITY_56 = 56,
+	FAC_EMPTY_FACILITY_57 = 57,
+	FAC_EMPTY_FACILITY_58 = 58,
+	FAC_EMPTY_FACILITY_59 = 59,
+	FAC_EMPTY_FACILITY_60 = 60,
+	FAC_EMPTY_FACILITY_61 = 61,
+	FAC_EMPTY_FACILITY_62 = 62,
+	FAC_EMPTY_FACILITY_63 = 63,
+	FAC_EMPTY_FACILITY_64 = 64,
+	FAC_SKY_HYDRO_LAB = 65,
+	FAC_NESSUS_MINING_STATION = 66,
+	FAC_ORBITAL_POWER_TRANS = 67,
+	FAC_ORBITAL_DEFENSE_POD = 68,
+	FAC_STOCKPILE_ENERGY = 69,
+	FAC_HUMAN_GENOME_PROJ = 70,
+	FAC_COMMAND_NEXUS = 71,
+	FAC_WEATHER_PARADIGM = 72,
+	FAC_MERCHANT_EXCHANGE = 73,
+	FAC_EMPATH_GUILD = 74,
+	FAC_CITIZENS_DEFENSE_FORCE = 75,
+	FAC_VIRTUAL_WORLD = 76,
+	FAC_PLANETARY_TRANS_SYS = 77,
+	FAC_XENOEMPATHY_DOME = 78,
+	FAC_NEURAL_AMPLIFIER = 79,
+	FAC_MARITIME_CONTROL_CENTER = 80,
+	FAC_PLANETARY_DATALINKS = 81,
+	FAC_SUPERCOLLIDER = 82,
+	FAC_ASCETIC_VIRTUES = 83,
+	FAC_LONGEVITY_VACCINE = 84,
+	FAC_HUNTER_SEEKER_ALGO = 85,
+	FAC_PHOLUS_MUTAGEN = 86,
+	FAC_CYBORG_FACTORY = 87,
+	FAC_THEORY_OF_EVERYTHING = 88,
+	FAC_DREAM_TWISTER = 89,
+	FAC_UNIVERSAL_TRANSLATOR = 90,
+	FAC_NETWORK_BACKBONE = 91,
+	FAC_NANO_FACTORY = 92,
+	FAC_LIVING_REFINERY = 93,
+	FAC_CLONING_VATS = 94,
+	FAC_SELF_AWARE_COLONY = 95,
+	FAC_CLINICAL_IMMORTALITY = 96,
+	FAC_SPACE_ELEVATOR = 97,
+	FAC_SINGULARITY_INDUCTOR = 98,
+	FAC_BULK_MATTER_TRANSMITTER = 99,
+	FAC_TELEPATHIC_MATRIX = 100,
+	FAC_VOICE_OF_PLANET = 101,
+	FAC_ASCENT_TO_TRANSCENDENCE = 102,
+	FAC_MANIFOLD_HARMONICS = 103,
+	FAC_NETHACK_TERMINUS = 104,
+	FAC_CLOUDBASE_ACADEMY = 105,
+	FAC_PLANETARY_ENERGY_GRID = 106,
+	FAC_EMPTY_SP_38 = 107,
+	FAC_EMPTY_SP_39 = 108,
+	FAC_EMPTY_SP_40 = 109,
+	FAC_EMPTY_SP_41 = 110,
+	FAC_EMPTY_SP_42 = 111,
+	FAC_EMPTY_SP_43 = 112,
+	FAC_EMPTY_SP_44 = 113,
+	FAC_EMPTY_SP_45 = 114,
+	FAC_EMPTY_SP_46 = 115,
+	FAC_EMPTY_SP_47 = 116,
+	FAC_EMPTY_SP_48 = 117,
+	FAC_EMPTY_SP_49 = 118,
+	FAC_EMPTY_SP_50 = 119,
+	FAC_EMPTY_SP_51 = 120,
+	FAC_EMPTY_SP_52 = 121,
+	FAC_EMPTY_SP_53 = 122,
+	FAC_EMPTY_SP_54 = 123,
+	FAC_EMPTY_SP_55 = 124,
+	FAC_EMPTY_SP_56 = 125,
+	FAC_EMPTY_SP_57 = 126,
+	FAC_EMPTY_SP_58 = 127,
+	FAC_EMPTY_SP_59 = 128,
+	FAC_EMPTY_SP_60 = 129,
+	FAC_EMPTY_SP_61 = 130,
+	FAC_EMPTY_SP_62 = 131,
+	FAC_EMPTY_SP_63 = 132,
+	FAC_EMPTY_SP_64 = 133,
 };
 
-enum  secret_project_id {
+enum  secret_project {
 	SP_HUMAN_GENOME_PROJ = 0,
 	SP_COMMAND_NEXUS = 1,
 	SP_WEATHER_PARADIGM = 2,
@@ -224,6 +224,7 @@ enum  secret_project_id {
 };
 
 enum base_status_bitfield {
+	BSTATUS_UNK_1 = 0x1,
 	BSTATUS_DRONE_RIOTS_ACTIVE = 0x2,
 	BSTATUS_GOLDEN_AGE_ACTIVE = 0x4,
 	BSTATUS_RESEARCH_DATA_STOLEN = 0x40,
@@ -275,8 +276,18 @@ enum governor_base_bitfield {
 	GOV_PRIORITY_CONQUER = 0x8000000,
 	// 0x10000000
 	// 0x20000000
-	GOV_UNK_0x40000000 = 0x40000000,
+	GOV_UNK_40000000 = 0x40000000,
 	GOV_ACTIVE = 0x80000000,
+};
+
+enum citizen_specialists {
+	CITIZEN_TECHNICIAN = 0,
+	CITIZEN_DOCTOR = 1,
+	CITIZEN_LIBRARIAN = 2,
+	CITIZEN_ENGINEER = 3,
+	CITIZEN_EMPATH = 4,
+	CITIZEN_THINKER = 5,
+	CITIZEN_TRANSCEND = 6,
 };
 
 struct base {
@@ -287,41 +298,46 @@ struct base {
 	int8_t populationSize;
 	uint8_t assimilationTurnsLeft;
 	uint8_t nerveStapleTurnsLeft;
-	uint8_t unk1;
-	uint8_t unk2; // visibility?
-	uint8_t factionPopulationSizeIntel[8];
+	uint8_t unk_1; // AI plan status?
+	uint8_t visibility; // faction bitfield of those who can see base (mapped: dim/bright)
+	uint8_t factionPopSizeIntel[8]; // last know population size for each faction
 	char nameString[25];
-	int16_t unkX;
-	int16_t unkY;
-	uint32_t status;
-	int event;
-	int governor;
+	int16_t unkX; // related to goals?
+	int16_t unkY; // related to goals?
+	uint32_t status; // see base_status_bitfield
+	uint32_t event; // see base_event_bitfield
+	uint32_t governor; // see governor_base_bitfield
 	int nutrientsAccumulated;
 	int mineralsAccumulated;
 	int productionIDLast;
 	int ecoDamage;
 	int queueSize;
-	int queueProductionID[10];
-	int resourceSqrRadius;
+	int queueProductionID[10]; // items in the production queue
+	int resourceSqrRadius; // worked tiles
 	int specialistTotal;
-	int unk3;
-	int unk4;
-	int unk5;
-	uint8_t facilitiesPresentTable[12];
+	int specialist_unk_1; // related to Governor controlling specialists, non-psych spec count?
+	/*
+	* Specialist types for the first 16 (see citizen_specialists, 4 bits per specialist) 
+	* Stored from left to right in base view, with left most represented by lower bits of spec
+	* Specialists after 16th in base are auto assigned based on best_specialist()
+	* Isn't correct when specialistTotal is 0, not reset? Or Governor actively controlling specs?
+	*/
+	uint32_t spec[2]; // specialist types
+	uint8_t facilitiesBuilt[12];
 	int mineralSurplusFinal;
 	int mineralsAccumulated2;
-	int unk6;
-	int unk7;
-	int unk8;
-	int unk9;
+	int unk_6; // unused?
+	int unk_7; // unused?
+	int unk_8; // unused?
+	int unk_9; // unused?
 	int nutrientIntake1;
 	int mineralIntake1;
 	int energyIntake1;
 	int unusedIntake1;
-	int nutrientIntake;
-	int mineralIntake;
-	int energyIntake;
-	int unusedIntake;
+	int nutrientIntake2;
+	int mineralIntake2;
+	int energyIntake2;
+	int unusedIntake2;
 	int nutrientSurplus;
 	int mineralSurplus;
 	int energySurplus;
@@ -337,7 +353,7 @@ struct base {
 	int economyTotal;
 	int psychTotal;
 	int labsTotal;
-	int unk10;
+	int unk_10;
 	int16_t autoforwardLandBaseID;
 	int16_t autoforwardSeaBaseID;
 	int16_t autoforwardAirBaseID;
@@ -347,8 +363,8 @@ struct base {
 	int superdroneTotal;
 	int randomEventTurns;
 	int nerveStapleCount;
-	int padding1;
-	int padding2;
+	int unk_11; // effectively unused, only set to 0 by base_init()
+	int unk_12; // effectively unused, only set to 0 by base_init()
 };
 
 struct rules_facility {
@@ -359,11 +375,11 @@ struct rules_facility {
 	int maint;
 	int preqTech;
 	int freeTech;
-	int SP_AIFight;
-	int SP_AIGrowth;
-	int SP_AITech;
-	int SP_AIWealth;
-	int SP_AIPower;
+	int SP_AI_Fight;
+	int SP_AI_Growth;
+	int SP_AI_Tech;
+	int SP_AI_Wealth;
+	int SP_AI_Power;
 };
 
 struct rules_citizen {

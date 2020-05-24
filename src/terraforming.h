@@ -20,27 +20,27 @@
  /*
   * Terraforming related objects, variables and functions.
   */
-enum terraform_id {
-	TERRA_FARM = 0x0,
-	TERRA_SOIL_ENRICHER = 0x1,
-	TERRA_MINE = 0x2,
-	TERRA_SOLAR_COLLECTOR_TIDAL = 0x3,
-	TERRA_FOREST = 0x4,
-	TERRA_ROAD = 0x5,
-	TERRA_MAGTUBE = 0x6,
-	TERRA_BUNKER = 0x7,
-	TERRA_AIRBASE = 0x8,
-	TERRA_SENSOR = 0x9,
-	TERRA_FUNGUS_REMOVE = 0xA,
-	TERRA_FUNGUS_PLANT = 0xB,
-	TERRA_CONDENSER = 0xC,
-	TERRA_ECHELON_MIRROR = 0xD,
-	TERRA_THERMAL_BOREHOLE = 0xE,
-	TERRA_AQUIFER = 0xF,
-	TERRA_RAISE_LAND = 0x10,
-	TERRA_LOWER_LAND = 0x11,
-	TERRA_LEVEL_TERRAIN = 0x12,
-	TERRA_MONOLITH = 0x13,
+enum terraform {
+	TERRA_FARM = 0, // Farm + Kelp Farm
+	TERRA_SOIL_ENR = 1, // Soil Enricher
+	TERRA_MINE = 2, // Mine + Mining Platform
+	TERRA_SOLAR_TIDAL = 3, // Solar Collector + Tidal Harness
+	TERRA_FOREST = 4,
+	TERRA_ROAD = 5,
+	TERRA_MAGTUBE = 6,
+	TERRA_BUNKER = 7,
+	TERRA_AIRBASE = 8,
+	TERRA_SENSOR = 9,
+	TERRA_REMOVE_FUNGUS = 10, // Remove Fungus + Sea Fungus
+	TERRA_PLANT_FUNGUS = 11, // Plant Fungus + Sea Fungus
+	TERRA_CONDENSER = 12,
+	TERRA_ECH_MIRROR = 13, // Echelon Mirror
+	TERRA_THERMAL_BORE = 14, // Thermal Borehole
+	TERRA_AQUIFER = 15,
+	TERRA_RAISE_LAND = 16, // Raise Land + Raise Sea Floor
+	TERRA_LOWER_LAND = 17, // Lower Land + Lower Sea Floor
+	TERRA_LEVEL_TERRAIN = 18,
+	TERRA_MONOLITH = 19,
 };
 
 struct rules_terraforming {

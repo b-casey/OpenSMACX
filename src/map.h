@@ -63,8 +63,8 @@ enum terrain_bit {
 	BIT_FUNGUS = 0x20,
 	BIT_SOLAR_TIDAL = 0x40,
 	BIT_RIVER = 0x80,
-	BIT_RIVER_SRC = 0x100,
-	BIT_UNK_200 = 0x200, // something related to cluster of rivers
+	BIT_RIVER_SRC = 0x100, // River begins here for visual effect
+	BIT_RIVER_LAKE = 0x200, // Shows more water for visual effect
 	BIT_RSC_BONUS = 0x400, // Mineral, Nutrient, Energy
 	BIT_BUNKER = 0x800,
 	BIT_BASE_RADIUS = 0x1000, // production radius; 21 tiles per base (20 surrounding + base tile)
@@ -109,7 +109,10 @@ enum terrain_landmark_bit2 {
 };
 
 /*
-Region notes:
+* Region notes:
+* a tile's region is visible with debug mode in the bottom left of the main interface tile area
+* region id is used to index the [128] planning variable arrays in player_data struct
+* 
 * 0: bad region, n/a
 * 1...62: any offshoots from poles starting at 1,1 up to continents and islands
 * 63: bad region - both poles land + single tile islands (this seems specific to huge Planet map)
@@ -121,13 +124,14 @@ Region notes:
 struct map {
 	uint8_t climate; // 000 00 000 | altitude (3 bit) ; rainfall (2 bit) ; temperature (3 bit)
 	uint8_t contour; // altitude details
-	uint8_t val2; // 0000 0000 | site (0xF0) ; owner (0x0F)
-	uint8_t region; // grouping of water/land masses; visible in bottom left of tile w/ debug mode
-	uint8_t visibility; // (1 << factionID)
+	uint8_t val2; // 0000 0000 | site (0xF0) ; owner (0x0F) - last immediate control occupying tile
+	                                                        // or 0x0F for unoccupied
+	uint8_t region; // grouping of disjoint water/land areas; see above notes for more details
+	uint8_t visibility; // faction bitfield of those who can see tile (mapped: dim/bright)
 	uint8_t val3; // 00 000 000 | rocky (2 bit); lock - factionID (3 bit); using - factionID (3 bit)
-	uint8_t unk1; // sometimes set to 0x80, set to 0/1 by Path::territory, contiguous (BOOL?)
-	int8_t territory; // factionID or -1 for unclaimed
-	uint32_t bit; // see terrain_bit enum
+	uint8_t unk_1; // sometimes set to 0x80, set to 0/1 by Path::territory, contiguous (BOOL?)
+	int8_t territory; // physical owner factionID of geographic area or -1 for unclaimed
+	uint32_t bit; // see terrain_bit
 	uint32_t bit2; // bitwho[0]? FF FF FFFF | code (landmark tile sequence); unk flags; landmark id
 	uint32_t bitVisible[7]; // what each faction sees tile as (ex. pods another faction already got)
 };
@@ -139,12 +143,12 @@ struct landmark {
 };
 
 struct continent {
-	int unk1;
-	int unk2;
-	int unk3;
-	int unk4;
-	int unk5;
-	uint8_t unk6[8];
+	int unk_1;
+	int unk_2;
+	int unk_3;
+	int unk_4;
+	int unk_5;
+	uint8_t unk_6[8];
 };
 
 struct rules_natural {

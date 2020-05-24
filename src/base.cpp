@@ -156,7 +156,7 @@ int __cdecl base_find(int xCoord, int yCoord, int factionID, int region, int fac
 					? PlayersData[factionID].diploTreaties[Base[i].factionIDCurrent] & DTREATY_PACT
 					: (factionID2 >= 0 && factionID2 == Base[i].factionIDCurrent)))) {
 				if (factionID3 < 0 || Base[i].factionIDCurrent == factionID3 
-					|| ((1 << factionID3) & Base[i].unk2)) {
+					|| ((1 << factionID3) & Base[i].visibility)) {
 					// removed redundant abs() around yCoord difference
 					int dist = x_dist(cursor_dist(xCoord, Base[i].xCoord), yCoord - Base[i].yCoord);
 					if (dist <= proximity) {
@@ -372,10 +372,10 @@ void __cdecl set_fac(int facilityID, int baseID, BOOL set) {
 	uint32_t offset, mask;
 	bitmask(facilityID, &offset, &mask);
 	if (set) {
-		Base[baseID].facilitiesPresentTable[offset] |= mask;
+		Base[baseID].facilitiesBuilt[offset] |= mask;
 	}
 	else {
-		Base[baseID].facilitiesPresentTable[offset] &= ~mask;
+		Base[baseID].facilitiesBuilt[offset] &= ~mask;
 	}
 }
 
@@ -522,7 +522,7 @@ Status: Complete
 BOOL __cdecl has_fac_built(uint32_t facilityID, uint32_t baseID) {
 	uint32_t offset, mask;
 	bitmask(facilityID, &offset, &mask);
-	return (Base[baseID].facilitiesPresentTable[offset] & mask) != 0;
+	return (Base[baseID].facilitiesBuilt[offset] & mask) != 0;
 }
 
 /*
@@ -572,7 +572,7 @@ uint32_t __cdecl garrison_check(uint32_t baseID) {
 	if (isObj && PlayersData[factionID].playerFlags & PFLAG_STRAT_DEF_OBJECTIVES) {
 		garrison++;
 	}
-	if (PlayersData[factionID].basePlanByRegion[region_at(xCoord, yCoord)] == PLAN_COLONIZATION) {
+	if (PlayersData[factionID].regionBasePlan[region_at(xCoord, yCoord)] == PLAN_COLONIZATION) {
 		garrison--;
 	}
 	int seaFactionID = zoc_sea(xCoord, yCoord, factionID) - 1;
@@ -720,7 +720,7 @@ Status: Complete
 BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID, int queueCount) {
 	// initial checks
 	if (!facilityID || (facilityID == FAC_SKUNKWORKS && *DiffLevelCurrent <= DLVL_SPECIALIST)
-		|| (facilityID >= FAC_HUMAN_GENOME_PROJ && *GameRules & RULES_SCENRULE_NO_BUILDING_SP)) {
+		|| (facilityID >= FAC_HUMAN_GENOME_PROJ && *GameRules & RULES_SCN_NO_BUILDING_SP)) {
 		return false; // Skunkworks removed if there are no prototype costs
 	}
 	if (facilityID == FAC_ASCENT_TO_TRANSCENDENCE) { // at top since anyone can build it

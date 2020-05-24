@@ -36,7 +36,7 @@ LPCSTR ScriptTxtID = "SCRIPT";
 LPSTR *Compass = (LPSTR *)0x00945D48;
 LPSTR *Difficulty = (LPSTR *)0x0096C85C;
 label *Label = (label *)0x009B90F8;
-rules_resourceinfo *ResourceInfo = (rules_resourceinfo *)0x00945F50;
+rules_resourceinfo *ResourceInfo = (rules_resourceinfo *)0x00945F50; // see resource_info_id
 rules_time_control *TimeControl = (rules_time_control *)0x0094F1B8;
 rules_resource *Resource = (rules_resource *)0x00946158;
 rules_energy *Energy = (rules_energy *)0x0094A318;
@@ -399,8 +399,8 @@ void __cdecl read_faction(player *Player, int toggle) {
 		return;
 	}
 	text_get();
-	strcpy_s(Player->nameFaction, 40, text_item());
-	Player->nameFaction[39] = 0;
+	strcpy_s(Player->formalNameFaction, 40, text_item());
+	Player->formalNameFaction[39] = 0;
 	strcpy_s(Player->descNameFaction, 24, text_item());
 	Player->descNameFaction[23] = 0;
 	strcpy_s(Player->nounFaction, 24, text_item());
@@ -421,11 +421,11 @@ void __cdecl read_faction(player *Player, int toggle) {
 	if (toggle == 2) {
 		return;
 	}
-	Player->AI_IntrestFight = text_item_number(); // -1, 0, 1
-	Player->AI_IntrestPower = text_item_number();
-	Player->AI_IntrestTech = text_item_number();
-	Player->AI_IntrestWealth = text_item_number();
-	Player->AI_IntrestGrowth = text_item_number();
+	Player->AI_Fight = text_item_number();
+	Player->AI_Power = text_item_number();
+	Player->AI_Tech = text_item_number();
+	Player->AI_Wealth = text_item_number();
+	Player->AI_Growth = text_item_number();
 	text_get();
 	LPSTR parseRuleCheck = text_item();
 	int len = strlen(parseRuleCheck);
@@ -629,7 +629,7 @@ void __cdecl read_faction(player *Player, int toggle) {
 		}
 		// OFFENSE
 		else if (!_stricmp(parseRule, BonusName[38].key) && Player->factionBonusCount < 8) {
-			Player->factionBonusID[Player->factionBonusCount] = RULE_OFFSENSE;
+			Player->factionBonusID[Player->factionBonusCount] = RULE_OFFENSE;
 			Player->factionBonusVal1[Player->factionBonusCount] = atoi(parseParameter);
 			Player->factionBonusCount++;
 		}
@@ -683,8 +683,8 @@ void __cdecl read_faction(player *Player, int toggle) {
 	}
 	// Faction and Leader related strings
 	text_get(); // skips 2nd value in this line, abbreviation unused?
-	strcpy_s(Player->nameAdjFaction, 128, text_item());
-	Player->nameAdjFaction[127] = 0;
+	strcpy_s(Player->adjNameFaction, 128, text_item());
+	Player->adjNameFaction[127] = 0;
 	text_get();
 	strcpy_s(Player->assistantName, 24, text_item());
 	Player->assistantName[23] = 0;
@@ -1012,7 +1012,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	if (tglAllRules) {
 		for (int i = 0; i < MaxVehProtoNum; i++) {
 			VehPrototype[i].vehName[0] = 0;
-			VehPrototype[i].unk1 = 0;
+			VehPrototype[i].unk_1 = 0;
 			VehPrototype[i].flags = 0;
 		}
 		if (read_units()) {
@@ -1048,11 +1048,11 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		Facility[i].freeTech = tech_name(text_item());
 		Facility[i].effect = text_item_string();
 		if (i >= FacilitySPStart) {
-			Facility[i].SP_AIFight = text_item_number();
-			Facility[i].SP_AIPower = text_item_number();
-			Facility[i].SP_AITech = text_item_number();
-			Facility[i].SP_AIWealth = text_item_number();
-			Facility[i].SP_AIGrowth = text_item_number();
+			Facility[i].SP_AI_Fight = text_item_number();
+			Facility[i].SP_AI_Power = text_item_number();
+			Facility[i].SP_AI_Tech = text_item_number();
+			Facility[i].SP_AI_Wealth = text_item_number();
+			Facility[i].SP_AI_Growth = text_item_number();
 		}
 	}
 	// Orders (basic)

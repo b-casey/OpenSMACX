@@ -53,7 +53,7 @@ Return Value: Faction name adjective
 Status: Complete
 */
 LPSTR __cdecl get_adjective(int factionID) {
-	return Players[factionID].nameAdjFaction;
+	return Players[factionID].adjNameFaction;
 }
 
 /*
@@ -138,7 +138,7 @@ uint32_t __cdecl guard_check(uint32_t factionID, uint32_t region) {
 		return 0;
 	}
 	int factor = 2 - PlayersData[factionID].AI_Fight;
-	int planRegion = PlayersData[factionID].basePlanByRegion[region];
+	int planRegion = PlayersData[factionID].regionBasePlan[region];
 	if (planRegion == PLAN_COLONIZATION) {
 		factor += 2;
 	}
@@ -148,7 +148,7 @@ uint32_t __cdecl guard_check(uint32_t factionID, uint32_t region) {
 	if (PlayersData[factionID].playerFlags & PFLAG_STRAT_DEF_OBJECTIVES) {
 		factor = 1; // 1-1 unit per base ratio
 	}
-	return (PlayersData[factionID].baseCountByRegion[region] + factor - 1) / factor;
+	return (PlayersData[factionID].regionTotalBases[region] + factor - 1) / factor;
 }
 
 /*
@@ -161,7 +161,7 @@ Status: Complete
 void __cdecl see_map_check() {
 	for (int factionID = 1; factionID < MaxPlayerNum; factionID++) {
 		PlayersData[factionID].playerFlags &= ~PFLAG_MAP_REVEALED;
-		uint32_t *satellites = &PlayersData[factionID].satSkyHydroLab;
+		uint32_t *satellites = &PlayersData[factionID].satellitesNutrient;
 		for (int i = 0; i < 4; i++, satellites++) {
 			if (*satellites) {
 				PlayersData[factionID].playerFlags |= PFLAG_MAP_REVEALED;
@@ -190,4 +190,208 @@ BOOL __cdecl society_avail(int socCategory, int socModel, int factionID) {
 		return false;
 	}
 	return has_tech(SocialCategory[socCategory].preqTech[socModel], factionID);
+}
+
+/*
+Purpose: Calculate specified faction's best available weapon and armor ratings as well as the
+		 fastest moving ground Veh chassis. Compare these capabilities to faction's best opponent
+		 capabilities based on current diplomacy.
+Original Offset: 00560DD0
+Return Value: n/a
+Status: Complete - testing / WIP
+*/
+void __cdecl enemy_capabilities(uint32_t factionID) {
+	BOOL hasWorms = veh_avail(BSC_MIND_WORMS, factionID, -1);
+	PlayersData[factionID].bestPsiOffense = hasWorms ? weap_strat(WPN_PSI_ATTACK, factionID) : 0;
+	PlayersData[factionID].bestWeaponValue = 1;
+	for (int i = 0; i < MaxWeaponNum; i++) {
+		if (has_tech(Weapon[i].preqTech, factionID) && Weapon[i].offenseRating < 99) {
+			int weapVal = weap_strat(i, factionID);
+			if (Weapon[i].offenseRating < 0 && weapVal > PlayersData[factionID].bestPsiOffense) {
+				PlayersData[factionID].bestPsiOffense = weapVal;
+			}
+			if (weapVal > PlayersData[factionID].bestWeaponValue) {
+				PlayersData[factionID].bestWeaponValue = weapVal;
+			}
+		}
+	}
+	PlayersData[factionID].bestPsiDefense = hasWorms ? arm_strat(ARM_PSI_DEFENSE, factionID) : 0;
+	PlayersData[factionID].bestArmorValue = 1;
+	for (int i = 0; i < MaxArmorNum; i++) {
+		if (has_tech(Armor[i].preqTech, factionID)) {
+			int armVal = arm_strat(i, factionID);
+			if (Armor[i].defenseRating < 0 && armVal > PlayersData[factionID].bestPsiDefense) {
+				PlayersData[factionID].bestPsiDefense = armVal;
+			}
+			if (armVal > PlayersData[factionID].bestArmorValue) {
+				PlayersData[factionID].bestArmorValue = armVal;
+			}
+		}
+	}
+	PlayersData[factionID].bestLandSpeed = 1;
+	for (int i = 0; i < MaxChassisNum; i++) {
+		if (has_tech(Chassis[i].preqTech, factionID) && Chassis[i].triad == TRIAD_LAND) {
+			if (Chassis[i].speed > PlayersData[factionID].bestLandSpeed) {
+				PlayersData[factionID].bestLandSpeed = Chassis[i].speed;
+			}
+		}
+	}
+	PlayersData[factionID].enemyBestWeaponValue = 0;
+	PlayersData[factionID].enemyBestArmorValue = 0;
+	PlayersData[factionID].enemyBestLandSpeed = 0;
+	PlayersData[factionID].enemyBestPsiOffense = 0;
+	PlayersData[factionID].enemyBestPsiDefense = 0;
+	for (int i = 0; i < 4 && !PlayersData[factionID].enemyBestWeaponValue; i++) {
+		// 1st pass: vendetta, no treaty, has commlink
+		// 2nd pass: no treaty, has commlink
+		// 3rd pass: has commlink
+		// 4th pass: any non-pact faction
+		for (uint32_t j = 1, treaties; j < MaxPlayerNum; j++) {
+			if (j != factionID
+				&& (treaties = PlayersData[i].diploTreaties[j], !(treaties & DTREATY_PACT))
+				&& ((!i && treaties & DTREATY_VENDETTA && !(treaties & DTREATY_TREATY)
+					&& treaties & DTREATY_COMMLINK)
+					|| (i == 1 && !(treaties & DTREATY_TREATY) && treaties & DTREATY_COMMLINK)
+					|| (i == 2 && treaties & DTREATY_COMMLINK) || (i == 3))) {
+				if (PlayersData[factionID].enemyBestWeaponValue < PlayersData[j].bestWeaponValue) {
+					PlayersData[factionID].enemyBestWeaponValue = PlayersData[j].bestWeaponValue;
+				}
+				if (PlayersData[factionID].enemyBestArmorValue < PlayersData[j].bestArmorValue) {
+					PlayersData[factionID].enemyBestArmorValue = PlayersData[j].bestArmorValue;
+				}
+				if (PlayersData[factionID].enemyBestLandSpeed < PlayersData[j].bestLandSpeed) {
+					PlayersData[factionID].enemyBestLandSpeed = PlayersData[j].bestLandSpeed;
+				}
+				if (PlayersData[factionID].enemyBestPsiOffense < PlayersData[j].bestPsiOffense) {
+					PlayersData[factionID].enemyBestPsiOffense = PlayersData[j].bestPsiOffense;
+				}
+				if (PlayersData[factionID].enemyBestPsiDefense < PlayersData[j].bestPsiDefense) {
+					PlayersData[factionID].enemyBestPsiDefense = PlayersData[j].bestPsiDefense;
+				}
+			}
+		}
+	}
+}
+
+void __cdecl enemy_capabilities_t(uint32_t factionID) {
+	// * PSI could potentially be best weapon?
+	// * PSI should always be last Weapon
+	// * faction order will affect initial run through
+	// > potential fix would be to calc all factions at once before enemy best compares
+
+	//BOOL hasWorms = veh_avail(BSC_MIND_WORMS, factionID, -1);
+	//PlayersData[factionID].bestPsiAtkVal = hasWorms ? weap_strat(WPN_PSI_ATTACK, factionID) : 0;
+	PlayersData[factionID].bestWeaponValue = 1;
+	for (int i = 0; i < MaxWeaponNum; i++) {
+		if (has_tech(Weapon[i].preqTech, factionID) && Weapon[i].offenseRating < 99) {
+			int weapVal = weap_strat(i, factionID);
+			//if (Weapon[i].offenseRating < 0 && weapVal > PlayersData[factionID].bestPsiAtkVal) {
+			//	PlayersData[factionID].bestPsiAtkVal = weapVal;
+			//}
+			if (Weapon[i].offenseRating >= 0 && weapVal > PlayersData[factionID].bestWeaponValue) {
+				PlayersData[factionID].bestWeaponValue = weapVal;
+			}
+		}
+	}
+	//PlayersData[factionID].bestPsiDefVal = hasWorms ? arm_strat(ARM_PSI_DEFENSE, factionID) : 0;
+	PlayersData[factionID].bestArmorValue = 1;
+	for (int i = 0; i < MaxArmorNum; i++) {
+		if (has_tech(Armor[i].preqTech, factionID)) {
+			int armVal = arm_strat(i, factionID);
+			//if (Armor[i].defenseRating < 0 && armVal > PlayersData[factionID].bestPsiDefVal) {
+			//	PlayersData[factionID].bestPsiDefVal = armVal;
+			//}
+			if (Armor[i].defenseRating >= 0 && armVal > PlayersData[factionID].bestArmorValue) {
+				PlayersData[factionID].bestArmorValue = armVal;
+			}
+		}
+	}
+	PlayersData[factionID].bestLandSpeed = 1;
+	for (int i = 0; i < MaxChassisNum; i++) {
+		if (has_tech(Chassis[i].preqTech, factionID) && Chassis[i].triad == TRIAD_LAND) {
+			if (Chassis[i].speed > PlayersData[factionID].bestLandSpeed) {
+				PlayersData[factionID].bestLandSpeed = Chassis[i].speed;
+			}
+		}
+	}
+	PlayersData[factionID].enemyBestWeaponValue = 0;
+	PlayersData[factionID].enemyBestArmorValue = 0;
+	PlayersData[factionID].enemyBestLandSpeed = 0;
+	//PlayersData[factionID].enemyBestPsiAtkVal = 0;
+	//PlayersData[factionID].enemyBestPsiDefVal = 0;
+	for (int i = 0; i < 4 && !PlayersData[factionID].enemyBestWeaponValue; i++) {
+		// 1st pass: vendetta, no treaty, has commlink
+		// 2nd pass: no treaty, has commlink
+		// 3rd pass: has commlink
+		// 4th pass: any non-pact faction
+		for (uint32_t j = 1, treaties; j < MaxPlayerNum; j++) {
+			if (j != factionID
+				&& (treaties = PlayersData[i].diploTreaties[j], !(treaties & DTREATY_PACT))
+				&& ((!i && treaties & DTREATY_VENDETTA && !(treaties & DTREATY_TREATY)
+					&& treaties & DTREATY_COMMLINK)
+					|| (i == 1 && !(treaties & DTREATY_TREATY) && treaties & DTREATY_COMMLINK)
+					|| (i == 2 && treaties & DTREATY_COMMLINK) || (i == 3))) {
+				if (PlayersData[factionID].enemyBestWeaponValue < PlayersData[j].bestWeaponValue) {
+					PlayersData[factionID].enemyBestWeaponValue = PlayersData[j].bestWeaponValue;
+				}
+				if (PlayersData[factionID].enemyBestArmorValue < PlayersData[j].bestArmorValue) {
+					PlayersData[factionID].enemyBestArmorValue = PlayersData[j].bestArmorValue;
+				}
+				if (PlayersData[factionID].enemyBestLandSpeed < PlayersData[j].bestLandSpeed) {
+					PlayersData[factionID].enemyBestLandSpeed = PlayersData[j].bestLandSpeed;
+				}
+				/*
+				if (PlayersData[factionID].enemyBestPsiAtkVal < PlayersData[j].bestPsiAtkVal) {
+					PlayersData[factionID].enemyBestPsiAtkVal = PlayersData[j].bestPsiAtkVal;
+				}
+				if (PlayersData[factionID].enemyBestPsiDefVal < PlayersData[j].bestPsiDefVal) {
+					PlayersData[factionID].enemyBestPsiDefVal = PlayersData[j].bestPsiDefVal;
+				}
+				*/
+			}
+		}
+	}
+	// PSI
+	BOOL hasWorms = veh_avail(BSC_MIND_WORMS, factionID, -1);
+	PlayersData[factionID].bestPsiOffense = hasWorms ? weap_strat(WPN_PSI_ATTACK, factionID) : 0;
+	for (int i = 0; i < MaxWeaponNum; i++) {
+		if (has_tech(Weapon[i].preqTech, factionID) && Weapon[i].offenseRating < 99) {
+			int weapVal = weap_strat(i, factionID);
+			if (Weapon[i].offenseRating < 0 && weapVal > PlayersData[factionID].bestPsiOffense) {
+				PlayersData[factionID].bestPsiOffense = weapVal;
+			}
+		}
+	}
+	PlayersData[factionID].bestPsiDefense = hasWorms ? arm_strat(ARM_PSI_DEFENSE, factionID) : 0;
+	for (int i = 0; i < MaxArmorNum; i++) {
+		if (has_tech(Armor[i].preqTech, factionID)) {
+			int armVal = arm_strat(i, factionID);
+			if (Armor[i].defenseRating < 0 && armVal > PlayersData[factionID].bestPsiDefense) {
+				PlayersData[factionID].bestPsiDefense = armVal;
+			}
+		}
+	}
+	PlayersData[factionID].enemyBestPsiOffense = 0;
+	PlayersData[factionID].enemyBestPsiDefense = 0;
+	for (int i = 0; i < 4 && !PlayersData[factionID].enemyBestPsiOffense; i++) {
+		// 1st pass: vendetta, no treaty, has commlink
+		// 2nd pass: no treaty, has commlink
+		// 3rd pass: has commlink
+		// 4th pass: any non-pact faction
+		for (uint32_t j = 1, treaties; j < MaxPlayerNum; j++) {
+			if (j != factionID
+				&& (treaties = PlayersData[i].diploTreaties[j], !(treaties & DTREATY_PACT))
+				&& ((!i && treaties & DTREATY_VENDETTA && !(treaties & DTREATY_TREATY)
+					&& treaties & DTREATY_COMMLINK)
+					|| (i == 1 && !(treaties & DTREATY_TREATY) && treaties & DTREATY_COMMLINK)
+					|| (i == 2 && treaties & DTREATY_COMMLINK) || (i == 3))) {
+				if (PlayersData[factionID].enemyBestPsiOffense < PlayersData[j].bestPsiOffense) {
+					PlayersData[factionID].enemyBestPsiOffense = PlayersData[j].bestPsiOffense;
+				}
+				if (PlayersData[factionID].enemyBestPsiDefense < PlayersData[j].bestPsiDefense) {
+					PlayersData[factionID].enemyBestPsiDefense = PlayersData[j].bestPsiDefense;
+				}
+			}
+		}
+	}
 }
