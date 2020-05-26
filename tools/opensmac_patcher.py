@@ -51,7 +51,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
 	bin_app = mmap.mmap(f.fileno(), 0)
-	# next: 365
+	# next: 368
 	#
 	
 	# ALPHA
@@ -194,6 +194,12 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x0010C4B0) # ?steal_energy@@YAHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*343))
+	bin_app.seek(0x00160B30) # ?garrison_check@@YAII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*365))
+	bin_app.seek(0x00160D30) # ?defensive_check@@YAII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*366))	
 	# BASEBUTTON
 	bin_app.seek(0x00207550) # ?set_bubble_text@BaseButton@@QAEHPBD@Z
 	patch_call_bytes(bin_app)
@@ -1172,5 +1178,8 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001BE100) # ?wants_prototype@@YAHII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*363))
+	bin_app.seek(0x001B9580) # ?stack_check@@YAHHIHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*367))
 	print("Functions redirected: %d" % count)
 	print("Done!")

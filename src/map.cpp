@@ -817,28 +817,28 @@ uint32_t __cdecl minerals_at(int xCoord, int yCoord) {
 		type--;
 	}
 	switch (type) {
-	case 0:
-	{
-		switch (val2) {
 		case 0:
-			return 1;
+		{
+			switch (val2) {
+				case 0:
+					return 1;
+				case 1:
+				case 3:
+					return 0;
+				case 2:
+					return ((val1 & 4) != 0) + 1; // 1 or 2
+				default:
+					return ~val2 & 1;
+			}
+		}
 		case 1:
-		case 3:
-			return 0;
+			return (val2 < 0 || val2 > 2) ? 2 : (val2 == 2) ? 1 : val2;
 		case 2:
-			return ((val1 & 4) != 0) + 1; // 1 or 2
+			return (val2 < 0 || val2 > 1) ? 2 : val2;
+		case 3:
+			return (val2 < 0 || val2 > 1) ? 2 : 1;
 		default:
 			return ~val2 & 1;
-		}
-	}
-	case 1:
-		return (val2 < 0 || val2 > 2) ? 2 : (val2 == 2) ? 1 : val2;
-	case 2:
-		return (val2 < 0 || val2 > 1) ? 2 : val2;
-	case 3:
-		return (val2 < 0 || val2 > 1) ? 2 : 1;
-	default:
-		return ~val2 & 1;
 	}
 }
 

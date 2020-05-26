@@ -805,36 +805,36 @@ uint32_t __cdecl proto_cost(uint32_t chassisID, uint32_t weaponID, uint32_t armo
 				}
 				else {
 					switch (factor) {
-					case 0: // None
-					default:
-						break;
-						// Increases w/ ratio of weapon to armor: 0, 1, or 2. Rounded DOWN. 
-						// Never higher than 2.
-					case -1:
-						// fixed potential crash: this will never trigger in vanilla
-						// but could with mods
-						if (armorCost) {
-							abilModifier += range(weapCost / armorCost, 0, 2);
-						}
-						break;
-					case -2: // Increases w/ weapon value
-						abilModifier += weapCost - 1;
-						break;
-					case -3: // Increases w/ armor value
-						abilModifier += armorCost - 1;
-						break;
-					case -4: // Increases w/ speed value
-						abilModifier += speedCost - 1;
-						break;
-					case -5: // Increases w/ weapon+armor value
-						abilModifier += weapCost + armorCost - 2;
-						break;
-					case -6: // Increases w/ weapon+speed value
-						abilModifier += weapCost + speedCost - 2;
-						break;
-					case -7: // Increases w/ armor+speed value
-						abilModifier += armorCost + speedCost - 2;
-						break;
+						case 0: // None
+						default:
+							break;
+							// Increases w/ ratio of weapon to armor: 0, 1, or 2. Rounded DOWN. 
+							// Never higher than 2.
+						case -1:
+							// fixed potential crash: this will never trigger in vanilla
+							// but could with mods
+							if (armorCost) {
+								abilModifier += range(weapCost / armorCost, 0, 2);
+							}
+							break;
+						case -2: // Increases w/ weapon value
+							abilModifier += weapCost - 1;
+							break;
+						case -3: // Increases w/ armor value
+							abilModifier += armorCost - 1;
+							break;
+						case -4: // Increases w/ speed value
+							abilModifier += speedCost - 1;
+							break;
+						case -5: // Increases w/ weapon+armor value
+							abilModifier += weapCost + armorCost - 2;
+							break;
+						case -6: // Increases w/ weapon+speed value
+							abilModifier += weapCost + speedCost - 2;
+							break;
+						case -7: // Increases w/ armor+speed value
+							abilModifier += armorCost + speedCost - 2;
+							break;
 					}
 				}
 				// 010000000000 - Cost increased for land units; Deep Radar
@@ -1138,7 +1138,7 @@ void __cdecl stack_sort_2(int vehID) {
 /*
 Purpose: Refresh/fix stack. Used by DirectPlay multiplayer only.
 Original Offset: 005B8E10
-Return Value: vehID ; return is checked if >= 0
+Return Value: vehID or top vehID of stack; return is checked if >= 0
 Status: Complete
 */
 int __cdecl stack_fix(int vehID) {
@@ -1154,11 +1154,148 @@ int __cdecl stack_fix(int vehID) {
 			stack_sort(vehID);
 		}
 	}
-	int topVehID = vehID;
-	for (int i = Veh[topVehID].prevVehIDStack; i >= 0; i = Veh[i].prevVehIDStack) {
-		topVehID = i;
+	return veh_top(vehID);
+}
+
+/*
+Purpose: Various Veh stack related calculations based on type parameter (0-19) and conditions.
+Original Offset: 005B9580
+Return Value: Dependent on type parameter
+Status: Complete
+*/
+int __cdecl stack_check(int vehID, uint32_t type, int cond1, int cond2, int cond3) {
+	int retVal = 0;
+	uint32_t plan, chas;
+	for (int i = veh_top(vehID); i >= 0; i = Veh[i].nextVehIDStack) {
+		switch (type) {
+			case 0:
+				if ((cond2 < 0 || Veh[i].factionID == cond2) && Veh[i].protoID == cond1) {
+					retVal++;
+				}
+				break;
+			case 1:
+				if (cond1 < 0 || Veh[i].factionID == cond1) {
+					retVal++;
+				}
+				break;
+			case 2:
+				if ((cond2 < 0 || Veh[i].factionID == cond2) 
+					&& VehPrototype[Veh[i].protoID].plan == cond1) {
+					retVal++;
+				}
+				break;
+			case 3:
+				if ((cond2 < 0 || Veh[i].factionID == cond2)
+					&& Chassis[VehPrototype[Veh[i].protoID].chassisID].triad == cond1) {
+					retVal++;
+				}
+				break;
+			case 4:
+				if (cond1 < 0 || Veh[i].factionID == cond1) {
+					retVal += Weapon[VehPrototype[Veh[i].protoID].weaponID].offenseRating;
+				}
+				break;
+			case 5:
+				if (cond1 < 0 || Veh[i].factionID == cond1) {
+					retVal += Armor[VehPrototype[Veh[i].protoID].armorID].defenseRating;
+				}
+				break;
+			case 6:
+				if ((cond2 < 0 || Veh[i].factionID == cond2) && has_abil(Veh[i].protoID, cond1)) {
+					retVal++;
+				}
+				break;
+			case 7:
+				if (cond1 < 0 || Veh[i].factionID == cond1) {
+					retVal += VehPrototype[Veh[i].protoID].cost;
+				}
+				break;
+			case 8:
+				if (cond1 < 0 || Veh[i].factionID == cond1) {
+					uint32_t triad = Chassis[VehPrototype[Veh[i].protoID].chassisID].triad;
+					if (triad == TRIAD_LAND) {
+						retVal--;
+					}
+					else if (triad == TRIAD_SEA) {
+						retVal += veh_cargo(i);
+					}
+				}
+				break;
+			case 9:
+				if ((cond2 < 0 || Veh[i].factionID == cond2) && Veh[i].orders == cond1) {
+					retVal++;
+				}
+				break;
+			case 10:
+				if (Veh[i].factionID == cond1) {
+					retVal++;
+				}
+				break;
+			case 11:
+				if ((cond3 < 0 || Veh[i].factionID == cond3) 
+					&& (Veh[i].state & cond1) == (uint32_t)cond2) {
+					retVal++;
+				}
+				break;
+			case 12:
+				if (cond1 < 0 || Veh[i].factionID == cond1) {
+					uint32_t factionID = Veh[i].factionID;
+					int protoID = Veh[i].protoID;
+					if (arm_strat(VehPrototype[protoID].armorID, factionID) 
+						> weap_strat(VehPrototype[protoID].weaponID, factionID)) {
+						retVal++;
+					}
+				}
+				break;
+			case 13:
+				if ((cond1 < 0 || Veh[i].factionID == cond1) 
+					&& Chassis[VehPrototype[Veh[i].protoID].chassisID].missile) {
+					retVal++;
+				}
+				break;
+			case 14:
+				if ((cond1 < 0 || Veh[i].factionID == cond1)
+					&& (plan = VehPrototype[Veh[i].protoID].plan, 
+						plan == PLAN_DEFENSIVE || plan == PLAN_COMBAT)) {
+					retVal++;
+				}
+				break;
+			case 15:
+				if ((cond1 < 0 || Veh[i].factionID == cond1) && can_arty(Veh[i].protoID, TRUE)) {
+					retVal++;
+				}
+				break;
+			case 16:
+				if ((cond1 < 0 || Veh[i].factionID == cond1)
+					&& (plan = VehPrototype[Veh[i].protoID].plan, plan == PLAN_DEFENSIVE 
+						|| plan == PLAN_RECONNAISANCE || plan == PLAN_COMBAT)) {
+					retVal++;
+				}
+				break;
+			case 17:
+				if ((cond2 < 0 || Veh[i].factionID == cond2) 
+					&& VehPrototype[Veh[i].protoID].unk_1 == cond1) {
+					retVal++;
+				}
+				break;
+			case 18:
+				if ((cond1 < 0 || Veh[i].factionID == cond1)
+					&& (chas = VehPrototype[Veh[i].protoID].chassisID,
+						Chassis[chas].triad == TRIAD_AIR && Chassis[chas].range > 1)) {
+					retVal++;
+				}
+				break;
+			case 19:
+				if ((cond1 < 0 || Veh[i].factionID == cond1)
+					&& !Weapon[VehPrototype[Veh[i].protoID].weaponID].offenseRating) {
+					retVal++;
+				}
+				break;
+			default:
+				break;
+		}
 	}
-	return topVehID;
+	return retVal;
 }
 
 /*

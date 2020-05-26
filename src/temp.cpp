@@ -64,7 +64,7 @@ func30* turn_timer = (func30*)0x0050EF10;
 // testing
 func8 *parse_string_OG = (func8 *)0x00625880;
 func12 *enemy_capabilities_OG = (func12 *)0x00560DD0;
-
+//
 ///
 char1032 *stringTemp = (char1032 *)0x009B86A0;
 char256 *ParseStrBuffer = (char256 *)0x009BB5E8;
@@ -91,7 +91,8 @@ int __cdecl tester() {
 	log_set_state(true);
 	log_say("Start test", 0, 0, 0);
 	//
-	
+
+
 	for (int i = 0; i < MaxPlayerNum; i++) {
 		for (int j = 0; j < 75; j++) {
 			int type = PlayersData[i].goals_1[j].type;

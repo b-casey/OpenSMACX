@@ -286,30 +286,21 @@ Status: Complete
 int __cdecl stoi(LPCSTR str) {
 	if (*str == '0') {
 		*str++;
-		switch (*str) 
-		{
+		switch (*str) {
 			case 'B':
 			case 'b':
-			{
 				*str++;
 				return btoi(str);
-			}
 			case 'X':
 			case 'x':
-			{
 				*str++;
 				return htoi(str);
-			}
 			case 'D':
 			case 'd':
-			{
 				*str++;
 				return atoi(str);
-			}
 			default:
-			{
 				return atoi(str);
-			}
 		}
 	}
 	return atoi(str);
@@ -445,8 +436,7 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
 			break;
 		}
 		LPSTR parsingInput = &input[1];
-		switch (var[1])
-		{
+		switch (var[1]) {
 			case '$': // done -> needs testing
 			{
 				int len = (var - input) + 1;

@@ -346,7 +346,7 @@ struct rules_chassis {
 	uint8_t range;
 	uint8_t cargo;
 	uint8_t cost; // TODO: expand to uint32_t in future
-	uint8_t missile;
+	uint8_t missile; // treated as boolean
 	uint8_t spriteFlagXOff[8];
 	uint8_t spriteFlagYOff[8];
 	uint8_t spriteUnk1XOff[8];
@@ -544,6 +544,7 @@ OPENSMACX_API void __cdecl stack_put(int vehID, int xCoord, int yCoord);
 OPENSMACX_API void __cdecl stack_sort(int vehID);
 OPENSMACX_API void __cdecl stack_sort_2(int vehID);
 OPENSMACX_API int __cdecl stack_fix(int vehID);
+OPENSMACX_API int __cdecl stack_check(int vehID, uint32_t type, int cond1, int cond2, int cond3);
 OPENSMACX_API BOOL __cdecl veh_avail(int protoID, int factionID, int baseID);
 OPENSMACX_API BOOL __cdecl wants_prototype(uint32_t protoID, uint32_t factionID);
 OPENSMACX_API int __cdecl veh_at(int xCoord, int yCoord);

@@ -34,7 +34,7 @@ LPSTR *Mood = (LPSTR *)0x0094C9E4;
 LPSTR *Repute = (LPSTR *)0x00946A30;
 rules_might *Might = (rules_might *)0x0094C558;
 rules_bonusname *BonusName = (rules_bonusname *)0x009461A8;
-uint8_t *FactionCurrentBitfield = (uint8_t *)0x009A64E8; // Human player bitfield [0], ? [1]
+uint8_t *FactionsStatus = (uint8_t *)0x009A64E8;
 
 /*
 Purpose: Check whether specified faction is a human player or computer controlled AI.
@@ -43,7 +43,17 @@ Return Value: Is faction a human? true/false
 Status: Complete
 */
 BOOL is_human(uint32_t factionID) {
-	return FactionCurrentBitfield[0] & (1 << factionID);
+	return FactionsStatus[0] & (1 << factionID);
+}
+
+/*
+Purpose: Check whether specified faction is alive or whether they've been eliminated.
+Original Offset: n/a
+Return Value: Is faction alive? true/false
+Status: Complete
+*/
+BOOL is_alive(uint32_t factionID) {
+	return FactionsStatus[1] & (1 << factionID);
 }
 
 /*
@@ -130,7 +140,7 @@ BOOL __cdecl climactic_battle() {
 /*
 Purpose: Determine ideal unit count to protect faction's bases in the specified land region.
 Original Offset: 00560D50
-Return Value: Amount of defensive/offensive (?) units needed to guard region
+Return Value: Amount of non-offensive units needed to guard region
 Status: Complete
 */
 uint32_t __cdecl guard_check(uint32_t factionID, uint32_t region) {
@@ -138,7 +148,7 @@ uint32_t __cdecl guard_check(uint32_t factionID, uint32_t region) {
 		return 0;
 	}
 	int factor = 2 - PlayersData[factionID].AI_Fight;
-	int planRegion = PlayersData[factionID].regionBasePlan[region];
+	uint32_t planRegion = PlayersData[factionID].regionBasePlan[region];
 	if (planRegion == PLAN_COLONIZATION) {
 		factor += 2;
 	}

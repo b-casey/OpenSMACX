@@ -272,7 +272,7 @@ struct player {
 
 struct player_data {
 	uint32_t playerFlags; // see player_flags_bitfield
-	uint32_t ranking; // 0 (lowest) to 7 (highest) rank
+	uint32_t ranking; // 0 (lowest) to 7 (highest) rank ; used to determine #MIGHT
 	int diffLevel;
 	uint32_t baseNameOffset; // keep track which base names have been used
 	uint32_t baseSeaNameOffset; // keep track which sea base names have been used
@@ -525,9 +525,10 @@ extern rules_bonusname *BonusName;
 extern player *Players; // Players[0] is AI native life faction
 extern player_data *PlayersData;
 extern faction_art *FactionArt;
-extern uint8_t *FactionCurrentBitfield;
+extern uint8_t *FactionsStatus;
 
 OPENSMACX_API BOOL is_human(uint32_t factionID);
+OPENSMACX_API BOOL is_alive(uint32_t factionID);
 OPENSMACX_API LPSTR __cdecl get_adjective(int factionID);
 OPENSMACX_API LPSTR __cdecl get_noun(int factionID);
 OPENSMACX_API uint32_t __cdecl aah_ooga(int factionID, int pactFactionID);

@@ -70,7 +70,7 @@ BOOL __cdecl eligible(uint32_t factionID) {
     uint32_t votes = council_votes(factionID);
     uint32_t factionCount = 0;
     for (uint32_t i = 1; i < MaxPlayerNum; i++) {
-        if (factionID != i && FactionCurrentBitfield[1] & (1 << i) && council_votes(i) > votes) {
+        if (factionID != i && is_alive(i) && council_votes(i) > votes) {
             factionCount++;
         }
     }

@@ -549,10 +549,10 @@ int __cdecl steal_energy(uint32_t baseID) {
 }
 
 /*
-Purpose: TBD
+Purpose: Determine ideal non-offense (defense, combat, recon) unit count for the specified base.
 Original Offset: 00560B30
-Return Value: TBD
-Status: Complete - testing
+Return Value: Amount of non-offensive units needed (1-10)
+Status: Complete
 */
 uint32_t __cdecl garrison_check(uint32_t baseID) {
 	int xCoord = Base[baseID].xCoord, yCoord = Base[baseID].yCoord;
@@ -579,23 +579,24 @@ uint32_t __cdecl garrison_check(uint32_t baseID) {
 	if (seaFactionID > 0 && (PlayersData[factionID].diploTreaties[seaFactionID]
 		& (DTREATY_VENDETTA | DTREATY_WANT_REVENGE) 
 		|| PlayersData[seaFactionID].diploTreaties[factionID] & DTREATY_WANT_REVENGE
-		|| PlayersData[seaFactionID].integrityBlemishes > 4)) {
+		|| PlayersData[seaFactionID].integrityBlemishes >= 4)) {
 		garrison++;
 	}
-	if (PlayersData[factionID].SE_SupportPending <= -4) {
+	int support = PlayersData[factionID].SE_SupportPending;
+	if (support <= -4) {
 		garrison--;
 	}
-	if (PlayersData[factionID].SE_SupportPending <= -4 && garrison > 2) {
+	if (support <= -3 && garrison > 2) {
 		garrison--;
 	}
 	return range(garrison, 1, 10);
 }
 
 /*
-Purpose: TBD
+Purpose: Determine the number of defensive units needed to protect the specified base.
 Original Offset: 00560D30
-Return Value: TBD
-Status: Complete - testing
+Return Value: Amount of defensive units needed (1-8)
+Status: Complete
 */
 uint32_t __cdecl defensive_check(uint32_t baseID) {
 	uint32_t defenses = garrison_check(baseID);
