@@ -500,7 +500,6 @@ OPENSMACX_API BOOL __cdecl has_project(uint32_t projectID, uint32_t factionID);
 OPENSMACX_API BOOL __cdecl has_fac_built(uint32_t facilityID);
 OPENSMACX_API BOOL __cdecl has_fac_built(uint32_t facilityID, uint32_t baseID);
 OPENSMACX_API int __cdecl base_project(uint32_t projectID);
-OPENSMACX_API int __cdecl steal_energy(uint32_t baseID);
 OPENSMACX_API uint32_t __cdecl garrison_check(uint32_t baseID);
 OPENSMACX_API uint32_t __cdecl defensive_check(uint32_t baseID);
 OPENSMACX_API BOOL __cdecl is_port(int baseID, BOOL isBaseRadius);

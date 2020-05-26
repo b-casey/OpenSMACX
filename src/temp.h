@@ -78,6 +78,8 @@ extern func8 *parse_string_OG;
 typedef void func12(int);
 extern func12 *enemy_capabilities_OG;
 //
+typedef int funct1(uint32_t, uint32_t, BOOL);
+extern funct1 *mind_control_OG;
 ///
 extern char1032 *stringTemp;
 extern char256 *ParseStrBuffer;

@@ -21,8 +21,28 @@
 #include "game.h"
 #include "map.h"
 #include "technology.h"
+#include "veh.h"
 
 rules_terraforming *Terraforming = (rules_terraforming *)0x00691878;
+
+/*
+Purpose: Calculate Former rate to perform terrain enhancements.
+Original Offset: 004C9A50
+Return Value: Terraforming speed
+Status: Complete
+*/
+uint32_t __cdecl contribution(int vehID, uint32_t terraformID) {
+	uint32_t rate = has_abil(Veh[vehID].protoID, ABL_SUPER_TERRAFORMER) ? 4 : 2;
+	if (terraformID == (ORDER_REMOVE_FUNGUS - 4) || terraformID == (ORDER_PLANT_FUNGUS - 4)) {
+		if (has_project(SP_XENOEMPATYH_DOME, Veh[vehID].factionID)) {
+			rate *= 2; // Doubled
+		}
+	}
+	else if (has_project(SP_WEATHER_PARADIGM, Veh[vehID].factionID)) {
+		rate = (rate * 3) / 2; // +50%
+	}
+	return rate;
+}
 
 /*
 Purpose: Check to see whether provided faction can construct specific terrain enhancement.

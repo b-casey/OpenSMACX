@@ -57,8 +57,8 @@
 		<Unit filename="src/buffer.h" />
 		<Unit filename="src/buttongroup.cpp" />
 		<Unit filename="src/buttongroup.h" />
-    <Unit filename="src/council.cpp" />
-    <Unit filename="src/council.h" />
+		<Unit filename="src/council.cpp" />
+		<Unit filename="src/council.h" />
 		<Unit filename="src/dialog.cpp" />
 		<Unit filename="src/dialog.h" />
 		<Unit filename="src/dllmain.cpp" />
@@ -90,8 +90,10 @@
 		<Unit filename="src/menu.h" />
 		<Unit filename="src/palette.cpp" />
 		<Unit filename="src/palette.h" />
-    <Unit filename="src/path.cpp" />
-    <Unit filename="src/path.h" />
+		<Unit filename="src/path.cpp" />
+		<Unit filename="src/path.h" />
+		<Unit filename="src/probe.cpp" />
+		<Unit filename="src/probe.h" />
 		<Unit filename="src/random.cpp" />
 		<Unit filename="src/random.h" />
 		<Unit filename="src/scroll.cpp" />

@@ -29,6 +29,7 @@
 #include "technology.h"
 #include "terraforming.h"
 #include "log.h"
+#include "probe.h"
 
 // built-in functions > used to prevent crash from mixed alloc/free SDKs
 func1 *_malloc = (func1 *)0x006470A6;
@@ -65,6 +66,7 @@ func30* turn_timer = (func30*)0x0050EF10;
 func8 *parse_string_OG = (func8 *)0x00625880;
 func12 *enemy_capabilities_OG = (func12 *)0x00560DD0;
 //
+funct1 *mind_control_OG = (funct1 *)0x0059EA80;
 ///
 char1032 *stringTemp = (char1032 *)0x009B86A0;
 char256 *ParseStrBuffer = (char256 *)0x009BB5E8;
@@ -91,6 +93,24 @@ int __cdecl tester() {
 	log_set_state(true);
 	log_say("Start test", 0, 0, 0);
 	//
+
+	for (int i = 0; i < MaxPlayerNum; i++) {
+		for (int j = 0; j < *BaseCurrentCount; j++) {
+			for (int k = 0; k < 2; k++) {
+				int mc1 = mind_control(j, i, k);
+				int mc2 = mind_control_OG(j, i, k);
+				if (mc1 != mc2) {
+					log_say("MC error", Base[j].nameString, i, j, k);
+				}
+				else {
+					char szTemp[200];
+					sprintf_s(szTemp, 200, "base: %s - xCoord: %d, yCoord: %d, MC cost for %s : %d",
+						Base[j].nameString, Base[j].xCoord, Base[j].yCoord, Players[i].formalNameFaction, mc1);
+					log_say(szTemp, 0, 0, 0);
+				}
+			}
+		}
+	}
 
 
 	for (int i = 0; i < MaxPlayerNum; i++) {

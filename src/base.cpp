@@ -536,19 +536,6 @@ int __cdecl base_project(uint32_t projectID) {
 }
 
 /*
-Purpose: Calculate the amount of energy that can be stolen from a base based on its population.
-Original Offset: 0050C4B0
-Return Value: Energy
-Status: Complete
-*/
-int __cdecl steal_energy(uint32_t baseID) {
-	uint32_t factionID = Base[baseID].factionIDCurrent;
-	int energy = PlayersData[factionID].energyReserves;
-	return (energy <= 0) ? 0 :
-		((energy * Base[baseID].populationSize) / (PlayersData[factionID].popTotal + 1));
-}
-
-/*
 Purpose: Determine ideal non-offense (defense, combat, recon) unit count for the specified base.
 Original Offset: 00560B30
 Return Value: Amount of non-offensive units needed (1-10)

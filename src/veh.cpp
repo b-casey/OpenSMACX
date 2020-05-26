@@ -27,6 +27,7 @@
 #include "map.h"
 #include "strings.h"
 #include "technology.h"
+#include "terraforming.h"
 
 veh_prototype *VehPrototype = (veh_prototype *)0x009AB868; // [512]
 veh *Veh = (veh *)0x00952828; // [2049]
@@ -48,25 +49,6 @@ int *VehDropLiftVehID = (int *)0x009B2280;
 int *VehLift_xCoord = (int *)0x009B2278;
 int *VehLift_yCoord = (int *)0x009B2284;
 BOOL *VehBitError = (BOOL *)0x009B228C;
-
-/*
-Purpose: Calculate Former rate to perform terrain enhancements.
-Original Offset: 004C9A50
-Return Value: Terraforming speed
-Status: Complete
-*/
-uint32_t __cdecl contribution(int vehID, uint32_t terraformID) {
-	uint32_t rate = has_abil(Veh[vehID].protoID, ABL_SUPER_TERRAFORMER) ? 4 : 2;
-	if (terraformID == (ORDER_REMOVE_FUNGUS - 4) || terraformID == (ORDER_PLANT_FUNGUS - 4)) {
-		if (has_project(SP_XENOEMPATYH_DOME, Veh[vehID].factionID)) {
-			rate *= 2; // Doubled
-		}
-	}
-	else if (has_project(SP_WEATHER_PARADIGM, Veh[vehID].factionID)) {
-		rate = (rate * 3) / 2; // +50%
-	}
-	return rate;
-}
 
 /*
 Purpose: Calculate maximum range for Veh drops (air drops, Drop Pods).

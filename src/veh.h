@@ -309,19 +309,6 @@ enum veh_reactor {
 	RECT_SINGULARITY = 4,
 };
 
-enum probe_primary_action {
-	PRB_INFILTRATE_DATALINKS = 0,
-	PRB_PROCURE_RESEARCH_DATA = 1,
-	PRB_ACTIVATE_SABOTAGE_VIRUS = 2,
-	PRB_DRAIN_ENERGY_RESERVES = 3,
-	PRB_INCITE_DRONE_RIOTS = 4,
-	PRB_ASSASSINATE_PROMINENT_RESEARCHERS = 5,
-	PRB_MIND_CONTROL_CITY = 6,
-	PRB_INTRODUCE_GENETIC_PLAGUE = 7,
-	PRB_FREE_CAPTURED_FACTION_LEADER = 8,
-	PRB_MIND_CONTROL_VEH = -1,
-};
-
 struct rules_chassis {
 	LPSTR offsv1Name;
 	LPSTR offsv2Name;
@@ -503,7 +490,6 @@ extern int *VehLift_xCoord;
 extern int *VehLift_yCoord;
 extern BOOL *VehBitError;
 
-OPENSMACX_API uint32_t __cdecl contribution(int vehID, uint32_t terraformID);
 OPENSMACX_API uint32_t __cdecl drop_range(int factionID);
 OPENSMACX_API uint32_t __cdecl planet_buster2(int protoID);
 OPENSMACX_API uint32_t __cdecl planet_buster(int vehID);
