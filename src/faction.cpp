@@ -22,6 +22,7 @@
 #include "council.h"
 #include "game.h"
 #include "map.h"
+#include "probe.h"
 #include "technology.h"
 #include "veh.h"
 
@@ -159,6 +160,26 @@ uint32_t __cdecl guard_check(uint32_t factionID, uint32_t region) {
 		factor = 1; // 1-1 unit per base ratio
 	}
 	return (PlayersData[factionID].regionTotalBases[region] + factor - 1) / factor;
+}
+
+/*
+Purpose: Calculate the cost for the faction to corner the Global Energy Market (Economic Victory).
+Original Offset: 0059EE50
+Return Value: Cost to corner the Global Energy Market
+Status: Complete
+*/
+uint32_t __cdecl corner_market(uint32_t factionID) {
+	int cost = 0;
+	for (int i = 0; i < *BaseCurrentCount; i++) {
+		uint32_t targetFactionID = Base[i].factionIDCurrent;
+		if (targetFactionID != factionID) {
+			uint32_t treaties = PlayersData[targetFactionID].diploTreaties[factionID];
+			if (!(treaties & DTREATY_PACT) || !(treaties & DTREATY_HAVE_SURRENDERED)) {
+				cost += mind_control(i, factionID, true);
+			}
+		}
+	}
+	return (cost < 1000) ? 1000 : cost;
 }
 
 /*

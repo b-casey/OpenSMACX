@@ -33,5 +33,10 @@ enum probe_primary_action {
 	PRB_MIND_CONTROL_VEH = -1,
 };
 
+extern BOOL *ProbeHasAlgoEnhancement;
+extern uint32_t *ProbeTargetFactionID;
+extern BOOL *ProbeTargetHasHSA;
+
 OPENSMACX_API int __cdecl steal_energy(uint32_t baseID);
-OPENSMACX_API int __cdecl mind_control(uint32_t baseID, uint32_t factionID, BOOL isExtendedCalc);
+OPENSMACX_API int __cdecl mind_control(uint32_t baseID, uint32_t factionID, BOOL isCornerMarket);
+OPENSMACX_API int __cdecl success_rates(int id, int probeMorale, int difficultyMod, int baseID);

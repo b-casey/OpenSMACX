@@ -150,23 +150,25 @@ uint32_t __cdecl crappy(int xCoord, int yCoord) {
 }
 
 /*
-Purpose: Calculate the distance between two points.
+Purpose: Take the absolute distance between two points as parameters to calculate how far out they 
+         radiate. This is mainly used to determine proximity or how far away the two points are from
+		 each other in a rough circle shape (see xRadiusOffset[]/yRadiusOffset[]).
 Original Offset: 004F8090
-Return Value: Distance
+Return Value: Distance radius
 Status: Complete
 */
-int __cdecl x_dist(int xCoord, int yCoord) {
-	int absX = abs(xCoord);
-	int absY = abs(yCoord);
-	int largest = absX;
-	if (absX <= absY) {
-		largest = absY;
+int __cdecl x_dist(int xDistance, int yDistance) {
+	xDistance = abs(xDistance);
+	yDistance = abs(yDistance);
+	int largest = xDistance;
+	if (xDistance <= yDistance) {
+		largest = yDistance;
 	}
-	int smallest = absX;
-	if (absX >= absY) {
-		smallest = absY;
+	int smallest = xDistance;
+	if (xDistance >= yDistance) {
+		smallest = yDistance;
 	}
-	return largest - ((((absY + absX) >> 1) - smallest + 1) >> 1);
+	return largest - (((yDistance + xDistance) / 2) - smallest + 1) / 2;
 }
 
 /*

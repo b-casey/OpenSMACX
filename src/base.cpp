@@ -607,6 +607,24 @@ BOOL __cdecl is_port(int baseID, BOOL isBaseRadius) {
 }
 
 /*
+Purpose: Calculate how vulnerable the coordinates are for the specified faction based on how far 
+         away this tile is from the faction's Headquarters.
+Original Offset: 0059E980
+Return Value: Radial distance between coordinates and faction's HQ or 12 if no HQ/bases
+Status: Complete
+*/
+int __cdecl vulnerable(uint32_t factionID, int xCoord, int yCoord) {
+	int dist = 12; // default value for no bases or no HQ
+	for (int i = 0; i < *BaseCurrentCount; i++) {
+		if (Base[i].factionIDCurrent == factionID && has_fac_built(FAC_HEADQUARTERS, i)) {
+			dist = x_dist(cursor_dist(xCoord, Base[i].xCoord), yCoord - Base[i].yCoord);
+			break;
+		}
+	}
+	return dist;
+}
+
+/*
 Purpose: Check whether specified base is considered an objective.
 Original Offset: 005AC060
 Return Value: Is base an objective? true/false

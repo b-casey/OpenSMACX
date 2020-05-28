@@ -503,6 +503,7 @@ OPENSMACX_API int __cdecl base_project(uint32_t projectID);
 OPENSMACX_API uint32_t __cdecl garrison_check(uint32_t baseID);
 OPENSMACX_API uint32_t __cdecl defensive_check(uint32_t baseID);
 OPENSMACX_API BOOL __cdecl is_port(int baseID, BOOL isBaseRadius);
+OPENSMACX_API int __cdecl vulnerable(uint32_t factionID, int xCoord, int yCoord);
 OPENSMACX_API BOOL __cdecl is_objective(int baseID);
 OPENSMACX_API BOOL __cdecl transcending(int factionID);
 OPENSMACX_API BOOL __cdecl ascending(int factionID);

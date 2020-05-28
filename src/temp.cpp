@@ -67,6 +67,7 @@ func8 *parse_string_OG = (func8 *)0x00625880;
 func12 *enemy_capabilities_OG = (func12 *)0x00560DD0;
 //
 funct1 *mind_control_OG = (funct1 *)0x0059EA80;
+funct3 *success_rates_OG = (funct3 *)0x0059EEE0;
 ///
 char1032 *stringTemp = (char1032 *)0x009B86A0;
 char256 *ParseStrBuffer = (char256 *)0x009BB5E8;
@@ -92,8 +93,11 @@ MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
 int __cdecl tester() {
 	log_set_state(true);
 	log_say("Start test", 0, 0, 0);
-	//
 
+
+
+
+	/*
 	for (int i = 0; i < MaxPlayerNum; i++) {
 		for (int j = 0; j < *BaseCurrentCount; j++) {
 			for (int k = 0; k < 2; k++) {
@@ -111,7 +115,7 @@ int __cdecl tester() {
 			}
 		}
 	}
-
+	*/
 
 	for (int i = 0; i < MaxPlayerNum; i++) {
 		for (int j = 0; j < 75; j++) {

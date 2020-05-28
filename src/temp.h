@@ -80,6 +80,8 @@ extern func12 *enemy_capabilities_OG;
 //
 typedef int funct1(uint32_t, uint32_t, BOOL);
 extern funct1 *mind_control_OG;
+typedef int funct3(int, int, int, int);
+extern funct3 *success_rates_OG;
 ///
 extern char1032 *stringTemp;
 extern char256 *ParseStrBuffer;

@@ -51,7 +51,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
 	bin_app = mmap.mmap(f.fileno(), 0)
-	# next: 368
+	# next: 370
 	#
 	
 	# ALPHA
@@ -199,7 +199,10 @@ with open(exe_path, "r+b") as f:
 	bin_app.write(struct.pack("<L", addr+4*365))
 	bin_app.seek(0x00160D30) # ?defensive_check@@YAII@Z
 	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*366))	
+	bin_app.write(struct.pack("<L", addr+4*366))
+	bin_app.seek(0x0019E980) # ?vulnerable@@YAHIHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*368))
 	# BASEBUTTON
 	bin_app.seek(0x00207550) # ?set_bubble_text@BaseButton@@QAEHPBD@Z
 	patch_call_bytes(bin_app)
@@ -236,6 +239,9 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x00160D50) # ?guard_check@@YAIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*364))
+	bin_app.seek(0x0019EE50) # ?corner_market@@YAII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*369))
 	# FILEMAP
 	bin_app.seek(0x00228380) # ??0Filemap@@QAE@XZ
 	patch_call_bytes(bin_app)
