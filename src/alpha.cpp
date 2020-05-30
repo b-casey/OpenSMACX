@@ -733,10 +733,47 @@ BOOL __cdecl read_factions() {
 		strncpy_s(Players[i].searchKey, text_item(), 24);
 	}
 	// SMACX only: Will override any values parsed from alphax.txt #NEWFACTIONS if set in ini; 
-	// Removed SMACX_Enabled check since there is one inside function already.
-	prefs_fac_load();
-	// Removed debug code related to non-existent faction JENN282; Most of code never executed in 
-	// vanilla. Nothing worthwhile to include, incomplete buggy code. Only present in SMACX.
+	prefs_fac_load(); // Removed an extra SMACX_Enabled check around call since there is one inside
+	uint32_t factionCount = 14;
+	if (!text_open(AlphaxFileID, "CUSTOMFACTIONS")) { // get count of custom factions
+		text_get();
+		for (LPSTR custom = text_item(); *custom; custom = text_item()) {
+			factionCount++;
+			text_get();
+		}
+	}
+	for (int i = 1; i < MaxPlayerNum; i++) {
+		if (!strcmp(Players[i].filename, "JENN282")) {
+			int factionOffset;
+			do {
+				int randFaction = rand() % factionCount;
+				uint32_t randGroup = randFaction / 7;
+				if (text_open(AlphaxFileID, !randGroup ? "FACTIONS" : (randGroup == 1)
+					? "NEWFACTIONS" : "CUSTOMFACTIONS")) {
+					return true;
+				}
+				factionOffset = randFaction % 7;
+				for (int j = factionOffset; j >= 0; j--) {
+					text_get();
+				}
+				strcpy_s(Players[i].filename, 24, text_item());
+				strcpy_s(Players[i].searchKey, 24, text_item()); // original code copied filename twice
+				for (int k = 1; k < MaxPlayerNum; k++) {
+					if (i != k) {
+						if (!strcmp(Players[i].filename, Players[k].filename)) {
+							factionOffset = -1;
+							break;
+						}
+					}
+				}
+				// skip Players[0] like below check
+				if (factionOffset != -1) {
+					read_faction(&Players[i], 0);
+					load_faction_art(i);
+				}
+			} while (factionOffset == -1);
+		}
+	}
 	for (int i = 1; i < MaxPlayerNum; i++) {
 		// skip Players[0], removed check (&Players[i] != &Players[0]) since i is already set to 1
 		read_faction(&Players[i], 0);

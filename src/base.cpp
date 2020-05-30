@@ -35,6 +35,7 @@ int *BaseCurrentCount = (int *)0x009A64CC;
 int *BaseFindDist = (int *)0x0090EA04;
 base **BaseCurrent = (base **)0x0090EA30;
 uint32_t *ScnVictFacilityObj = (uint32_t *)0x009A6814;
+uint32_t *BaseUpkeepStage = (uint32_t *)0x0090EA34;
 
 /*
 Purpose: Check if the base already has a particular facility built or if it's in the queue.
@@ -409,6 +410,62 @@ void __cdecl set_fac_announced(int factionID, int facilityID, BOOL set) {
 	else {
 		PlayersData[factionID].facilityAnnounced[offset] &= ~mask;
 	}
+}
+
+/*
+Purpose: Calculate the current base's energy loss / inefficiency for an amount of energy. (?)
+Original Offset: 004EA1F0
+Return Value: Amount of energy inefficiency
+Status: Complete - testing
+*/
+uint32_t __cdecl black_market(int energy) {
+	if (energy <= 0) {
+		return 0;
+	}
+	uint32_t factionID = (*BaseCurrent)->factionIDCurrent;
+	int xCoord = (*BaseCurrent)->xCoord, yCoord = (*BaseCurrent)->yCoord;
+	int search = 999;
+	for (int i = 0; i < *BaseCurrentCount; i++) { // modified version of vulnerable()
+		if (Base[i].factionIDCurrent == factionID && has_fac_built(FAC_HEADQUARTERS, i)) {
+			int dist = x_dist(cursor_dist(xCoord, Base[i].xCoord), yCoord - Base[i].yCoord);
+			if (dist <= search) {
+				search = dist;
+			}
+		}
+	}
+	if (search == 999) {
+		search = 16;
+	}
+	else if (search < 0) {
+		return 0;
+	}
+	if (*BaseUpkeepStage == 1) {
+		for (int i = 0, j = 0; i >= -64; i -= 8, j++) {
+			int val1, val2;
+			if (has_fac_built(FAC_CHILDREN_CRECHE, *BaseIDCurrentSelected)) {
+				val1 = j - 2;
+				val2 = i + 16;
+			}
+			else {
+				val1 = j;
+				val2 = i;
+			}
+			if (val1 < 8) {
+				PlayersData[factionID].unk_46[val1] += energy * search / (val2 + 64);
+			}
+			else {
+				PlayersData[factionID].unk_46[val1] += energy;
+			}
+		}
+	}
+	int ineffciency = 4 - PlayersData[factionID].SE_EffiencyPending;
+	if (has_fac_built(FAC_CHILDREN_CRECHE, *BaseIDCurrentSelected)) {
+		ineffciency -= 2;
+	}
+	if (ineffciency >= 8) {
+		return energy;
+	}
+	return range(energy * search / ((8 - ineffciency) * 8), 0, energy);
 }
 
 /*

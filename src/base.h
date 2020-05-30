@@ -478,6 +478,7 @@ extern int *BaseCurrentCount;
 extern int *BaseFindDist;
 extern base **BaseCurrent;
 extern uint32_t *ScnVictFacilityObj;
+extern uint32_t *BaseUpkeepStage;
 
 OPENSMACX_API BOOL __cdecl has_fac(int facilityID, int baseID, int queueCount);
 OPENSMACX_API void __cdecl set_base(int baseID);
@@ -493,6 +494,7 @@ OPENSMACX_API int __cdecl base_lose_minerals(int baseID, int productionID);
 OPENSMACX_API void __cdecl set_fac(int facilityID, int baseID, BOOL set);
 OPENSMACX_API BOOL __cdecl has_fac_announced(int factionID, int facilityID);
 OPENSMACX_API void __cdecl set_fac_announced(int factionID, int facilityID, BOOL set);
+OPENSMACX_API uint32_t __cdecl black_market(int energy);
 OPENSMACX_API uint32_t __cdecl pop_goal_fac(int baseID);
 OPENSMACX_API uint32_t __cdecl pop_goal(int baseID);
 OPENSMACX_API int __cdecl fac_maint(int facilityID, int factionID);
