@@ -18,12 +18,12 @@
 #include "stdafx.h"
 #include "temp.h"
 #include "alpha.h"
-#include <string>
-#include "game.h"
 #include "base.h"
 #include "council.h"
+#include "game.h"
 #include "general.h"
 #include "map.h"
+#include "random.h"
 #include "strings.h"
 #include "technology.h"
 #include "terraforming.h"
@@ -744,40 +744,40 @@ BOOL __cdecl read_factions() {
 	}
 	for (int i = 1; i < MaxPlayerNum; i++) {
 		if (!strcmp(Players[i].filename, "JENN282")) {
-			int factionOffset;
+			int factionID;
 			do {
-				int randFaction = rand() % factionCount;
-				uint32_t randGroup = randFaction / 7;
-				if (text_open(AlphaxFileID, !randGroup ? "FACTIONS" : (randGroup == 1)
+				int randVal = random(0, factionCount); // replaced rand()
+				uint32_t factionSet = randVal / 7; // 0: SMAC; 1: SMACX; 2+: custom
+				if (text_open(AlphaxFileID, !factionSet ? "FACTIONS" : (factionSet == 1)
 					? "NEWFACTIONS" : "CUSTOMFACTIONS")) {
 					return true;
 				}
-				factionOffset = randFaction % 7;
-				for (int j = factionOffset; j >= 0; j--) {
+				factionID = randVal % 7;
+				for (int j = factionID; j >= 0; j--) {
 					text_get();
 				}
 				strcpy_s(Players[i].filename, 24, text_item());
-				strcpy_s(Players[i].searchKey, 24, text_item()); // original code copied filename twice
+				strcpy_s(Players[i].searchKey, 24, text_item()); // original copied filename twice
 				for (int k = 1; k < MaxPlayerNum; k++) {
 					if (i != k) {
 						if (!strcmp(Players[i].filename, Players[k].filename)) {
-							factionOffset = -1;
+							factionID = -1;
 							break;
 						}
 					}
 				}
-				// skip Players[0] like below check
-				if (factionOffset != -1) {
+				if (factionID != -1) { // skip Players[0] like below check
 					read_faction(&Players[i], 0);
 					load_faction_art(i);
 				}
-			} while (factionOffset == -1);
+			} while (factionID == -1);
 		}
-	}
-	for (int i = 1; i < MaxPlayerNum; i++) {
-		// skip Players[0], removed check (&Players[i] != &Players[0]) since i is already set to 1
-		read_faction(&Players[i], 0);
-		load_faction_art(i);
+		else {
+			// removed check (&Players[i] != &Players[0]) since Players[0] is already skipped
+			// moved this into same loop to increase performance with random factions
+			read_faction(&Players[i], 0);
+			load_faction_art(i);
+		}
 	}
 	return false;
 }
