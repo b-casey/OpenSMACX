@@ -872,7 +872,7 @@ Status: Complete with built in version of srand(). Revisit once more code is red
 */
 void __cdecl my_srand(uint32_t reseed) {
 	log_say("Reseed to", reseed, 0, 0);
-	//srand(reseed);
+	srand(reseed);
 	_srand(reseed);
 }
 
