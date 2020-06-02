@@ -38,7 +38,6 @@ func3 *_fopen = (func3 *)0x00645646;
 func4 *_srand = (func4 *)0x00646010;
 func10 *_fread = (func10 *)0x00646178;
 func10 *_fwrite = (func10 *)0x0064603F;
-//func7 *__rand = (func7 *)0x0064601D;
 //func12 *_realloc = (func12 *)0x00647132;
 //func18 *_fclose = (func18 *)0x00645598;
 //func19 *_fgets = (func19 *)0x0064726A;
@@ -66,7 +65,6 @@ func30* turn_timer = (func30*)0x0050EF10;
 func8 *parse_string_OG = (func8 *)0x00625880;
 func12 *enemy_capabilities_OG = (func12 *)0x00560DD0;
 //
-funct1 *mind_control_OG = (funct1 *)0x0059EA80;
 funct3 *success_rates_OG = (funct3 *)0x0059EEE0;
 ///
 char1032 *stringTemp = (char1032 *)0x009B86A0;
@@ -93,8 +91,7 @@ MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
 int __cdecl tester() {
 	log_set_state(true);
 	log_say("Start test", 0, 0, 0);
-
-
+	//
 
 
 	/*

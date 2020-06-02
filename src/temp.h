@@ -37,8 +37,6 @@ typedef FILE *func3(LPCSTR, LPCSTR);
 extern func3 *_fopen;
 typedef void *func4(unsigned int);
 extern func4 *_srand;
-//typedef int func7(void);
-//extern func7 *__rand;
 
 typedef int *func10(void *, size_t, size_t, FILE *);
 extern func10 *_fread;
@@ -78,8 +76,6 @@ extern func8 *parse_string_OG;
 typedef void func12(int);
 extern func12 *enemy_capabilities_OG;
 //
-typedef int funct1(uint32_t, uint32_t, BOOL);
-extern funct1 *mind_control_OG;
 typedef int funct3(int, int, int, int);
 extern funct3 *success_rates_OG;
 ///

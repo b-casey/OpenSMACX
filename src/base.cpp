@@ -413,10 +413,10 @@ void __cdecl set_fac_announced(int factionID, int facilityID, BOOL set) {
 }
 
 /*
-Purpose: Calculate the current base's energy loss / inefficiency for an amount of energy. (?)
+Purpose: Calculate the current base's energy loss/inefficiency for an amount of energy.
 Original Offset: 004EA1F0
 Return Value: Amount of energy inefficiency
-Status: Complete - testing
+Status: Complete
 */
 uint32_t __cdecl black_market(int energy) {
 	if (energy <= 0) {
@@ -424,48 +424,49 @@ uint32_t __cdecl black_market(int energy) {
 	}
 	uint32_t factionID = (*BaseCurrent)->factionIDCurrent;
 	int xCoord = (*BaseCurrent)->xCoord, yCoord = (*BaseCurrent)->yCoord;
-	int search = 999;
+	int distHQ = 999;
 	for (int i = 0; i < *BaseCurrentCount; i++) { // modified version of vulnerable()
 		if (Base[i].factionIDCurrent == factionID && has_fac_built(FAC_HEADQUARTERS, i)) {
-			int dist = x_dist(cursor_dist(xCoord, Base[i].xCoord), yCoord - Base[i].yCoord);
-			if (dist <= search) {
-				search = dist;
+			int dist = x_dist(cursor_dist(Base[i].xCoord, xCoord), Base[i].yCoord - yCoord);
+			if (dist < distHQ) {
+				distHQ = dist;
 			}
 		}
 	}
-	if (search == 999) {
-		search = 16;
+	if (distHQ == 999) {
+		distHQ = 16;
 	}
-	else if (search < 0) {
+	else if (distHQ == 0) {
 		return 0;
 	}
+	BOOL hasCreche = has_fac_built(FAC_CHILDREN_CRECHE, *BaseIDCurrentSelected);
 	if (*BaseUpkeepStage == 1) {
 		for (int i = 0, j = 0; i >= -64; i -= 8, j++) {
-			int val1, val2;
-			if (has_fac_built(FAC_CHILDREN_CRECHE, *BaseIDCurrentSelected)) {
-				val1 = j - 2;
-				val2 = i + 16;
+			int ineff, factor;
+			if (hasCreche) {
+				ineff = j - 2;
+				factor = i + 16;
 			}
 			else {
-				val1 = j;
-				val2 = i;
+				ineff = j;
+				factor = i;
 			}
-			if (val1 < 8) {
-				PlayersData[factionID].unk_46[val1] += energy * search / (val2 + 64);
+			if (ineff >= 8) {
+				PlayersData[factionID].unk_46[j] += energy;
 			}
 			else {
-				PlayersData[factionID].unk_46[val1] += energy;
+				PlayersData[factionID].unk_46[j] += energy * distHQ / (factor + 64);
 			}
 		}
 	}
 	int ineffciency = 4 - PlayersData[factionID].SE_EffiencyPending;
-	if (has_fac_built(FAC_CHILDREN_CRECHE, *BaseIDCurrentSelected)) {
+	if (hasCreche) {
 		ineffciency -= 2;
 	}
 	if (ineffciency >= 8) {
 		return energy;
 	}
-	return range(energy * search / ((8 - ineffciency) * 8), 0, energy);
+	return range(energy * distHQ / ((8 - ineffciency) * 8), 0, energy);
 }
 
 /*

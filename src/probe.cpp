@@ -45,7 +45,7 @@ Purpose: Calculate the cost for the faction to be able to mind control the speci
          parameter determines if this cost is for cornering the market (true) or via probe (false).
 Original Offset: 0059EA80
 Return Value: Mind control cost
-Status: Complete - testing
+Status: Complete
 */
 int __cdecl mind_control(uint32_t baseID, uint32_t factionID, BOOL isCornerMarket) {
     uint32_t targetFactionID = Base[baseID].factionIDCurrent;
@@ -90,9 +90,9 @@ int __cdecl mind_control(uint32_t baseID, uint32_t factionID, BOOL isCornerMarke
 		if (treaties & DTREATY_TREATY) {
             cost /= 2;
 		}
-        int techComm1 = PlayersData[targetFactionID].techCommerceBonus;
-        int techComm2 = PlayersData[factionID].techCommerceBonus;
-        cost = (cost * (techComm1 * techComm1 + 1)) / (techComm2 * techComm2 + 1);
+        int techCommTarget = PlayersData[targetFactionID].techCommerceBonus;
+        int techCommProbe = PlayersData[factionID].techCommerceBonus;
+        cost = (cost * (techCommTarget * techCommTarget + 1)) / (techCommProbe * techCommProbe + 1);
     }
     else {
 		if (treaties & DTREATY_PACT) {

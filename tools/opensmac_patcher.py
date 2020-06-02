@@ -51,7 +51,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
 	bin_app = mmap.mmap(f.fileno(), 0)
-	# next: 370
+	# next: 372
 	#
 	
 	# ALPHA
@@ -191,9 +191,6 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x000E4960) # ?set_fac_announced@@YAXHHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*339))
-	bin_app.seek(0x0010C4B0) # ?steal_energy@@YAHI@Z
-	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*343))
 	bin_app.seek(0x00160B30) # ?garrison_check@@YAII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*365))
@@ -203,6 +200,9 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x0019E980) # ?vulnerable@@YAHIHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*368))
+	bin_app.seek(0x000EA1F0) # ?black_market@@YAIH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*370))
 	# BASEBUTTON
 	bin_app.seek(0x00207550) # ?set_bubble_text@BaseButton@@QAEHPBD@Z
 	patch_call_bytes(bin_app)
@@ -675,6 +675,9 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x0016B480) # ?coast_or_border@@YAHHHHHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*359))
+	bin_app.seek(0x000ECB90) # ?crappy@@YAIHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*308))	
 	# PATH
 	bin_app.seek(0x0019A220) # ?init@Path@@QAEXXZ
 	patch_call_bytes(bin_app)
@@ -682,6 +685,13 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x0019A2D0) # ?shutdown@Path@@QAEXXZ
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*323))
+	# PROBE
+	bin_app.seek(0x0010C4B0) # ?steal_energy@@YAHI@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*343))
+	bin_app.seek(0x0019EA80) # ?mind_control@@YAHIIH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*371))
 	# RANDOM
 	bin_app.seek(0x00225730) # ??0Random@@QAE@XZ
 	patch_call_bytes(bin_app)
@@ -828,12 +838,12 @@ with open(exe_path, "r+b") as f:
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*362))	
 	# TERRAFORMING
+	bin_app.seek(0x000C9A50) # ?contribution@@YAIHI@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*198))	
 	bin_app.seek(0x001BAB40) # ?terrain_avail@@YAHHHH@Z
 	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*266))
-	bin_app.seek(0x000ECB90) # ?crappy@@YAIHH@Z
-	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*308))	
+	bin_app.write(struct.pack("<L", addr+4*266))	
 	# 
 	# TEXT
 	bin_app.seek(0x001FD860) # ??0Text@@QAE@XZ
@@ -1007,9 +1017,6 @@ with open(exe_path, "r+b") as f:
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*307))	
 	# VEH
-	bin_app.seek(0x000C9A50) # ?contribution@@YAIHI@Z
-	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*198))
 	bin_app.seek(0x00100320) # ?drop_range@@YAIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*199))
