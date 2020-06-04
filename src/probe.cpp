@@ -121,7 +121,7 @@ int __cdecl mind_control(uint32_t baseID, uint32_t factionID, BOOL isCornerMarke
 
 /*
 Purpose: Calculate the success and survival rates for a probe action to generate a chances 
-         probability string. The base is an optional parameter to determine its probe defenses.
+         probability string. A baseID is an optional parameter to determine its probe defenses.
 Original Offset: 0059EEE0
 Return Value: Survival chances of probe
 Status: Complete - testing

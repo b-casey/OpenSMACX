@@ -149,17 +149,20 @@ enum veh_orders {
 	ORDER_AI_GO_TO = 88,         //  - ; ORDER_GO_TO (0x18) | 0x40 > 0x58 ? only used by AI funcs
 };
 
+enum veh_convoy_type {
+	CONVOY_NUTRIENTS = 0,
+	CONVOY_MINERALS = 1,
+	CONVOY_ENERGY = 2,
+	CONVOY_PSI = 3, // dropped mechanic
+};
+
 enum veh_orders_auto_type {
-	ORDERA_CONVOY_NUTRIENTS = 0,
 	ORDERA_TERRA_AUTO_FULL = 0,
-	ORDERA_CONVOY_MINERALS = 1,
 	ORDERA_TERRA_AUTO_ROAD = 1,
-	ORDERA_CONVOY_ENERGY = 2,
 	ORDERA_TERRA_AUTO_MAGTUBE = 2,
-	ORDERA_CONVOY_PSI = 3,
 	ORDERA_TERRA_AUTOIMPROVE_BASE = 3,
 	ORDERA_TERRA_FARM_SOLAR_ROAD = 4,
-	ORDERA_TERRA_MINE_SOLAR_ROAD = 5,
+	ORDERA_TERRA_FARM_MINE_ROAD = 5, // displayed incorrectly as 'Mine+Solar+Road' (labels.txt:L411)
 	ORDERA_TERRA_AUTO_FUNGUS_REM = 6,
 	ORDERA_TERRA_AUTOMATIC_SENSOR = 7,
 	// 8 unused?

@@ -28,14 +28,20 @@
 
 rules_facility *Facility = (rules_facility *)0x009A4B68;
 rules_citizen *Citizen = (rules_citizen *)0x00946020;
-base *Base = (base *)0x0097D040; // 512
-base_secret_project *SecretProject = (base_secret_project *)0x009A6514; // 64
+base *Base = (base *)0x0097D040; // [512]
+base_secret_project *SecretProject = (base_secret_project *)0x009A6514; // [64]
 int *BaseIDCurrentSelected = (int *)0x00689370;
 int *BaseCurrentCount = (int *)0x009A64CC;
 int *BaseFindDist = (int *)0x0090EA04;
 base **BaseCurrent = (base **)0x0090EA30;
 uint32_t *ScnVictFacilityObj = (uint32_t *)0x009A6814;
 uint32_t *BaseUpkeepStage = (uint32_t *)0x0090EA34;
+uint32_t *BaseCurrentConvoyFrom = (uint32_t *)0x0090E904; // [4]
+uint32_t *BaseCurrentConvoyTo = (uint32_t *)0x0090E93C; // [4]
+int *BaseCurrentGrowthRate = (int *)0x0090E918;
+uint32_t *BaseCurrentVehPacifismCount = (uint32_t *)0x0090E980;
+uint32_t *BaseCurrentForcesSupported = (uint32_t *)0x0090E91C;
+uint32_t *BaseCurrentForcesMaintCost = (uint32_t *)0x0090E8FC;
 
 /*
 Purpose: Check if the base already has a particular facility built or if it's in the queue.
@@ -409,6 +415,238 @@ void __cdecl set_fac_announced(int factionID, int facilityID, BOOL set) {
 	}
 	else {
 		PlayersData[factionID].facilityAnnounced[offset] &= ~mask;
+	}
+}
+
+/*
+Purpose: TBD
+Original Offset: 004E6400
+Return Value: TBD
+Status: Complete - testing
+*/
+uint32_t __cdecl morale_mod(uint32_t baseID, uint32_t factionID, uint32_t triad) {
+	uint32_t moraleMod = 0;
+	if (triad == TRIAD_LAND && (has_fac_built(FAC_COMMAND_CENTER, baseID) 
+		|| has_project(SP_COMMAND_NEXUS, factionID))) {
+		moraleMod = 2;
+	}
+	else if (triad == TRIAD_SEA && (has_fac_built(FAC_NAVAL_YARD, baseID)
+		|| has_project(SP_MARITIME_CONTROL_CENTER, factionID))) {
+		moraleMod = 2;
+	}
+	else if (triad == TRIAD_AIR && (has_fac_built(FAC_AEROSPACE_COMPLEX, baseID)
+		|| has_project(SP_CLOUDBASE_ACADEMY, factionID))) {
+		moraleMod = 2;
+	}
+	if (has_fac_built(FAC_BIOENHANCEMENT_CENTER, baseID)
+		|| has_project(SP_CYBORG_FACTORY, factionID)) {
+		moraleMod += 2;
+	}
+	if (PlayersData[factionID].SE_MoralePending < -1) {
+		moraleMod /= 2;
+	}
+	return moraleMod;
+}
+
+/*
+Purpose: TBD
+Original Offset: 004E65C0
+Return Value: TBD
+Status: Complete - testing
+*/
+uint32_t __cdecl breed_mod(uint32_t baseID, uint32_t factionID) {
+	uint32_t breedMod = has_project(SP_XENOEMPATYH_DOME, factionID) ? 1 : 0;
+	if (has_project(SP_PHOLUS_MUTAGEN, factionID)) {
+		breedMod++;
+	}
+	if (has_project(SP_VOICE_OF_PLANET, factionID)) {
+		breedMod++;
+	}
+	if (has_fac_built(FAC_CENTAURI_PRESERVE, baseID)) {
+		breedMod++;
+	}
+	if (has_fac_built(FAC_TEMPLE_OF_PLANET, baseID)) {
+		breedMod++;
+	}
+	if (has_fac_built(FAC_BIOLOGY_LAB, baseID)) {
+		breedMod++;
+	}
+	if (has_fac_built(FAC_BIOENHANCEMENT_CENTER, baseID) 
+		|| has_project(SP_CYBORG_FACTORY, factionID)) {
+		breedMod++;
+	}
+	return breedMod;
+}
+
+/*
+Purpose: TBD
+Original Offset: 004E6740
+Return Value: TBD
+Status: Complete - testing
+*/
+uint32_t __cdecl worm_mod(uint32_t baseID, uint32_t factionID) {
+	uint32_t wormMod = has_project(SP_XENOEMPATYH_DOME, factionID) ? 1 : 0;
+	if (has_project(SP_PHOLUS_MUTAGEN, factionID)) {
+		wormMod++;
+	}
+	if (has_project(SP_VOICE_OF_PLANET, factionID)) {
+		wormMod++;
+	}
+	if (has_fac_built(FAC_CENTAURI_PRESERVE, baseID)) {
+		wormMod++;
+	}
+	if (has_fac_built(FAC_TEMPLE_OF_PLANET, baseID)) {
+		wormMod++;
+	}
+	if (has_fac_built(FAC_BIOLOGY_LAB, baseID)) {
+		wormMod++;
+	}
+	if (has_fac_built(FAC_BIOENHANCEMENT_CENTER, baseID)
+		|| has_project(SP_CYBORG_FACTORY, factionID)) {
+		wormMod++;
+	}
+	if (Players[factionID].rulePsi) {
+		wormMod++;
+	}
+	if (has_project(SP_DREAM_TWISTER, factionID)) {
+		wormMod++;
+	}
+	if (has_project(SP_NEURAL_AMPLIFIER, factionID)) {
+		wormMod++;
+	}
+	return wormMod;
+}
+
+/*
+Purpose: Calculate nutrients and growth for the current base.
+Original Offset: 004E9B70
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl base_nutrient() {
+	uint32_t factionID = (*BaseCurrent)->factionIDCurrent;
+	*BaseCurrentGrowthRate = PlayersData[factionID].SE_GrowthPending;
+	if (has_fac_built(FAC_CHILDREN_CRECHE, *BaseIDCurrentSelected)) {
+		*BaseCurrentGrowthRate += 2;
+	}
+	if ((*BaseCurrent)->status & BSTATUS_GOLDEN_AGE_ACTIVE) {
+		*BaseCurrentGrowthRate += 2;
+	}
+	(*BaseCurrent)->nutrientIntake2 += BaseCurrentConvoyTo[CONVOY_NUTRIENTS];
+	(*BaseCurrent)->nutrientConsumption += BaseCurrentConvoyFrom[CONVOY_NUTRIENTS]
+		+ (*BaseCurrent)->populationSize * Rules->NutrientReqCitizen;
+	(*BaseCurrent)->nutrientSurplus = (*BaseCurrent)->nutrientIntake2
+		- (*BaseCurrent)->nutrientConsumption;
+	if ((*BaseCurrent)->nutrientSurplus < 0) {
+		if (!(*BaseCurrent)->nutrientsAccumulated) {
+			(*BaseCurrent)->nutrientsAccumulated = -1;
+		}
+	}
+	else {
+		if ((*BaseCurrent)->nutrientsAccumulated < 0) {
+			(*BaseCurrent)->nutrientsAccumulated = 0;
+		}
+	}
+	if (*BaseUpkeepStage == 1) {
+		PlayersData[factionID].nutrientSurplusTotal 
+			+= range((*BaseCurrent)->nutrientSurplus, 0, 99);
+	}
+}
+
+/*
+Purpose: Calculate minerals and ecological damage for the current base.
+Original Offset: 004E9CB0
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl base_minerals() {
+	uint32_t factionID = (*BaseCurrent)->factionIDCurrent;
+	(*BaseCurrent)->mineralIntake2 += BaseCurrentConvoyTo[CONVOY_MINERALS];
+	uint32_t multiplier = 0;
+	if (has_fac_built(FAC_QUANTUM_CONVERTER, *BaseIDCurrentSelected)
+		|| has_project(SP_SINGULARITY_INDUCTOR, factionID)) {
+		multiplier = 1;
+	}
+	if (has_fac_built(FAC_ROBOTIC_ASSEMBLY_PLANT, *BaseIDCurrentSelected)) {
+		multiplier++;
+	}
+	if (has_fac_built(FAC_GENEJACK_FACTORY, *BaseIDCurrentSelected)) {
+		multiplier++;
+	}
+	if (has_fac_built(FAC_NANOREPLICATOR, *BaseIDCurrentSelected)) {
+		multiplier++;
+	}
+	if (has_project(SP_BULK_MATTER_TRANSMITTER, factionID)) {
+		multiplier++;
+	}
+	(*BaseCurrent)->mineralIntake2 = ((*BaseCurrent)->mineralIntake2 * (multiplier + 2)) / 2;
+	(*BaseCurrent)->mineralConsumption = *BaseCurrentForcesMaintCost
+		+ BaseCurrentConvoyFrom[CONVOY_MINERALS];
+	(*BaseCurrent)->mineralSurplus = (*BaseCurrent)->mineralIntake2 
+		- (*BaseCurrent)->mineralConsumption;
+	(*BaseCurrent)->mineralInefficiency = 0; // ?
+	(*BaseCurrent)->mineralSurplus -= (*BaseCurrent)->mineralInefficiency; // ?
+	(*BaseCurrent)->mineralSurplusFinal = (*BaseCurrent)->mineralSurplus;
+	(*BaseCurrent)->ecoDamage /= 8;
+
+	int val = PlayersData[factionID].unk_35 + 16;
+	if ((*BaseCurrent)->ecoDamage > 0) {
+		int modVal = (*BaseCurrent)->ecoDamage;
+		if ((*BaseCurrent)->ecoDamage >= val) {
+			modVal = val;
+		}
+		val -= modVal;
+		(*BaseCurrent)->ecoDamage -= modVal;
+	}
+	int factor = (has_fac_built(FAC_NANOREPLICATOR, *BaseIDCurrentSelected)
+		|| has_project(SP_SINGULARITY_INDUCTOR, factionID)) ? 2 : 1;
+	if (has_fac_built(FAC_CENTAURI_PRESERVE, *BaseIDCurrentSelected)) {
+		factor++;
+	}
+	if (has_fac_built(FAC_TEMPLE_OF_PLANET, *BaseIDCurrentSelected)) {
+		factor++;
+	}
+	if (has_project(SP_PHOLUS_MUTAGEN, factionID)) {
+		factor++;
+	}
+	(*BaseCurrent)->ecoDamage += (*BaseCurrent)->mineralIntake2 - val
+		- range(PlayersData[factionID].satellitesMineral, 0, (*BaseCurrent)->populationSize);
+	if (is_human(factionID)) {
+		uint32_t ecoDmgFactor = range(*MapSeaLevel, 0, 100) 
+			/ range(WorldBuilder->SeaLevelRises, 1, 100) + factor;
+		(*BaseCurrent)->ecoDamage += (PlayersData[factionID].majorAtrocities * 5) / ecoDmgFactor;
+		(*BaseCurrent)->ecoDamage += (TectonicDetonationCount[factionID] * 5) / ecoDmgFactor;
+	}
+	if ((*BaseCurrent)->ecoDamage < 0) {
+		(*BaseCurrent)->ecoDamage = 0;
+	}
+	if (ascending(factionID) && *GameRules & RULES_VICTORY_TRANSCENDENCE) {
+		(*BaseCurrent)->ecoDamage *= 2;
+	}
+	if (*GameState & STATE_PERIHELION_ACTIVE) {
+		(*BaseCurrent)->ecoDamage *= 2;
+	}
+	uint32_t diffFactor;
+	if (is_human(factionID)) {
+		int diffLvl = PlayersData[factionID].diffLevel;
+		diffFactor = diffLvl ? ((diffLvl <= 3) ? 3 : 5) : 2;
+	}
+	else {
+		diffFactor = range(6 - *DiffLevelCurrent, 1, 3);
+	}
+	int planetFactor = range(PlayersData[factionID].SE_PlanetPending, -3, 2);
+	(*BaseCurrent)->ecoDamage = ((PlayersData[factionID].techRanking
+		- PlayersData[factionID].theoryOfEverything) * (3 - planetFactor)
+		* (*MapNativeLifeForms + 1) * (*BaseCurrent)->ecoDamage * diffFactor) / 6;
+	(*BaseCurrent)->ecoDamage = ((*BaseCurrent)->ecoDamage + 50) / 100;
+	if (has_project(SP_SPACE_ELEVATOR, factionID) 
+		&& ((*BaseCurrent)->queueProductionID[0] == -FAC_SKY_HYDRO_LAB 
+			|| (*BaseCurrent)->queueProductionID[0] == -FAC_NESSUS_MINING_STATION
+			|| (*BaseCurrent)->queueProductionID[0] == -FAC_ORBITAL_POWER_TRANS 
+			|| (*BaseCurrent)->queueProductionID[0] == -FAC_ORBITAL_DEFENSE_POD)) {
+		(*BaseCurrent)->mineralIntake2 *= 2;
+		(*BaseCurrent)->mineralSurplus = // doesn't update mineralSurplusFinal?
+			(*BaseCurrent)->mineralIntake2 - (*BaseCurrent)->mineralConsumption;
 	}
 }
 

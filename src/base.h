@@ -479,6 +479,12 @@ extern int *BaseFindDist;
 extern base **BaseCurrent;
 extern uint32_t *ScnVictFacilityObj;
 extern uint32_t *BaseUpkeepStage;
+extern uint32_t *BaseCurrentConvoyFrom; // resources convoyed from base
+extern uint32_t *BaseCurrentConvoyTo; // resources convoyed/extracted to base
+extern int *BaseCurrentGrowthRate;
+extern uint32_t *BaseCurrentVehPacifismCount;
+extern uint32_t *BaseCurrentForcesSupported; // Forces Supported by Base
+extern uint32_t *BaseCurrentForcesMaintCost; // Minerals expended for Forces Supported maintenance
 
 OPENSMACX_API BOOL __cdecl has_fac(int facilityID, int baseID, int queueCount);
 OPENSMACX_API void __cdecl set_base(int baseID);
@@ -494,6 +500,11 @@ OPENSMACX_API int __cdecl base_lose_minerals(int baseID, int productionID);
 OPENSMACX_API void __cdecl set_fac(int facilityID, int baseID, BOOL set);
 OPENSMACX_API BOOL __cdecl has_fac_announced(int factionID, int facilityID);
 OPENSMACX_API void __cdecl set_fac_announced(int factionID, int facilityID, BOOL set);
+OPENSMACX_API uint32_t __cdecl morale_mod(uint32_t baseID, uint32_t factionID, uint32_t triad);
+OPENSMACX_API uint32_t __cdecl breed_mod(uint32_t baseID, uint32_t factionID);
+OPENSMACX_API uint32_t __cdecl worm_mod(uint32_t baseID, uint32_t factionID);
+OPENSMACX_API void __cdecl base_nutrient();
+OPENSMACX_API void __cdecl base_minerals();
 OPENSMACX_API uint32_t __cdecl black_market(int energy);
 OPENSMACX_API uint32_t __cdecl pop_goal_fac(int baseID);
 OPENSMACX_API uint32_t __cdecl pop_goal(int baseID);

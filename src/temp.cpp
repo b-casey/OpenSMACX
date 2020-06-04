@@ -92,7 +92,19 @@ int __cdecl tester() {
 	log_set_state(true);
 	log_say("Start test", 0, 0, 0);
 	//
-
+	for (int i = -1; i < *BaseCurrentCount; i++) {
+		for (int j = -2; j < 10; j++) {
+			for (int k = -2; k < 10; k++) {
+				for (int p = 0; p < MaxPlayerNum; p++) {
+					for (int a = 0; a < 2; a++) {
+						for (int b = 0; b < 2; b++) {
+							//
+						}
+					}
+				}
+			}
+		}
+	}
 
 	/*
 	for (int i = 0; i < MaxPlayerNum; i++) {

@@ -885,8 +885,8 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		for (int j = 0; j < 2; j++) {
 			*(&Terraforming[i].name + j) = text_item_string();
 			*(&Terraforming[i].preqTech + j) = tech_name(text_item());
-			// add in flags vs hard coded const struct
-			*(&Terraforming[i].flag + j) = flagsTerraforming[i * 2 + j];
+			// add in bits & incompatible bits vs hard coded const struct
+			*(&Terraforming[i].bit + j) = terraformingBits[i][j];
 		}
 		Terraforming[i].rate = text_item_number();
 		// land + sea orders
@@ -1275,7 +1275,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	// Buttons used by "Edit Map" menus.
 	for (int i = 0, j = 0; i < MaxTerrainNum; i++) {
 		// excludes: Fungus (removal), Aquifer, Raise Land, Lower Land, Level Terrain
-		if (Terraforming[i].flag) {
+		if (Terraforming[i].bit) {
 			MainInterfaceVar->flatButton[j++ + 17].set_bubble_text(
 				StringTable->get((int)Terraforming[i].name)); // 17-31
 		}

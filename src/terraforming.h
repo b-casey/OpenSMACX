@@ -17,6 +17,8 @@
  */
 #pragma once
 
+#include "map.h"
+
  /*
   * Terraforming related objects, variables and functions.
   */
@@ -48,33 +50,41 @@ struct rules_terraforming {
 	LPSTR nameSea;
 	int preqTech;
 	int preqTechSea;
-	uint32_t flag;
-	uint32_t flagSea;
+	uint32_t bit;
+	uint32_t bitIncompatible;
 	int rate;
 	LPSTR shortcuts;
 };
 
-const uint32_t flagsTerraforming[] = { // land, sea
-	    0x8000,   0x200000, // farm
-	   0x80000,   0x200000, // soil enricher
-	      0x10, 0x81E00050, // mine
-	      0x40, 0x81E00050, // solar collector / tidal harness
-	  0x200000,  0x1E88070, // forest
-	         4,          0, // road
-	         8,          0, // magtube
-	     0x800,    0x40000, // bunker
-	   0x40000,      0x800, // airbase
-	0x80000000,  0x1C00050, // sensor
-	         0,       0x20, // fungus remove
-	      0x20,   0x288050, // fungus plant
-	  0x400000, 0x81E00050, // condenser
-	  0x800000, 0x81E00050, // echelon mirror
-	 0x1000000, 0x81E08050, // thermal borehole
-	         0,          0, // aquifer
-	         0,          0, // raise land
-	         0,          0, // lower land 
-           	 0,          0, // level terrain
-	    0x2000, 0x30000400, // monolith
+const int terraformingBits[20][2] = { // terrain enhancement, incompatible enhancements on same tile 
+	BIT_FARM,          BIT_FOREST, // farm
+	BIT_SOIL_ENRICHER, BIT_FOREST, // soil enricher
+	BIT_MINE,          BIT_MINE | BIT_SOLAR_TIDAL | BIT_FOREST | BIT_CONDENSER | BIT_ECH_MIRROR 
+	                   | BIT_THERMAL_BORE | BIT_SENSOR_ARRAY, // mine
+	BIT_SOLAR_TIDAL,   BIT_MINE | BIT_SOLAR_TIDAL | BIT_FOREST | BIT_CONDENSER | BIT_ECH_MIRROR 
+	                   | BIT_THERMAL_BORE | BIT_SENSOR_ARRAY, // solar collector / tidal harness
+	BIT_FOREST,        BIT_MINE | BIT_FUNGUS | BIT_SOLAR_TIDAL | BIT_FARM | BIT_SOIL_ENRICHER 
+	                   | BIT_FOREST | BIT_CONDENSER | BIT_ECH_MIRROR | BIT_THERMAL_BORE, // forest
+	BIT_ROAD,          0, // road
+	BIT_MAGTUBE,       0, // magtube
+	BIT_BUNKER,        BIT_AIRBASE, // bunker
+	BIT_AIRBASE,       BIT_BUNKER, // airbase
+	BIT_SENSOR_ARRAY,  BIT_MINE | BIT_SOLAR_TIDAL | BIT_CONDENSER | BIT_ECH_MIRROR
+	                   | BIT_THERMAL_BORE, // sensor
+	0,                 BIT_FUNGUS, // fungus remove
+	BIT_FUNGUS,        BIT_MINE | BIT_SOLAR_TIDAL | BIT_FARM | BIT_SOIL_ENRICHER 
+	                   | BIT_FOREST, // fungus plant
+	BIT_CONDENSER,     BIT_MINE | BIT_SOLAR_TIDAL | BIT_FOREST | BIT_CONDENSER | BIT_ECH_MIRROR 
+	                   | BIT_THERMAL_BORE | BIT_SENSOR_ARRAY, // condenser
+	BIT_ECH_MIRROR,    BIT_MINE | BIT_SOLAR_TIDAL | BIT_FOREST | BIT_CONDENSER | BIT_ECH_MIRROR 
+	                   | BIT_THERMAL_BORE | BIT_SENSOR_ARRAY, // echelon mirror
+	BIT_THERMAL_BORE,  BIT_MINE | BIT_SOLAR_TIDAL | BIT_FARM | BIT_FOREST | BIT_CONDENSER 
+	                   | BIT_ECH_MIRROR | BIT_THERMAL_BORE | BIT_SENSOR_ARRAY, // thermal borehole
+	0,                 0, // aquifer
+	0,                 0, // raise land
+	0,                 0, // lower land 
+	0,                 0, // level terrain
+	BIT_MONOLITH,      BIT_SUPPLY_POD | BIT_NUTRIENT_RSC | BIT_RSC_BONUS, // monolith
 };
 
 constexpr int MaxTerrainNum = 20;
