@@ -19,13 +19,12 @@
 #include "random.h"
 
  /*
- Purpose: Updates seed value. Original code after some convoluted XORs simplified to 'seed = param'. 
-          Modified it to XOR old seed with new seed.
+ Purpose: Updates seed value. Original code after some convoluted XORs simplified to 'seed = param'.
  Original Offset: 00625750
  Return Value: n/a
  Status: Complete
  */
-void Random::reseed(uint32_t reseedValue) { seed ^= reseedValue; }
+void Random::reseed(uint32_t reseedValue) { seed = reseedValue; }
 
 /*
 Purpose: Get a random value between min and (max - 1)
