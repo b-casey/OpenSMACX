@@ -419,6 +419,44 @@ void __cdecl set_fac_announced(int factionID, int facilityID, BOOL set) {
 }
 
 /*
+Purpose: Determine what Veh to start building first in specified base.
+Original Offset: 004E4AA0
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl base_first(uint32_t baseID) {
+	int priority = -1;
+	uint32_t protoID = BSC_SCOUT_PATROL;
+	uint32_t factionID = Base[baseID].factionIDCurrent;
+	for (int i = 0; i < MaxVehProtoNum; i++) {
+		if (veh_avail(i, factionID, baseID)) {
+			if (i < MaxVehProtoFactionNum || VehPrototype[i].flags & PROTO_TYPED_COMPLETE) {
+				int compare = Armor[VehPrototype[i].armorID].defenseRating * 32;
+				uint32_t plan = VehPrototype[i].plan;
+				if (plan == PLAN_DEFENSIVE) {
+					compare *= 4;
+				}
+				else if (plan == PLAN_COMBAT) {
+					compare *= 3;
+				}
+				else if (plan == PLAN_RECONNAISANCE) {
+					compare *= 2;
+				}
+				if (Chassis[VehPrototype[i].chassisID].triad != TRIAD_LAND) {
+					compare /= 4;
+				}
+				compare -= VehPrototype[i].cost;
+				if (compare >= priority) {
+					priority = compare;
+					protoID = i;
+				}
+			}
+		}
+	}
+	Base[baseID].queueProductionID[0] = protoID;
+}
+
+/*
 Purpose: TBD
 Original Offset: 004E6400
 Return Value: TBD
@@ -753,6 +791,26 @@ uint32_t __cdecl pop_goal(int baseID) {
 		}
 	}
 	return goal;
+}
+
+/*
+Purpose: Reset convoy orders once it reaches base? Or cancel action if needs energy?
+Original Offset: 004F4DC0
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl base_energy_costs() {
+	if ((*BaseCurrent)->energySurplus >= 0 || *VehCurrentCount <= 0) {
+		return;
+	}
+	uint32_t factionID = (*BaseCurrent)->factionIDCurrent;
+	for (int i = 0; i < *VehCurrentCount; i++) {
+		if (Veh[i].factionID == factionID && VehPrototype[Veh[i].protoID].plan == PLAN_SUPPLY_CONVOY 
+			&& Veh[i].orders == ORDER_CONVOY && Veh[i].orderAutoType == CONVOY_ENERGY 
+			&& base_who(Veh[i].xCoord, Veh[i].yCoord) >= 0) {
+			Veh[i].orders = ORDER_NONE;
+		}
+	}
 }
 
 /*
