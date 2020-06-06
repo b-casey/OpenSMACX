@@ -497,7 +497,7 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 						}
 					}
 					if (search 
-						&& PlayersData[factionID].unk_79[region] >= Continents[region].unk_1) {
+						&& PlayersData[factionID].unk_79[region] >= Continents[region].tiles) {
 						valueRet *= 3;
 						if (isHuman) {
 							valueRet *= 2;

@@ -248,7 +248,7 @@ int __cdecl base_coast(uint32_t baseID) {
 		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
 			&& xRadius < (int)*MapHorizontalBounds && is_ocean(xRadius, yRadius)) {
 			region = region_at(xRadius, yRadius);
-			int compare = (region >= 127) ? 1 : Continents[region].unk_1;
+			int compare = (region >= 127) ? 1 : Continents[region].tiles;
 			if (compare >= val) {
 				val = compare; // value isn't used?
 			}

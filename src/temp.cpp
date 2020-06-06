@@ -92,6 +92,19 @@ int __cdecl tester() {
 	log_set_state(true);
 	log_say("Start test", 0, 0, 0);
 	//
+	for (int i = 0; i < MaxContinentNum; i++) {
+		log_say("Continent_unk2_count:", i, Continents[i].unk_2, 0);
+	}
+	for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
+		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
+			map *tile = map_loc(x, y);
+			if (altitude_at(x, y) >= ALT_BIT_SHORE_LINE && (tile->climate & (RAINFALL_RAINY | RAINFALL_MOIST)) != 0
+				&& (tile->val3 & 0xC0u) < TERRAIN_ROCKY && (!(tile->bit & BIT_FUNGUS) || altitude_at(x, y) < ALT_BIT_OCEAN_SHELF)) {
+				log_say("unk2_found:", tile->region, x, y);
+			}
+		}
+	}
+	/*
 	for (int i = -1; i < *BaseCurrentCount; i++) {
 		for (int j = -2; j < 10; j++) {
 			for (int k = -2; k < 10; k++) {
@@ -105,7 +118,7 @@ int __cdecl tester() {
 			}
 		}
 	}
-
+	*/
 	/*
 	for (int i = 0; i < MaxPlayerNum; i++) {
 		for (int j = 0; j < *BaseCurrentCount; j++) {

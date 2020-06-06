@@ -145,8 +145,8 @@ void Path::make_abstract() {
  Status: wip
 */
 void Path::UNK1(uint32_t region1, uint32_t region2) {
-    Continents[region2].unk_1 += Continents[region1].unk_1;
-    Continents[region1].unk_1 = 0;
+    Continents[region2].tiles += Continents[region1].tiles;
+    Continents[region1].tiles = 0;
     for (uint32_t i = 0; i < *MapArea; i++) {
         if ((uint32_t)Map[i]->region == region1) {
             Map[i]->region = (uint8_t)region2;
@@ -198,7 +198,7 @@ void Path::territory(int xCoord, int yCoord, int region, int factionID) {
  Status: wip
 */
 void Path::continent(int xCoord, int yCoord, uint32_t region) {
-    Continents[region].unk_1 = 0;
+    Continents[region].tiles = 0;
 	index1 = 0; index2 = 0;
     uint32_t oceanCount = 0;
 	xCoordTable[index1] = (int16_t)xCoord;
@@ -210,7 +210,7 @@ void Path::continent(int xCoord, int yCoord, uint32_t region) {
 	for (int16_t xCoordIt, yCoordIt; index2 && index1 != index2;) {
 		xCoordIt = xCoordTable[index2], yCoordIt = yCoordTable[index2];
 		index2++;
-        Continents[region].unk_1++;
+        Continents[region].tiles++;
 		for (uint32_t i = 0; i < 8; i++) {
 			int xRadius = xrange(xCoordIt + xRadiusBase[i]);
 			int yRadius = yCoordIt + yRadiusBase[i];
