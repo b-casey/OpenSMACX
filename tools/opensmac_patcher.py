@@ -348,7 +348,7 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x00225E50) # ?parse_say@@YAHHHHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*130))
-	bin_app.seek(0x00225EC0) # ?parse_says@@YAHHPADHH@Z
+	bin_app.seek(0x00225EC0) # ?parse_says@@YAHHPBDHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*131))
 	bin_app.seek(0x002288D0) # ?btoi@@YAHPBD@Z

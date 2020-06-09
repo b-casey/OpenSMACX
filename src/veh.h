@@ -503,6 +503,7 @@ OPENSMACX_API void __cdecl go_to(int vehID, char type, int xCoord, int yCoord);
 OPENSMACX_API int __cdecl veh_top(int vehID);
 OPENSMACX_API uint32_t __cdecl veh_moves(int vehID);
 OPENSMACX_API uint32_t __cdecl proto_power(int vehID);
+OPENSMACX_API BOOL __cdecl want_monolith(uint32_t vehID);
 OPENSMACX_API int __cdecl arm_strat(int armorID, int factionID);
 OPENSMACX_API int __cdecl weap_strat(int weaponID, int factionID);
 OPENSMACX_API int __cdecl weap_val(int protoID, int factionID);

@@ -17,6 +17,7 @@
  */
 #include "stdafx.h"
 #include "temp.h"
+#include "alpha.h"
 #include "general.h"
 #include "log.h" // log_say
 #include "strings.h"
@@ -226,7 +227,7 @@ Original Offset: 00625EC0
 Return Value: 0: no errors; 3: error
 Status: Complete
 */
-int __cdecl parse_says(int id, LPSTR input, int gender, int pluralality) {
+int __cdecl parse_says(int id, LPCSTR input, int gender, int pluralality) {
 	if (!input || id > 9) {
 		return 3;
 	}
@@ -1008,4 +1009,20 @@ Status: Complete
 */
 uint32_t __cdecl rnd(int bounds, LPSTR input) {
 	return (bounds - 1 > 0) ? rand() % bounds : 0;
+}
+
+/*
+Purpose: Create an error pop-up and write the parameters to the debug log.
+Original Offset: 00538F30
+Return Value: n/a
+Status: Complete - test
+*/
+void __cdecl danger(LPCSTR msg1, LPCSTR msg2, int num1, int num2, int num3) {
+	parse_says(0, msg1, -1, -1);
+	parse_says(1, msg2, -1, -1);
+	parse_num(0, num1);
+	parse_num(1, num2);
+	parse_num(2, num3);
+	log_say(msg1, msg2, num1, num2, num3);
+	popp(ScriptTxtID, "DANGER", 0, "hasty_sm.pcx", 0);
 }

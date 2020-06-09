@@ -42,7 +42,7 @@ OPENSMACX_API FILE * __cdecl env_open(LPCSTR source, LPCSTR mode);
 OPENSMACX_API void __cdecl parse_set(int gender, int plurality);
 OPENSMACX_API int __cdecl parse_num(int id, int value);
 OPENSMACX_API int __cdecl parse_say(int id, int input, int gender, int pluralality);
-OPENSMACX_API int __cdecl parse_says(int id, LPSTR input, int gender, int pluralality);
+OPENSMACX_API int __cdecl parse_says(int id, LPCSTR input, int gender, int pluralality);
 OPENSMACX_API int __cdecl btoi(LPCSTR str);
 OPENSMACX_API int __cdecl htoi(LPCSTR str);
 OPENSMACX_API int __cdecl stoi(LPCSTR str);
@@ -67,6 +67,7 @@ OPENSMACX_API void __cdecl bitmask(uint32_t input, uint32_t *offset, uint32_t *m
 OPENSMACX_API uint8_t __cdecl checksum(uint8_t *input, uint32_t length, uint8_t seed);
 OPENSMACX_API uint32_t __cdecl checksum_password(LPCSTR password);
 OPENSMACX_API uint32_t __cdecl rnd(int bounds, LPSTR input);
+OPENSMACX_API void __cdecl danger(LPCSTR msg1, LPCSTR msg2, int num1, int num2, int num3);
 
 // WIP
 int filefind_init(LPCSTR path, BOOL isComplete); 

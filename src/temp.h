@@ -59,6 +59,8 @@ extern func9 *mapwin_terrain_fixup;
 extern func9 *do_video;
 extern func9 *check_net;
 extern func9 *do_net;
+typedef int func7(LPCSTR, LPCSTR, int, LPCSTR, int(__cdecl *)());
+extern func7 *popp;
 typedef int func14(int, int);
 extern func14 *base_at;
 typedef BOOL func11(int, int, int);

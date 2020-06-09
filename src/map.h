@@ -28,7 +28,6 @@ enum terrain_altitude_bit {
 	ALT_BIT_1_LEVEL_ABOVE_SEA = 0x80,
 	ALT_BIT_2_LEVELS_ABOVE_SEA = 0xA0,
 	ALT_BIT_3_LEVELS_ABOVE_SEA = 0xC0,
-	ALT_BIT_4_LEVELS_ABOVE_SEA = 0xE0,
 };
 
 enum terrain_altitude {
@@ -39,7 +38,6 @@ enum terrain_altitude {
 	ALT_1_LEVEL_ABOVE_SEA = 4,
 	ALT_2_LEVELS_ABOVE_SEA = 5,
 	ALT_3_LEVELS_ABOVE_SEA = 6,
-	ALT_4_LEVELS_ABOVE_SEA = 7,
 };
 
 enum terrain_rainfall_bit { // land modifiers only
@@ -54,7 +52,7 @@ enum terrain_rock_bit { // land modifiers only
 	TERRAIN_ROCKY = 0x80, // " "
 };
 
-enum terrain_bit {
+enum terrain_bit : uint32_t {
 	BIT_BASE_IN_TILE = 0x1,
 	BIT_VEH_IN_TILE = 0x2,
 	BIT_ROAD = 0x4,
@@ -146,7 +144,7 @@ struct continent {
 	uint32_t tiles; // count of tiles in region
 	uint32_t unk_2; // count land terrain that meets certain conditions 
 	uint32_t unk_3; // highest world_site value (0-15)
-	uint32_t pods; // current count of supply and unity pod in region
+	uint32_t pods; // current count of supply and unity pods in region
 	uint32_t unk_5; // padding?
 	uint8_t unk_6[8]; // sea specific regions, connections to land regions? bitmask
 };
@@ -282,6 +280,7 @@ OPENSMACX_API void __cdecl synch_bit(int xCoord, int yCoord, int factionID);
 OPENSMACX_API uint32_t __cdecl minerals_at(int xCoord, int yCoord);
 OPENSMACX_API uint32_t __cdecl bonus_at(int xCoord, int yCoord, int unkVal);
 OPENSMACX_API uint32_t __cdecl goody_at(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl site_radius(int xCoord, int yCoord, BOOL tgl);
 OPENSMACX_API BOOL __cdecl is_coast(int xCoord, int yCoord, BOOL isBaseRadius);
 OPENSMACX_API BOOL __cdecl is_ocean(int xCoord, int yCoord);
 OPENSMACX_API int __cdecl veh_who(int xCoord, int yCoord);

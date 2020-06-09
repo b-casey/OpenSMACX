@@ -595,6 +595,8 @@ constexpr int MaxResourceNum = 4;
 constexpr int MaxEnergyNum = 3;
 constexpr int MaxDiffNum = 6;
 
+extern LPCSTR AlphaxFileID;
+extern LPCSTR ScriptTxtID;
 extern label *Label;
 extern rules_resourceinfo *ResourceInfo;
 extern rules_time_control *TimeControl;

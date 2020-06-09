@@ -54,6 +54,7 @@ func9 *check_net = (func9 *)0x0062D5D0;
 func9 *do_net = (func9 *)0x0062D5B0;
 func14 *base_at = (func14 *)0x004E3A50;
 func11 *wants_to_attack = (func11 *)0x0055BC80;
+func7 *popp = (func7 *)0x0048C0A0;
 
 // Time
 func30* blink_timer = (func30*)0x0050EA40;
@@ -93,17 +94,25 @@ int __cdecl tester() {
 	log_say("Start test", 0, 0, 0);
 	//
 	for (int i = 0; i < MaxContinentNum; i++) {
-		log_say("Continent_unk2_count:", i, Continents[i].unk_2, 0);
+		//log_say("Continent_unk2_count:", i, Continents[i].unk_2, 0);
+		log_say("Continent_unk3_count:", i, Continents[i].unk_3, 0);
 	}
 	for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
 		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
 			map *tile = map_loc(x, y);
 			if (altitude_at(x, y) >= ALT_BIT_SHORE_LINE && (tile->climate & (RAINFALL_RAINY | RAINFALL_MOIST)) != 0
 				&& (tile->val3 & 0xC0u) < TERRAIN_ROCKY && (!(tile->bit & BIT_FUNGUS) || altitude_at(x, y) < ALT_BIT_OCEAN_SHELF)) {
-				log_say("unk2_found:", tile->region, x, y);
+				//log_say("unk2_found:", tile->region, x, y);
+			}
+			uint32_t site = tile->val2 >> 4;
+			if (site) {
+				char region[10];
+				sprintf_s(region, 10, "%d", tile->region);
+				log_say("site_found:", region, site, x, y);
 			}
 		}
 	}
+
 	/*
 	for (int i = -1; i < *BaseCurrentCount; i++) {
 		for (int j = -2; j < 10; j++) {
@@ -139,11 +148,12 @@ int __cdecl tester() {
 	}
 	*/
 
+	/*
 	for (int i = 0; i < MaxPlayerNum; i++) {
 		for (int j = 0; j < 75; j++) {
-			int type = PlayersData[i].goals_1[j].type;
+			int type = PlayersData[i].goals[j].type;
 			if (type != AI_GOAL_UNUSED) {
-				PlayersData[i].goals_1[j].type = AI_GOAL_UNK_1;
+				PlayersData[i].goals[j].type = AI_GOAL_UNK_1;
 				/*
 				if (type == 6) {
 					char szTemp[100];
@@ -152,10 +162,11 @@ int __cdecl tester() {
 					log_say(szTemp, 0, 0, 0);
 				}
 				*/
+	/*
 			}
 		}
 	}
-
+	*/
 	/*
 	for (int i = 0; i < MaxPlayerNum; i++) {
 		log_say(Players[i].nameFaction, "global rep", PlayersData[i].globalReputation, 0, 0);

@@ -56,7 +56,7 @@ struct rules_terraforming {
 	LPSTR shortcuts;
 };
 
-const int terraformingBits[20][2] = { // terrain enhancement, incompatible enhancements on same tile 
+const uint32_t terraformingBits[20][2] = { // terrain enhancement, incompatible enhancements on same tile 
 	BIT_FARM,          BIT_FOREST, // farm
 	BIT_SOIL_ENRICHER, BIT_FOREST, // soil enricher
 	BIT_MINE,          BIT_MINE | BIT_SOLAR_TIDAL | BIT_FOREST | BIT_CONDENSER | BIT_ECH_MIRROR 

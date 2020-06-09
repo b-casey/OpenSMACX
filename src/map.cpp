@@ -504,7 +504,7 @@ Status: Complete
 */
 uint32_t __cdecl alt_natural(int xCoord, int yCoord) {
 	uint32_t contour = alt_detail_at(xCoord, yCoord) - *MapSeaLevel;
-	uint32_t natural = 6;
+	uint32_t natural = ALT_3_LEVELS_ABOVE_SEA;
 	while (contour < AltNatural[natural] && natural) {
 		natural--;
 	}
@@ -906,6 +906,23 @@ uint32_t __cdecl goody_at(int xCoord, int yCoord) {
 		return 2;
 	}
 	return cmp == ((11 * (avg / 4) + 61 * (xCoordDiff / 4) + *MapRandSeed + 8) & 0x1F); // 0 or 1
+}
+
+/*
+Purpose: Reset site radius. The 3rd parameter is unused.
+Original Offset: 00592400
+Return Value: n/a
+Status: Complete - test
+*/
+void __cdecl site_radius(int xCoord, int yCoord, BOOL tgl) {
+	for (int i = 0; i < 21; i++) {
+		int xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
+		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
+			&& xRadius < (int)*MapHorizontalBounds) {
+			map *tile = map_loc(xRadius, yRadius);
+			tile->val2 &= 0x0F;
+		}
+	}
 }
 
 /*

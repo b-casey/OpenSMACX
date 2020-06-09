@@ -229,6 +229,21 @@ uint32_t __cdecl proto_power(int vehID) {
 }
 
 /*
+Purpose: Determine whether vehID has already received upgrade or could use it.
+Original Offset: 00579F80
+Return Value: Does unit want monolith? true/false
+Status: Complete - testing
+*/
+BOOL __cdecl want_monolith(uint32_t vehID) {
+	if (!(Veh[vehID].state & VSTATE_MONOLITH_UPGRADED) 
+		&& morale_veh(vehID, true, 0) < MORALE_ELITE && Veh[vehID].morale < MORALE_ELITE 
+		&& Weapon[VehPrototype[Veh[vehID].protoID].weaponID].offenseRating) {
+		return true;
+	}
+	return false;
+}
+
+/*
 Purpose: Calculate armor value from armorID
 Original Offset: 0057D270
 Return Value: Armor value / factor

@@ -163,6 +163,203 @@ uint32_t __cdecl guard_check(uint32_t factionID, uint32_t region) {
 }
 
 /*
+Purpose: Adding a goal.
+Original Offset: 00579A30
+Return Value: n/a
+Status:  Complete - testing
+*/
+void __cdecl add_goal(uint32_t factionID, int16_t type, int16_t priority, int xCoord, int yCoord,
+	int baseID) {
+	if (!on_map(xCoord, yCoord)) {
+		return;
+	}
+	for (int i = 0; i < MaxGoalsNum; i++) {
+		if (PlayersData[factionID].goals[i].xCoord == xCoord && 
+			PlayersData[factionID].goals[i].yCoord == yCoord &&
+			PlayersData[factionID].goals[i].type == type) {
+			if (PlayersData[factionID].goals[i].priority <= priority) {
+				PlayersData[factionID].goals[i].priority = priority;
+			}
+			return;
+		}
+	}
+	int prioritySearch = 0, goalID = -1;
+	for (int i = 0; i < MaxGoalsNum; i++) {
+		int typeCmp = PlayersData[factionID].goals[i].type, 
+			prirotyCmp = PlayersData[factionID].goals[i].priority;
+		if (typeCmp < 0 || prirotyCmp < priority) {
+			int cmp = typeCmp >= 0 ? 0 : 1000;
+			if (!cmp) {
+				cmp = prirotyCmp <= 0 ? prirotyCmp + 100 : 20 - prirotyCmp;
+			}
+			if (cmp > prioritySearch) {
+				prioritySearch = cmp;
+				goalID = i;
+			}
+		}
+	}
+	if (goalID >= 0) {
+		PlayersData[factionID].goals[goalID].type = type;
+		PlayersData[factionID].goals[goalID].priority = priority;
+		PlayersData[factionID].goals[goalID].xCoord = xCoord;
+		PlayersData[factionID].goals[goalID].yCoord = yCoord;
+		PlayersData[factionID].goals[goalID].baseID = baseID;
+	}
+}
+
+/*
+Purpose: Add site to tile.
+Original Offset: 00579B70
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl add_site(uint32_t factionID, int16_t type, int16_t priority, int xCoord, int yCoord) {
+	if ((xCoord ^ yCoord) & 1 && *GameState & STATE_DEBUG_MODE) {
+		danger("Bad SITE", "", xCoord, yCoord, type);
+	}
+	for (int i = 0; i < MaxSitesNum; i++) {
+		if (PlayersData[factionID].sites[i].xCoord == xCoord &&
+			PlayersData[factionID].sites[i].yCoord == yCoord &&
+			PlayersData[factionID].sites[i].type == type) {
+			if (PlayersData[factionID].sites[i].priority <= priority) {
+				PlayersData[factionID].sites[i].priority = priority;
+			}
+			return;
+		}
+	}
+	int prioritySearch = 0, siteID = -1;
+	for (int i = 0; i < MaxGoalsNum; i++) {
+		int typeCmp = PlayersData[factionID].goals[i].type,
+			prirotyCmp = PlayersData[factionID].goals[i].priority;
+		if (typeCmp < 0 || prirotyCmp < priority) {
+			int cmp = typeCmp >= 0 ? 0 : 1000;
+			if (!cmp) {
+				cmp = prirotyCmp <= 0 ? prirotyCmp + 100 : 20 - prirotyCmp;
+			}
+			if (cmp > prioritySearch) {
+				prioritySearch = cmp;
+				siteID = i;
+			}
+		}
+	}
+	if (siteID >= 0) {
+		PlayersData[factionID].goals[siteID].type = type;
+		PlayersData[factionID].goals[siteID].priority = priority;
+		PlayersData[factionID].goals[siteID].xCoord = xCoord;
+		PlayersData[factionID].goals[siteID].yCoord = yCoord;
+		add_goal(factionID, type, priority, xCoord, yCoord, -1);
+	}
+}
+
+/*
+Purpose: Check if goal exists at tile.
+Original Offset: 00579CC0
+Return Value: Does specific goal exist for faction at tile? true/false
+Status: Complete - testing
+*/
+BOOL __cdecl at_goal(uint32_t factionID, int16_t type, int xCoord, int yCoord) {
+	for (int i = 0; i < MaxGoalsNum; i++) {
+		if (PlayersData[factionID].goals[i].xCoord == xCoord &&
+			PlayersData[factionID].goals[i].yCoord == yCoord &&
+			PlayersData[factionID].goals[i].type == type) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/*
+Purpose: Check if site exists at tile.
+Original Offset: 00579D20
+Return Value: Does specific site exist for faction at tile? true/false
+Status: Complete - testing
+*/
+BOOL __cdecl at_site(uint32_t factionID, int16_t type, int xCoord, int yCoord) {
+	for (int i = 0; i < MaxSitesNum; i++) {
+		if (PlayersData[factionID].sites[i].xCoord == xCoord &&
+			PlayersData[factionID].sites[i].yCoord == yCoord &&
+			PlayersData[factionID].sites[i].type == type) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/*
+Purpose: Wipe goals.
+Original Offset: 00579D80
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl wipe_goals(uint32_t factionID) {
+	for (int i = 0; i < MaxGoalsNum; i++) {
+		int16_t priority = PlayersData[factionID].goals[i].priority;
+		if (priority >= 0) {
+			PlayersData[factionID].goals[i].priority = -priority;
+		}
+		else {
+			PlayersData[factionID].goals[i].type = AI_GOAL_UNUSED;
+		}
+	}
+	for (int i = 0; i < MaxSitesNum; i++) {
+		goal &ptrGoal = PlayersData[factionID].sites[i];
+		int16_t type = ptrGoal.type;
+		if (type >= 0) {
+			add_goal(factionID, type, ptrGoal.priority, ptrGoal.xCoord, ptrGoal.yCoord, -1);
+		}
+	}
+}
+
+/*
+Purpose: Initialize faction goals.
+Original Offset: 00579E00
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl init_goals(uint32_t factionID) {
+	for (int i = 0; i < MaxGoalsNum; i++) {
+		PlayersData[factionID].goals[i].type = -1;
+		PlayersData[factionID].goals[i].priority = 0;
+		PlayersData[factionID].goals[i].xCoord = 0;
+		PlayersData[factionID].goals[i].yCoord = 0;
+		PlayersData[factionID].goals[i].baseID = 0;
+	}
+	for (int i = 0; i < MaxSitesNum; i++) {
+		PlayersData[factionID].sites[i].type = -1;
+		PlayersData[factionID].sites[i].priority = 0;
+		PlayersData[factionID].sites[i].xCoord = 0;
+		PlayersData[factionID].sites[i].yCoord = 0;
+		PlayersData[factionID].sites[i].baseID = 0;
+	}
+}
+
+/*
+Purpose: Delete site and related goals.
+Original Offset: 00579E70
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl del_site(uint32_t factionID, int16_t type, int xCoord, int yCoord, int proximity) {
+	for (int i = 0; i < MaxSitesNum; i++) {
+		if (PlayersData[factionID].sites[i].type == type) {
+			int dist = x_dist(cursor_dist(xCoord, PlayersData[factionID].sites[i].xCoord), 
+				yCoord - PlayersData[factionID].sites[i].yCoord);
+			if (dist <= proximity) {
+				PlayersData[factionID].sites[i].type = AI_GOAL_UNUSED;
+				PlayersData[factionID].sites[i].priority = 0;
+			}
+		}
+	}
+	for (int i = 0; i < MaxGoalsNum; i++) {
+		if (PlayersData[factionID].goals[i].xCoord == xCoord &&
+			PlayersData[factionID].goals[i].yCoord == yCoord &&
+			PlayersData[factionID].goals[i].type == type) {
+			PlayersData[factionID].goals[i].type = AI_GOAL_UNUSED;
+		}
+	}
+}
+
+/*
 Purpose: Calculate the cost for the faction to corner the Global Energy Market (Economic Victory).
 Original Offset: 0059EE50
 Return Value: Cost to corner the Global Energy Market
