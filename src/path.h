@@ -25,30 +25,30 @@ private:
     int *mapTable;
     int16_t *xCoordTable;
     int16_t *yCoordTable;
-    int index1;
-    int index2;
+    int index1; // specific territory count
+    int index2; // overall territory count
     int factionID1;
-    int xCoordDst1;
-    int yCoordDst1;
+    int xCoordDst;
+    int yCoordDst;
     int field_20;
     int factionID2;
-    int protoID1;
+    int protoID;
 
 public:
 	Path() : mapTable(0), xCoordTable(0), yCoordTable(0), index1(0), index2(0), factionID1(0),
-        xCoordDst1(0), yCoordDst1(0), field_20(5), factionID2(0), protoID1(0) { } // n/a
+        xCoordDst(0), yCoordDst(0), field_20(5), factionID2(0), protoID(0) { } // n/a
 	~Path() { shutdown(); } // 0059A320
 
     void init();
     void shutdown();
     int zoc_path(int xCoord, int yCoord, int factionID);
-    int find(int xCoordSrc, int yCoordSrc, int xCoordDst, int yCoordDst, int protoID,
+    int find(int xCoordSrc, int yCoordSrc, int xCoordDstA, int yCoordDstA, int protoID_,
         int factionID, int unk1, int unk2);
     int move(int vehID, int factionID);
     void make_abstract();
-    void UNK1(uint32_t unk1, uint32_t unk2);
+    void replace(uint32_t regionOld, uint32_t regionNew);
     void territory(int xCoord, int yCoord, int region, int factionID);
     void continent(int xCoord, int yCoord, uint32_t region);
     void continents();
-    void sensors(int factionID, int *xCoordOut, int *yCoordOut);
+    BOOL sensors(int factionID, int *xCoordPtr, int *yCoordPtr);
 };

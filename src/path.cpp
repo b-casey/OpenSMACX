@@ -18,6 +18,9 @@
 #include "stdafx.h"
 #include "temp.h"
 #include "path.h"
+#include "alpha.h"
+#include "game.h"
+#include "technology.h"
 #include "veh.h"
 #include "map.h"
 
@@ -29,8 +32,8 @@
  */
 void Path::init() {
     shutdown();
-    xCoordDst1 = -1;
-    yCoordDst1 = -1;
+    xCoordDst = -1;
+    yCoordDst = -1;
     mapTable = (int *)mem_get(*MapArea * 4);
     xCoordTable = (int16_t *)mem_get(*MapArea * 2);
     yCoordTable = (int16_t *)mem_get(*MapArea * 2);
@@ -101,7 +104,7 @@ int Path::zoc_path(int xCoord, int yCoord, int factionID) {
  Return Value: 
  Status: wip
 */
-int Path::find(int xCoordSrc, int yCoordSrc, int xCoordDst, int yCoordDst, int protoID, 
+int Path::find(int xCoordSrc, int yCoordSrc, int xCoordDstA, int yCoordDstA, int protoID_, 
     int factionID, int unk1, int unk2) {
     return 0;
 }
@@ -117,10 +120,10 @@ int Path::move(int vehID, int factionID) {
 }
 
 /*
- Purpose: TBD
+ Purpose: Populate the abstract map with the radial region value.
  Original Offset: 0059C200
  Return Value: n/a
- Status: wip
+ Status: Complete - testing
 */
 void Path::make_abstract() {
     for (uint32_t y = 0; y < *MapAbstractVertBounds; y++) {
@@ -139,26 +142,26 @@ void Path::make_abstract() {
 }
 
 /*
- Purpose: Fixup of region values? Merge continents?
+ Purpose: Replace the old region with the new region. Add the old tile count to the new Continent.
  Original Offset: 0059C340
  Return Value: n/a
- Status: wip
+ Status: Complete - testing
 */
-void Path::UNK1(uint32_t region1, uint32_t region2) {
-    Continents[region2].tiles += Continents[region1].tiles;
-    Continents[region1].tiles = 0;
+void Path::replace(uint32_t regionOld, uint32_t regionNew) {
+    Continents[regionNew].tiles += Continents[regionOld].tiles;
+    Continents[regionOld].tiles = 0;
     for (uint32_t i = 0; i < *MapArea; i++) {
-        if ((uint32_t)Map[i]->region == region1) {
-            Map[i]->region = (uint8_t)region2;
+        if ((uint32_t)Map[i]->region == regionOld) {
+            Map[i]->region = (uint8_t)regionNew;
         }
     }
 }
 
 /*
- Purpose: TBD
+ Purpose: Map out connected territory?
  Original Offset: 0059C3C0
  Return Value: n/a
- Status: wip
+ Status: Complete - testing
 */
 void Path::territory(int xCoord, int yCoord, int region, int factionID) {
     if (is_ocean(xCoord, yCoord)) {
@@ -192,10 +195,10 @@ void Path::territory(int xCoord, int yCoord, int region, int factionID) {
 }
 
 /*
- Purpose: TBD
+ Purpose: Set up continent.
  Original Offset: 0059C520
  Return Value: n/a
- Status: wip
+ Status: Complete - testing
 */
 void Path::continent(int xCoord, int yCoord, uint32_t region) {
     Continents[region].tiles = 0;
@@ -230,23 +233,111 @@ void Path::continent(int xCoord, int yCoord, uint32_t region) {
 			}
 		}
 	}
-    if (oceanCount) {
-        //BOOL setBit = (int)oceanCount < ((Continents[region].unk_1 * 3) / 4);
-        //for (uint32_t i = 0; i < *MapVerticalBounds; i++) {
-            //
-        //}
-    }
+    BOOL isFreshWater = oceanCount < ((Continents[region].tiles * 3) / 4); // land locked?
+	for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
+		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
+			if (region == region_at(x, y)) {
+                bit2_set(x, y, LM_FRESH, isFreshWater);
+			}
+		}
+	}
     do_all_non_input();
 }
 
 /*
- Purpose: TBD
+ Purpose: Set up continents.
  Original Offset: 0059C790
  Return Value: n/a
- Status: wip
+ Status: Complete - testing
 */
 void Path::continents() {
-    //
+	for (uint32_t i = 0; i < *MapArea; i++) {
+        Map[i]->region = 0;
+	}
+    uint32_t oceanRegion = 64;
+    uint32_t landRegion = 0;
+    for (uint32_t y = 1; y < *MapAbstractVertBounds - 1; y++) {
+        for (uint32_t x = y & 1; x < *MapAbstractHorizBounds; x += 2) {
+            if (!region_at(x, y)) {
+                uint32_t regionCurrent, regionMin, regionMax;
+                if (is_ocean(x, y)) {
+                    oceanRegion++;
+                    regionMin = 64;
+                    regionMax = 126;
+                    regionCurrent = range(oceanRegion, regionMin, regionMax);
+                }
+                else {
+                    landRegion++;
+                    regionMin = 0;
+                    regionMax = 62;
+                    regionCurrent = range(landRegion, regionMin, regionMax);
+                }
+                continent(x, y, regionCurrent);
+                if (regionCurrent == regionMax) {
+                    uint32_t tiles = Continents[regionCurrent].tiles;
+                    int searchRegion = -1;
+                    for (uint32_t i = regionMin; i < regionMax; i++) {
+                        if (Continents[i].tiles < tiles) {
+                            tiles = Continents[i].tiles;
+                            searchRegion = i;
+                        }
+                    }
+                    if (searchRegion < 0) {
+                        replace(regionCurrent, regionMax + 1);
+                    }
+                    else {
+                        replace(searchRegion, regionMax + 1);
+                        replace(regionCurrent, searchRegion);
+                    }
+                }
+            }
+        }
+    }
+    for (uint32_t x = 0; x < *MapHorizontalBounds; x += 2) { // north pole
+        uint8_t poleRegion = is_ocean(x, 0) ? 63 : 127;
+        region_set(x, 0, poleRegion);
+        Continents[poleRegion].tiles++;
+    }
+    uint32_t yCoordSouthPole = *MapVerticalBounds - 1;
+	for (uint32_t x = yCoordSouthPole & 1; x < *MapHorizontalBounds; x += 2) { // south pole
+        uint8_t poleRegion = is_ocean(x, yCoordSouthPole) ? 63 : 127;
+		region_set(x, yCoordSouthPole, poleRegion);
+		Continents[poleRegion].tiles++;
+	}
+    uint32_t mostTiles = 0, totalTiles = 0;
+	for (uint32_t i = 1; i < 63; i++) {
+        uint32_t tiles = Continents[i].tiles;
+        totalTiles += tiles;
+		if (tiles < mostTiles) {
+            mostTiles = tiles;
+		}
+	}
+    *GameState = (mostTiles < ((totalTiles * 4) / 5)) ? *GameState & ~0x100 : *GameState | 0x100;
+    for (uint32_t i = 0; i < MaxRegionLandNum; i++) {
+        *(uint32_t *)Continents[i].unk_6 = 0;
+        *(uint32_t *)(Continents[i].unk_6 + 1) = 0;
+    }
+    for (uint32_t y = 1; y < *MapAbstractVertBounds - 1; y++) {
+        for (uint32_t x = y & 1; x < *MapAbstractHorizBounds; x += 2) {
+            if (region_at(x, y) < MaxRegionLandNum) {
+				for (uint32_t i = 0; i < 8; i++) {
+					int xRadius = xrange(x + xRadiusBase[i]), yRadius = y + yRadiusBase[i];
+                    if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
+                        && xRadius < (int)*MapHorizontalBounds) {
+                        uint32_t region = region_at(x, y);
+                        if (region >= 64) {
+                            uint32_t offset, mask;
+                            bitmask(region - 64, &offset, &mask);
+                            Continents[region].unk_6[offset] |= mask;
+                            i += 2 - (i & 1);
+                        }
+                    }
+				}
+            }
+        }
+    }
+    make_abstract();
+    do_all_non_input();
 }
 
 /*
@@ -255,6 +346,60 @@ void Path::continents() {
  Return Value: n/a
  Status: wip
 */
-void Path::sensors(int factionID, int *xCoordOut, int *yCoordOut) {
-    //
+BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
+    BOOL isSensor = true;
+    memset(mapTable, 0, *MapArea * 4);
+	xCoordDst = -1;
+	yCoordDst = -1;
+    int xCoord = *xCoordPtr, yCoord = *yCoordPtr;
+    uint32_t search = 9999;
+    uint32_t region = region_at(xCoord, yCoord);
+    for (uint32_t y = 1; y < *MapAbstractVertBounds - 1; y++) {
+        for (uint32_t x = y & 1; x < *MapAbstractHorizBounds; x += 2) {
+            if (region_at(x, y) == region 
+                && whose_territory(factionID, x, y, NULL, false) == factionID 
+                && base_who(x, y) < 0) {
+                int factionIDVeh = veh_who(x, y);
+                if (factionIDVeh < 0 || factionIDVeh == factionID
+                    || PlayersData[factionID].diploTreaties[factionIDVeh] & DTREATY_PACT) {
+                    int factionIDZoc = zoc_veh(x, y, factionID);
+                    uint32_t bit = bit_at(x, y);
+                    map *tile = map_loc(x, y);
+                    if (factionIDZoc != 1 && (!factionIDZoc 
+                        || PlayersData[factionID].diploTreaties[factionIDZoc] & DTREATY_PACT)
+                        && bit & (BIT_MINE | BIT_SOLAR_TIDAL) 
+                        && bit & (BIT_MONOLITH | BIT_CONDENSER | BIT_THERMAL_BORE) 
+                        && !bonus_at(x, y, 0) && ((tile->val3 & 0xC0u) > TERRAIN_ROLLING
+                        || !(tile->climate & (RAINFALL_RAINY | RAINFALL_MOIST))
+                        || !(bit & BIT_FUNGUS) || !is_ocean(x, y))
+                        && (!(bit & BIT_FUNGUS) || (!is_ocean(x, y) 
+                            && has_tech(Rules->TechImproveFungusSqr, factionID)))) {
+                        uint32_t flags = 0;
+						for (uint32_t i = 0; i < 25; i++) {
+                            int xRadius = xrange(x + xRadiusOffset[i]);
+                            int yRadius = y + yRadiusOffset[i];
+							if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
+								&& xRadius < (int)*MapHorizontalBounds) {
+                                if (!is_sensor(xRadius, yRadius) 
+                                    && (whose_territory(factionID, xRadius, yRadius, NULL, false)
+                                    == factionID 
+                                        || &((mapTable)[(xRadius >> 1) + yRadius * *MapHorizontal]) 
+                                        != 0)) {
+                                    if (i >= 9) {
+                                        flags |= 1;
+                                    }
+                                    flags |= 2;
+                                }
+							}
+						}
+                        if (!(flags & 1)) {
+                            //
+                        }
+                    }
+                }
+            }
+        }
+    }
+    do_all_non_input();
+    return isSensor;
 }

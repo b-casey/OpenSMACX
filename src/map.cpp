@@ -1188,7 +1188,7 @@ BOOL __cdecl map_read(FILE *mapFile) {
 }
 
 /*
-Purpose: Get abstract value for coordinates.
+Purpose: Get the region value for coordinates.
 Original Offset: 00591210
 Return Value: Abstract value
 Status: Complete
@@ -1198,13 +1198,13 @@ uint8_t __cdecl abstract_at(int xCoord, int yCoord) {
 }
 
 /*
-Purpose: Set abstract value for coordinates. 
+Purpose: Set the region value for coordinates. 
 Original Offset: 00591230
 Return Value: n/a
 Status: Complete
 */
-void __cdecl abstract_set(int xCoord, int yCoord, uint8_t val) {
-	(*MapAbstract)[(xCoord >> 1) + yCoord * (*MapAbstractHorizBounds >> 1)] = val;
+void __cdecl abstract_set(int xCoord, int yCoord, uint8_t region) {
+	(*MapAbstract)[(xCoord >> 1) + yCoord * (*MapAbstractHorizBounds >> 1)] = region;
 }
 
 /*
