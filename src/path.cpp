@@ -24,12 +24,12 @@
 #include "veh.h"
 #include "map.h"
 
- /*
-  Purpose: Initialize instance of Path class.
-  Original Offset: 0059A220
-  Return Value: n/a
-  Status: Complete
- */
+/*
+ Purpose: Initialize instance of Path class.
+ Original Offset: 0059A220
+ Return Value: n/a
+ Status: Complete
+*/
 void Path::init() {
     shutdown();
     xCoordDst = -1;
@@ -50,12 +50,12 @@ void Path::shutdown() {
     if (mapTable) {
         free(mapTable);
     }
-	if (xCoordTable) {
-		free(xCoordTable);
-	}
-	if (yCoordTable) {
-		free(yCoordTable);
-	}
+    if (xCoordTable) {
+        free(xCoordTable);
+    }
+    if (yCoordTable) {
+        free(yCoordTable);
+    }
     mapTable = 0;
     xCoordTable = 0;
     yCoordTable = 0;
@@ -72,39 +72,39 @@ int Path::zoc_path(int xCoord, int yCoord, int factionID) {
     if (bit_at(xCoord, yCoord) & BIT_BASE_IN_TILE && owner_at(xCoord, yCoord) < 8) {
         return 0;
     }
-	BOOL isOcean = is_ocean(xCoord, yCoord);
-	for (uint32_t i = 0; i < 8; i++) {
-		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
-		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-			&& xRadius < (int)*MapHorizontalBounds) {
-			int owner = veh_who(xRadius, yRadius);
-			if (owner >= 0 && owner != factionID && is_ocean(xRadius, yRadius) == isOcean
-				&& !(PlayersData[factionID].diploTreaties[owner] 
+    BOOL isOcean = is_ocean(xCoord, yCoord);
+    for (uint32_t i = 0; i < 8; i++) {
+        int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
+        if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
+            && xRadius < (int)*MapHorizontalBounds) {
+            int owner = veh_who(xRadius, yRadius);
+            if (owner >= 0 && owner != factionID && is_ocean(xRadius, yRadius) == isOcean
+                && !(PlayersData[factionID].diploTreaties[owner]
                     & (DTREATY_VENDETTA | DTREATY_PACT))) {
                 if (is_human(factionID)) {
                     return owner + 1;
                 }
-				for (int vehID = veh_at(xRadius, yRadius); vehID >= 0; 
+                for (int vehID = veh_at(xRadius, yRadius); vehID >= 0;
                     vehID = Veh[vehID].nextVehIDStack) {
-					if ((Veh[vehID].factionID == factionID && ((Veh[vehID].flags 
-                        & (VFLAG_INVISIBLE | VFLAG_LURKER)) != (VFLAG_INVISIBLE | VFLAG_LURKER))) 
+                    if ((Veh[vehID].factionID == factionID && ((Veh[vehID].flags
+                        & (VFLAG_INVISIBLE | VFLAG_LURKER)) != (VFLAG_INVISIBLE | VFLAG_LURKER)))
                         || Veh[vehID].visibility & (1 << factionID)) {
-						return owner + 1;
-					}
-				}
-			}
-		}
-	}
-	return 0;
+                        return owner + 1;
+                    }
+                }
+            }
+        }
+    }
+    return 0;
 }
 
 /*
  Purpose: Find path between points and conditions?
  Original Offset: 0059A530
- Return Value: 
+ Return Value:
  Status: wip
 */
-int Path::find(int xCoordSrc, int yCoordSrc, int xCoordDstA, int yCoordDstA, int protoID_, 
+int Path::find(int xCoordSrc, int yCoordSrc, int xCoordDstA, int yCoordDstA, int protoID_,
     int factionID, int unk1, int unk2) {
     return 0;
 }
@@ -127,10 +127,10 @@ int Path::move(int vehID, int factionID) {
 */
 void Path::make_abstract() {
     for (uint32_t y = 0; y < *MapAbstractVertBounds; y++) {
-        for (uint32_t x = y & 1; x < *MapAbstractHorizBounds; x+=2) {
+        for (uint32_t x = y & 1; x < *MapAbstractHorizBounds; x += 2) {
             uint8_t region = 0;
             for (uint32_t i = 0; i < 8; i++) {
-				int xRadius = xrange(x * 5 + xRadiusOffset[i]), yRadius = y + yRadiusOffset[i];
+                int xRadius = xrange(x * 5 + xRadiusOffset[i]), yRadius = y + yRadiusOffset[i];
                 if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
                     && xRadius < (int)*MapHorizontalBounds && !is_ocean(xRadius, yRadius)) {
                     region = (uint8_t)region_at(xRadius, yRadius);
@@ -175,21 +175,21 @@ void Path::territory(int xCoord, int yCoord, int region, int factionID) {
     for (int16_t xCoordIt, yCoordIt; index2 && index1 != index2;) {
         xCoordIt = xCoordTable[index2], yCoordIt = yCoordTable[index2];
         index2++;
-		for (uint32_t i = 0; i < 8; i++) {		
+        for (uint32_t i = 0; i < 8; i++) {
             int xRadius = xrange(xCoordIt + xRadiusBase[i]);
             int yRadius = yCoordIt + yRadiusBase[i];
-			if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-				&& xRadius < (int)*MapHorizontalBounds) {
-				if (yCoordIt && yCoordIt != ((int)*MapVerticalBounds - 1) 
+            if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
+                && xRadius < (int)*MapHorizontalBounds) {
+                if (yCoordIt && yCoordIt != ((int)*MapVerticalBounds - 1)
                     && !is_ocean(xCoordIt, yCoordIt) && !map_loc(xCoordIt, yCoordIt)->unk_1
-					&& map_loc(xCoord, yCoord)->territory == factionID) {
-					map_loc(xCoordIt, yCoordIt)->unk_1 = 1;
-					xCoordTable[index1] = xCoordIt;
-					yCoordTable[index1] = yCoordIt;
-					index1++;
-				}
-			}
-		}
+                    && map_loc(xCoord, yCoord)->territory == factionID) {
+                    map_loc(xCoordIt, yCoordIt)->unk_1 = 1;
+                    xCoordTable[index1] = xCoordIt;
+                    yCoordTable[index1] = yCoordIt;
+                    index1++;
+                }
+            }
+        }
     }
     do_all_non_input();
 }
@@ -202,45 +202,45 @@ void Path::territory(int xCoord, int yCoord, int region, int factionID) {
 */
 void Path::continent(int xCoord, int yCoord, uint32_t region) {
     Continents[region].tiles = 0;
-	index1 = 0; index2 = 0;
+    index1 = 0; index2 = 0;
     uint32_t oceanCount = 0;
-	xCoordTable[index1] = (int16_t)xCoord;
-	yCoordTable[index1] = (int16_t)yCoord;
-	index1++;
+    xCoordTable[index1] = (int16_t)xCoord;
+    yCoordTable[index1] = (int16_t)yCoord;
+    index1++;
     region_set(xCoord, yCoord, (uint8_t)region);
     BOOL isOcean = is_ocean(xCoord, yCoord);
 
-	for (int16_t xCoordIt, yCoordIt; index2 && index1 != index2;) {
-		xCoordIt = xCoordTable[index2], yCoordIt = yCoordTable[index2];
-		index2++;
+    for (int16_t xCoordIt, yCoordIt; index2 && index1 != index2;) {
+        xCoordIt = xCoordTable[index2], yCoordIt = yCoordTable[index2];
+        index2++;
         Continents[region].tiles++;
-		for (uint32_t i = 0; i < 8; i++) {
-			int xRadius = xrange(xCoordIt + xRadiusBase[i]);
-			int yRadius = yCoordIt + yRadiusBase[i];
-			if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-				&& xRadius < (int)*MapHorizontalBounds) {
+        for (uint32_t i = 0; i < 8; i++) {
+            int xRadius = xrange(xCoordIt + xRadiusBase[i]);
+            int yRadius = yCoordIt + yRadiusBase[i];
+            if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
+                && xRadius < (int)*MapHorizontalBounds) {
                 BOOL isOceanIt = is_ocean(xCoordIt, yCoordIt);
-				if (yCoordIt && yCoordIt != ((int)*MapVerticalBounds - 1) 
+                if (yCoordIt && yCoordIt != ((int)*MapVerticalBounds - 1)
                     && isOceanIt == isOcean && !region) {
                     if (isOcean && bit2_at(xCoordIt, yCoordIt) & LM_FRESH && isOceanIt) {
                         oceanCount++;
                     }
                     region_set(xRadius, yRadius, (uint8_t)region);
-					xCoordTable[index1] = xCoordIt;
-					yCoordTable[index1] = yCoordIt;
-					index1++;
+                    xCoordTable[index1] = xCoordIt;
+                    yCoordTable[index1] = yCoordIt;
+                    index1++;
                 }
-			}
-		}
-	}
+            }
+        }
+    }
     BOOL isFreshWater = oceanCount < ((Continents[region].tiles * 3) / 4); // land locked?
-	for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
-		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
-			if (region == region_at(x, y)) {
+    for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
+        for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
+            if (region == region_at(x, y)) {
                 bit2_set(x, y, LM_FRESH, isFreshWater);
-			}
-		}
-	}
+            }
+        }
+    }
     do_all_non_input();
 }
 
@@ -251,9 +251,9 @@ void Path::continent(int xCoord, int yCoord, uint32_t region) {
  Status: Complete - testing
 */
 void Path::continents() {
-	for (uint32_t i = 0; i < *MapArea; i++) {
+    for (uint32_t i = 0; i < *MapArea; i++) {
         Map[i]->region = 0;
-	}
+    }
     uint32_t oceanRegion = 64;
     uint32_t landRegion = 0;
     for (uint32_t y = 1; y < *MapAbstractVertBounds - 1; y++) {
@@ -299,19 +299,19 @@ void Path::continents() {
         Continents[poleRegion].tiles++;
     }
     uint32_t yCoordSouthPole = *MapVerticalBounds - 1;
-	for (uint32_t x = yCoordSouthPole & 1; x < *MapHorizontalBounds; x += 2) { // south pole
+    for (uint32_t x = yCoordSouthPole & 1; x < *MapHorizontalBounds; x += 2) { // south pole
         uint8_t poleRegion = is_ocean(x, yCoordSouthPole) ? 63 : 127;
-		region_set(x, yCoordSouthPole, poleRegion);
-		Continents[poleRegion].tiles++;
-	}
+        region_set(x, yCoordSouthPole, poleRegion);
+        Continents[poleRegion].tiles++;
+    }
     uint32_t mostTiles = 0, totalTiles = 0;
-	for (uint32_t i = 1; i < 63; i++) {
+    for (uint32_t i = 1; i < 63; i++) {
         uint32_t tiles = Continents[i].tiles;
         totalTiles += tiles;
-		if (tiles < mostTiles) {
+        if (tiles < mostTiles) {
             mostTiles = tiles;
-		}
-	}
+        }
+    }
     *GameState = (mostTiles < ((totalTiles * 4) / 5)) ? *GameState & ~0x100 : *GameState | 0x100;
     for (uint32_t i = 0; i < MaxRegionLandNum; i++) {
         *(uint32_t *)Continents[i].unk_6 = 0;
@@ -320,8 +320,8 @@ void Path::continents() {
     for (uint32_t y = 1; y < *MapAbstractVertBounds - 1; y++) {
         for (uint32_t x = y & 1; x < *MapAbstractHorizBounds; x += 2) {
             if (region_at(x, y) < MaxRegionLandNum) {
-				for (uint32_t i = 0; i < 8; i++) {
-					int xRadius = xrange(x + xRadiusBase[i]), yRadius = y + yRadiusBase[i];
+                for (uint32_t i = 0; i < 8; i++) {
+                    int xRadius = xrange(x + xRadiusBase[i]), yRadius = y + yRadiusBase[i];
                     if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
                         && xRadius < (int)*MapHorizontalBounds) {
                         uint32_t region = region_at(x, y);
@@ -332,7 +332,7 @@ void Path::continents() {
                             i += 2 - (i & 1);
                         }
                     }
-				}
+                }
             }
         }
     }
@@ -349,15 +349,15 @@ void Path::continents() {
 BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
     BOOL isSensor = true;
     memset(mapTable, 0, *MapArea * 4);
-	xCoordDst = -1;
-	yCoordDst = -1;
+    xCoordDst = -1;
+    yCoordDst = -1;
     int xCoord = *xCoordPtr, yCoord = *yCoordPtr;
     uint32_t search = 9999;
     uint32_t region = region_at(xCoord, yCoord);
     for (uint32_t y = 1; y < *MapAbstractVertBounds - 1; y++) {
         for (uint32_t x = y & 1; x < *MapAbstractHorizBounds; x += 2) {
-            if (region_at(x, y) == region 
-                && whose_territory(factionID, x, y, NULL, false) == factionID 
+            if (region_at(x, y) == region
+                && whose_territory(factionID, x, y, NULL, false) == factionID
                 && base_who(x, y) < 0) {
                 int factionIDVeh = veh_who(x, y);
                 if (factionIDVeh < 0 || factionIDVeh == factionID
@@ -365,33 +365,33 @@ BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
                     int factionIDZoc = zoc_veh(x, y, factionID);
                     uint32_t bit = bit_at(x, y);
                     map *tile = map_loc(x, y);
-                    if (factionIDZoc != 1 && (!factionIDZoc 
+                    if (factionIDZoc != 1 && (!factionIDZoc
                         || PlayersData[factionID].diploTreaties[factionIDZoc] & DTREATY_PACT)
-                        && bit & (BIT_MINE | BIT_SOLAR_TIDAL) 
-                        && bit & (BIT_MONOLITH | BIT_CONDENSER | BIT_THERMAL_BORE) 
+                        && bit & (BIT_MINE | BIT_SOLAR_TIDAL)
+                        && bit & (BIT_MONOLITH | BIT_CONDENSER | BIT_THERMAL_BORE)
                         && !bonus_at(x, y, 0) && ((tile->val3 & 0xC0u) > TERRAIN_ROLLING
-                        || !(tile->climate & (RAINFALL_RAINY | RAINFALL_MOIST))
-                        || !(bit & BIT_FUNGUS) || !is_ocean(x, y))
-                        && (!(bit & BIT_FUNGUS) || (!is_ocean(x, y) 
+                            || !(tile->climate & (RAINFALL_RAINY | RAINFALL_MOIST))
+                            || !(bit & BIT_FUNGUS) || !is_ocean(x, y))
+                        && (!(bit & BIT_FUNGUS) || (!is_ocean(x, y)
                             && has_tech(Rules->TechImproveFungusSqr, factionID)))) {
                         uint32_t flags = 0;
-						for (uint32_t i = 0; i < 25; i++) {
+                        for (uint32_t i = 0; i < 25; i++) {
                             int xRadius = xrange(x + xRadiusOffset[i]);
                             int yRadius = y + yRadiusOffset[i];
-							if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-								&& xRadius < (int)*MapHorizontalBounds) {
-                                if (!is_sensor(xRadius, yRadius) 
+                            if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
+                                && xRadius < (int)*MapHorizontalBounds) {
+                                if (!is_sensor(xRadius, yRadius)
                                     && (whose_territory(factionID, xRadius, yRadius, NULL, false)
-                                    == factionID 
-                                        || &((mapTable)[(xRadius >> 1) + yRadius * *MapHorizontal]) 
+                                        == factionID
+                                        || &((mapTable)[(xRadius >> 1) + yRadius * *MapHorizontal])
                                         != 0)) {
                                     if (i >= 9) {
                                         flags |= 1;
                                     }
                                     flags |= 2;
                                 }
-							}
-						}
+                            }
+                        }
                         if (!(flags & 1)) {
                             //
                         }
