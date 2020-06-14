@@ -93,6 +93,7 @@ int __cdecl tester() {
 	log_set_state(true);
 	log_say("Start test", 0, 0, 0);
 	//
+	/*
 	for (int i = 0; i < MaxContinentNum; i++) {
 		//log_say("Continent_unk2_count:", i, Continents[i].unk_2, 0);
 		log_say("Continent_unk3_count:", i, Continents[i].unk_3, 0);
@@ -112,7 +113,7 @@ int __cdecl tester() {
 			}
 		}
 	}
-
+	*/
 	/*
 	for (int i = -1; i < *BaseCurrentCount; i++) {
 		for (int j = -2; j < 10; j++) {

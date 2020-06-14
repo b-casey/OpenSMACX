@@ -142,11 +142,11 @@ struct landmark {
 
 struct continent {
 	uint32_t tiles; // count of tiles in region
-	uint32_t unk_2; // count land terrain that meets certain conditions 
+	uint32_t openTerrain; // count of non-rocky, non-fungus tiles (only 1 movement point to travel)
 	uint32_t unk_3; // highest world_site value (0-15)
 	uint32_t pods; // current count of supply and unity pods in region
 	uint32_t unk_5; // padding?
-	uint8_t unk_6[8]; // sea specific regions, connections to land regions? bitmask
+	uint8_t seaCoasts[8]; // sea specific regions, connections to land regions? bitmask
 };
 
 struct rules_natural {

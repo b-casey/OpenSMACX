@@ -192,7 +192,7 @@ Status: Complete
 BOOL __cdecl sea_coast(uint32_t regionDst, uint32_t regionSrc) {
 	uint32_t offset, mask;
 	bitmask(regionSrc & RegionBounds, &offset, &mask);
-	return (Continents[regionDst].unk_6[offset] & mask) != 0;
+	return (Continents[regionDst].seaCoasts[offset] & mask) != 0;
 }
 
 /*

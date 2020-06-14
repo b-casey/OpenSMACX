@@ -51,7 +51,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
 	bin_app = mmap.mmap(f.fileno(), 0)
-	# next: 372
+	# next: 373
 	#
 	
 	# ALPHA
@@ -489,10 +489,10 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x000712A0) # ?on_map@@YAHHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*252))	
-	bin_app.seek(0x000F8090) # ?x_dist@@YAHHH@Z
+	bin_app.seek(0x00179790) # ?x_dist@@YAHHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*145))
-	bin_app.seek(0x00191AD0) # ?@@YAXHHE@Z
+	bin_app.seek(0x00191AD0) # ?temp_set@@YAXHHE@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*146))
 	bin_app.seek(0x00191A80) # ?climate_set@@YAXHHE@Z
@@ -573,7 +573,7 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x0008BEE0) # ?xrange@@YAHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*283))
-	bin_app.seek(0x00179790) # ?cursor_dist@@YAHHH@Z
+	bin_app.seek(0x000F8090) # ?vector_dist@@YAHHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*284))
 	bin_app.seek(0x001C89F0) # ?zoc_any@@YAIHHI@Z
@@ -677,7 +677,10 @@ with open(exe_path, "r+b") as f:
 	bin_app.write(struct.pack("<L", addr+4*359))
 	bin_app.seek(0x000ECB90) # ?crappy@@YAIHH@Z
 	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*308))	
+	bin_app.write(struct.pack("<L", addr+4*308))
+	bin_app.seek(0x001A5910) # ?vector_dist@@YAHHHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*372))
 	# PATH
 	bin_app.seek(0x0019A220) # ?init@Path@@QAEXXZ
 	patch_call_bytes(bin_app)

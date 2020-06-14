@@ -314,8 +314,8 @@ void Path::continents() {
     }
     *GameState = (mostTiles < ((totalTiles * 4) / 5)) ? *GameState & ~0x100 : *GameState | 0x100;
     for (uint32_t i = 0; i < MaxRegionLandNum; i++) {
-        *(uint32_t *)Continents[i].unk_6 = 0;
-        *(uint32_t *)(Continents[i].unk_6 + 1) = 0;
+        *(uint32_t *)Continents[i].seaCoasts = 0;
+        *(uint32_t *)(Continents[i].seaCoasts + 1) = 0;
     }
     for (uint32_t y = 1; y < *MapAbstractVertBounds - 1; y++) {
         for (uint32_t x = y & 1; x < *MapAbstractHorizBounds; x += 2) {
@@ -324,11 +324,11 @@ void Path::continents() {
                     int xRadius = xrange(x + xRadiusBase[i]), yRadius = y + yRadiusBase[i];
                     if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
                         && xRadius < (int)*MapHorizontalBounds) {
-                        uint32_t region = region_at(x, y);
+                        uint32_t region = region_at(xRadius, yRadius);
                         if (region >= 64) {
                             uint32_t offset, mask;
                             bitmask(region - 64, &offset, &mask);
-                            Continents[region].unk_6[offset] |= mask;
+                            Continents[region].seaCoasts[offset] |= mask;
                             i += 2 - (i & 1);
                         }
                     }
