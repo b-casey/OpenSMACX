@@ -719,7 +719,7 @@ int __cdecl hex_cost(int protoID, int factionID, int xCoordSrc, int yCoordSrc, i
 		|| protoID == BSC_MIND_WORMS || protoID == BSC_SPORE_LAUNCHER) && bitDst & BIT_FUNGUS) {
 		return 1;
 	}
-	if (bitSrc & BIT_RIVER && bitDst & BIT_RIVER && cursor_dist(xCoordSrc, xCoordDst) == 1
+	if (bitSrc & BIT_RIVER && bitDst & BIT_RIVER && x_dist(xCoordSrc, xCoordDst) == 1
 		&& abs(yCoordSrc - yCoordDst) == 1 && factionID) {
 		return 1;
 	}

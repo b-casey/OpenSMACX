@@ -157,7 +157,7 @@ Original Offset: 004F8090
 Return Value: Distance radius
 Status: Complete
 */
-int __cdecl x_dist(int xDistance, int yDistance) {
+int __cdecl vector_dist(int xDistance, int yDistance) {
 	xDistance = abs(xDistance);
 	yDistance = abs(yDistance);
 	int largest = xDistance;
@@ -169,6 +169,17 @@ int __cdecl x_dist(int xDistance, int yDistance) {
 		smallest = yDistance;
 	}
 	return largest - (((yDistance + xDistance) / 2) - smallest + 1) / 2;
+}
+
+/*
+Purpose: Take two points and calculate how far out they radiate. This is mainly used to determine 
+         proximity or how far away the two points are from each other in a rough circle shape.
+Original Offset: 005A5910
+Return Value: Distance radius
+Status: Complete
+*/
+int __cdecl vector_dist(int xCoordA, int yCoordA, int xCoordB, int yCoordB) {
+	return vector_dist(x_dist(xCoordA, xCoordB), abs(yCoordA - yCoordB));
 }
 
 /*
@@ -1022,13 +1033,13 @@ void __cdecl rebuild_base_bits() {
 }
  
 /*
-Purpose: Calculate distance between two xCoords with handling for round maps.
+Purpose: Calculate the distance between two xCoords with handling for round maps.
 Original Offset: 00579790
 Return Value: Distance
 Status: Complete
 */
-int __cdecl cursor_dist(int xCoord1, int xCoord2) {
-	int dist = abs(xCoord1 - xCoord2);
+int __cdecl x_dist(int xCoordA, int xCoordB) {
+	int dist = abs(xCoordA - xCoordB);
 	if (!*MapIsFlat && dist > (int)*MapHorizontal) {
 		dist = *MapHorizontalBounds - dist;
 	}
@@ -1219,7 +1230,7 @@ int __cdecl is_sensor(int xCoord, int yCoord) {
 	}
 	int baseID = base_find(xCoord, yCoord);
 	if (baseID != -1) {
-		int distX = cursor_dist(xCoord, Base[baseID].xCoord);
+		int distX = x_dist(xCoord, Base[baseID].xCoord);
 		if (!distX || distX == 2) { // removed unnecessary duplicate calculation of distX
 			int distY = abs(yCoord - Base[baseID].yCoord);
 			if (!distY || distY == 2) {
@@ -1342,4 +1353,14 @@ uint32_t __cdecl zoc_move(int xCoord, int yCoord, uint32_t factionID) {
 		return zoc_sea(xCoord, yCoord, factionID);
 	}
 	return 0;
+}
+
+/*
+Purpose: Take two points and calculate the cursor distance between them. Optimized out of x86 code.
+Original Offset: n/a
+Return Value: Cursor distance
+Status: Complete
+*/
+int __cdecl cursor_dist(int xCoordA, int yCoordA, int xCoordB, int yCoordB) {
+	return (x_dist(xCoordA, xCoordB) + abs(yCoordA - yCoordB)) / 2;
 }

@@ -342,8 +342,8 @@ Status: Complete - testing
 void __cdecl del_site(uint32_t factionID, int16_t type, int xCoord, int yCoord, int proximity) {
 	for (int i = 0; i < MaxSitesNum; i++) {
 		if (PlayersData[factionID].sites[i].type == type) {
-			int dist = x_dist(cursor_dist(xCoord, PlayersData[factionID].sites[i].xCoord), 
-				yCoord - PlayersData[factionID].sites[i].yCoord);
+			int dist = vector_dist(xCoord, yCoord, PlayersData[factionID].sites[i].xCoord, 
+				PlayersData[factionID].sites[i].yCoord);
 			if (dist <= proximity) {
 				PlayersData[factionID].sites[i].type = AI_GOAL_UNUSED;
 				PlayersData[factionID].sites[i].priority = 0;

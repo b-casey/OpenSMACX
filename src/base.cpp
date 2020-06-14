@@ -18,13 +18,13 @@
 #include "stdafx.h"
 #include "base.h"
 #include "alpha.h"
-#include "faction.h" // PlayerData
-#include "game.h" // Difficulty level
-#include "map.h" // x_dist(), region_at()
+#include "faction.h"
+#include "game.h"
+#include "map.h"
 #include "strings.h"
 #include "text.h"
-#include "technology.h" // has_tech()
-#include "veh.h" // best_reactor()
+#include "technology.h"
+#include "veh.h"
 
 rules_facility *Facility = (rules_facility *)0x009A4B68;
 rules_citizen *Citizen = (rules_citizen *)0x00946020;
@@ -104,7 +104,7 @@ int __cdecl base_find(int xCoord, int yCoord) {
 	int proximity = 9999, baseID = -1;
 	for (int i = 0; i < *BaseCurrentCount; i++) {
 		// removed redundant abs() around yCoord difference
-		int dist = x_dist(cursor_dist(xCoord, Base[i].xCoord), yCoord - Base[i].yCoord);
+		int dist = vector_dist(xCoord, yCoord, Base[i].xCoord, Base[i].yCoord);
 		if (dist <= proximity) {
 			proximity = dist;
 			baseID = i;
@@ -130,7 +130,7 @@ int __cdecl base_find(int xCoord, int yCoord, uint32_t factionID) {
 	for (int i = 0; i < *BaseCurrentCount; i++) {
 		if (Base[i].factionIDCurrent == factionID) {
 			// removed redundant abs() around yCoord difference
-			int dist = x_dist(cursor_dist(xCoord, Base[i].xCoord), yCoord - Base[i].yCoord);
+			int dist = vector_dist(xCoord, yCoord, Base[i].xCoord, Base[i].yCoord);
 			if (dist <= proximity) {
 				proximity = dist;
 				baseID = i;
@@ -165,7 +165,7 @@ int __cdecl base_find(int xCoord, int yCoord, int factionID, int region, int fac
 				if (factionID3 < 0 || Base[i].factionIDCurrent == factionID3 
 					|| ((1 << factionID3) & Base[i].visibility)) {
 					// removed redundant abs() around yCoord difference
-					int dist = x_dist(cursor_dist(xCoord, Base[i].xCoord), yCoord - Base[i].yCoord);
+					int dist = vector_dist(xCoord, yCoord, Base[i].xCoord, Base[i].yCoord);
 					if (dist <= proximity) {
 						proximity = dist;
 						baseID = i;
@@ -703,7 +703,7 @@ uint32_t __cdecl black_market(int energy) {
 	int distHQ = 999;
 	for (int i = 0; i < *BaseCurrentCount; i++) { // modified version of vulnerable()
 		if (Base[i].factionIDCurrent == factionID && has_fac_built(FAC_HEADQUARTERS, i)) {
-			int dist = x_dist(cursor_dist(Base[i].xCoord, xCoord), Base[i].yCoord - yCoord);
+			int dist = vector_dist(Base[i].xCoord, Base[i].yCoord, xCoord, yCoord);
 			if (dist < distHQ) {
 				distHQ = dist;
 			}
@@ -971,7 +971,7 @@ int __cdecl vulnerable(uint32_t factionID, int xCoord, int yCoord) {
 	int dist = 12; // default value for no bases or no HQ
 	for (int i = 0; i < *BaseCurrentCount; i++) {
 		if (Base[i].factionIDCurrent == factionID && has_fac_built(FAC_HEADQUARTERS, i)) {
-			dist = x_dist(cursor_dist(xCoord, Base[i].xCoord), yCoord - Base[i].yCoord);
+			dist = vector_dist(xCoord, yCoord, Base[i].xCoord, Base[i].yCoord);
 			break;
 		}
 	}

@@ -232,7 +232,8 @@ OPENSMACX_API int __cdecl whose_territory(int factionID, int xCoord, int yCoord,
 	int *baseID, BOOL ignoreComm);
 OPENSMACX_API int __cdecl base_territory(int factionID, int xCoord, int yCoord);
 OPENSMACX_API uint32_t __cdecl crappy(int xCoord, int yCoord);
-OPENSMACX_API int __cdecl x_dist(int xCoord, int yCoord);
+OPENSMACX_API int __cdecl vector_dist(int xDistance, int yDistance);
+OPENSMACX_API int __cdecl vector_dist(int xCoordA, int yCoordA, int xCoordB, int yCoordB);
 OPENSMACX_API BOOL __cdecl sea_coast(uint32_t regionDst, uint32_t regionSrc);
 OPENSMACX_API uint32_t __cdecl sea_coasts(uint32_t regionSrc);
 OPENSMACX_API BOOL __cdecl base_on_sea(uint32_t baseID, uint32_t regionSea);
@@ -286,7 +287,7 @@ OPENSMACX_API BOOL __cdecl is_ocean(int xCoord, int yCoord);
 OPENSMACX_API int __cdecl veh_who(int xCoord, int yCoord);
 OPENSMACX_API void __cdecl rebuild_vehicle_bits();
 OPENSMACX_API void __cdecl rebuild_base_bits();
-OPENSMACX_API int __cdecl cursor_dist(int xCoord1, int xCoord2);
+OPENSMACX_API int __cdecl x_dist(int xCoordA, int xCoordB);
 OPENSMACX_API BOOL __cdecl is_known(uint32_t xCoord, uint32_t yCoord, uint32_t factionID);
 OPENSMACX_API int __cdecl base_who(uint32_t xCoord, uint32_t yCoord);
 OPENSMACX_API int __cdecl anything_at(uint32_t xCoord, uint32_t yCoord);
@@ -303,3 +304,4 @@ OPENSMACX_API uint32_t __cdecl zoc_any(int xCoord, int yCoord, uint32_t factionI
 OPENSMACX_API uint32_t __cdecl zoc_veh(int xCoord, int yCoord, uint32_t factionID);
 OPENSMACX_API uint32_t __cdecl zoc_sea(int xCoord, int yCoord, uint32_t factionID);
 OPENSMACX_API uint32_t __cdecl zoc_move(int xCoord, int yCoord, uint32_t factionID);
+OPENSMACX_API int __cdecl cursor_dist(int xCoordA, int yCoordA, int xCoordB, int yCoordB);
