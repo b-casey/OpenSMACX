@@ -90,7 +90,6 @@ extern int *ParseStrPlurality;
 extern int *ParseStrGender;
 extern int *GenderDefault;
 extern int *PluralityDefault;
-extern BOOL *IsLoggingDisabled; // global toggle for logging on/off? debug vs release?
 extern BOOL *MultiplayerToggle;
 extern int *MsgStatus;
 extern HWND *HandleMain;

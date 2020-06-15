@@ -95,6 +95,7 @@ void Log::say_hex(LPCSTR str1, LPCSTR str2, int num1, int num2, int num3) {
 
 // global
 Log *Logging = (Log *)0x009BBFF8;
+BOOL *IsLoggingDisabled = (BOOL *)0x009BC004;
 
 void __cdecl log_logging() { // 00625F20
 	*Logging = *(new Log("logfile.txt")); atexit(log_logging_exit); }
