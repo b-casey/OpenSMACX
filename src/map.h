@@ -298,6 +298,8 @@ OPENSMACX_API BOOL __cdecl map_write(FILE *mapFile);
 OPENSMACX_API BOOL __cdecl map_read(FILE *mapFile);
 OPENSMACX_API uint8_t __cdecl abstract_at(int xCoord, int yCoord);
 OPENSMACX_API void __cdecl abstract_set(int xCoord, int yCoord, uint8_t region);
+OPENSMACX_API void __cdecl quick_zoc(int xCoordSrc, int yCoordSrc, int factionID, int xCoordDst,
+	int yCoordDst, int *xCoordZoc, int *yCoordZoc);
 OPENSMACX_API int __cdecl is_sensor(int xCoord, int yCoord);
 OPENSMACX_API BOOL __cdecl has_temple(int factionID);
 OPENSMACX_API uint32_t __cdecl zoc_any(int xCoord, int yCoord, uint32_t factionID);

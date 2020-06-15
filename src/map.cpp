@@ -1219,6 +1219,35 @@ void __cdecl abstract_set(int xCoord, int yCoord, uint8_t region) {
 }
 
 /*
+Purpose: Quick check for Veh related zone of control conflicts. If a ZOC conflict is found, store 
+         coordinates of tile inside xCoordZoc/yCoordZoc.
+Original Offset: 00593830
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl quick_zoc(int xCoordSrc, int yCoordSrc, int factionID, int xCoordDst, int yCoordDst, 
+	int *xCoordZoc, int *yCoordZoc) {
+	BOOL isSrcOcean = is_ocean(xCoordSrc, yCoordSrc);
+	int searchZoc = -1;
+	for (uint32_t i = 0; i < 8; i++) {
+		int xRadius = xrange(xCoordSrc + xRadiusBase[i]), yRadius = yCoordSrc + yRadiusBase[i];
+		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
+			&& xRadius < (int)*MapHorizontalBounds) {
+			int owner = veh_who(xRadius, yRadius);
+			if (owner >= 0 && owner != (int)factionID && is_ocean(xRadius, yRadius) == isSrcOcean
+				&& !(PlayersData[factionID].diploTreaties[owner] & DTREATY_PACT)) {
+				int proximity = vector_dist(xRadius, yRadius, xCoordDst, yCoordDst);
+				if (proximity >= searchZoc) {
+					searchZoc = proximity;
+					*xCoordZoc = xRadius;
+					*yCoordZoc = yRadius;
+				}
+			}
+		}
+	}
+}
+
+/*
 Purpose: Check whether there is a sensor available in the tile.
 Original Offset: 005BF010
 Return Value: 0 (no sensor), 1 (sensor array via terraforming), 2 (Geosynchronous Survey Pod)
