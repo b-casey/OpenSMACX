@@ -200,7 +200,7 @@ Return Value: Is tech available to faction? true/false
 Status: Complete
 */
 BOOL __cdecl tech_avail(int techID, int factionID) {
-	if (has_tech(techID, factionID) || techID >= MaxTechnologyNum || (!*SMACX_Enabled 
+	if (has_tech(techID, factionID) || techID >= MaxTechnologyNum || (!*ExpansionEnabled
 		&& (techID == TECH_PRPSYCH || techID == TECH_FLDMOD || techID == TECH_ADAPDOC 
 			|| techID == TECH_ADAPECO || techID == TECH_BIOADAP || techID == TECH_SENTRES 
 			|| techID == TECH_SECMANI || techID == TECH_NEWMISS || techID == TECH_BFG9000))) {

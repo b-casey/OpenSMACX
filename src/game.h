@@ -99,9 +99,12 @@ enum game_difficulty_level {
 	DLVL_TRANSCEND = 5,
 };
 
-extern BOOL *SMACX_Enabled;
-extern uint32_t *GameState; // bitfield
+extern BOOL *ExpansionEnabled; // SMACX mode (true); SMAC mode (false)
+extern uint32_t *GamePreferences;
+extern uint32_t *GameMorePreferences;
+extern uint32_t *GameAnnounce; // used for setting pop notifications
 extern uint32_t *GameRules; // bitfield
+extern uint32_t *GameState; // bitfield
 extern int *DiffLevelCurrent;
 extern int *TurnCurrentNum;
 extern uint32_t *ObjectiveReqVictory;
@@ -112,7 +115,6 @@ extern uint32_t *MissionYearCurrent;
 extern uint32_t *StartingMissionYear;
 extern uint32_t *EndingMissionYear;
 extern uint32_t *TectonicDetonationCount;
-
 extern int *SunspotDuration;
 extern uint32_t *MountPlanetXCoord;
 extern uint32_t *MountPlanetYCoord;

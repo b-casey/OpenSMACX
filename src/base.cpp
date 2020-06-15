@@ -1091,7 +1091,7 @@ BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID, int queue
 		return false;
 	}
 	// Secret Project availability
-	if (!*SMACX_Enabled && (facilityID == FAC_MANIFOLD_HARMONICS
+	if (!*ExpansionEnabled && (facilityID == FAC_MANIFOLD_HARMONICS
 		|| facilityID == FAC_NETHACK_TERMINUS || facilityID == FAC_CLOUDBASE_ACADEMY
 		|| facilityID == FAC_PLANETARY_ENERGY_GRID)) {
 		return false;
@@ -1147,13 +1147,13 @@ BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID, int queue
 		case FAC_AQUAFARM:
 		case FAC_SUBSEA_TRUNKLINE:
 		case FAC_THERMOCLINE_TRANSDUCER:
-			return *SMACX_Enabled && is_coast(Base[baseID].xCoord, Base[baseID].yCoord, false);
+			return *ExpansionEnabled && is_coast(Base[baseID].xCoord, Base[baseID].yCoord, false);
 		case FAC_COVERT_OPS_CENTER:
 		case FAC_BROOD_PIT:
 		case FAC_FLECHETTE_DEFENSE_SYS:
-			return *SMACX_Enabled;
+			return *ExpansionEnabled;
 		case FAC_GEOSYNC_SURVEY_POD: // SMACX only & must have Aerospace Complex
-			return *SMACX_Enabled && (has_fac(FAC_AEROSPACE_COMPLEX, baseID, queueCount)
+			return *ExpansionEnabled && (has_fac(FAC_AEROSPACE_COMPLEX, baseID, queueCount)
 				|| has_project(SP_CLOUDBASE_ACADEMY, factionID)
 				|| has_project(SP_SPACE_ELEVATOR, factionID));
 		case FAC_SKY_HYDRO_LAB:
@@ -1164,7 +1164,7 @@ BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID, int queue
 				|| has_project(SP_CLOUDBASE_ACADEMY, factionID)
 				|| has_project(SP_SPACE_ELEVATOR, factionID);
 		case FAC_SUBSPACE_GENERATOR: // Progenitor factions only
-			return *SMACX_Enabled && (Players[factionID].ruleFlags & RFLAG_ALIEN);
+			return *ExpansionEnabled && (Players[factionID].ruleFlags & RFLAG_ALIEN);
 		default:
 			break;
 	}

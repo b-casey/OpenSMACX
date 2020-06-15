@@ -25,6 +25,7 @@
 #define OPENSMACX_API __declspec(dllexport)
 #include <SDKDDKVer.h>
 #include <random>
+#include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>

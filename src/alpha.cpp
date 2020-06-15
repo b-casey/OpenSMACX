@@ -42,6 +42,9 @@ rules_resource *Resource = (rules_resource *)0x00946158;
 rules_energy *Energy = (rules_energy *)0x0094A318;
 rules_basic *Rules = (rules_basic *)0x00949738;
 rules_worldbuilder *WorldBuilder = (rules_worldbuilder *)0x009502A8;
+alpha_ini *AlphaIni = (alpha_ini *)0x0094B464;
+default_pref *DefaultPrefs = (default_pref *)0x0094B350;
+uint32_t *Language = (uint32_t *)0x009BC054;
 
 /*
 Purpose: Convert tech name string to number offset id
@@ -724,7 +727,7 @@ BOOL __cdecl read_factions() {
 		}
 		strncpy_s(BonusName[i].key, text_item(), 24);
 	}
-	if (text_open(AlphaxFileID, SMACX_Enabled ? "NEWFACTIONS" : "FACTIONS")) {
+	if (text_open(AlphaxFileID, ExpansionEnabled ? "NEWFACTIONS" : "FACTIONS")) {
 		return true;
 	}
 	for (int i = 1; i < MaxPlayerNum; i++) {
@@ -1292,6 +1295,85 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 }
 
 /*
+Purpose: Attempt to read setting's value from Alpha Centauri ini file.
+Original Offset: 0059D980
+Return Value: Key's string value from ini or default if not set
+Status: Complete with internal string pointers. Eventually, clean up dependent code on string
+		globals and remove these references.
+*/
+LPSTR prefs_get(LPCSTR keyName, LPCSTR defaultValue, BOOL useDefault) {
+	if (useDefault ||
+		(GetPrivateProfileStringA("Alpha Centauri", "Prefs Format", "0", *TextBufferGetPtr, 256,
+			".\\Alpha Centauri.ini"), atoi(*TextBufferGetPtr) != 12)) {
+		strcpy_s(*TextBufferGetPtr, 256, defaultValue);
+	}
+	else {
+		GetPrivateProfileStringA("Alpha Centauri", keyName, defaultValue, *TextBufferGetPtr, 256,
+			".\\Alpha Centauri.ini");
+	}
+	return Txt->update();
+}
+
+/*
+Purpose: TBD
+Original Offset: 0059DA20
+Return Value: Default preferences
+Status: Complete - testing
+*/
+uint32_t __cdecl default_prefs() {
+	return prefs_get("Laptop", 0, false) ? 0xA3E1DD16 : 0xBBE1DD96;
+}
+
+/*
+Purpose: TBD
+Original Offset: 0059DAA0
+Return Value: Second set of default preferences
+Status: Complete - testing
+*/
+uint32_t __cdecl default_prefs2() {
+	return prefs_get("Laptop", 0, false) ? 0x327168 : 0x3A7168;
+}
+
+/*
+Purpose: TBD
+Original Offset: 0059DB20
+Return Value: Default warning preferences
+Status: Complete - testing
+*/
+uint32_t __cdecl default_warn() {
+	return 0x3C3A9;
+}
+
+/*
+Purpose: TBD
+Original Offset: 0059DB30
+Return Value: Default rule preferences
+Status: Complete - testing
+*/
+uint32_t __cdecl default_rules() {
+	return RULES_VICTORY_COOPERATIVE | RULES_VICTORY_TRANSCENDENCE | RULES_BLIND_RESEARCH 
+		| RULES_VICTORY_DIPLOMATIC | RULES_VICTORY_ECONOMIC | RULES_VICTORY_CONQUEST;
+}
+
+/*
+Purpose: Attempt to read setting's value from Alpha Centauri ini file.
+Original Offset: 0059DB40
+Return Value: Key's integer value from ini or default if not set
+Status: Complete with internal string pointers. Eventually, clean up code dependent on string
+		globals and remove these references.
+*/
+int prefs_get(LPCSTR keyName, int defaultValue, BOOL useDefault) {
+	_itoa_s(defaultValue, stringTemp->str, 256, 10);
+	if (useDefault) {
+		strcpy_s(*TextBufferGetPtr, 256, stringTemp->str);
+		return defaultValue;
+	}
+	GetPrivateProfileStringA("Alpha Centauri", keyName, stringTemp->str, *TextBufferGetPtr, 256,
+		".\\Alpha Centauri.ini");
+	return atoi(Txt->update());
+}
+
+/*
 Purpose: Read faction filenames and search keys from ini file (SMACX only). Has added effect of
 		 forcing Player searchKey to be set to filename value. Rewrote almost the entire function
 		 because of how terrible the original code logic was.
@@ -1300,7 +1382,7 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl prefs_fac_load() {
-	if (SMACX_Enabled) {
+	if (ExpansionEnabled) {
 		char returnedString[256];
 		GetPrivateProfileStringA("Alpha Centauri", "Prefs Format", "0",
 			returnedString, 256, ".\\Alpha Centauri.ini");
@@ -1321,6 +1403,142 @@ void __cdecl prefs_fac_load() {
 			}
 		}
 	}
+}
+
+/*
+Purpose: TBD ; not all will reset to default
+Original Offset: 0059DCF0
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl prefs_load(BOOL useDefault) {
+	set_language(prefs_get("Language", 0, false));
+	prefs_get("Difficulty", 0, false);
+	DefaultPrefs->Difficulty = text_item_number();
+	prefs_get("Map Type", 0, false);
+	DefaultPrefs->MapType = text_item_number();
+	prefs_get("Top Menu", 0, false);
+	DefaultPrefs->TopMenu = text_item_number();
+	prefs_get("Faction", 1, false);
+	DefaultPrefs->FactionId = text_item_number();
+	uint32_t prefs = default_prefs();
+	if (DefaultPrefs->Difficulty < DLVL_TALENT) {
+		prefs |= 0x20;
+	}
+	prefs_get("Preferences", prefs_get_binary(prefs).c_str(), useDefault);
+	AlphaIni->Preferences = text_item_binary();
+	prefs_get("More Preferences", prefs_get_binary(default_prefs2()).c_str(), useDefault);
+	AlphaIni->MorePreferences = text_item_binary();
+	prefs_get("Semaphore", "00000000", useDefault);
+	AlphaIni->Semaphore = text_item_binary();
+	prefs_get("Customize", 0, false);
+	AlphaIni->Customize = text_item_number();
+	prefs_get("Rules", prefs_get_binary(default_rules()).c_str(), useDefault);
+	AlphaIni->Rules = text_item_binary();
+	prefs_get("Announce", prefs_get_binary(default_warn()).c_str(), useDefault);
+	AlphaIni->Announce = text_item_binary();
+	std::stringstream ss;
+	for (uint32_t i = 0; i < 7; i++) {
+		ss << i ? "1, " : "2, ";
+	}
+	std::string customWorldDef = ss.str();
+	prefs_get("Custom World", customWorldDef.c_str(), useDefault);
+	for (uint32_t i = 0; i < 7; i++) {
+		AlphaIni->CustomWorld[i] = text_item_number();
+	}
+	prefs_get("Time Controls", 1, useDefault);
+	AlphaIni->TimeControls = text_item_number();
+}
+
+/*
+Purpose: Write string value to pref key of ini.
+Original Offset: 0059E510
+Return Value: n/a
+Status: Complete
+*/
+void prefs_put(LPCSTR keyName, LPCSTR value) {
+	WritePrivateProfileStringA("Alpha Centauri", keyName, value, ".\\Alpha Centauri.ini");
+}
+
+/*
+Purpose: Write value as either integer or binary to pref key inside ini.
+Original Offset: 0059E530
+Return Value: n/a
+Status: Complete - testing
+*/
+void prefs_put(LPCSTR keyName, int value, BOOL binaryTgl) {
+	char temp[33];
+	binaryTgl ? strcpy_s(temp, 33, prefs_get_binary(value).c_str()) : _itoa_s(value, temp, 33, 10);
+	WritePrivateProfileStringA("Alpha Centauri", keyName, temp, ".\\Alpha Centauri.ini");
+}
+
+/*
+Purpose: TBD
+Original Offset: 0059E5D0
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl prefs_save(BOOL saveFactions) {
+	prefs_put("Prefs Format", 12, false);
+	prefs_put("Difficulty", DefaultPrefs->Difficulty, false);
+	prefs_put("Map Type", DefaultPrefs->MapType, false);
+	prefs_put("Top Menu", DefaultPrefs->TopMenu, false);
+	prefs_put("Faction", DefaultPrefs->FactionId, false);
+	prefs_put("Preferences", AlphaIni->Preferences, true);
+	prefs_put("More Preferences", AlphaIni->MorePreferences, true);
+	prefs_put("Semaphore", AlphaIni->Semaphore, true);
+	prefs_put("Announce", AlphaIni->Announce, true);
+	prefs_put("Rules", AlphaIni->Rules, true);
+	prefs_put("Customize", AlphaIni->Customize, false);
+	std::stringstream ss;
+	for (uint32_t i = 0; i < 7; i++) {
+		if (i != 0) {
+			ss << ", ";
+		}
+		ss << AlphaIni->CustomWorld[i];
+	}
+	std::string customWorldStr = ss.str();
+	prefs_put("Custom World", customWorldStr.c_str());
+	prefs_put("Time Controls", AlphaIni->TimeControls, false);
+	if (saveFactions && *ExpansionEnabled) {
+		for (uint32_t i = 1; i < MaxPlayerNum; i++) {
+			sprintf_s(stringTemp->str, "Faction %d", i);
+			prefs_put(stringTemp->str, Players[i].filename);
+		}
+	}
+}
+
+/*
+Purpose: TBD
+Original Offset: 0059E950
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl prefs_use() {
+	*GamePreferences = AlphaIni->Preferences;
+	*GameMorePreferences = AlphaIni->MorePreferences;
+	*GameAnnounce = AlphaIni->Announce;
+}
+
+/*
+Purpose: Convert value to binary string used by preferences.
+Original Offset: n/a
+Return Value: n/a
+Status: Complete - testing
+*/
+std::string prefs_get_binary(int value) {
+	char temp[33];
+	temp[0] = 0;
+	for (int shift = 31, nonPad = 0; shift >= 0; shift--) {
+		if ((1 << shift) & value) {
+			nonPad = 1;
+			strcat_s(temp, 33, "1");
+		}
+		else if (nonPad || shift < 8) {
+			strcat_s(temp, 33, "0");
+		}
+	}
+	return temp;
 }
 
 /*
@@ -1359,6 +1577,16 @@ void __cdecl labels_shutdown() {
 		Label->stringsPtr = 0;
 	}
 	Label->count = 0;
+}
+
+/*
+Purpose: Set the game's language.
+Original Offset: 00627100
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl set_language(uint32_t language) {
+	*Language = language;
 }
 
 /*

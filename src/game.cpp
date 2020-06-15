@@ -19,9 +19,12 @@
 #include "game.h"
 #include "alpha.h"
 
-BOOL *SMACX_Enabled = (BOOL *)0x009A6488;
-uint32_t *GameState  = (uint32_t *)0x009A64C0;
+BOOL *ExpansionEnabled = (BOOL *)0x009A6488;
+uint32_t *GamePreferences = (uint32_t *)0x009A6490;
+uint32_t *GameMorePreferences = (uint32_t *)0x009A6494;
+uint32_t *GameAnnounce = (uint32_t *)0x009A6498;
 uint32_t *GameRules = (uint32_t *)0x009A649C;
+uint32_t *GameState  = (uint32_t *)0x009A64C0;
 int *DiffLevelCurrent = (int *)0x009A64C4;
 int *TurnCurrentNum = (int *)0x009A64D4;
 uint32_t *ObjectiveReqVictory = (uint32_t *)0x0094B4C0;
@@ -32,7 +35,6 @@ uint32_t *MissionYearCurrent = (uint32_t *)0x009A64D8;
 uint32_t *StartingMissionYear = (uint32_t *)0x0094B4D0;
 uint32_t *EndingMissionYear = (uint32_t *)0x0094B4D4;
 uint32_t *TectonicDetonationCount = (uint32_t *)0x00946138; // [8]; value for each faction
-
 int *SunspotDuration = (int *)0x009A6800;
 uint32_t *MountPlanetXCoord = (uint32_t *)0x009A6804;
 uint32_t *MountPlanetYCoord = (uint32_t *)0x009A6808;

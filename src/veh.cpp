@@ -250,7 +250,7 @@ Return Value: Armor value / factor
 Status: Complete
 */
 int __cdecl arm_strat(int armorID, int factionID) {
-	if (!SMACX_Enabled && armorID > ARM_PSI_DEFENSE) {
+	if (!ExpansionEnabled && armorID > ARM_PSI_DEFENSE) {
 		return 1;
 	}
 	int defenseRating = Armor[armorID].defenseRating;
@@ -269,7 +269,7 @@ Return Value: Weapon value / factor
 Status: Complete
 */
 int __cdecl weap_strat(int weaponID, int factionID) {
-	if (!SMACX_Enabled && (weaponID == WPN_RESONANCE_LASER || weaponID == WPN_RESONANCE_BOLT
+	if (!ExpansionEnabled && (weaponID == WPN_RESONANCE_LASER || weaponID == WPN_RESONANCE_BOLT
 		|| weaponID == WPN_STRING_DISRUPTOR))
 		return 1;
 	int offenseRating = Weapon[weaponID].offenseRating;
@@ -652,7 +652,7 @@ int __cdecl armor_budget(int factionID, int maxCost) {
 		if (has_tech(Armor[i].preqTech, factionID) && Armor[i].cost <= maxCost 
 			&& Armor[i].defenseRating >= 0) { // excludes PSI
 			int defenseCompare = Armor[i].defenseRating;
-			if (factionID >= 0 && !*SMACX_Enabled && i > 9) {
+			if (factionID >= 0 && !*ExpansionEnabled && i > 9) {
 				defenseCompare = 1; // Pulse + Resonance in non-expansion mode
 			}                       // This really only affects Pulse 8 Armor (Super Tensile Solids)
 			defenseCompare *= 2;
@@ -1061,6 +1061,27 @@ void __cdecl make_proto(int protoID, uint32_t chassisID, uint32_t weaponID, uint
 }
 
 /*
+Purpose: Search for the 1st prototype that matches specified plan.
+Original Offset: 005AED50
+Return Value: protoID or -1
+Status: Complete - testing
+*/
+int __cdecl get_plan(uint32_t factionID, uint32_t plan) {
+	for (int i = 0; i < 128; i++) {
+		uint32_t protoID = (i < MaxVehProtoFactionNum) ? i 
+			: (factionID * MaxVehProtoFactionNum) + i - MaxVehProtoFactionNum;
+		if (VehPrototype[protoID].flags & PROTO_ACTIVE 
+			&& !(VehPrototype[protoID].obsoleteFactions & (1 << factionID)) 
+			&& (protoID > MaxVehProtoFactionNum 
+				|| has_tech(VehPrototype[protoID].preqTech, factionID))
+			&& VehPrototype[protoID].plan == plan) {
+			return protoID;
+		}
+	}
+	return -1;
+}
+
+/*
 Purpose: Move all Veh(s) in same stack as Veh to the destination coordinates.
 Original Offset: 005B8AF0
 Return Value: n/a
@@ -1321,7 +1342,7 @@ BOOL __cdecl veh_avail(int protoID, int factionID, int baseID) {
 	}
 	uint8_t weapID;
 	uint32_t abilFlag;
-	if (!*SMACX_Enabled && (VehPrototype[protoID].armorID > ARM_PSI_DEFENSE
+	if (!*ExpansionEnabled && (VehPrototype[protoID].armorID > ARM_PSI_DEFENSE
 		|| (weapID = VehPrototype[protoID].weaponID, weapID == WPN_RESONANCE_LASER 
 		|| weapID == WPN_RESONANCE_BOLT || weapID == WPN_STRING_DISRUPTOR 
 		|| weapID == WPN_TECTONIC_PAYLOAD || weapID == WPN_FUNGAL_PAYLOAD)

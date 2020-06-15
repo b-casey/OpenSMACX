@@ -585,6 +585,25 @@ struct rules_worldbuilder {
 	int Islands;
 };
 
+struct alpha_ini {
+	uint32_t Preferences;
+	uint32_t MorePreferences;
+	uint32_t Announce;
+	uint32_t Rules;
+	uint32_t Semaphore;
+	uint32_t TimeControls;
+	uint32_t Customize;
+	uint32_t CustomWorld[7];
+};
+
+struct default_pref {
+	uint32_t Difficulty;
+	uint32_t FactionId;
+	uint32_t pad; // unused
+	uint32_t MapType;
+	uint32_t TopMenu;
+};
+
 constexpr int NoneValue = -1;
 constexpr int DisabledValue = -2;
 
@@ -604,6 +623,9 @@ extern rules_resource *Resource;
 extern rules_energy *Energy;
 extern rules_basic *Rules;
 extern rules_worldbuilder *WorldBuilder;
+extern alpha_ini *AlphaIni;
+extern default_pref *DefaultPrefs;
+extern uint32_t *Language;
 
 OPENSMACX_API int __cdecl tech_name(LPSTR techName);
 OPENSMACX_API int __cdecl chas_name(LPSTR chasName);
@@ -619,8 +641,21 @@ OPENSMACX_API BOOL __cdecl read_factions();
 OPENSMACX_API void __cdecl noun_item(int *gender, BOOL *plurality);
 OPENSMACX_API BOOL __cdecl read_units();
 OPENSMACX_API BOOL __cdecl read_rules(BOOL tglAllRules);
+OPENSMACX_API LPSTR prefs_get(LPCSTR keyName, LPCSTR defaultValue, BOOL useDefault);
+OPENSMACX_API uint32_t __cdecl default_prefs();
+OPENSMACX_API uint32_t __cdecl default_prefs2();
+OPENSMACX_API uint32_t __cdecl default_warn();
+OPENSMACX_API uint32_t __cdecl default_rules();
+OPENSMACX_API int prefs_get(LPCSTR keyName, int defaultValue, BOOL useDefault);
 OPENSMACX_API void __cdecl prefs_fac_load();
+OPENSMACX_API void __cdecl prefs_load(BOOL useDefault);
+OPENSMACX_API void prefs_put(LPCSTR keyName, LPCSTR value);
+OPENSMACX_API void prefs_put(LPCSTR keyName, int value, BOOL binaryTgl);
+OPENSMACX_API void __cdecl prefs_save(BOOL saveFactions);
+OPENSMACX_API void __cdecl prefs_use();
+OPENSMACX_API std::string prefs_get_binary(int value);
 OPENSMACX_API BOOL __cdecl labels_init();
 OPENSMACX_API void __cdecl labels_shutdown();
+OPENSMACX_API void __cdecl set_language(uint32_t language);
 OPENSMACX_API void __cdecl say_label(int labelOffset);
 OPENSMACX_API LPSTR __cdecl label_get(int labelOffset);

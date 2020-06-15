@@ -30,7 +30,7 @@ Return Value: Faction vote count
 Status: Complete
 */
 uint32_t __cdecl council_votes(uint32_t factionID) {
-    if (*SMACX_Enabled && Players[factionID].ruleFlags & RFLAG_ALIEN) {
+    if (*ExpansionEnabled && Players[factionID].ruleFlags & RFLAG_ALIEN) {
         return 0;
     }
     uint32_t votes = 0;
@@ -64,7 +64,7 @@ Return Value: Is the leader eligible (top two vote totals)? true/false
 Status: Complete
 */
 BOOL __cdecl eligible(uint32_t factionID) {
-	if (*SMACX_Enabled && Players[factionID].ruleFlags & RFLAG_ALIEN) {
+	if (*ExpansionEnabled && Players[factionID].ruleFlags & RFLAG_ALIEN) {
 		return 0;
 	}
     uint32_t votes = council_votes(factionID);
