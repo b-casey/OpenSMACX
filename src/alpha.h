@@ -59,7 +59,7 @@ enum game_preferences : uint32_t {
 	PREF_BSC_AUTOSAVE_EACH_TURN = 0x2,
 	PREF_BSC_DONT_QUICK_MOVE_ENEMY_VEH = 0x4, // flag set when unchecked
 	PREF_ADV_FAST_BATTLE_RESOLUTION = 0x8,
-	PREF_UNK_10 = 0x10,
+	PREF_UNK_10 = 0x10, // no text, not visible in PrefWin; set with default preferences
 	PREF_BSC_TUTORIAL_MSGS = 0x20,
 	//
 	PREF_AV_MAP_ANIMATIONS = 0x80,

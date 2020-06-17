@@ -367,7 +367,7 @@ BOOL __cdecl convoy(uint32_t vehID, uint32_t baseID) {
 	if (homeBaseID < 0 || baseID == (uint32_t)homeBaseID) {
 		return false;
 	}
-	uint32_t triad = Chassis[VehPrototype[Veh[vehID].protoID].chassisID].triad;
+	uint32_t triad = get_triad(vehID);
 	if (triad == TRIAD_AIR) {
 		return true; // air
 	}
@@ -399,7 +399,7 @@ Return Value: Can Veh reach tile? true/false
 Status: Complete
 */
 BOOL __cdecl get_there(uint32_t vehID, int xCoordDst, int yCoordDst) {
-	uint32_t triad = Chassis[VehPrototype[Veh[vehID].protoID].chassisID].triad;
+	uint32_t triad = get_triad(vehID);
 	if (triad == TRIAD_AIR) {
 		return true;
 	}

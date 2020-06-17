@@ -491,7 +491,7 @@ void __cdecl say_stats_2(LPSTR stat, int protoID) {
 		say_defense(protoID) : label_get(196); // 'Psi'
 	output += "-";
 	output += std::to_string(speed_proto(protoID) / Rules->MoveRateRoads);
-	uint32_t triad = Chassis[VehPrototype[protoID].chassisID].triad;
+	uint32_t triad = get_proto_triad(protoID);
 	if (triad == TRIAD_SEA) {
 		output += " ";
 		output += label_get(163); // 'Sea'
@@ -716,9 +716,8 @@ int __cdecl hex_cost(int protoID, int factionID, int xCoordSrc, int yCoordSrc, i
 	int yCoordDst, BOOL toggle) {
 	uint32_t bitDst = bit_at(xCoordDst, yCoordDst);
 	if (is_ocean(xCoordDst, yCoordDst)) {
-		if (bitDst & BIT_FUNGUS
-			&& altitude_at(xCoordDst, yCoordDst) == ALT_BIT_OCEAN_SHELF
-			&& Chassis[VehPrototype[protoID].chassisID].triad == TRIAD_SEA 
+		if (bitDst & BIT_FUNGUS && altitude_at(xCoordDst, yCoordDst) == ALT_BIT_OCEAN_SHELF
+			&& get_proto_triad(protoID) == TRIAD_SEA 
 			&& protoID != BSC_SEALURK // Bug fix
 			&& protoID != BSC_ISLE_OF_THE_DEEP && !has_project(SP_XENOEMPATYH_DOME, factionID)) {
 			return Rules->MoveRateRoads * 3;
@@ -728,7 +727,7 @@ int __cdecl hex_cost(int protoID, int factionID, int xCoordSrc, int yCoordSrc, i
 	if (is_ocean(xCoordSrc, yCoordSrc)) {
 		return Rules->MoveRateRoads;
 	}
-	if (protoID >= 0 && Chassis[VehPrototype[protoID].chassisID].triad != TRIAD_LAND) {
+	if (protoID >= 0 && get_proto_triad(protoID) != TRIAD_LAND) {
 		return Rules->MoveRateRoads;
 	}
 	// Land only conditions
@@ -1230,8 +1229,7 @@ int __cdecl stack_check(int vehID, uint32_t type, int cond1, int cond2, int cond
 				}
 				break;
 			case 3:
-				if ((cond2 < 0 || Veh[i].factionID == cond2)
-					&& Chassis[VehPrototype[Veh[i].protoID].chassisID].triad == cond1) {
+				if ((cond2 < 0 || Veh[i].factionID == cond2) && get_triad(i) == cond1) {
 					retVal++;
 				}
 				break;
@@ -1257,7 +1255,7 @@ int __cdecl stack_check(int vehID, uint32_t type, int cond1, int cond2, int cond
 				break;
 			case 8:
 				if (cond1 < 0 || Veh[i].factionID == cond1) {
-					uint32_t triad = Chassis[VehPrototype[Veh[i].protoID].chassisID].triad;
+					uint32_t triad = get_triad(i);
 					if (triad == TRIAD_LAND) {
 						retVal--;
 					}
@@ -1363,8 +1361,7 @@ BOOL __cdecl veh_avail(int protoID, int factionID, int baseID) {
 	if (VehPrototype[protoID].plan == PLAN_COLONIZATION && *GameRules & RULES_SCN_NO_COLONY_PODS) {
 		return false;
 	}
-	if (baseID >= 0 && Chassis[VehPrototype[protoID].chassisID].triad == TRIAD_SEA 
-		&& !is_port(baseID, false)) {
+	if (baseID >= 0 && get_proto_triad(protoID) == TRIAD_SEA && !is_port(baseID, false)) {
 		return false;
 	}
 	uint8_t weapID;
@@ -1558,8 +1555,7 @@ int __cdecl veh_drop(int vehID, int xCoord, int yCoord) {
 	}
 	if (yCoord >= 0 && yCoord < (int)*MapVerticalBounds && xCoord >= 0
 		&& xCoord < (int)*MapHorizontalBounds) {
-		uint32_t flags = (Veh[vehID].factionID
-			&& Chassis[VehPrototype[Veh[vehID].protoID].chassisID].triad != TRIAD_AIR)
+		uint32_t flags = (Veh[vehID].factionID && get_triad(vehID) != TRIAD_AIR) 
 			? BIT_SUPPLY_REMOVE | BIT_VEH_IN_TILE : BIT_VEH_IN_TILE;
 		bit_set(xCoord, yCoord, flags, true);
 	}
@@ -1682,7 +1678,7 @@ BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn) {
 		&& protoID != BSC_SPORE_LAUNCHER) { // Spore Launcher exception
 		return false;
 	}
-	uint8_t triad = Chassis[VehPrototype[protoID].chassisID].triad;
+	uint8_t triad = get_proto_triad(protoID);
 	if (triad == TRIAD_SEA) {
 		return seaTriadRetn; // cursory check shows this value always being set to true
 	}
@@ -1783,8 +1779,8 @@ uint32_t __cdecl offense_proto(int protoID, int vehIDDef, BOOL isArtyMissile) {
 		}
 		return (vehIDDef < 0) ? offRating : offRating * 8; // conventional 
 	}
-	return (vehIDDef < 0) ? Rules->PsiCombatRatioAtk[TRIAD_LAND] : // PSI
-	   Rules->PsiCombatRatioAtk[Chassis[VehPrototype[Veh[vehIDDef].protoID].chassisID].triad] * 8;
+	return (vehIDDef < 0) ? Rules->PsiCombatRatioAtk[TRIAD_LAND] :  // PSI
+		Rules->PsiCombatRatioAtk[get_triad(vehIDDef)] * 8;
 }
 
 /*
@@ -1810,7 +1806,7 @@ uint32_t __cdecl armor_proto(int protoID, int vehIDAtk, BOOL isArtyMissile) {
 		return (vehIDAtk < 0) ? defRating : defRating * 8; // conventional
 	}
 	return (vehIDAtk < 0) ? Rules->PsiCombatRatioDef[TRIAD_LAND] : // PSI
-		Rules->PsiCombatRatioDef[Chassis[VehPrototype[protoID].chassisID].triad] * 8;
+		Rules->PsiCombatRatioDef[get_proto_triad(protoID)] * 8;
 }
 
 /*
@@ -1871,7 +1867,7 @@ uint32_t __cdecl speed(int vehID, BOOL skipMorale) {
 		return 0; // cannot move
 	}
 	uint32_t speedVal = speed_proto(protoID);
-	uint8_t triad = Chassis[VehPrototype[protoID].chassisID].triad;
+	uint8_t triad = get_proto_triad(protoID);
 	if (triad == TRIAD_SEA && has_project(SP_MARITIME_CONTROL_CENTER, Veh[vehID].factionID)) {
 		speedVal += Rules->MoveRateRoads * 2;
 	}
@@ -1925,7 +1921,7 @@ uint32_t __cdecl prototype_factor(int protoID) {
 		|| PlayersData[factionID].diffLevel <= DLVL_SPECIALIST) {
 		return 0;
 	}
-	uint8_t triad = Chassis[VehPrototype[protoID].chassisID].triad;
+	uint8_t triad = get_proto_triad(protoID);
 	switch (triad) {
 		case TRIAD_SEA:
 			return Rules->ExtraPctCostProtoSea;
@@ -1944,10 +1940,9 @@ Return Value: True if Veh is in "jail" and cannot leave, false if Veh can disemb
 Status: Complete
 */
 BOOL __cdecl veh_jail(int vehID) {
-	if (Chassis[VehPrototype[Veh[vehID].protoID].chassisID].triad == TRIAD_LAND 
-		&& Veh[vehID].orders == ORDER_SENTRY_BOARD && Veh[vehID].waypoint_xCoord[0] >= 0 
-		&& Chassis[VehPrototype[Veh[Veh[vehID].waypoint_xCoord[0]].protoID].chassisID].triad 
-																					== TRIAD_AIR 
+	if (get_triad(vehID) == TRIAD_LAND && Veh[vehID].orders == ORDER_SENTRY_BOARD 
+		&& Veh[vehID].waypoint_xCoord[0] >= 0 
+		&& get_triad(Veh[vehID].waypoint_xCoord[0]) == TRIAD_AIR
 		&& (!(bit_at(Veh[vehID].xCoord, Veh[vehID].yCoord) & BIT_BASE_IN_TILE) 
 			|| owner_at(Veh[vehID].xCoord, Veh[vehID].yCoord) >= 8 
 			|| owner_at(Veh[vehID].xCoord, Veh[vehID].yCoord) <= 0)
@@ -2009,4 +2004,24 @@ int __cdecl veh_wake(int vehID) {
 	Veh[vehID].state &= ~(VSTATE_UNK_200 | VSTATE_EXPLORE | VSTATE_UNK_1000000 | VSTATE_UNK_2000000 
 		| VSTATE_UNK_8000000);
 	return vehID;
+}
+
+/*
+Purpose: Get triad for specified prototype.
+Original Offset: n/a
+Return Value: triad (see veh_triad)
+Status: Complete
+*/
+uint8_t get_proto_triad(uint32_t protoID) {
+	return Chassis[VehPrototype[protoID].chassisID].triad;
+}
+
+/*
+Purpose: Get triad for specified veh. 
+Original Offset: n/a
+Return Value: triad (see veh_triad)
+Status: Complete
+*/
+uint8_t get_triad(uint32_t vehID) {
+	return get_proto_triad(Veh[vehID].protoID);
 }

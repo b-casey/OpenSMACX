@@ -442,7 +442,7 @@ void __cdecl base_first(uint32_t baseID) {
 				else if (plan == PLAN_RECONNAISANCE) {
 					compare *= 2;
 				}
-				if (Chassis[VehPrototype[i].chassisID].triad != TRIAD_LAND) {
+				if (get_proto_triad(i) != TRIAD_LAND) {
 					compare /= 4;
 				}
 				compare -= VehPrototype[i].cost;
