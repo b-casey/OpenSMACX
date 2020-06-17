@@ -54,7 +54,7 @@ enum game_base_warnings {
 	WARN_STOP_RANDOM_EVENT = 0x20000,
 };
 
-enum game_preferences {
+enum game_preferences : uint32_t {
 	PREF_BSC_PAUSE_END_TURN = 0x1,
 	PREF_BSC_AUTOSAVE_EACH_TURN = 0x2,
 	PREF_BSC_DONT_QUICK_MOVE_ENEMY_VEH = 0x4, // flag set when unchecked

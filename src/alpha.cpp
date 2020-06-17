@@ -1534,7 +1534,7 @@ Status: Complete - testing
 void __cdecl prefs_use() {
 	*GamePreferences = AlphaIni->Preferences;
 	*GameMorePreferences = AlphaIni->MorePreferences;
-	*GameAnnounce = AlphaIni->Announce;
+	*GameWarnings = AlphaIni->Announce;
 }
 
 /*
