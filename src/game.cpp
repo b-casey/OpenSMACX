@@ -22,7 +22,7 @@
 BOOL *ExpansionEnabled = (BOOL *)0x009A6488;
 uint32_t *GamePreferences = (uint32_t *)0x009A6490;
 uint32_t *GameMorePreferences = (uint32_t *)0x009A6494;
-uint32_t *GameAnnounce = (uint32_t *)0x009A6498;
+uint32_t *GameWarnings = (uint32_t *)0x009A6498;
 uint32_t *GameRules = (uint32_t *)0x009A649C;
 uint32_t *GameState  = (uint32_t *)0x009A64C0;
 int *DiffLevelCurrent = (int *)0x009A64C4;

@@ -172,6 +172,33 @@ int __cdecl psi_factor(int combatRatio, int factionID, BOOL isAttack, BOOL isFun
 }
 
 /*
+Purpose: Determine whether enemy units of base are within range to attack.
+Original Offset: 00506490
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl invasions(uint32_t baseID) {
+	uint32_t factionIDBase = Base[baseID].factionIDCurrent;
+	int16_t xCoordBase = Base[baseID].xCoord, yCoordBase = Base[baseID].yCoord;
+	for (int i = 0; i < *VehCurrentCount; i++) {
+		uint32_t factionIDVeh = Veh[i].factionID;
+		if (factionIDVeh && !is_human(factionIDVeh) && factionIDVeh != factionIDBase
+			&& !(PlayersData[factionIDVeh].diploTreaties[factionIDBase] & DTREATY_TREATY)) {
+			int xCoordVeh = Veh[i].xCoord, yCoordVeh = Veh[i].yCoord;
+			if (!is_ocean(xCoordVeh, yCoordVeh) && veh_cargo(i)
+				&& stack_check(i, 3, TRIAD_LAND, -1, -1)) {
+				int proximity = vector_dist(xCoordVeh, yCoordVeh, xCoordBase, yCoordBase);
+				if (proximity <= (int)speed(i, false)) {
+					Veh[i].orders = ORDER_MOVE_TO;
+					Veh[i].waypoint_xCoord[0] = xCoordBase;
+					Veh[i].waypoint_yCoord[0] = yCoordBase;
+				}
+			}
+		}
+	}
+}
+
+/*
 Purpose: Direct Veh to start moving automatically towards specified coordinates.
 Original Offset: 00560AD0
 Return Value: n/a

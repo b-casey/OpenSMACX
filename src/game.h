@@ -102,7 +102,7 @@ enum game_difficulty_level {
 extern BOOL *ExpansionEnabled; // SMACX mode (true); SMAC mode (false)
 extern uint32_t *GamePreferences;
 extern uint32_t *GameMorePreferences;
-extern uint32_t *GameAnnounce; // used for setting pop notifications
+extern uint32_t *GameWarnings; // used for setting pop notifications
 extern uint32_t *GameRules; // bitfield
 extern uint32_t *GameState; // bitfield
 extern int *DiffLevelCurrent;

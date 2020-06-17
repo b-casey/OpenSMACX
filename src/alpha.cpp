@@ -1321,7 +1321,16 @@ Return Value: Default preferences
 Status: Complete - testing
 */
 uint32_t __cdecl default_prefs() {
-	return prefs_get("Laptop", 0, false) ? 0xA3E1DD16 : 0xBBE1DD96;
+	uint32_t basePrefs = PREF_ADV_RADIO_BTN_NOT_SEL_SING_CLK | PREF_AUTO_FORMER_BUILD_ADV 
+		| PREF_AUTO_FORMER_PLANT_FORESTS | PREF_AUTO_END_MOVE_SPOT_VEH_WAR 
+		| PREF_AUTO_END_MOVE_SPOT_VEH_TRUCE | PREF_AUTO_END_MOVE_SPOT_VEH_TREATY 
+		| PREF_AUTO_AIR_VEH_RET_HOME_FUEL_RNG | PREF_BSC_DONT_QUICK_MOVE_ALLY_VEH 
+		| PREF_BSC_AUTO_DESIGN_VEH | PREF_BSC_MOUSE_EDGE_SCROLL_VIEW | PREF_AV_BACKGROUND_MUSIC 
+		| PREF_AV_SOUND_EFFECTS | PREF_MAP_SHOW_GRID | PREF_UNK_10 
+		| PREF_BSC_DONT_QUICK_MOVE_ENEMY_VEH | PREF_BSC_AUTOSAVE_EACH_TURN 
+		| PREF_AUTO_WAKE_VEH_TRANS_REACH_LAND;
+	return prefs_get("Laptop", 0, false) ? basePrefs : basePrefs  // 0xA3E1DD16 : 0xBBE1DD96
+		| PREF_AV_SECRET_PROJECT_MOVIES | PREF_AV_SLIDING_WINDOWS | PREF_AV_MAP_ANIMATIONS;
 }
 
 /*
@@ -1331,7 +1340,12 @@ Return Value: Second set of default preferences
 Status: Complete - testing
 */
 uint32_t __cdecl default_prefs2() {
-	return prefs_get("Laptop", 0, false) ? 0x327168 : 0x3A7168;
+	uint32_t basePrefs2 = MPREF_ADV_DETAIL_MAIN_MENUS | MPREF_BSC_AUTO_PRUNE_OBS_VEH
+		| MPREF_AV_VOICEOVER_STOP_CLOSE_POPUP | MPREF_AV_VOICEOVER_TECH_FAC
+		| MPREF_MAP_SHOW_BASE_NAMES | MPREF_MAP_SHOW_PROD_WITH_BASE_NAMES
+		| MPREF_ADV_RIGHT_CLICK_POPS_UP_MENU | MPREF_ADV_QUICK_MOVE_VEH_ORDERS
+		| MPREF_AUTO_FORMER_BUILD_SENSORS | MPREF_AUTO_FORMER_REMOVE_FUNGUS; // 0x327168 : 0x3A7168
+	return prefs_get("Laptop", 0, false) ? basePrefs2 : basePrefs2 | MPREF_AV_SLIDING_SCROLLBARS;
 }
 
 /*
@@ -1341,7 +1355,10 @@ Return Value: Default warning preferences
 Status: Complete - testing
 */
 uint32_t __cdecl default_warn() {
-	return 0x3C3A9;
+	return WARN_STOP_RANDOM_EVENT | WARN_STOP_ENERGY_SHORTAGE | WARN_STOP_MINERAL_SHORTAGE 
+		| WARN_STOP_STARVATION | WARN_STOP_BUILD_OUT_OF_DATE | WARN_STOP_UNK_100
+		| WARN_STOP_NUTRIENT_SHORTAGE | WARN_STOP_GOLDEN_AGE | WARN_STOP_DRONE_RIOTS 
+		| WARN_STOP_NEW_FAC_BUILT; // 0x3C3A9
 }
 
 /*
@@ -1352,7 +1369,7 @@ Status: Complete - testing
 */
 uint32_t __cdecl default_rules() {
 	return RULES_VICTORY_COOPERATIVE | RULES_VICTORY_TRANSCENDENCE | RULES_BLIND_RESEARCH 
-		| RULES_VICTORY_DIPLOMATIC | RULES_VICTORY_ECONOMIC | RULES_VICTORY_CONQUEST;
+		| RULES_VICTORY_DIPLOMATIC | RULES_VICTORY_ECONOMIC | RULES_VICTORY_CONQUEST; // 0x1A0E
 }
 
 /*
@@ -1420,7 +1437,7 @@ void __cdecl prefs_load(BOOL useDefault) {
 	prefs_get("Top Menu", 0, false);
 	DefaultPrefs->TopMenu = text_item_number();
 	prefs_get("Faction", 1, false);
-	DefaultPrefs->FactionId = text_item_number();
+	DefaultPrefs->FactionID = text_item_number();
 	uint32_t prefs = default_prefs();
 	if (DefaultPrefs->Difficulty < DLVL_TALENT) {
 		prefs |= 0x20;
@@ -1483,7 +1500,7 @@ void __cdecl prefs_save(BOOL saveFactions) {
 	prefs_put("Difficulty", DefaultPrefs->Difficulty, false);
 	prefs_put("Map Type", DefaultPrefs->MapType, false);
 	prefs_put("Top Menu", DefaultPrefs->TopMenu, false);
-	prefs_put("Faction", DefaultPrefs->FactionId, false);
+	prefs_put("Faction", DefaultPrefs->FactionID, false);
 	prefs_put("Preferences", AlphaIni->Preferences, true);
 	prefs_put("More Preferences", AlphaIni->MorePreferences, true);
 	prefs_put("Semaphore", AlphaIni->Semaphore, true);

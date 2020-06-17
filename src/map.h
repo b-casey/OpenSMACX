@@ -161,8 +161,8 @@ constexpr int MaxContinentNum = 128;
 constexpr int MaxRegionLandNum = 64;
 
 const uint32_t RadiusRange[] = { 1, 9, 25, 49, 81, 121, 169, 225, 289 };
-const int xRadiusBase[] = { 1, 2, 1, 0, -1, -2, -1, 0, 2, 2, -2, -2, 1, 3, 3, 1, -1, -3, -3, -1 };
-const int yRadiusBase[] = { -1, 0, 1, 2, 1, 0, -1, -2, -2, 2, 2, -2, -3, -1, 1, 3, 3, 1, -1, -3 };
+const int xRadiusBase[] = {  1, 2, 1, 0, -1, -2, -1,  0, 0 };
+const int yRadiusBase[] = { -1, 0, 1, 2,  1,  0, -1, -2, 0 };
 const int xRadiusOffset[] = {
 	 0,  1,  2,  1,  0, -1, -2,  -1,   0,   2,   2,  -2,  -2,   1,   3,   3,   1,  -1,  -3,  -3,
 	-1,  4, -4,  0,  0,  1,  2,   3,   4,   5,   5,   4,   3,   2,   1,  -1,  -2,  -3,  -4,  -5,
@@ -300,6 +300,10 @@ OPENSMACX_API uint8_t __cdecl abstract_at(int xCoord, int yCoord);
 OPENSMACX_API void __cdecl abstract_set(int xCoord, int yCoord, uint8_t region);
 OPENSMACX_API void __cdecl quick_zoc(int xCoordSrc, int yCoordSrc, int factionID, int xCoordDst,
 	int yCoordDst, int *xCoordZoc, int *yCoordZoc);
+OPENSMACX_API int __cdecl radius_move(int xRadiusOff, int yRadiusOff, int range);
+OPENSMACX_API  int __cdecl radius_move(int xCoordSrc, int yCoordSrc, int xCoordDst, int yCoordDst, 
+	int range);
+OPENSMACX_API int __cdecl compass_move(int xCoordSrc, int yCoordSrc, int xCoordDst, int yCoordDst);
 OPENSMACX_API int __cdecl is_sensor(int xCoord, int yCoord);
 OPENSMACX_API BOOL __cdecl has_temple(int factionID);
 OPENSMACX_API uint32_t __cdecl zoc_any(int xCoord, int yCoord, uint32_t factionID);

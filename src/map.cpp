@@ -1248,6 +1248,64 @@ void __cdecl quick_zoc(int xCoordSrc, int yCoordSrc, int factionID, int xCoordDs
 }
 
 /*
+Purpose: Check to see if radius offsets are within range.
+Original Offset: 005A65A0
+Return Value: -1 if not within range, otherwise range radius
+Status: Complete - testing
+*/
+int __cdecl radius_move(int xRadiusOff, int yRadiusOff, int range) {
+	for (int i = 0; i < range; i++) {
+		if (xRadiusOff == xRadiusOffset[i] && yRadiusOff == yRadiusOffset[i]) {
+			return i; // radius
+		}
+	}
+	return -1;
+}
+
+/*
+Purpose: Determine if the specified two tiles are within radial range of each other.
+Original Offset: 005A65D0
+Return Value: -1 if not within range, otherwise range radius
+Status: Complete - testing
+*/
+int __cdecl radius_move(int xCoordSrc, int yCoordSrc, int xCoordDst, int yCoordDst, int range) {
+	int xRadiusOff = xCoordDst - xCoordSrc;
+	if (xRadiusOff < ((int)*MapHorizontalBounds / -2)) {
+		xRadiusOff += *MapHorizontalBounds;
+	}
+	if (xRadiusOff > ((int)*MapHorizontalBounds / 2)) {
+		xRadiusOff -= *MapHorizontalBounds;
+	}
+	return radius_move(xRadiusOff, yCoordDst - yCoordSrc, range);
+}
+
+/*
+Purpose: Determine if the specified two tiles are within range via North, South, East, West.
+Original Offset: 005A6630
+Return Value: -1 if not within range, otherwise range offset
+Status: Complete - testing
+*/
+int __cdecl compass_move(int xCoordSrc, int yCoordSrc, int xCoordDst, int yCoordDst) {
+	int xRadiusOff = xCoordDst - xCoordSrc;
+	if (xRadiusOff < ((int)*MapHorizontalBounds / -2)) {
+		xRadiusOff += *MapHorizontalBounds;
+	}
+	if (xRadiusOff > ((int)*MapHorizontalBounds / 2)) {
+		xRadiusOff -= *MapHorizontalBounds;
+	}
+	int yRadiusOff = yCoordDst - yCoordSrc;
+	int directionX = (xRadiusOff <= 0) ? (xRadiusOff >= 0) - 1 : 1;
+	int directionY = (yRadiusOff <= 0) ? (yRadiusOff >= 0) - 1 : 1;
+	for (int i = 0; i < 9; i++) {
+		if (directionX == (xRadiusOffset[i] <= 0 ? (xRadiusOffset[i] >= 0) - 1 : 1)
+			&& directionY == (yRadiusOffset[i] <= 0 ? (yRadiusOffset[i] >= 0) - 1 : 1)) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+/*
 Purpose: Check whether there is a sensor available in the tile.
 Original Offset: 005BF010
 Return Value: 0 (no sensor), 1 (sensor array via terraforming), 2 (Geosynchronous Survey Pod)
