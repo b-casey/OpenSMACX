@@ -357,7 +357,7 @@ Original Offset: 004E4810
 Return Value: Minerals that would be lost if production changed, or 0 if not applicable.
 Status: Complete
 */
-int __cdecl base_lose_minerals(int baseID, int productionID) {
+int __cdecl base_lose_minerals(int baseID, int UNUSED(productionID)) {
 	int minAccumal;
 	if (Rules->RetoolPctPenProdChg && is_human(Base[baseID].factionIDCurrent)
 		&& base_making(Base[baseID].productionIDLast, baseID)
@@ -1029,7 +1029,7 @@ Original Offset: 005AC680
 Return Value: Has Voice of Planet been built? true/false
 Status: Complete
 */
-BOOL __cdecl ascending(int factionID) {
+BOOL __cdecl ascending(int UNUSED(factionID)) {
 	return base_project(SP_VOICE_OF_PLANET) != SP_Unbuilt;
 }
 

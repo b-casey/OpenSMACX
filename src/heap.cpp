@@ -39,7 +39,7 @@ Original Offset: 005D45E0
 Return Value: n/a
 Status: Complete
 */
-void Heap::squeeze(int toggle) {
+void Heap::squeeze(int UNUSED(toggle)) {
 	size_t usedSize = baseSize - freeSize;
 	LPVOID newAddr = realloc(basePtr, usedSize);
 	if (newAddr) {

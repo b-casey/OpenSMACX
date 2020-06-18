@@ -242,7 +242,7 @@ Original Offset: 006167E0
 Return Value: n/a
 Status: Complete
 */
-void Time::TimerProc(HWND hwnd, uint32_t msg, UINT_PTR idTimer, DWORD elapsed) {
+void Time::TimerProc(HWND UNUSED(hwnd), uint32_t msg, UINT_PTR idTimer, DWORD UNUSED(elapsed)) {
 	if (idTimer && (!TimeModal || idTimer == (UINT_PTR)TimeModal) 
 		&& !reinterpret_cast<Time *>(idTimer)->unk_1) {
 		PostMessageA(*HandleMain, WM_USER | WM_CREATE, idTimer, 0);
@@ -256,8 +256,8 @@ Original Offset: 00616820
 Return Value: n/a
 Status: Complete
 */
-void Time::MultimediaProc(uint32_t timerID, uint32_t msg, DWORD_PTR dwUser, DWORD_PTR dw1,
-	DWORD_PTR dw2) {
+void Time::MultimediaProc(uint32_t UNUSED(timerID), uint32_t UNUSED(msg), DWORD_PTR dwUser,
+    DWORD_PTR UNUSED(dw1), DWORD_PTR UNUSED(dw2)) {
 	if (dwUser && (!TimeModal || dwUser == (DWORD_PTR)TimeModal)
 		&& !reinterpret_cast<Time *>(dwUser)->unk_1) {
 		PostMessageA(*HandleMain, WM_USER | WM_CREATE, dwUser, 0);

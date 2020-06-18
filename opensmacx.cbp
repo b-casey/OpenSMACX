@@ -8,7 +8,7 @@
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/opensmacx" prefix_auto="1" extension_auto="1" />
-				<Option object_output="bld/debug/" />
+				<Option object_output="build/debug/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -18,15 +18,10 @@
 					<Add option="-DBUILD_DLL" />
 					<Add option="-DBUILD_DEBUG" />
 				</Compiler>
-				<Linker>
-					<Add library="user32" />
-					<Add library="libwinmm.a" />
-					<Add library="Gdi32" />
-				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/opensmacx" prefix_auto="1" extension_auto="1" />
-				<Option object_output="bld/release/" />
+				<Option object_output="build/release/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -38,13 +33,17 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s -static" />
-					<Add library="user32" />
 				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-std=c++11 -pedantic -Wall -Wextra -Wshadow -Wcast-align -Wfloat-conversion -Wuseless-cast" />
+			<Add option="-std=c++11 -pedantic -Wall -Wextra -Wshadow -Wcast-align -Wfloat-conversion -Wuseless-cast -Wno-comment -Wno-parentheses -Wno-unknown-pragmas" />
 		</Compiler>
+		<Linker>
+			<Add library="user32" />
+			<Add library="gdi32" />
+			<Add library="winmm" />
+		</Linker>
 		<Unit filename="src/alpha.cpp" />
 		<Unit filename="src/alpha.h" />
 		<Unit filename="src/autosound.cpp" />
@@ -128,6 +127,9 @@
 		<Unit filename="src/win.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
+			<code_completion />
+			<envvars />
+			<debugger />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

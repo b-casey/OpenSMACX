@@ -933,7 +933,7 @@ Original Offset: 00579770
 Return Value: Randomized value
 Status: Complete
 */
-uint32_t __cdecl rnd(int bounds, LPSTR input) {
+uint32_t __cdecl rnd(int bounds, LPSTR UNUSED(input)) {
 	return (bounds - 1 > 0) ? rand() % bounds : 0;
 }
 

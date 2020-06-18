@@ -862,7 +862,7 @@ Original Offset: 00592030
 Return Value: 0 (no bonus), 1 (nutrient), 2 (mineral), 3 (energy)
 Status: Complete
 */
-uint32_t __cdecl bonus_at(int xCoord, int yCoord, int unkVal) {
+uint32_t __cdecl bonus_at(int xCoord, int yCoord, int UNUSED(unkVal)) {
 	uint32_t bit = bit_at(xCoord, yCoord);
 	uint32_t alt = alt_at(xCoord, yCoord);
 	BOOL hasRscBonus = bit & BIT_RSC_BONUS;
@@ -925,7 +925,7 @@ Original Offset: 00592400
 Return Value: n/a
 Status: Complete - test
 */
-void __cdecl site_radius(int xCoord, int yCoord, BOOL tgl) {
+void __cdecl site_radius(int xCoord, int yCoord, BOOL UNUSED(tgl)) {
 	for (int i = 0; i < 21; i++) {
 		int xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
 		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
@@ -1234,7 +1234,7 @@ void __cdecl quick_zoc(int xCoordSrc, int yCoordSrc, int factionID, int xCoordDs
 		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
 			&& xRadius < (int)*MapHorizontalBounds) {
 			int owner = veh_who(xRadius, yRadius);
-			if (owner >= 0 && owner != (int)factionID && is_ocean(xRadius, yRadius) == isSrcOcean
+			if (owner >= 0 && owner != factionID && is_ocean(xRadius, yRadius) == isSrcOcean
 				&& !(PlayersData[factionID].diploTreaties[owner] & DTREATY_PACT)) {
 				int proximity = vector_dist(xRadius, yRadius, xCoordDst, yCoordDst);
 				if (proximity >= searchZoc) {

@@ -1113,7 +1113,7 @@ Original Offset: 005B5EA0
 Return Value: Does veh want to wake? true/false
 Status: Complete - testing
 */
-BOOL __cdecl want_to_wake(uint32_t factionID, uint32_t vehID, int vehID2) {
+BOOL __cdecl want_to_wake(uint32_t factionID, int32_t vehID, int32_t vehID2) {
 	uint32_t triad = get_triad(vehID), vehFactionID = Veh[vehID].factionID;
 	if (triad == TRIAD_AIR && Veh[vehID].terraformingTurns && Veh[vehID].orders == ORDER_MOVE_TO) {
 		int baseFactionID = base_who(Veh[vehID].waypoint_xCoord[0], Veh[vehID].waypoint_yCoord[0]);
