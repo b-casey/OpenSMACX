@@ -78,7 +78,6 @@ int *ParseStrPlurality = (int *)0x009BB570;
 int *ParseStrGender = (int *)0x009BB5C0;
 int *GenderDefault = (int *)0x009BBFEC;
 int *PluralityDefault = (int *)0x009BBFF0;
-BOOL *MultiplayerToggle = (BOOL *)0x0093F660;
 int *MsgStatus = (int *)0x009B7B9C;
 HWND *HandleMain = (HWND *)0x009B7B28;
 

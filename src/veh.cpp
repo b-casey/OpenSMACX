@@ -1108,6 +1108,97 @@ int __cdecl get_plan(uint32_t factionID, uint32_t plan) {
 }
 
 /*
+Purpose: Determine if Veh wants to wake up based on certain conditions and preferences.
+Original Offset: 005B5EA0
+Return Value: Does veh want to wake? true/false
+Status: Complete - testing
+*/
+BOOL __cdecl want_to_wake(uint32_t factionID, uint32_t vehID, int vehID2) {
+	uint32_t triad = get_triad(vehID), vehFactionID = Veh[vehID].factionID;
+	if (triad == TRIAD_AIR && Veh[vehID].terraformingTurns && Veh[vehID].orders == ORDER_MOVE_TO) {
+		int baseFactionID = base_who(Veh[vehID].waypoint_xCoord[0], Veh[vehID].waypoint_yCoord[0]);
+		if (baseFactionID >= 0 && ((uint32_t)baseFactionID == vehFactionID)
+			|| PlayersData[vehFactionID].diploTreaties[baseFactionID] & DTREATY_PACT) {
+			return false;
+		}
+	}
+	uint32_t treaties = PlayersData[vehFactionID].diploTreaties[factionID];
+	BOOL wantToWake;
+	if (treaties & DTREATY_PACT) {
+		if (!*IsMultiplayer) {
+			wantToWake = *GamePreferences & PREF_AUTO_END_MOVE_SPOT_VEH_PACT;
+			if (!(*GamePreferences & PREF_AUTO_DONT_END_MOVE_DIFF_TRIAD)) {
+				return wantToWake;
+			}
+		}
+		else {
+			wantToWake = false;
+		}
+	}
+	else if (treaties & DTREATY_TREATY) {
+		if (!*IsMultiplayer) {
+			wantToWake = *GamePreferences & PREF_AUTO_END_MOVE_SPOT_VEH_TREATY;
+			if (!(*GamePreferences & PREF_AUTO_DONT_END_MOVE_DIFF_TRIAD)) {
+				return wantToWake;
+			}
+		}
+		else {
+			wantToWake = true;
+		}
+	}
+	else if (treaties & DTREATY_TRUCE) {
+		if (!*IsMultiplayer) {
+			wantToWake = *GamePreferences & PREF_AUTO_END_MOVE_SPOT_VEH_TRUCE;
+			if (!(*GamePreferences & PREF_AUTO_DONT_END_MOVE_DIFF_TRIAD)) {
+				return wantToWake;
+			}
+		}
+		else {
+			wantToWake = true;
+		}
+	}
+	else {
+		if (!*IsMultiplayer) {
+			wantToWake = *GamePreferences & PREF_AUTO_END_MOVE_SPOT_VEH_WAR;
+			if (!(*GamePreferences & PREF_AUTO_DONT_END_MOVE_DIFF_TRIAD)) {
+				return wantToWake;
+			}
+		}
+		else {
+			wantToWake = true;
+		}
+	}
+	if (vehID >= 0 && vehID2 >= 0) {
+		uint32_t triad2 = get_triad(vehID2);
+		if (triad != triad2 && ((Veh[vehID].state & (VSTATE_UNK_1000000 | VSTATE_UNK_200))
+			!= (VSTATE_UNK_1000000 | VSTATE_UNK_200) || triad2 == TRIAD_LAND)) {
+			wantToWake = false;
+		}
+	}
+	return wantToWake;
+}
+
+/*
+Purpose: Wake up the stack where vehID is located.
+Original Offset: 005B6060
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl wake_stack(int vehID) {
+	for (int i = veh_top(vehID); i >= 0; i = Veh[i].nextVehIDStack) {
+		int vehIDWayPoint, xCoord, yCoord;
+		if (Veh[i].orders == ORDER_SENTRY_BOARD && (get_triad(i) || (xCoord = Veh[i].xCoord, 
+			yCoord = Veh[i].yCoord, !is_ocean(xCoord, yCoord) 
+			&& ((vehIDWayPoint = Veh[i].waypoint_xCoord[0], vehIDWayPoint < 0) 
+				|| get_triad(vehIDWayPoint) != TRIAD_AIR || base_who(xCoord, yCoord) >= 0 
+				|| bit_at(xCoord, yCoord) & BIT_AIRBASE)))) {
+			Veh[i].orders = ORDER_NONE;
+			Veh[i].state &= ~VSTATE_EXPLORE;
+		}
+	}
+}
+
+/*
 Purpose: Move all Veh(s) in same stack as Veh to the destination coordinates.
 Original Offset: 005B8AF0
 Return Value: n/a
@@ -1186,7 +1277,7 @@ Return Value: vehID or top vehID of stack; return is checked if >= 0
 Status: Complete
 */
 int __cdecl stack_fix(int vehID) {
-	if (vehID < 0 || !*MultiplayerToggle
+	if (vehID < 0 || !*IsMultiplayer
 		|| (Veh[vehID].nextVehIDStack < 0 && Veh[vehID].prevVehIDStack < 0)) {
 		return vehID; // invalid vehID, not DirectPlay MP or no stack
 	}
@@ -1452,7 +1543,7 @@ int __cdecl veh_at(int xCoord, int yCoord) {
 	if (!*VehBitError) {
 		log_say("Vehicle Bit Error  (x, y)", xCoord, yCoord, 0);
 	}
-	if (*GameState & STATE_SCENARIO_EDITOR || *GameState & STATE_DEBUG_MODE || *MultiplayerToggle) {
+	if (*GameState & STATE_SCENARIO_EDITOR || *GameState & STATE_DEBUG_MODE || *IsMultiplayer) {
 		if (*VehBitError) {
 			return -1;
 		}
@@ -1607,9 +1698,15 @@ void __cdecl veh_demote(int vehID) {
 Purpose: Move vehID to top of stack.
 Original Offset: 005C0260
 Return Value: n/a
-Status: Complete
+Status: Complete - testing
 */
 void __cdecl veh_promote(int vehID) {
+	int vehIDTop = veh_top(vehID);
+	if (vehIDTop >= 0 && vehIDTop != vehID) {
+		veh_lift(vehID);
+		veh_drop(vehID, Veh[vehIDTop].xCoord, Veh[vehIDTop].yCoord);
+	}
+	/*
 	if (vehID >= 0) {
 		int16_t prevVehID = Veh[vehID].prevVehIDStack;
 		if (prevVehID >= 0) {
@@ -1625,6 +1722,7 @@ void __cdecl veh_promote(int vehID) {
 			}
 		}
 	}
+	*/
 }
 
 /*

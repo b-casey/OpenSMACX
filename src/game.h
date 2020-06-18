@@ -119,6 +119,7 @@ extern int *SunspotDuration;
 extern uint32_t *MountPlanetXCoord;
 extern uint32_t *MountPlanetYCoord;
 extern int *DustCloudDuration;
+extern BOOL *IsMultiplayer;
 
 OPENSMACX_API void __cdecl clear_scenario();
 OPENSMACX_API uint32_t __cdecl game_year(int turn);

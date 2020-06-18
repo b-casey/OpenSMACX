@@ -20,6 +20,8 @@
 				</Compiler>
 				<Linker>
 					<Add library="user32" />
+					<Add library="libwinmm.a" />
+					<Add library="Gdi32" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -125,9 +127,6 @@
 		<Unit filename="src/win.cpp" />
 		<Unit filename="src/win.h" />
 		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
 			<lib_finder disable_auto="1" />
 		</Extensions>
 	</Project>
