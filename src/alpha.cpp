@@ -1456,7 +1456,7 @@ void __cdecl prefs_load(BOOL useDefault) {
 	AlphaIni->Announce = text_item_binary();
 	std::stringstream ss;
 	for (uint32_t i = 0; i < 7; i++) {
-		ss << i ? "1, " : "2, "; // FIXME
+		ss << (i ? "1, " : "2, ");
 	}
 	std::string customWorldDef = ss.str();
 	prefs_get("Custom World", customWorldDef.c_str(), useDefault);

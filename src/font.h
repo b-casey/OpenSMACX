@@ -35,12 +35,12 @@ class OPENSMACX_API Font {
 public:
 	Font() : unk_1(-1), isFotSet(0), fontObj(0), lineHeight(0), height(0), ascent(0), descent(0),
 		fotFileName(0)  { } // 00618EA0
-	Font(LPSTR fontName, int height, int style) { init(fontName, height, style); } // 00618EC0
+	Font(LPSTR fontName, int lfHeight, int style) { init(fontName, lfHeight, style); } // 00618EC0
 	~Font() { close(); } // 00618EE0
 
 	// int UNK1(int, int, int, int) { return 1; } // no direct references
-	int init(LPCSTR fontName, int height, uint32_t style);
-	int init(LPCSTR lpszFile, LPCSTR fontName, int height, uint32_t style);
+	int init(LPCSTR fontName, int lfHeight, uint32_t style);
+	int init(LPCSTR file, LPCSTR fontName, int lfHeight, uint32_t style);
 	void close();
 	int width(LPSTR input);
 	int width(LPSTR input, int maxLen);

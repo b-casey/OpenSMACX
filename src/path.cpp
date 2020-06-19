@@ -163,7 +163,7 @@ void Path::replace(uint32_t regionOld, uint32_t regionNew) {
  Return Value: n/a
  Status: Complete - testing
 */
-void Path::territory(int xCoord, int yCoord, int region, int factionID) {
+void Path::territory(int xCoord, int yCoord, int UNUSED(region), int factionID) {
     if (is_ocean(xCoord, yCoord)) {
         return;
     }

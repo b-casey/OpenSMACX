@@ -15,14 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenSMACX. If not, see <http://www.gnu.org/licenses/>.
  */
+#pragma once
 
 /*
  * Include file for standard system include files, or project specific include files that are used 
  * frequently, but are changed infrequently
  */
-
-#pragma once
-
 //#ifdef _CRT_SECURE_NO_WARNINGS
 //#undef _CRT_SECURE_NO_WARNINGS
 //#endif
@@ -38,10 +36,8 @@
 #include <windows.h>
 #include <vector>
 
-
 #ifdef __GNUC__
 #define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
 #else
 #define UNUSED(x) UNUSED_ ## x
 #endif
-

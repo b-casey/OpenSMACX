@@ -242,7 +242,8 @@ Original Offset: 006167E0
 Return Value: n/a
 Status: Complete
 */
-void Time::TimerProc(HWND UNUSED(hwnd), uint32_t msg, UINT_PTR idTimer, DWORD UNUSED(elapsed)) {
+void Time::TimerProc(HWND UNUSED(hwnd), uint32_t UNUSED(msg), UINT_PTR idTimer, 
+	DWORD UNUSED(elapsed)) {
 	if (idTimer && (!TimeModal || idTimer == (UINT_PTR)TimeModal) 
 		&& !reinterpret_cast<Time *>(idTimer)->unk_1) {
 		PostMessageA(*HandleMain, WM_USER | WM_CREATE, idTimer, 0);

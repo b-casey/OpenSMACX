@@ -29,7 +29,7 @@ Original Offset: 00618F40
 Return Value: Non-zero error; Zero successful
 Status: Complete
 */
-int Font::init(LPCSTR fontName, int heightInit, uint32_t style) {
+int Font::init(LPCSTR fontName, int lfHeight, uint32_t style) {
 	if (!fontName) {
 		return 3;
 	}
@@ -47,7 +47,7 @@ int Font::init(LPCSTR fontName, int heightInit, uint32_t style) {
 		close();
 	}
 	LOGFONT lf;
-	lf.lfHeight = -heightInit;
+	lf.lfHeight = -lfHeight;
 	lf.lfWidth = 0;
 	lf.lfEscapement = 0;
 	lf.lfUnderline = (style >> 2) & 1;
@@ -83,7 +83,7 @@ Original Offset: 006190D0
 Return Value: Non-zero error; Zero successful
 Status: Complete
 */
-int Font::init(LPCSTR file, LPCSTR fontName, int heightInit, uint32_t style) {
+int Font::init(LPCSTR file, LPCSTR fontName, int lfHeight, uint32_t style) {
 	close();
 	if (!file || !fontName) {
 		return 16;
@@ -105,7 +105,7 @@ int Font::init(LPCSTR file, LPCSTR fontName, int heightInit, uint32_t style) {
 	}
 	PostMessageA(HWND_BROADCAST, WM_FONTCHANGE, 0, 0);
 	isFotSet |= 1;
-	return init(fontName, heightInit, style);
+	return init(fontName, lfHeight, style);
 }
 
 /*
