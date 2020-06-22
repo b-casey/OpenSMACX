@@ -1168,7 +1168,7 @@ BOOL __cdecl want_to_wake(uint32_t factionID, uint32_t vehID, int vehID2) {
 			wantToWake = true;
 		}
 	}
-	if (vehID2 >= 0) {
+	if (vehID2 >= 0) { // removed a check if vehID is also >= 0 since it should always be unsigned
 		uint32_t triad2 = get_triad(vehID2);
 		if (triad != triad2 && ((Veh[vehID].state & (VSTATE_UNK_1000000 | VSTATE_UNK_200))
 			!= (VSTATE_UNK_1000000 | VSTATE_UNK_200) || triad2 == TRIAD_LAND)) {

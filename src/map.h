@@ -127,7 +127,7 @@ struct map {
 	uint8_t region; // grouping of disjoint water/land areas; see above notes for more details
 	uint8_t visibility; // faction bitfield of those who can see tile (mapped: dim/bright)
 	uint8_t val3; // 00 000 000 | rocky (2 bit); lock - factionID (3 bit); using - factionID (3 bit)
-	uint8_t unk_1; // sometimes set to 0x80, set to 0/1 by Path::territory, contiguous (BOOL?)
+	uint8_t unk_1; // flags? bitfield
 	int8_t territory; // physical owner factionID of geographic area or -1 for unclaimed
 	uint32_t bit; // see terrain_bit
 	uint32_t bit2; // bitwho[0]? FF FF FFFF | code (landmark tile sequence); unk flags; landmark id

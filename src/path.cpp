@@ -116,7 +116,41 @@ int Path::find(int xCoordSrc, int yCoordSrc, int xCoordDstA, int yCoordDstA, int
  Status: wip
 */
 int Path::move(int vehID, int factionID) {
-    return 0;
+    int factionIDVeh = Veh[vehID].factionID;
+    uint32_t flags = 0xC0;
+    if (factionIDVeh != factionID1) {
+        xCoordDst = -1;
+        yCoordDst = -1;
+        factionID1 = factionIDVeh;
+    }
+    int xCoordVeh = Veh[vehID].xCoord, yCoordVeh = Veh[vehID].yCoord,
+        xCoordWayPt = Veh[vehID].waypoint_xCoord[0], yCoordWayPt = Veh[vehID].waypoint_yCoord[0];
+
+    if (yCoordWayPt < 0 || yCoordWayPt >= (int)*MapVerticalBounds || xCoordWayPt < 0
+        || xCoordWayPt >= (int)*MapHorizontalBounds || (xCoordVeh == xCoordWayPt 
+            && yCoordVeh == yCoordWayPt)) {
+        return -1;
+    }
+    BOOL isHuman = is_human(factionIDVeh);
+    if (!isHuman && (Veh[vehID].state & (VSTATE_UNK_40000 | VSTATE_UNK_20000) 
+        == (VSTATE_UNK_40000 | VSTATE_UNK_20000))) {
+        flags = 0xE0;
+    }
+    if (Veh[vehID].state & (VSTATE_UNK_1000000 | VSTATE_UNK_200)
+        == (VSTATE_UNK_1000000 | VSTATE_UNK_200)) {
+        flags &= 0xBF;
+    }
+    else {
+        uint32_t vehMoves = veh_moves(vehID);
+        if (vehMoves <= Rules->MoveRateRoads) {
+            flags |= 0x100;
+            if (vehMoves <= ((Veh[vehID].protoID != BSC_MIND_WORMS) + 1)) {
+                flags |= 0x100;
+            }
+        }
+    }
+
+	return 0;
 }
 
 /*
@@ -343,8 +377,8 @@ void Path::continents() {
 /*
  Purpose: TBD
  Original Offset: 0059CCA0
- Return Value: n/a
- Status: wip
+ Return Value: true/false
+ Status: Complete -testing
 */
 BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
     BOOL isSensor = true;
@@ -352,7 +386,7 @@ BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
     xCoordDst = -1;
     yCoordDst = -1;
     int xCoord = *xCoordPtr, yCoord = *yCoordPtr;
-    uint32_t search = 9999;
+    int search = 9999;
     uint32_t region = region_at(xCoord, yCoord);
     for (uint32_t y = 1; y < *MapAbstractVertBounds - 1; y++) {
         for (uint32_t x = y & 1; x < *MapAbstractHorizBounds; x += 2) {
@@ -393,13 +427,64 @@ BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
                             }
                         }
                         if (!(flags & 1)) {
-                            //
+                            int proxminity = vector_dist(xCoord, yCoord, x, y);
+                            for (uint32_t i = 0; i < 25; i++) {
+                                int xRadius = xrange(x + xRadiusOffset[i]);
+                                int yRadius = y + yRadiusOffset[i];
+                                if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds
+                                    && xRadius >= 0 && xRadius < (int)*MapHorizontalBounds) {
+                                    int tileFactionID = base_who(xRadius, yRadius);
+                                    if (tileFactionID == factionID) {
+                                        flags |= 4;
+                                        BOOL check = true;
+                                        for (uint32_t j = 0; j < 25; j++) {
+                                            int xRadius2 = xrange(xRadius + xRadiusOffset[j]);
+                                            int yRadius2 = yRadius + yRadiusOffset[j];
+                                            if (yRadius2 >= 0 && yRadius2 < (int)*MapVerticalBounds
+                                                && xRadius2 >= 0
+                                                && xRadius2 < (int)*MapHorizontalBounds) {
+                                                if (!is_sensor(xRadius2, yRadius2)
+                                                    && (whose_territory(factionID, xRadius2,
+                                                        yRadius2, NULL, false) == factionID
+                                                        || &((mapTable)[(xRadius2 >> 1) + yRadius2
+                                                            * *MapHorizontal])
+                                                        != 0)) {
+                                                    check = false;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        if (check) {
+                                            flags |= 8;
+                                        }
+                                    }
+                                }
+                            }
+                            if (flags & 4) {
+                                proxminity += 400;
+                            }
+                            if (flags & 8) {
+                                proxminity += 800;
+                            }
+                            if (!(flags & 2) || flags & 8) {
+                                proxminity++;
+                                ((mapTable)[(x >> 1) + y * *MapHorizontal]) = 0;
+                            }
+                            else {
+                                proxminity += 200;
+                            }
+                            if (proxminity < search) {
+                                *xCoordPtr = x;
+                                *yCoordPtr = y;
+                                search = proxminity;
+                                isSensor = false;
+                            }
                         }
                     }
                 }
             }
         }
     }
-    do_all_non_input();
-    return isSensor;
+	do_all_non_input();
+	return isSensor;
 }
