@@ -132,11 +132,11 @@ int Path::move(int vehID, int factionID) {
         return -1;
     }
     BOOL isHuman = is_human(factionIDVeh);
-    if (!isHuman && (Veh[vehID].state & (VSTATE_UNK_40000 | VSTATE_UNK_20000) 
+    if (!isHuman && ((Veh[vehID].state & (VSTATE_UNK_40000 | VSTATE_UNK_20000))
         == (VSTATE_UNK_40000 | VSTATE_UNK_20000))) {
         flags = 0xE0;
     }
-    if (Veh[vehID].state & (VSTATE_UNK_1000000 | VSTATE_UNK_200)
+    if ((Veh[vehID].state & (VSTATE_UNK_1000000 | VSTATE_UNK_200))
         == (VSTATE_UNK_1000000 | VSTATE_UNK_200)) {
         flags &= 0xBF;
     }
@@ -144,7 +144,7 @@ int Path::move(int vehID, int factionID) {
         uint32_t vehMoves = veh_moves(vehID);
         if (vehMoves <= Rules->MoveRateRoads) {
             flags |= 0x100;
-            if (vehMoves <= ((Veh[vehID].protoID != BSC_MIND_WORMS) + 1)) {
+            if (vehMoves <= (uint32_t)((Veh[vehID].protoID != BSC_MIND_WORMS) + 1)) {
                 flags |= 0x100;
             }
         }

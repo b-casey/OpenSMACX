@@ -51,7 +51,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
 	bin_app = mmap.mmap(f.fileno(), 0)
-	# next: 373
+	# next: 378
 	#
 	
 	# ALPHA
@@ -203,6 +203,21 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x000EA1F0) # ?black_market@@YAIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*370))
+	bin_app.seek(0x000F4DC0) # ?base_energy_costs@@YAXXZ
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*373))
+	bin_app.seek(0x000E4AA0) # ?base_first@@YAXI@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*374))
+	bin_app.seek(0x000E6400) # ?morale_mod@@YAIIII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*375))
+	bin_app.seek(0x000E65C0) # ?breed_mod@@YAIII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*376))
+	bin_app.seek(0x000E6740) # ?worm_mod@@YAIII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*377))	
 	# BASEBUTTON
 	bin_app.seek(0x00207550) # ?set_bubble_text@BaseButton@@QAEHPBD@Z
 	patch_call_bytes(bin_app)

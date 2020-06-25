@@ -18,12 +18,57 @@
 #include "stdafx.h"
 #include "terraforming.h"
 #include "base.h"
+#include "faction.h"
 #include "game.h"
+#include "general.h"
 #include "map.h"
 #include "technology.h"
 #include "veh.h"
 
 rules_terraforming *Terraforming = (rules_terraforming *)0x00691878;
+
+/*
+Purpose: Calculate the credit cost to lower or raise terrain at tile for the specified faction.
+Original Offset: 004C9420
+Return Value: Credit cost
+Status: Complete - testing
+*/
+uint32_t __cdecl terraform_cost(int xCoord, int yCoord, uint32_t factionID) {
+	uint32_t alt = alt_at(xCoord, yCoord);
+	int cost = abs((int)alt - 3);
+	cost += 2;
+	cost *= cost;
+	if (bit_at(xCoord, yCoord) & BIT_FUNGUS && altitude_at(xCoord, yCoord) >= ALT_BIT_OCEAN_SHELF) {
+		cost *= 3;
+	}
+	cost *= 2;
+	if (alt < ALT_SHORE_LINE) {
+		cost *= 2;
+		if (!GameTechDiscovered[TECH_DOCAIR]) {
+			cost *= 2;
+		}
+	}
+	int baseID = base_find(xCoord, yCoord, factionID);
+	if (baseID >= 0) {
+		int cursorDist = cursor_dist(xCoord, yCoord, Base[baseID].xCoord, Base[baseID].yCoord);
+		cost *= range(cursorDist, 1, 100);
+		int baseID2 = base_find(xCoord, yCoord, -1, -1, factionID, -1);
+		if (baseID2 >= 0 && !(PlayersData[factionID].diploTreaties[Base[baseID2].factionIDCurrent] 
+			& DTREATY_PACT)) {
+			int cmp = (cursorDist * (Base[baseID2].populationSize + 2)) / 3;
+			int cmp2 = (cursor_dist(xCoord, yCoord, Base[baseID2].xCoord, Base[baseID2].yCoord)
+				* (Base[baseID].populationSize + 2)) / 3;
+			if (cmp2 && cmp && cmp2 < cmp) {
+				cost = (cost * cmp) / cmp2;
+			}
+		}
+	}
+	if (Players[factionID].ruleFlags & RFLAG_TERRAFORM) {
+		cost /= 2;
+	}
+	cost /= 2;
+	return range(cost, 1, 30000);
+}
 
 /*
 Purpose: Calculate Former rate to perform terrain enhancements.

@@ -164,52 +164,52 @@ struct rules_basic {
 	// Alpha(x).txt #RULES: Movement rate along roads
 	// Original bounds: 1 to 100
 	// Default value: 3
-	int MoveRateRoads;
+	uint32_t MoveRateRoads;
 	
 	// Alpha(x).txt #RULES: Nutrient intake requirement for citizens
 	// Original bounds: 0 to 100
 	// Default value: 2
-	int NutrientReqCitizen;
+	uint32_t NutrientReqCitizen;
 	
 	// Alpha(x).txt #RULES: Max airdrop range w/o orbital insertion
 	// Original bounds: 1 to 500
 	// Default value: 8
-	int MaxAirdropSansOrbInsert;
+	uint32_t MaxAirdropSansOrbInsert;
 	
 	// Alpha(x).txt #RULES: Max artillery range (larger will break multiplayer)
 	// Original bounds: 1 to 8
 	// Default value: 2
-	int ArtilleryMaxRng;
+	uint32_t ArtilleryMaxRng;
 	
 	// Alpha(x).txt #RULES: Numerator for artillery fire damage
 	// Original bounds: 1 to 1000
 	// Default value: 3
-	int ArtilleryDmgNum;
+	uint32_t ArtilleryDmgNum;
 	
 	// Alpha(x).txt #RULES: Denominator for artillery fire damage
 	// Original bounds: 1 to 1000
 	// Default value: 2
-	int ArtilleryDmgDenom;
+	uint32_t ArtilleryDmgDenom;
 	
 	// Alpha(x).txt #RULES: Nutrient cost multiplier
 	// Original bounds: 1 to 100
 	// Default value: 10
-	int NutrientCostMulti;
+	uint32_t NutrientCostMulti;
 
 	// Alpha(x).txt #RULES: Minerals cost multiplier
 	// Original bounds: 1 to 100
 	// Default value: 10
-	int MineralCostMulti;
+	uint32_t MineralCostMulti;
 
 	// Alpha(x).txt #RULES: Technology discovery rate as a percentage of standard
 	// Original bounds: 0 to 1000
 	// Default value: 100
-	int TechDiscovRatePctStd;
+	uint32_t TechDiscovRatePctStd;
 
 	// Alpha(x).txt #RULES: Limits mineral increase for mine without road in square
 	// Original bounds: 0 to 100
 	// Default value: 1
-	int LimitMineralMineSansRoad;
+	uint32_t LimitMineralMineSansRoad;
 
 	// Alpha(x).txt #RULES: Nutrient effect in mine square (0 or -1)
 	// Original bounds: 0 or -1
@@ -219,22 +219,22 @@ struct rules_basic {
 	// Alpha(x).txt #RULES: Minimum base size to support specialists
 	// Original bounds: 0 to 100
 	// Default value: 5
-	int MinBaseSizeSpecialists;
+	uint32_t MinBaseSizeSpecialists;
 
 	// Alpha(x).txt #RULES: Drones induced by Genejack factory
 	// Original bounds: 0 to 100
 	// Default value: 1
-	int DronesGenejackFactory;
+	uint32_t DronesGenejackFactory;
 
 	// Alpha(x).txt #RULES: Population limit w/o hab complex
 	// Original bounds: 1 to 100
 	// Default value: 7
-	int PopLimitSansHabComplex;
+	uint32_t PopLimitSansHabComplex;
 
 	// Alpha(x).txt #RULES: Population limit w/o hab dome
 	// Original bounds: 1 to 100
 	// Default value: 14
-	int PopLimitSansHabDome;
+	uint32_t PopLimitSansHabDome;
 
 	// Alpha(x).txt #RULES: Technology to improve fungus squares
 	// Default value: CentPsi (63)
@@ -267,34 +267,34 @@ struct rules_basic {
 	// Alpha(x).txt #RULES: Extra percentage cost of prototype LAND unit
 	// Original bounds: 0 to 500
 	// Default value: 50
-	int ExtraPctCostProtoLand;
+	uint32_t ExtraPctCostProtoLand;
 
 	// Alpha(x).txt #RULES: Extra percentage cost of prototype SEA unit
 	// Original bounds: 0 to 500
 	// Default value: 50
-	int ExtraPctCostProtoSea;
+	uint32_t ExtraPctCostProtoSea;
 
 	// Alpha(x).txt #RULES: Extra percentage cost of prototype AIR unit
 	// Original bounds: 0 to 500
 	// Default value: 50
-	int ExtraPctCostProtoAir;
+	uint32_t ExtraPctCostProtoAir;
 
 	// Alpha(x).txt #RULES: Psi combat offense-to-defense ratio (unit defending) Numerator
 	// Original bounds: 1 to 1000
 	// Default value: 3 (LAND)
 	// Default value: 1 (SEA/AIR)
-	int PsiCombatRatioAtk[3]; // LAND, SEA, AIR
+	uint32_t PsiCombatRatioAtk[3]; // LAND, SEA, AIR
 	
 	// Alpha(x).txt #RULES: Psi combat offense-to-defense ratio (unit defending) Denominator
 	// Original bounds: 1 to 1000
 	// Default value: 2 (LAND)
 	// Default value: 1 (SEA/AIR)
-	int PsiCombatRatioDef[3]; // LAND, SEA, AIR
+	uint32_t PsiCombatRatioDef[3]; // LAND, SEA, AIR
 
 	// Alpha(x).txt #RULES: Players' starting energy reserves
 	// Original bounds: 0 to 1000
 	// Default value: 10
-	int PlayerStartEnergyReserve;
+	uint32_t PlayerStartEnergyReserve;
 
 	// Alpha(x).txt #RULES: Combat % -> intrinsic base defense
 	// Original bounds: -100 to 1000
@@ -323,22 +323,22 @@ struct rules_basic {
 	// Alpha(x).txt #RULES: Minimum # of turns between councils
 	// Original bounds: 0 to 1000
 	// Default value: 20
-	int MinTurnsCouncils;
+	uint32_t MinTurnsCouncils;
 
 	// Alpha(x).txt #RULES: Minerals for harvesting forest
 	// Original bounds: 0 to 100
 	// Default value: 5
-	int MineralsHarvestingForest;
+	uint32_t MineralsHarvestingForest;
 
 	// Alpha(x).txt #RULES: Territory: max distance from base
 	// Original bounds: 0 to 100
 	// Default value: 8
-	int TerritoryMaxDistBase;
+	uint32_t TerritoryMaxDistBase;
 
 	// Alpha(x).txt #RULES: Turns to corner Global Energy Market
 	// Original bounds: 1 to 100
 	// Default value: 20
-	int TurnsCornerGblEnergyMrkt;
+	uint32_t TurnsCornerGblEnergyMrkt;
 	
 	// Alpha(x).txt #RULES: Technology for +1 mining platform bonus
 	// Default value: EcoEng2 (62)
@@ -437,87 +437,87 @@ struct rules_basic {
 	// (0 = Always Free, 1 = Free in Category, 2 = Free if Project, 3 = Never Free)
 	// Original bounds: 0 to 2 (Bug Fix: Should be 0 to 3)
 	// Default value: 2
-	int RetoolStrictness;
+	uint32_t RetoolStrictness;
 
 	// Alpha(x).txt #RULES: Retool percent penalty for production change
 	// Original bounds: 0 to 100
 	// Default value: 50
-	int RetoolPctPenProdChg;
+	uint32_t RetoolPctPenProdChg;
 
 	// Alpha(x).txt #RULES: Retool exemption (first X minerals not affected by penalty)
 	// Original bounds: 0 to 1000
 	// Default value: 10
-	int RetoolExemption;
+	uint32_t RetoolExemption;
 
 	// Alpha(x).txt #RULES: If non-zero, probe teams can steal technologies
 	// Original bounds: 0, 1 or -1 (Changed to 0 or 1 since -1 is treated same as 1)
 	// Default value: 1
-	int TglProbeCanStealTech;
+	BOOL TglProbeCanStealTech;
 
 	// Alpha(x).txt #RULES: If non-zero, humans can always contact each other in net games
 	// Original bounds: 0, 1 or -1 (Changed to 0 or 1 since -1 is treated same as 1)
 	// Default value: 1
-	int TglHumanAlwaysContactNet;
+	BOOL TglHumanAlwaysContactNet;
 
 	// Alpha(x).txt #RULES: If non-zero, humans can always contact each other in hotseat/email games
 	// Original bounds: 0, 1 or -1 (Changed to 0 or 1 since -1 is treated same as 1)
 	// Default value: 1
-	int TglHumansAlwaysContactPbem;
+	BOOL TglHumansAlwaysContactPbem;
 
 	// Alpha(x).txt #RULES: Maximum % damage inflicted by arty versus units in base/bunker
 	// Original bounds: 10 to 100
 	// Default value: 50
-	int MaxPctDmgArtVsUnitBaseBnkr;
+	uint32_t MaxPctDmgArtVsUnitBaseBnkr;
 
 	// Alpha(x).txt #RULES: Maximum % damage inflicted by arty versus units in open
 	// Original bounds: 10 to 100
 	// Default value: 99
-	int MaxPctDmgArtVsUnitsOpen;
+	uint32_t MaxPctDmgArtVsUnitsOpen;
 
 	// Alpha(x).txt #RULES: Maximum % damage inflicted by arty versus units in sea
 	// Original bounds: 10 to 100
 	// Default value: 100
-	int MaxPctDmgArtVsUnitsSea;
+	uint32_t MaxPctDmgArtVsUnitsSea;
 
 	// Alpha(x).txt #RULES: Numerator for freq of global warming (1,2 would be "half" normal warming).
 	// Original bounds: 0 to 1000
 	// Default value: 1
-	int FreqGlobalWarmingNum;
+	uint32_t FreqGlobalWarmingNum;
 
 	// Alpha(x).txt #RULES: Denominator for freq of global warming (1,2 would be "half" normal warming).
 	// Original bounds: 1 to 1000
 	// Default value: 1
-	int FreqGlobalWarmingDenom;
+	uint32_t FreqGlobalWarmingDenom;
 
 	// Alpha(x).txt #RULES: Normal starting year
 	// Original bounds: 0 to 999999
 	// Default value: 2100
-	int NormalStartingYear;
+	uint32_t NormalStartingYear;
 
 	// Alpha(x).txt #RULES: Normal ending year for lowest 3 difficulty levels
 	// Original bounds: 0 to 999999
 	// Default value: 2600
-	int NormalEndYearLowThreeDiff;
+	uint32_t NormalEndYearLowThreeDiff;
 
 	// Alpha(x).txt #RULES: Normal ending year for highest 3 difficulty levels
 	// Original bounds: 0 to 999999
 	// Default value: 2500
-	int NormalEndYearHighThreeDiff;
+	uint32_t NormalEndYearHighThreeDiff;
 
 	// Alpha(x).txt #RULES: If non-zero, obliterating a base counts as an atrocity
 	// Original bounds: 0, 1 or -1 (Changed to 0 or 1 since -1 is treated same as 1)
 	// Default value: 1
-	int TglOblitBaseAtrocity;
+	BOOL TglOblitBaseAtrocity;
 
 	// Alphax.txt #RULES: Size of base for subspace generator
 	// Original bounds: 1 to 999
 	// Default value: 10
-	int SizeBaseSubspaceGen;
+	uint32_t SizeBaseSubspaceGen;
 
 	// Alphax.txt #RULES: Number of subspace generators needed
 	// Original bounds: 1 to 999
 	// Default value: 6
-	int SubspaceGeneratorsNeeded;
+	uint32_t SubspaceGeneratorsNeeded;
 };
 
 struct rules_worldbuilder {

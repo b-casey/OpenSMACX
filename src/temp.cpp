@@ -66,7 +66,8 @@ func30* turn_timer = (func30*)0x0050EF10;
 func8 *parse_string_OG = (func8 *)0x00625880;
 func12 *enemy_capabilities_OG = (func12 *)0x00560DD0;
 //
-funct3 *success_rates_OG = (funct3 *)0x0059EEE0;
+funct0 *success_rates_OG = (funct0 *)0x0059EEE0;
+funct1 *terraform_cost_OG = (funct1 *)0x004C9420;
 ///
 char1032 *stringTemp = (char1032 *)0x009B86A0;
 char256 *ParseStrBuffer = (char256 *)0x009BB5E8;
@@ -89,6 +90,31 @@ MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
 int __cdecl tester() {
 	log_set_state(true);
 	log_say("Start test", 0, 0, 0);
+	for (int f = 0; f < MaxPlayerNum; f++) {
+		for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
+			for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
+				uint32_t costOG = terraform_cost_OG(x, y, f);
+				uint32_t cost = terraform_cost(x, y, f);
+				if (costOG != cost) {
+					log_say("terraform_cost_error:", x, y, f);
+				}
+			}
+		}
+	}
+
+	/*
+	for (int i = 0; i < *BaseCurrentCount; i++) {
+		if (Base[i].factionIDCurrent == 1) {
+			set_base(i);
+			int temp = Base[i].energySurplus;
+			Base[i].energySurplus = -1;
+			base_energy_costs();
+			Base[i].energySurplus = temp;
+		}
+		
+		//base_energy_costs_OG();
+	}
+	/*
 	for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
 		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
 			map *tile = map_loc(x, y);

@@ -78,8 +78,10 @@ extern func8 *parse_string_OG;
 typedef void func12(int);
 extern func12 *enemy_capabilities_OG;
 //
-typedef int funct3(int, int, int, int);
-extern funct3 *success_rates_OG;
+typedef int funct0(int, int, int, int);
+extern funct0 *success_rates_OG;
+typedef uint32_t funct1(int, int, uint32_t);
+extern funct1 *terraform_cost_OG;
 ///
 extern char1032 *stringTemp;
 extern char256 *ParseStrBuffer;

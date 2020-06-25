@@ -192,7 +192,7 @@ uint32_t  __cdecl best_specialist() {
 	for (int i = 0; i < MaxSpecialistNum; i++) {
 		if (has_tech(Citizen[i].preqTech, (*BaseCurrent)->factionIDCurrent)) {
 			uint32_t bonus = Citizen[i].psychBonus * 3;
-			if ((*BaseCurrent)->populationSize >= Rules->MinBaseSizeSpecialists) {
+			if ((*BaseCurrent)->populationSize >= (int)Rules->MinBaseSizeSpecialists) {
 				bonus += Citizen[i].opsBonus + Citizen[i].researchBonus;
 			}
 			if ((int)bonus > currentBonus) {
@@ -358,13 +358,13 @@ Return Value: Minerals that would be lost if production changed, or 0 if not app
 Status: Complete
 */
 int __cdecl base_lose_minerals(int baseID, int UNUSED(productionID)) {
-	int minAccumal;
+	int minAccum;
 	if (Rules->RetoolPctPenProdChg && is_human(Base[baseID].factionIDCurrent)
 		&& base_making(Base[baseID].productionIDLast, baseID)
 		!= base_making(Base[baseID].queueProductionID[0], baseID)
-		&& (minAccumal = Base[baseID].mineralsAccumulated2, minAccumal > Rules->RetoolExemption)) {
-		return minAccumal - (100 - Rules->RetoolPctPenProdChg) 
-			* (minAccumal - Rules->RetoolExemption) / 100 - Rules->RetoolExemption;
+		&& (minAccum = Base[baseID].mineralsAccumulated2, minAccum > (int)Rules->RetoolExemption)) {
+		return minAccum - (100 - Rules->RetoolPctPenProdChg) 
+			* (minAccum - Rules->RetoolExemption) / 100 - Rules->RetoolExemption;
 	}
 	return 0;
 }
@@ -419,10 +419,10 @@ void __cdecl set_fac_announced(int factionID, int facilityID, BOOL set) {
 }
 
 /*
-Purpose: Determine what Veh to start building first in specified base.
+Purpose: Determine what Veh the specified base should start building first then add it to the queue.
 Original Offset: 004E4AA0
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl base_first(uint32_t baseID) {
 	int priority = -1;
@@ -457,24 +457,29 @@ void __cdecl base_first(uint32_t baseID) {
 }
 
 /*
-Purpose: TBD
+Purpose: Calculate the new unit morale bonus modifier provided by the base and faction for a triad.
 Original Offset: 004E6400
-Return Value: TBD
-Status: Complete - testing
+Return Value: Morale bonus
+Status: Complete
 */
 uint32_t __cdecl morale_mod(uint32_t baseID, uint32_t factionID, uint32_t triad) {
 	uint32_t moraleMod = 0;
-	if (triad == TRIAD_LAND && (has_fac_built(FAC_COMMAND_CENTER, baseID) 
-		|| has_project(SP_COMMAND_NEXUS, factionID))) {
-		moraleMod = 2;
+	if (triad == TRIAD_LAND) {
+		if (has_fac_built(FAC_COMMAND_CENTER, baseID) || has_project(SP_COMMAND_NEXUS, factionID)) {
+			moraleMod = 2;
+		}
 	}
-	else if (triad == TRIAD_SEA && (has_fac_built(FAC_NAVAL_YARD, baseID)
-		|| has_project(SP_MARITIME_CONTROL_CENTER, factionID))) {
-		moraleMod = 2;
+	else if (triad == TRIAD_SEA) {
+		if (has_fac_built(FAC_NAVAL_YARD, baseID) 
+			|| has_project(SP_MARITIME_CONTROL_CENTER, factionID)) {
+			moraleMod = 2;
+		}
 	}
-	else if (triad == TRIAD_AIR && (has_fac_built(FAC_AEROSPACE_COMPLEX, baseID)
-		|| has_project(SP_CLOUDBASE_ACADEMY, factionID))) {
-		moraleMod = 2;
+	else if (triad == TRIAD_AIR) {
+		if (has_fac_built(FAC_AEROSPACE_COMPLEX, baseID) 
+			|| has_project(SP_CLOUDBASE_ACADEMY, factionID)) {
+			moraleMod = 2;
+		}
 	}
 	if (has_fac_built(FAC_BIOENHANCEMENT_CENTER, baseID)
 		|| has_project(SP_CYBORG_FACTORY, factionID)) {
@@ -487,10 +492,10 @@ uint32_t __cdecl morale_mod(uint32_t baseID, uint32_t factionID, uint32_t triad)
 }
 
 /*
-Purpose: TBD
+Purpose: Calculate the new native unit lifecycle bonus modifier provided by a base and faction.
 Original Offset: 004E65C0
-Return Value: TBD
-Status: Complete - testing
+Return Value: Lifecycle bonus
+Status: Complete
 */
 uint32_t __cdecl breed_mod(uint32_t baseID, uint32_t factionID) {
 	uint32_t breedMod = has_project(SP_XENOEMPATYH_DOME, factionID) ? 1 : 0;
@@ -517,32 +522,13 @@ uint32_t __cdecl breed_mod(uint32_t baseID, uint32_t factionID) {
 }
 
 /*
-Purpose: TBD
+Purpose: Calculate the number of native unit lifecycle/psi bonuses provided by a base and faction.
 Original Offset: 004E6740
-Return Value: TBD
-Status: Complete - testing
+Return Value: Native life modifier count
+Status: Complete
 */
 uint32_t __cdecl worm_mod(uint32_t baseID, uint32_t factionID) {
-	uint32_t wormMod = has_project(SP_XENOEMPATYH_DOME, factionID) ? 1 : 0;
-	if (has_project(SP_PHOLUS_MUTAGEN, factionID)) {
-		wormMod++;
-	}
-	if (has_project(SP_VOICE_OF_PLANET, factionID)) {
-		wormMod++;
-	}
-	if (has_fac_built(FAC_CENTAURI_PRESERVE, baseID)) {
-		wormMod++;
-	}
-	if (has_fac_built(FAC_TEMPLE_OF_PLANET, baseID)) {
-		wormMod++;
-	}
-	if (has_fac_built(FAC_BIOLOGY_LAB, baseID)) {
-		wormMod++;
-	}
-	if (has_fac_built(FAC_BIOENHANCEMENT_CENTER, baseID)
-		|| has_project(SP_CYBORG_FACTORY, factionID)) {
-		wormMod++;
-	}
+	uint32_t wormMod = breed_mod(baseID, factionID);
 	if (Players[factionID].rulePsi) {
 		wormMod++;
 	}
@@ -756,10 +742,10 @@ uint32_t __cdecl pop_goal_fac(int baseID) {
 	uint32_t factionID = Base[baseID].factionIDCurrent;
 	uint32_t limitMod = has_project(SP_ASCETIC_VIRTUES, factionID) ? 2 : 0;
 	int pop = Base[baseID].populationSize - limitMod + Players[factionID].rulePopulation;
-	if (pop >= Rules->PopLimitSansHabComplex && !has_fac_built(FAC_HAB_COMPLEX, baseID)) {
+	if (pop >= (int)Rules->PopLimitSansHabComplex && !has_fac_built(FAC_HAB_COMPLEX, baseID)) {
 		return FAC_HAB_COMPLEX;
 	}
-	if (pop >= Rules->PopLimitSansHabDome && !has_fac_built(FAC_HABITATION_DOME, baseID)) {
+	if (pop >= (int)Rules->PopLimitSansHabDome && !has_fac_built(FAC_HABITATION_DOME, baseID)) {
 		return FAC_HABITATION_DOME;
 	}
 	return 0; // Pop hasn't reached capacity or Base already has Hab Complex and Dome
@@ -794,10 +780,11 @@ uint32_t __cdecl pop_goal(int baseID) {
 }
 
 /*
-Purpose: Reset convoy orders once it reaches base? Or cancel action if needs energy?
+Purpose: Check if current base has had an energy shortfall. If so, reset all existing energy convoy 
+         orders for the faction. TODO: Revisit and find a way to only reset specific base convoys.
 Original Offset: 004F4DC0
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl base_energy_costs() {
 	if ((*BaseCurrent)->energySurplus >= 0 || *VehCurrentCount <= 0) {
