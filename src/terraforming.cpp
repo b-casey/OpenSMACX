@@ -28,10 +28,10 @@
 rules_terraforming *Terraforming = (rules_terraforming *)0x00691878;
 
 /*
-Purpose: Calculate the credit cost to lower or raise terrain at tile for the specified faction.
+Purpose: Calculate the credit cost to lower or raise the tile's terrain for the specified faction.
 Original Offset: 004C9420
 Return Value: Credit cost
-Status: Complete - testing
+Status: Complete
 */
 uint32_t __cdecl terraform_cost(int xCoord, int yCoord, uint32_t factionID) {
 	uint32_t alt = alt_at(xCoord, yCoord);
@@ -53,13 +53,13 @@ uint32_t __cdecl terraform_cost(int xCoord, int yCoord, uint32_t factionID) {
 		int cursorDist = cursor_dist(xCoord, yCoord, Base[baseID].xCoord, Base[baseID].yCoord);
 		cost *= range(cursorDist, 1, 100);
 		int baseID2 = base_find(xCoord, yCoord, -1, -1, factionID, -1);
-		if (baseID2 >= 0 && !(PlayersData[factionID].diploTreaties[Base[baseID2].factionIDCurrent] 
+		if (baseID2 >= 0 && !(PlayersData[factionID].diploTreaties[Base[baseID2].factionIDCurrent]
 			& DTREATY_PACT)) {
-			int cmp = (cursorDist * (Base[baseID2].populationSize + 2)) / 3;
-			int cmp2 = (cursor_dist(xCoord, yCoord, Base[baseID2].xCoord, Base[baseID2].yCoord)
+			int numProx = (cursorDist * (Base[baseID2].populationSize + 2)) / 3;
+			int denomProx = (cursor_dist(xCoord, yCoord, Base[baseID2].xCoord, Base[baseID2].yCoord)
 				* (Base[baseID].populationSize + 2)) / 3;
-			if (cmp2 && cmp && cmp2 < cmp) {
-				cost = (cost * cmp) / cmp2;
+			if (denomProx && numProx && denomProx < numProx) {
+				cost = (cost * numProx) / denomProx; // increase cost based on proximity ratio
 			}
 		}
 	}
@@ -97,7 +97,7 @@ Status: Complete
 */
 BOOL __cdecl terrain_avail(int terraformID, BOOL isSea, int factionID) {
 	int preqTech = *(&Terraforming[terraformID].preqTech + isSea);
-	if (preqTech < TechNone || ((terraformID == TERRA_RAISE_LAND || terraformID == TERRA_LOWER_LAND) 
+	if (preqTech < TechNone || ((terraformID == TERRA_RAISE_LAND || terraformID == TERRA_LOWER_LAND)
 		&& *GameRules & RULES_SCN_NO_TERRAFORMING)) {
 		return false;
 	}

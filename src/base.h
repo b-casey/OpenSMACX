@@ -317,7 +317,7 @@ struct base {
 	int specialistTotal;
 	int specialist_unk_1; // related to Governor controlling specialists, non-psych spec count?
 	/*
-	* Specialist types for the first 16 (see citizen_specialists, 4 bits per specialist) 
+	* Specialist types for the first 16 (see citizen_specialists, 4 bits per specialist)
 	* Stored from left to right in base view, with left most represented by lower bits of spec
 	* Specialists after 16th in base are auto assigned based on best_specialist()
 	* Isn't correct when specialistTotal is 0, not reset? Or Governor actively controlling specs?
@@ -523,6 +523,6 @@ OPENSMACX_API BOOL __cdecl is_objective(int baseID);
 OPENSMACX_API BOOL __cdecl transcending(int factionID);
 OPENSMACX_API BOOL __cdecl ascending(int factionID);
 OPENSMACX_API BOOL __cdecl redundant(int facilityID, int factionID);
-OPENSMACX_API BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID, 
+OPENSMACX_API BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID,
 	int queueCount);
 OPENSMACX_API int facility_offset(LPCSTR facilSearch);

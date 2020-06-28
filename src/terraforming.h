@@ -56,33 +56,33 @@ struct rules_terraforming {
 	LPSTR shortcuts;
 };
 
-const uint32_t terraformingBits[20][2] = { // terrain enhancement, incompatible enhancements on same tile 
+const uint32_t terraformingBits[20][2] = { // terrain enhancement, incompatible enhancements on same tile
 	BIT_FARM,          BIT_FOREST, // farm
 	BIT_SOIL_ENRICHER, BIT_FOREST, // soil enricher
-	BIT_MINE,          BIT_MINE | BIT_SOLAR_TIDAL | BIT_FOREST | BIT_CONDENSER | BIT_ECH_MIRROR 
-	                   | BIT_THERMAL_BORE | BIT_SENSOR_ARRAY, // mine
-	BIT_SOLAR_TIDAL,   BIT_MINE | BIT_SOLAR_TIDAL | BIT_FOREST | BIT_CONDENSER | BIT_ECH_MIRROR 
-	                   | BIT_THERMAL_BORE | BIT_SENSOR_ARRAY, // solar collector / tidal harness
-	BIT_FOREST,        BIT_MINE | BIT_FUNGUS | BIT_SOLAR_TIDAL | BIT_FARM | BIT_SOIL_ENRICHER 
-	                   | BIT_FOREST | BIT_CONDENSER | BIT_ECH_MIRROR | BIT_THERMAL_BORE, // forest
+	BIT_MINE,          BIT_MINE | BIT_SOLAR_TIDAL | BIT_FOREST | BIT_CONDENSER | BIT_ECH_MIRROR
+					   | BIT_THERMAL_BORE | BIT_SENSOR_ARRAY, // mine
+	BIT_SOLAR_TIDAL,   BIT_MINE | BIT_SOLAR_TIDAL | BIT_FOREST | BIT_CONDENSER | BIT_ECH_MIRROR
+					   | BIT_THERMAL_BORE | BIT_SENSOR_ARRAY, // solar collector / tidal harness
+	BIT_FOREST,        BIT_MINE | BIT_FUNGUS | BIT_SOLAR_TIDAL | BIT_FARM | BIT_SOIL_ENRICHER
+					   | BIT_FOREST | BIT_CONDENSER | BIT_ECH_MIRROR | BIT_THERMAL_BORE, // forest
 	BIT_ROAD,          0, // road
 	BIT_MAGTUBE,       0, // magtube
 	BIT_BUNKER,        BIT_AIRBASE, // bunker
 	BIT_AIRBASE,       BIT_BUNKER, // airbase
 	BIT_SENSOR_ARRAY,  BIT_MINE | BIT_SOLAR_TIDAL | BIT_CONDENSER | BIT_ECH_MIRROR
-	                   | BIT_THERMAL_BORE, // sensor
+					   | BIT_THERMAL_BORE, // sensor
 	0,                 BIT_FUNGUS, // fungus remove
-	BIT_FUNGUS,        BIT_MINE | BIT_SOLAR_TIDAL | BIT_FARM | BIT_SOIL_ENRICHER 
-	                   | BIT_FOREST, // fungus plant
-	BIT_CONDENSER,     BIT_MINE | BIT_SOLAR_TIDAL | BIT_FOREST | BIT_CONDENSER | BIT_ECH_MIRROR 
-	                   | BIT_THERMAL_BORE | BIT_SENSOR_ARRAY, // condenser
-	BIT_ECH_MIRROR,    BIT_MINE | BIT_SOLAR_TIDAL | BIT_FOREST | BIT_CONDENSER | BIT_ECH_MIRROR 
-	                   | BIT_THERMAL_BORE | BIT_SENSOR_ARRAY, // echelon mirror
-	BIT_THERMAL_BORE,  BIT_MINE | BIT_SOLAR_TIDAL | BIT_FARM | BIT_FOREST | BIT_CONDENSER 
-	                   | BIT_ECH_MIRROR | BIT_THERMAL_BORE | BIT_SENSOR_ARRAY, // thermal borehole
+	BIT_FUNGUS,        BIT_MINE | BIT_SOLAR_TIDAL | BIT_FARM | BIT_SOIL_ENRICHER
+					   | BIT_FOREST, // fungus plant
+	BIT_CONDENSER,     BIT_MINE | BIT_SOLAR_TIDAL | BIT_FOREST | BIT_CONDENSER | BIT_ECH_MIRROR
+					   | BIT_THERMAL_BORE | BIT_SENSOR_ARRAY, // condenser
+	BIT_ECH_MIRROR,    BIT_MINE | BIT_SOLAR_TIDAL | BIT_FOREST | BIT_CONDENSER | BIT_ECH_MIRROR
+					   | BIT_THERMAL_BORE | BIT_SENSOR_ARRAY, // echelon mirror
+	BIT_THERMAL_BORE,  BIT_MINE | BIT_SOLAR_TIDAL | BIT_FARM | BIT_FOREST | BIT_CONDENSER
+					   | BIT_ECH_MIRROR | BIT_THERMAL_BORE | BIT_SENSOR_ARRAY, // thermal borehole
 	0,                 0, // aquifer
 	0,                 0, // raise land
-	0,                 0, // lower land 
+	0,                 0, // lower land
 	0,                 0, // level terrain
 	BIT_MONOLITH,      BIT_SUPPLY_POD | BIT_NUTRIENT_RSC | BIT_RSC_BONUS, // monolith
 };

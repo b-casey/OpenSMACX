@@ -39,4 +39,4 @@ extern BOOL *ProbeTargetHasHSA;
 
 OPENSMACX_API int __cdecl steal_energy(uint32_t baseID);
 OPENSMACX_API int __cdecl mind_control(uint32_t baseID, uint32_t factionID, BOOL isCornerMarket);
-OPENSMACX_API int __cdecl success_rates(int id, int probeMorale, int difficultyMod, int baseID);
+OPENSMACX_API int __cdecl success_rates(uint32_t id, uint32_t morale, int diffModifier, int baseID);

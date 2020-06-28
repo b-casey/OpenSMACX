@@ -287,7 +287,7 @@ struct player_data {
 	int loanBalance[8]; // Loan balance remaining this faction owes another to be paid over term
 	int loanPayment[8]; // The per turn payment amount this faction owes another faction
 	char gap_104[32];
-	int integrityBlemishes;
+	int integrityBlemishes; // Blacken
 	int globalReputation; // ? integrity? related to signing treaties, freeing faction
 	int diploUnk_1[8]; // ? rights (vs wrongs below)? gift, bribe; Gifts and bribes we have received
 	int diploWrongs[8]; // number of times the player has double crossed (wronged) this faction
@@ -377,8 +377,8 @@ struct player_data {
 	uint32_t satODPDeployed;
 	int theoryOfEverything;
 	char techTradeSource[92];
-	int techAccumulated;
-	int techIDResearching;
+	int techAccumulated; // Research
+	int techIDResearching; // Researching
 	int techCost;
 	int earnedTechsSaved;
 	int netRandomEvent;
@@ -387,8 +387,8 @@ struct player_data {
 	BOOL AI_Tech;
 	BOOL AI_Wealth;
 	BOOL AI_Power;
-	int target_xCoord;
-	int target_yCoord;
+	int xCoordTarget;
+	int yCoordTarget;
 	int unk_28;
 	int councilCallTurn;
 	int unk_29[11]; // used by council code related to buying votes; vote id?
@@ -398,8 +398,8 @@ struct player_data {
 	char unk_33;
 	char unk_34;
 	char gap_462[2];
-	int unk_35;
-	int unk_36;
+	int planetEcology;
+	int baseIDAtkTarget; // Battle planning of base to attack, -1 if not set
 	int unk_37;
 	char savedQueueName[8][24]; // queue template
 	int savedQueueSize[8]; // queue template
@@ -544,7 +544,7 @@ OPENSMACX_API BOOL __cdecl at_goal(uint32_t factionID, int16_t type, int xCoord,
 OPENSMACX_API BOOL __cdecl at_site(uint32_t factionID, int16_t type, int xCoord, int yCoord);
 OPENSMACX_API void __cdecl wipe_goals(uint32_t factionID);
 OPENSMACX_API void __cdecl init_goals(uint32_t factionID);
-OPENSMACX_API void __cdecl del_site(uint32_t factionID, int16_t type, int xCoord, int yCoord, 
+OPENSMACX_API void __cdecl del_site(uint32_t factionID, int16_t type, int xCoord, int yCoord,
 	int proximity);
 OPENSMACX_API uint32_t __cdecl corner_market(uint32_t factionID);
 OPENSMACX_API void __cdecl see_map_check();

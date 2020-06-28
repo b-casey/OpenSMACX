@@ -21,7 +21,7 @@
 #include "maininterface.h"
 
  /*
-  * Temp functions and offset pointers. This allows interfacing with parts of the exe not yet 
+  * Temp functions and offset pointers. This allows interfacing with parts of the exe not yet
   * decompiled. Eventually, this will be removed.
   */
 
@@ -67,21 +67,16 @@ typedef BOOL func11(int, int, int);
 extern func11 *wants_to_attack;
 // Time
 typedef void func30(int);
-extern func30* blink_timer;
-extern func30* blink2_timer;
-extern func30* line_timer;
-extern func30* turn_timer;
+extern func30 *blink_timer;
+extern func30 *blink2_timer;
+extern func30 *line_timer;
+extern func30 *turn_timer;
 
 // testing
 typedef int *func8(LPSTR, LPSTR);
 extern func8 *parse_string_OG;
 typedef void func12(int);
 extern func12 *enemy_capabilities_OG;
-//
-typedef int funct0(int, int, int, int);
-extern funct0 *success_rates_OG;
-typedef uint32_t funct1(int, int, uint32_t);
-extern funct1 *terraform_cost_OG;
 ///
 extern char1032 *stringTemp;
 extern char256 *ParseStrBuffer;

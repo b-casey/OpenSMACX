@@ -23,12 +23,12 @@
 #include "strings.h"
 #include "text.h"
 
-/*
-Purpose: Trim trailing spaces inline from end of string
-Original Offset: 00600780
-Return Value: None
-Status: Complete
-*/
+ /*
+ Purpose: Trim trailing spaces inline from end of string
+ Original Offset: 00600780
+ Return Value: None
+ Status: Complete
+ */
 void __cdecl purge_trailing(LPSTR input) {
 	LPSTR trim = input + strlen(input);
 	while ((*(trim - 1) - ' ') == 0 && (trim != input)) {
@@ -76,8 +76,8 @@ void __cdecl kill_lf(LPSTR str) {
 }
 
 /*
-Purpose: Remove newline (Windows: CR LF). Fixes bug with TextIndex having CR at end "HEADER\r" 
-         breaking compare. This is because it uses Filemap vs fopen(x, "rt").
+Purpose: Remove newline (Windows: CR LF). Fixes bug with TextIndex having CR at end "HEADER\r"
+		 breaking compare. This is because it uses Filemap vs fopen(x, "rt").
 Original Offset: n/a
 Return Value: n/a
 Status: Complete
@@ -156,7 +156,7 @@ Return Value: FILE ptr
 Status: Complete with two versions of fopen to prevent crash. Incompatibility with
 		newer SDK version of fopen/fopen_s. Revisit once more code is redirected to dll.
 */
-FILE * __cdecl env_open_old(LPCSTR source, LPCSTR mode) {
+FILE *__cdecl env_open_old(LPCSTR source, LPCSTR mode) {
 	LPCSTR srcCheck = filefind_get(source);
 	if (!srcCheck) {
 		srcCheck = source;
@@ -164,7 +164,7 @@ FILE * __cdecl env_open_old(LPCSTR source, LPCSTR mode) {
 	return _fopen(srcCheck, mode);
 }
 
-FILE * __cdecl env_open(LPCSTR source, LPCSTR mode) {
+FILE *__cdecl env_open(LPCSTR source, LPCSTR mode) {
 	LPCSTR srcCheck = filefind_get(source);
 	if (!srcCheck) {
 		srcCheck = source;
@@ -191,7 +191,7 @@ Original Offset: 00625E30
 Return Value: 0: no errors; 3: error
 Status: Complete
 */
-int __cdecl parse_num(int id, int value) {
+int __cdecl parse_num(uint32_t id, int value) {
 	if (id > 9) {
 		return 3; // error
 	}
@@ -205,7 +205,7 @@ Original Offset: 00625E50
 Return Value: 0: no errors; 3: error
 Status: Complete
 */
-int __cdecl parse_say(int id, int input, int gender, int pluralality) {
+int __cdecl parse_say(uint32_t id, int input, int gender, int pluralality) {
 	if (id > 9) {
 		return 3;
 	}
@@ -227,7 +227,7 @@ Original Offset: 00625EC0
 Return Value: 0: no errors; 3: error
 Status: Complete
 */
-int __cdecl parse_says(int id, LPCSTR input, int gender, int pluralality) {
+int __cdecl parse_says(uint32_t id, LPCSTR input, int gender, int pluralality) {
 	if (!input || id > 9) {
 		return 3;
 	}
@@ -269,7 +269,7 @@ int __cdecl htoi(LPCSTR str) {
 		result *= 16;
 		if (isdigit(*str)) {
 			result += *str - '0';
-		} 
+		}
 		else {
 			result += toupper(*str) - '7';
 		}
@@ -288,20 +288,20 @@ int __cdecl stoi(LPCSTR str) {
 	if (*str == '0') {
 		*str++;
 		switch (*str) {
-			case 'B':
-			case 'b':
-				*str++;
-				return btoi(str);
-			case 'X':
-			case 'x':
-				*str++;
-				return htoi(str);
-			case 'D':
-			case 'd':
-				*str++;
-				return atoi(str);
-			default:
-				return atoi(str);
+		case 'B':
+		case 'b':
+			*str++;
+			return btoi(str);
+		case 'X':
+		case 'x':
+			*str++;
+			return htoi(str);
+		case 'D':
+		case 'd':
+			*str++;
+			return atoi(str);
+		default:
+			return atoi(str);
 		}
 	}
 	return atoi(str);
@@ -327,8 +327,8 @@ LPSTR __cdecl findnum(LPSTR str) {
 }
 
 /*
-Purpose: Check to see if JACKAL lib version is up to date. Pretty pointless but might add OpenSMACX 
-         check in future.
+Purpose: Check to see if JACKAL lib version is up to date. Pretty pointless but might add OpenSMACX
+		 check in future.
 Original Offset: 0062D570
 Return Value: Was there an error? true/false
 Status: Complete
@@ -364,211 +364,182 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
 		}
 		LPSTR parsingInput = &input[1];
 		switch (var[1]) {
-			case '$': // done -> needs testing
-			{
-				int len = (var - input) + 1;
-				strncpy_s(output, 1024, input, len);
-				output += len;
-				input = var + 2;
-				*output = 0;
-			}
-			break;
-			case 'H': // done -> needs testing
-			{
-				if (strncmp(var, "$HEX", 4)) {
-					int number = var[4] - '0';
-					if (number > 9) {
-						return 14; // parse error
-					}
-					int len = var - input;
-					strncpy_s(output, 1024, input, len);
-					output += len;
-					*output = 0;
-					input = var + 5;
-					char outputNum[5];
-					_itoa_s(ParseNumTable[number], outputNum, 5, 10);
-					strcat_s(output, 1024, outputNum);
-					output += strlen(output);
+		case '$': // done -> needs testing
+		{
+			int len = (var - input) + 1;
+			strncpy_s(output, 1024, input, len);
+			output += len;
+			input = var + 2;
+			*output = 0;
+		}
+		break;
+		case 'H': // done -> needs testing
+		{
+			if (strncmp(var, "$HEX", 4)) {
+				int number = var[4] - '0';
+				if (number > 9) {
+					return 14; // parse error
 				}
-				else {
-					LPSTR num = findnum(var);
-					if (!num) {
-						break;
-					}
-					int number = num[0] - '0';
-					if (number > 9) {
-						return 14; // parse error
-					}
-					int len = (var - input) + 1;
-					strncpy_s(output, 1024, input, len);
-					output += len;
-					*output = 0;
-					input = num + 1;
-					strcat_s(output, 1024, ParseStrBuffer[number].str);
-					output += strlen(output);
-				}
-			}
-			break;
-			case 'N': // done -> needs testing
-			{
-				if (strncmp(var, "$NUMBER", 7)) {
-					int number = var[7] - '0';
-					if (number > 9) {
-						return 14; // parse error
-					}
-					int len = var - input;
-					strncpy_s(output, 1024, input, len);
-					output += len;
-					*output = 0;
-					input = var + 8;
-					char outputNum[5];
-					_itoa_s(ParseNumTable[number], outputNum, 5, 10);
-					strcat_s(output, 1024, outputNum);
-					output += strlen(output);
-				}
-				else if (strncmp(var, "$NUM", 4)) {
-					int number = var[4] - '0';
-					if (number > 9) {
-						return 14; // parse error
-					}
-					int len = var - input;
-					strncpy_s(output, 1024, input, len);
-					output += len;
-					*output = 0;
-					input = var + 5;
-					char outputNum[5];
-					_itoa_s(ParseNumTable[number], outputNum, 5, 10);
-					strcat_s(output, 1024, outputNum);
-					output += strlen(output);
-				}
-				else {
-					LPSTR num = findnum(var);
-					if (!num) {
-						break;
-					}
-					int number = num[0] - '0';
-					if (number > 9) {
-						return 14; // parse error
-					}
-					int len = var - input;
-					strncpy_s(output, 1024, input, len);
-					output += len;
-					*output = 0;
-					input = num + 1;
-					strcat_s(output, 1024, ParseStrBuffer[number].str);
-					output += strlen(output);
-				}
-			}
-			break;
-			case '<':
-			{
 				int len = var - input;
 				strncpy_s(output, 1024, input, len);
 				output += len;
 				*output = 0;
-				LPSTR endBracket = strstr(var, ">");
-				if (!endBracket) {
-					input = var + 1;
-					continue;
-				}
-				var += 2;
-				input = endBracket + 1;
-				purge_leading(var);
-				int gender, plural = 0, num = -1;
-				switch (var[0]) {
-					case 'M':
-					case 'm':
-					{
-						gender = 0;
-					}
-					break;
-					case 'F':
-					case 'f':
-					{
-						gender = 1;
-					}
-					break;
-					case 'N':
-					case 'n':
-					{
-						gender = 2;
-					}
-					break;
-					case '#':
-					{
-						//
-					}
-					break;
-					default:
-					{
-						//
-					}
+				input = var + 5;
+				char outputNum[5];
+				_itoa_s(ParseNumTable[number], outputNum, 5, 10);
+				strcat_s(output, 1024, outputNum);
+				output += strlen(output);
+			}
+			else {
+				LPSTR num = findnum(var);
+				if (!num) {
 					break;
 				}
-				/*
-				else if (szGender == '#') {
-					nNum = var[1] - '0';
-					if (nNum > 9 || nNum < 0) {
-						break;
-					}
-					var++;
-					nPlural = (ParseNumTable[nNum] == 1) ? 0 : 1;
+				int number = num[0] - '0';
+				if (number > 9) {
+					return 14; // parse error
 				}
-				else {
-					nNum = szGender - '0';
-					if (nNum > 9 || nNum < 0) {
-						break;
-					}
-					nPlural = ParseStrPlurality[nNum];
-					nGender = ParseStrGender[nNum];
+				int len = (var - input) + 1;
+				strncpy_s(output, 1024, input, len);
+				output += len;
+				*output = 0;
+				input = num + 1;
+				strcat_s(output, 1024, ParseStrBuffer[number].str);
+				output += strlen(output);
+			}
+		}
+		break;
+		case 'N': // done -> needs testing
+		{
+			if (strncmp(var, "$NUMBER", 7)) {
+				int number = var[7] - '0';
+				if (number > 9) {
+					return 14; // parse error
+				}
+				int len = var - input;
+				strncpy_s(output, 1024, input, len);
+				output += len;
+				*output = 0;
+				input = var + 8;
+				char outputNum[5];
+				_itoa_s(ParseNumTable[number], outputNum, 5, 10);
+				strcat_s(output, 1024, outputNum);
+				output += strlen(output);
+			}
+			else if (strncmp(var, "$NUM", 4)) {
+				int number = var[4] - '0';
+				if (number > 9) {
+					return 14; // parse error
+				}
+				int len = var - input;
+				strncpy_s(output, 1024, input, len);
+				output += len;
+				*output = 0;
+				input = var + 5;
+				char outputNum[5];
+				_itoa_s(ParseNumTable[number], outputNum, 5, 10);
+				strcat_s(output, 1024, outputNum);
+				output += strlen(output);
+			}
+			else {
+				LPSTR num = findnum(var);
+				if (!num) {
+					break;
+				}
+				int number = num[0] - '0';
+				if (number > 9) {
+					return 14; // parse error
+				}
+				int len = var - input;
+				strncpy_s(output, 1024, input, len);
+				output += len;
+				*output = 0;
+				input = num + 1;
+				strcat_s(output, 1024, ParseStrBuffer[number].str);
+				output += strlen(output);
+			}
+		}
+		break;
+		case '<':
+		{
+			int len = var - input;
+			strncpy_s(output, 1024, input, len);
+			output += len;
+			*output = 0;
+			LPSTR endBracket = strstr(var, ">");
+			if (!endBracket) {
+				input = var + 1;
+				continue;
+			}
+			var += 2;
+			input = endBracket + 1;
+			purge_leading(var);
+			int gender, plural = 0, num = -1;
+			switch (var[0]) {
+			case 'M':
+			case 'm':
+			{
+				gender = 0;
+			}
+			break;
+			case 'F':
+			case 'f':
+			{
+				gender = 1;
+			}
+			break;
+			case 'N':
+			case 'n':
+			{
+				gender = 2;
+			}
+			break;
+			case '#':
+			{
+				//
+			}
+			break;
+			default:
+			{
+				//
+			}
+			break;
+			}
+			/*
+			else if (szGender == '#') {
+				nNum = var[1] - '0';
+				if (nNum > 9 || nNum < 0) {
+					break;
 				}
 				var++;
-				if (nNum < 0) {
-					if (isdigit(var[0])) {
-						nNum = var[0] - '1';
-						var++;
-					}
-				}
-				purge_leading(var);
-				if (var[0] == ':') {
-					var++;
-				}
-				// unfinished
-				*/
+				nPlural = (ParseNumTable[nNum] == 1) ? 0 : 1;
 			}
-			break;
-			case 'L': // done -> needs testing
-			{
-				if (strncmp(var, "$LINK<", 6)) {
-					LPSTR num = findnum(var);
-					if (!num) {
-						var = 0;
-						break;
-					}
-					int number = num[0] - '0';
-					if (number > 9) {
-						return 14; // parse error
-					}
-					int len = var - input;
-					strncpy_s(output, 1024, input, len);
-					output += len;
-					*output = 0;
-					input = num + 1;
-					strcat_s(output, 1024, ParseStrBuffer[number].str);
-					output += strlen(output);
-				}
-				else {
-					int len = (var - input) + 1;
-					strncpy_s(output, 1024, input, len);
-					output += len;
-					*output = 0;
-					input = var + 1;
+			else {
+				nNum = szGender - '0';
+				if (nNum > 9 || nNum < 0) {
 					break;
 				}
+				nPlural = ParseStrPlurality[nNum];
+				nGender = ParseStrGender[nNum];
 			}
-			break;
-			default: // done -> needs testing
-			{
+			var++;
+			if (nNum < 0) {
+				if (isdigit(var[0])) {
+					nNum = var[0] - '1';
+					var++;
+				}
+			}
+			purge_leading(var);
+			if (var[0] == ':') {
+				var++;
+			}
+			// unfinished
+			*/
+		}
+		break;
+		case 'L': // done -> needs testing
+		{
+			if (strncmp(var, "$LINK<", 6)) {
 				LPSTR num = findnum(var);
 				if (!num) {
 					var = 0;
@@ -586,7 +557,36 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
 				strcat_s(output, 1024, ParseStrBuffer[number].str);
 				output += strlen(output);
 			}
-			break;
+			else {
+				int len = (var - input) + 1;
+				strncpy_s(output, 1024, input, len);
+				output += len;
+				*output = 0;
+				input = var + 1;
+				break;
+			}
+		}
+		break;
+		default: // done -> needs testing
+		{
+			LPSTR num = findnum(var);
+			if (!num) {
+				var = 0;
+				break;
+			}
+			int number = num[0] - '0';
+			if (number > 9) {
+				return 14; // parse error
+			}
+			int len = var - input;
+			strncpy_s(output, 1024, input, len);
+			output += len;
+			*output = 0;
+			input = num + 1;
+			strcat_s(output, 1024, ParseStrBuffer[number].str);
+			output += strlen(output);
+		}
+		break;
 		}
 	} while (var);
 
@@ -608,11 +608,9 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
 		/*
 		int nLoop = 0;
 		do {
-
-
 				int nOffset = (nLoop < 3) + 3;
 				char szVowel = tolower(partFound[nOffset]);
-				if (szVowel == 'a' || szVowel == 'e' || szVowel == 'i' 
+				if (szVowel == 'a' || szVowel == 'e' || szVowel == 'i'
 				|| szVowel == 'o' || szVowel == 'u' || szVowel == 'y' || szVowel == 'h') {
 					int nDiff = strlen(output) - strlen(partFound);
 					strcpy_s(&output[nDiff + nOffset - 1], 1024, &output[nDiff + nOffset]);
@@ -654,8 +652,8 @@ void filefind_set_alternative(LPCSTR path) {
 }
 
 /*
-Purpose: Initialize filefind struct and CD check with callback if not complete install. Changed 
-         logic since most installs will be on HDD making CD check less important.
+Purpose: Initialize filefind struct and CD check with callback if not complete install. Changed
+		 logic since most installs will be on HDD making CD check less important.
 Original Offset: 00600400
 Return Value: Zero: no errors; Non-zero: error
 Status: WIP
@@ -778,7 +776,7 @@ uint32_t __cdecl bit_count(uint32_t bitfield) {
 
 /*
 Purpose: Count number of bits set (signed). Added a fix to prevent an infinite loop. Only referenced
-         by one GraphicWin function.
+		 by one GraphicWin function.
 Original Offset: 00628AB0
 Return Value: Bit count
 Status: Complete
@@ -822,7 +820,7 @@ void __cdecl swap(int *var1, int *var2) {
 
 /*
 Purpose: Swap the values of two 8-bit variables. Added an additional check when swapping the same
-         memory location. Future: convert to MACRO?
+		 memory location. Future: convert to MACRO?
 Original Offset: 00628A80
 Return Value: n/a
 Status: Complete
@@ -838,8 +836,8 @@ void __cdecl swap(uint8_t *var1, uint8_t *var2) {
 }
 
 /*
-Purpose: Shift numerator to left by 16 then divide denominator. Added a check to prevent divide by 
-         zero crash.
+Purpose: Shift numerator to left by 16 then divide denominator. Added a check to prevent divide by
+		 zero crash.
 Original Offset: 00628AD0
 Return Value: Quotient
 Status: Complete
@@ -853,7 +851,7 @@ int __cdecl fixed_div(int numer, int denom) {
 
 /*
 Purpose: Reverse string search for last occurrence of specified character. Replaced searching logic
-         with strrchr() that does same thing. End parameter can be removed in future.
+		 with strrchr() that does same thing. End parameter can be removed in future.
 Original Offset: 00628AF0
 Return Value: Position of character or null if not found.
 Status: Complete
@@ -928,7 +926,7 @@ uint32_t __cdecl checksum_password(LPCSTR password) {
 
 /*
 Purpose: Calculate a random value within provided bounds. The 2nd string parameter is unused. It
-         was possibly meant to have the random value append to it. Left in for compatibility.
+		 was possibly meant to have the random value append to it. Left in for compatibility.
 Original Offset: 00579770
 Return Value: Randomized value
 Status: Complete
@@ -938,10 +936,10 @@ uint32_t __cdecl rnd(int bounds, LPSTR UNUSED(input)) {
 }
 
 /*
-Purpose: Create an error pop-up and write the parameters to the debug log.
+Purpose: Create a debug error pop-up with both messages and numbers then write these values to log.
 Original Offset: 00538F30
 Return Value: n/a
-Status: Complete - test
+Status: Complete
 */
 void __cdecl danger(LPCSTR msg1, LPCSTR msg2, int num1, int num2, int num3) {
 	parse_says(0, msg1, -1, -1);
