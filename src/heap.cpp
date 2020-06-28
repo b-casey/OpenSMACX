@@ -1,5 +1,6 @@
 /*
- * Copyright 2013-2014 Brendan Casey.
+ * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by

@@ -23,12 +23,12 @@
 #include "strings.h"
 #include "text.h"
 
- /*
- Purpose: Trim trailing spaces inline from end of string
- Original Offset: 00600780
- Return Value: None
- Status: Complete
- */
+/*
+Purpose: Trim trailing spaces inline from end of string
+Original Offset: 00600780
+Return Value: None
+Status: Complete
+*/
 void __cdecl purge_trailing(LPSTR input) {
 	LPSTR trim = input + strlen(input);
 	while ((*(trim - 1) - ' ') == 0 && (trim != input)) {

@@ -21,7 +21,7 @@
 
 /*
 Purpose: Initialize Filemap by opening a file with WRITE access. BOOL toggles if file is accessed
-		sequentially or randomly.
+		 sequentially or randomly.
 Original Offset: 006283A0
 Return Value: Pointer to initialized Filemap
 Status: Complete

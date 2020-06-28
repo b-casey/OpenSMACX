@@ -18,12 +18,12 @@
 #include "stdafx.h"
 #include "random.h"
 
- /*
- Purpose: Updates seed value. Original code after some convoluted XORs simplified to 'seed = param'.
- Original Offset: 00625750
- Return Value: n/a
- Status: Complete
- */
+/*
+Purpose: Updates seed value. Original code after some convoluted XORs simplified to 'seed = param'.
+Original Offset: 00625750
+Return Value: n/a
+Status: Complete
+*/
 void Random::reseed(uint32_t reseedValue) { seed = reseedValue; }
 
 /*

@@ -19,12 +19,12 @@
 #include "temp.h"
 #include "log.h"
 
- /*
- Purpose: Initialize log file
- Original Offset: 00626040
- Return Value: Non-zero error; Zero successful
- Status: Complete
- */
+/*
+Purpose: Initialize log file
+Original Offset: 00626040
+Return Value: Non-zero error; Zero successful
+Status: Complete
+*/
 int Log::init(LPCSTR input) {
 	if (!input) {
 		return 16;

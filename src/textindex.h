@@ -18,10 +18,10 @@
 #pragma once
 #include "heap.h"
 
- /*
- * Designed to speed up the time it takes to find string resources
- * in text files by creating an index of the file sections prefixed by '#'
- */
+/*
+* Designed to speed up the time it takes to find string resources
+* in text files by creating an index of the file sections prefixed by '#'
+*/
 class OPENSMACX_API TextIndex {
 	char fileName[256]; // name of file to be mapped
 	uint32_t sectionCount; // number of section entries
@@ -40,12 +40,12 @@ public:
 };
 
 /*
-// global
-Can skip setting TxtIndex constructor/destructor; Messy vector logic otherwise trying to assign to
-existing memory location. Existing code maps to class TextIndex() and ~TextIndex() that redirect to
-dll so no need replace them. Revisit in future.
-void __cdecl `dynamic initializer for 'TxtIndex''(): 005FD4E0
-void __cdecl `dynamic atexit destructor for 'TxtIndex''(): 005FD510
+* global
+* Can skip setting TxtIndex constructor/destructor; Messy vector logic otherwise trying to assign to
+* existing memory location. Existing code maps to class TextIndex() and ~TextIndex() that redirect to
+* dll so no need replace them. Revisit in future.
+* void __cdecl `dynamic initializer for 'TxtIndex''(): 005FD4E0
+* void __cdecl `dynamic atexit destructor for 'TxtIndex''(): 005FD510
 */
 constexpr int MaxTextIndexNum = 4;
 extern TextIndex *TxtIndex;

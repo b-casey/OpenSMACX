@@ -31,7 +31,7 @@
 #include "log.h"
 #include "probe.h"
 
- // built-in functions > used to prevent crash from mixed alloc/free SDKs
+// built-in functions > used to prevent crash from mixed alloc/free SDKs
 func1 *_malloc = (func1 *)0x006470A6;
 func2 *_free = (func2 *)0x00644EF2;
 func3 *_fopen = (func3 *)0x00645646;

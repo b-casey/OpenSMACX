@@ -23,7 +23,7 @@
 
 /*
 Purpose: Read specified file in from parameter and create an index of section headers ("#EXAMPLE").
-		Store the file offset of each section for improved search time.
+		 Store the file offset of each section for improved search time.
 Original Offset: 005FDF80
 Return Value: n/a
 Status: Complete

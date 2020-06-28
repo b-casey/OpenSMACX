@@ -63,7 +63,7 @@ Status: Complete
 */
 BOOL __cdecl on_map(int xCoord, int yCoord) {
 	return yCoord >= 0 && yCoord < (int)*MapVerticalBounds
-		&&xCoord >= 0 && xCoord < (int)*MapHorizontalBounds;
+		&& xCoord >= 0 && xCoord < (int)*MapHorizontalBounds;
 }
 
 /*

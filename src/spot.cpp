@@ -19,12 +19,12 @@
 #include "spot.h"
 #include "general.h" // mem_get()
 
- /*
- Purpose: Shutdown instance of Spot.
- Original Offset: 005FA830
- Return Value: n/a
- Status: Complete
- */
+/*
+Purpose: Shutdown instance of Spot.
+Original Offset: 005FA830
+Return Value: n/a
+Status: Complete
+*/
 void Spot::shutdown() {
 	if (spots) {
 		free(spots);

@@ -30,10 +30,10 @@ class OPENSMACX_API Text {
 	LPSTR bufferItem;   // (+0x15C)
 
 public:
-	Text() : currentPos(0), textFile(0), bufferGet(0), bufferItem(0) {
+	Text() : currentPos(0), textFile(0), bufferGet(0), bufferItem(0) { // 005FD860
 		fileName[0] = 0;
 		filePath[0] = 0;
-	} // 005FD860
+	}
 	Text(size_t size) : currentPos(0), textFile(0), bufferGet(0), bufferItem(0) { // 005FD880
 		fileName[0] = 0; filePath[0] = 0;
 		bufferGet = (LPSTR)mem_get(size);
