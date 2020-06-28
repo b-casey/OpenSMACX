@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ Original Offset: 00616260
 Return Value: n/a
 Status: Complete
 */
-void Time::init(void (__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res) {
+void Time::init(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res) {
 	stop();
 	unkToggle = 0;
 	callback1 = callback;
@@ -47,7 +47,7 @@ Original Offset: 006162D0
 Return Value: n/a
 Status: Complete
 */
-void Time::init(void (__cdecl *callback)(int, int), int param, int param2, 
+void Time::init(void(__cdecl *callback)(int, int), int param, int param2,
 	uint32_t cnt, uint32_t res) {
 	stop();
 	unkToggle = 0;
@@ -67,7 +67,7 @@ Original Offset: 00616350
 Return Value: Zero success, non-zero error
 Status: Complete
 */
-uint32_t Time::start(void(__cdecl * callback)(int), int param, uint32_t cnt, uint32_t res) {
+uint32_t Time::start(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res) {
 	init(callback, param, cnt, res);
 	if (!callback) {
 		return 7;
@@ -89,7 +89,7 @@ Original Offset: 00616410
 Return Value: Zero success, non-zero error
 Status: Complete
 */
-uint32_t Time::start(void(__cdecl * callback)(int, int), int param, int param2,
+uint32_t Time::start(void(__cdecl *callback)(int, int), int param, int param2,
 	uint32_t cnt, uint32_t res) {
 	init(callback, param, param2, cnt, res);
 	if (!callback) {
@@ -112,7 +112,7 @@ Original Offset: 006164D0
 Return Value: Zero success, non-zero error
 Status: Complete
 */
-uint32_t Time::pulse(void(__cdecl * callback)(int), int param, uint32_t cnt, uint32_t res) {
+uint32_t Time::pulse(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res) {
 	init(callback, param, cnt, res);
 	if (!callback) {
 		return 7;
@@ -137,7 +137,7 @@ Original Offset: 00616590
 Return Value: Zero success, non-zero error
 Status: Complete
 */
-uint32_t Time::pulse(void(__cdecl * callback)(int, int), int param, int param2,
+uint32_t Time::pulse(void(__cdecl *callback)(int, int), int param, int param2,
 	uint32_t cnt, uint32_t res) {
 	init(callback, param, param2, cnt, res);
 	if (!callback) {
@@ -166,7 +166,7 @@ uint32_t Time::start() {
 	}
 	unkToggle &= ~1;
 	if (count < 50) {
-		idEvent = timeSetEvent(count, resolution, (LPTIMECALLBACK)MultimediaProc, 
+		idEvent = timeSetEvent(count, resolution, (LPTIMECALLBACK)MultimediaProc,
 			(UINT_PTR)this, TIME_PERIODIC);
 	}
 	else {
@@ -242,9 +242,9 @@ Original Offset: 006167E0
 Return Value: n/a
 Status: Complete
 */
-void Time::TimerProc(HWND UNUSED(hwnd), uint32_t UNUSED(msg), UINT_PTR idTimer, 
+void Time::TimerProc(HWND UNUSED(hwnd), uint32_t UNUSED(msg), UINT_PTR idTimer,
 	DWORD UNUSED(elapsed)) {
-	if (idTimer && (!TimeModal || idTimer == (UINT_PTR)TimeModal) 
+	if (idTimer && (!TimeModal || idTimer == (UINT_PTR)TimeModal)
 		&& !reinterpret_cast<Time *>(idTimer)->unk_1) {
 		PostMessageA(*HandleMain, WM_USER | WM_CREATE, idTimer, 0);
 		reinterpret_cast<Time *>(idTimer)->unk_1 = 1;
@@ -258,7 +258,7 @@ Return Value: n/a
 Status: Complete
 */
 void Time::MultimediaProc(uint32_t UNUSED(timerID), uint32_t UNUSED(msg), DWORD_PTR dwUser,
-    DWORD_PTR UNUSED(dw1), DWORD_PTR UNUSED(dw2)) {
+	DWORD_PTR UNUSED(dw1), DWORD_PTR UNUSED(dw2)) {
 	if (dwUser && (!TimeModal || dwUser == (DWORD_PTR)TimeModal)
 		&& !reinterpret_cast<Time *>(dwUser)->unk_1) {
 		PostMessageA(*HandleMain, WM_USER | WM_CREATE, dwUser, 0);
@@ -273,7 +273,7 @@ Time *BlinkTimer = (Time *)0x00915688;
 Time *Blink2Timer = (Time *)0x00939EB0;
 Time *GoTimer = (Time *)0x00939E60;
 Time *ConsoleTimer = (Time *)0x00939E88;
- 
+
 /*
 Purpose: Start global timers.
 Original Offset: 0050F3D0

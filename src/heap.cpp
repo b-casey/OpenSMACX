@@ -87,7 +87,7 @@ LPVOID Heap::get(size_t reqSize) {
 				"Aborting due to a heap shortage!\n"
 				"Base size: %d\n"
 				"Free size: %d\n"
-				"Requested size: %d", 
+				"Requested size: %d",
 				baseSize, freeSize, reqSize);
 			MessageBoxA(NULL, szError, "Heap Notice!!", MB_OK);
 			exit(3);

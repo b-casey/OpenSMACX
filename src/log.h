@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@ class OPENSMACX_API Log {
 	BOOL isDisabled;
 
 public:
-	Log(): logFile(0), isDisabled(false) { } // 00625FB0
-	Log(LPCSTR input): logFile(0), isDisabled(false) { // 00625FC0
+	Log() : logFile(0), isDisabled(false) { } // 00625FB0
+	Log(LPCSTR input) : logFile(0), isDisabled(false) { // 00625FC0
 		if (input) {
 			int len = strlen(input) + 1;
 			logFile = (LPSTR)mem_get(len);
@@ -38,7 +38,7 @@ public:
 		}
 	}
 	~Log() { if (logFile) { free(logFile); logFile = 0; } } // 00626020
-	
+
 	int init(LPCSTR input);
 	void reset();
 	void say(LPCSTR str1, LPCSTR str2, int num1, int num2, int num3);

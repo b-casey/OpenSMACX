@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,8 @@
 #include "general.h" // filefind_get
 
 /*
-Purpose: Initialize Filemap by opening a file with WRITE access. BOOL toggles if file is accessed 
-         sequentially or randomly.
+Purpose: Initialize Filemap by opening a file with WRITE access. BOOL toggles if file is accessed
+		sequentially or randomly.
 Original Offset: 006283A0
 Return Value: Pointer to initialized Filemap
 Status: Complete
@@ -32,7 +32,7 @@ Filemap *Filemap::init(LPCSTR fileName, BOOL isSequential) {
 }
 
 /*
-Purpose: Initialize Filemap by opening a random access file with WRITE access. 
+Purpose: Initialize Filemap by opening a random access file with WRITE access.
 Original Offset: 006283C0
 Return Value: Pointer to initialized Filemap
 Status: Complete
@@ -54,7 +54,7 @@ LPVOID Filemap::open_read(LPCSTR fileName, BOOL isSequential) {
 	if (!filePaths) {
 		filePaths = fileName;
 	}
-	hFile = CreateFileA(filePaths, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL 
+	hFile = CreateFileA(filePaths, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL
 		| (isSequential ? FILE_FLAG_SEQUENTIAL_SCAN : FILE_FLAG_RANDOM_ACCESS), NULL);
 	if (hFile == INVALID_HANDLE_VALUE) {
 		GetLastError(); // failed to read file
@@ -84,8 +84,8 @@ LPVOID Filemap::open(LPCSTR fileName, BOOL isSequential) {
 	if (!filePaths) {
 		filePaths = fileName;
 	}
-	hFile = CreateFileA(filePaths, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 
-		FILE_ATTRIBUTE_NORMAL | 
+	hFile = CreateFileA(filePaths, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL |
 		(isSequential ? FILE_FLAG_SEQUENTIAL_SCAN : FILE_FLAG_RANDOM_ACCESS), NULL);
 	if (hFile == INVALID_HANDLE_VALUE) {
 		GetLastError(); // failed to read file
@@ -113,7 +113,7 @@ LPVOID Filemap::create(LPCSTR fileName, uint32_t size, BOOL isSequential) {
 	close();
 	fileSize = size;
 	hFile = CreateFileA(fileName, GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
-		FILE_ATTRIBUTE_NORMAL | 
+		FILE_ATTRIBUTE_NORMAL |
 		(isSequential ? FILE_FLAG_SEQUENTIAL_SCAN : FILE_FLAG_RANDOM_ACCESS), NULL);
 	if (hFile == INVALID_HANDLE_VALUE) {
 		GetLastError();
@@ -159,8 +159,8 @@ void Filemap::close() {
 }
 
 /*
-Purpose: Close file and set end based on difference between mapViewAddr and newAddr. This can be 
-         used to truncate existing tmp files. Assumes file has WRITE access.
+Purpose: Close file and set end based on difference between mapViewAddr and newAddr. This can be
+		 used to truncate existing tmp files. Assumes file has WRITE access.
 Original Offset: 00628810
 Return Value: n/a
 Status: Complete

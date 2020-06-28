@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
  /*
   * Scroll class
   */
-class OPENSMACX_API Scroll: GraphicWin {
+class OPENSMACX_API Scroll : GraphicWin {
 	uint32_t field_A14;
 	uint32_t field_A18;
 	uint32_t borderColor;

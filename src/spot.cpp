@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,7 +90,7 @@ Return Value: -1 error, otherwise Spot position on success.
 Status: Complete
 */
 int Spot::add(int position, int type, RECT *rect) {
-	return add(position, type, rect->left, rect->top, 
+	return add(position, type, rect->left, rect->top,
 		rect->right - rect->left, rect->bottom - rect->top);
 }
 

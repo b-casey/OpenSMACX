@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@ class OPENSMACX_API Time {
 private:
 	int unkToggle; // some kind of toggle or type
 	UINT_PTR idEvent;
-	void (__cdecl *callback1)(int);
-	void (__cdecl *callback2)(int, int);
+	void(__cdecl *callback1)(int);
+	void(__cdecl *callback2)(int, int);
 	int cbParam2; // callback 2nd parameter
 	int cbParam1; // callback 1st parameter
 	uint32_t count; // either delay (timeSetEvent) or elapsed (SetTimer) value
@@ -36,17 +36,17 @@ private:
 	int unk_2;
 
 public:
-	Time(): unkToggle(0), idEvent(0), callback1(0), callback2(0), cbParam2(0), cbParam1(0), 
+	Time() : unkToggle(0), idEvent(0), callback1(0), callback2(0), cbParam2(0), cbParam1(0),
 		count(0), unk_1(0), resolution(5), unk_2(0) { } // 006161D0
 	~Time() { close(); } // 00616200
 
 	void init(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res);
 	void init(void(__cdecl *callback)(int, int), int param, int param2, uint32_t cnt, uint32_t res);
 	uint32_t start(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res);
-	uint32_t start(void(__cdecl *callback)(int, int), int param, int param2, 
+	uint32_t start(void(__cdecl *callback)(int, int), int param, int param2,
 		uint32_t cnt, uint32_t res);
 	uint32_t pulse(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res);
-	uint32_t pulse(void(__cdecl *callback)(int, int), int param, int param2, 
+	uint32_t pulse(void(__cdecl *callback)(int, int), int param, int param2,
 		uint32_t cnt, uint32_t res);
 	uint32_t start();
 	uint32_t pulse();

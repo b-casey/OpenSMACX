@@ -51,7 +51,7 @@ Purpose: Store input string to string table
 Original Offset: 00616970
 Return Value: Address of stored string
 Status: Complete
-*/ 
+*/
 LPSTR Strings::put(LPCSTR input) {
 	int len = strlen(input) + 1;
 	LPSTR tableAddr = LPSTR(Heap::get(len));
@@ -69,7 +69,7 @@ LPSTR Strings::get(int address) {
 	// checking if ptr is after base
 	if ((LPVOID)address > getBasePtr()) {
 		// checking ptr is not after end of table
-		return ((LPSTR)address <= LPSTR(size_t(getBasePtr()) + getBaseSize())) ? 
+		return ((LPSTR)address <= LPSTR(size_t(getBasePtr()) + getBaseSize())) ?
 			(LPSTR)address : NULL;
 	}
 	return LPSTR(getBasePtr()); // return base

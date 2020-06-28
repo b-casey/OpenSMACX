@@ -62,8 +62,8 @@ Return Value: true if on map, otherwise false
 Status: Complete
 */
 BOOL __cdecl on_map(int xCoord, int yCoord) {
-	return yCoord >= 0 && yCoord < (int)*MapVerticalBounds 
-		&& xCoord >= 0 && xCoord < (int)*MapHorizontalBounds;
+	return yCoord >= 0 && yCoord < (int)*MapVerticalBounds
+		&&xCoord >= 0 && xCoord < (int)*MapHorizontalBounds;
 }
 
 /*
@@ -100,7 +100,7 @@ int __cdecl whose_territory(int factionID, int xCoord, int yCoord, int *baseID, 
 	if (factionID != owner) {
 		if (!ignoreComm && !(*GameState & STATE_OMNISCIENT_VIEW)
 			&& (PlayersData[factionID].diploTreaties[owner]
-				& (DTREATY_COMMLINK | DTREATY_UNK_8000000)) 
+				& (DTREATY_COMMLINK | DTREATY_UNK_8000000))
 			!= (DTREATY_COMMLINK | DTREATY_UNK_8000000)) {
 			return -1; // owner unknown to faction
 		}
@@ -150,8 +150,8 @@ uint32_t __cdecl crappy(int xCoord, int yCoord) {
 }
 
 /*
-Purpose: Take the absolute distance between two points as parameters to calculate how far out they 
-         radiate. This is mainly used to determine proximity or how far away the two points are from
+Purpose: Take the absolute distance between two points as parameters to calculate how far out they
+		 radiate. This is mainly used to determine proximity or how far away the two points are from
 		 each other in a rough circle shape (see xRadiusOffset[]/yRadiusOffset[]).
 Original Offset: 004F8090
 Return Value: Distance radius
@@ -172,8 +172,8 @@ int __cdecl vector_dist(int xDistance, int yDistance) {
 }
 
 /*
-Purpose: Take two points and calculate how far out they radiate. This is mainly used to determine 
-         proximity or how far away the two points are from each other in a rough circle shape.
+Purpose: Take two points and calculate how far out they radiate. This is mainly used to determine
+		 proximity or how far away the two points are from each other in a rough circle shape.
 Original Offset: 005A5910
 Return Value: Distance radius
 Status: Complete
@@ -239,10 +239,10 @@ BOOL __cdecl base_on_sea(uint32_t baseID, uint32_t regionSea) {
 
 /*
 Purpose: Determine the ocean region for coastal bases. There is an issue if a base is connected to
-         more than one ocean region, it will only return the last checked region based on the base 
+		 more than one ocean region, it will only return the last checked region based on the base
 		 radius clockwise order. This could cause the AI to make incorrect calculations for what to
 		 prioritize building at the base. An example could be a base that is connected to a small
-		 water body as well as the much larger ocean. Depending on where these bodies of water are 
+		 water body as well as the much larger ocean. Depending on where these bodies of water are
 		 positioned, the AI might make assumptions not to prioritize building naval units. Also,
 		 the Continents compare logic isn't used by anything. This might be the root cause of
 		 outlined bug. TODO: Revisit in the future once more is known about Continent structure.
@@ -318,8 +318,8 @@ BOOL __cdecl port_to_port(uint32_t baseIDSrc, uint32_t baseIDDst) {
 }
 
 /*
-Purpose: Determine if a base has access to ports or more than one coastal region. This helps 
-         prioritize whether naval transports should be built.
+Purpose: Determine if a base has access to ports or more than one coastal region. This helps
+		 prioritize whether naval transports should be built.
 Original Offset: 0050E310
 Return Value: Should base build naval transports? true/false
 Status: Complete
@@ -372,7 +372,7 @@ BOOL __cdecl convoy(uint32_t vehID, uint32_t baseID) {
 		return true; // air
 	}
 	uint32_t regionBase = region_at(Base[baseID].xCoord, Base[baseID].yCoord);
-	if (region_at(Base[homeBaseID].xCoord, Base[homeBaseID].yCoord) == regionBase 
+	if (region_at(Base[homeBaseID].xCoord, Base[homeBaseID].yCoord) == regionBase
 		&& ((regionBase >= 64) == (triad == TRIAD_SEA))) {
 		return true; // same region, by land or sea
 	}
@@ -421,8 +421,8 @@ BOOL __cdecl get_there(uint32_t vehID, int xCoordDst, int yCoordDst) {
 }
 
 /*
-Purpose: Determine whether point A is a coast or border tile. It seems that the point B check is 
-         effectively disabled since usage of this function passes same coordinates for both points.
+Purpose: Determine whether point A is a coast or border tile. It seems that the point B check is
+		 effectively disabled since usage of this function passes same coordinates for both points.
 		 Modified return value to boolean rather than returning i. It is always treated as boolean
 		 and makes a lot more sense than returning iterator position.
 Original Offset: 0056B480
@@ -439,7 +439,7 @@ BOOL __cdecl coast_or_border(int xCoordPtA, int yCoordPtA, int xCoordPtB, int yC
 		int xRadius = xrange(xCoordPtA + xRadiusOffset[i]), yRadius = yCoordPtA + yRadiusOffset[i];
 		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
 			&& xRadius < (int)*MapHorizontalBounds && (is_ocean(xRadius, yRadius)
-			|| whose_territory(factionID, xRadius, yRadius, NULL, false) != factionID
+				|| whose_territory(factionID, xRadius, yRadius, NULL, false) != factionID
 				|| regionA != regionB)) { // not sure about reason for this
 			return true; // modified to boolean rather than returning i
 		}
@@ -453,7 +453,7 @@ Original Offset: n/a
 Return Value: Pointer to map tile
 Status: Complete
 */
-map * __cdecl map_loc(int xCoord, int yCoord) {
+map *__cdecl map_loc(int xCoord, int yCoord) {
 	return &((*Map)[(xCoord >> 1) + yCoord * *MapHorizontal]);
 }
 
@@ -597,7 +597,7 @@ void __cdecl site_set(int xCoord, int yCoord, int site) {
 }
 
 /*
-Purpose: Get region of tile at coordinates. 
+Purpose: Get region of tile at coordinates.
 Original Offset: 00500220
 Return Value: Region
 Status: Complete
@@ -714,7 +714,7 @@ void __cdecl rocky_set(int xCoord, int yCoord, uint8_t rocky) {
 }
 
 /*
-Purpose: Get bit of tile at coordinates. 
+Purpose: Get bit of tile at coordinates.
 Original Offset: 005001B0
 Return Value: Bitfield
 Status: Complete
@@ -774,8 +774,8 @@ void __cdecl bit2_set(int xCoord, int yCoord, uint32_t bit2, BOOL set) {
 }
 
 /*
-Purpose: Get code of tile at coordinates. This is the upper byte section of bit2. 
-         This value keeps track of tile sequence order for landmarks.
+Purpose: Get code of tile at coordinates. This is the upper byte section of bit2.
+		 This value keeps track of tile sequence order for landmarks.
 Original Offset: n/a
 Return Value: Code
 Status: Complete
@@ -830,34 +830,34 @@ uint32_t __cdecl minerals_at(int xCoord, int yCoord) {
 		type--;
 	}
 	switch (type) {
+	case 0:
+	{
+		switch (val2) {
 		case 0:
-		{
-			switch (val2) {
-				case 0:
-					return 1;
-				case 1:
-				case 3:
-					return 0;
-				case 2:
-					return ((val1 & 4) != 0) + 1; // 1 or 2
-				default:
-					return ~val2 & 1;
-			}
-		}
+			return 1;
 		case 1:
-			return (val2 < 0 || val2 > 2) ? 2 : (val2 == 2) ? 1 : val2;
-		case 2:
-			return (val2 < 0 || val2 > 1) ? 2 : val2;
 		case 3:
-			return (val2 < 0 || val2 > 1) ? 2 : 1;
+			return 0;
+		case 2:
+			return ((val1 & 4) != 0) + 1; // 1 or 2
 		default:
 			return ~val2 & 1;
+		}
+	}
+	case 1:
+		return (val2 < 0 || val2 > 2) ? 2 : (val2 == 2) ? 1 : val2;
+	case 2:
+		return (val2 < 0 || val2 > 1) ? 2 : val2;
+	case 3:
+		return (val2 < 0 || val2 > 1) ? 2 : 1;
+	default:
+		return ~val2 & 1;
 	}
 }
 
 /*
-Purpose: Determine if tile has a resource bonus. Last param is unused. It's set to 1 by two calls 
-         inside world_site(), otherwise all other calls have it set to  0.
+Purpose: Determine if tile has a resource bonus. Last param is unused. It's set to 1 by two calls
+		 inside world_site(), otherwise all other calls have it set to  0.
 Original Offset: 00592030
 Return Value: 0 (no bonus), 1 (nutrient), 2 (mineral), 3 (energy)
 Status: Complete
@@ -866,7 +866,7 @@ uint32_t __cdecl bonus_at(int xCoord, int yCoord, int UNUSED(unkVal)) {
 	uint32_t bit = bit_at(xCoord, yCoord);
 	uint32_t alt = alt_at(xCoord, yCoord);
 	BOOL hasRscBonus = bit & BIT_RSC_BONUS;
-	if (!hasRscBonus && (!*MapRandSeed 
+	if (!hasRscBonus && (!*MapRandSeed
 		|| (alt >= ALT_SHORE_LINE && !(*GameRules & RULES_NO_UNITY_SCATTERING)))) {
 		return 0;
 	}
@@ -901,7 +901,7 @@ uint32_t __cdecl goody_at(int xCoord, int yCoord) {
 		return 0; // nothing, supply pod already opened or monolith
 	}
 	if (*GameRules & RULES_NO_UNITY_SCATTERING) {
-		return (bit & (BIT_UNK_4000000|BIT_UNK_8000000)) ? 2 : 0; // ?
+		return (bit & (BIT_UNK_4000000 | BIT_UNK_8000000)) ? 2 : 0; // ?
 	}
 	if (bit & BIT_SUPPLY_POD) {
 		return 1; // supply pod
@@ -912,7 +912,7 @@ uint32_t __cdecl goody_at(int xCoord, int yCoord) {
 	uint32_t avg = (xCoord + yCoord) >> 1;
 	int xCoordDiff = xCoord - avg;
 	uint32_t cmp = (avg & 3) + 4 * (xCoordDiff & 3);
-	if (!is_ocean(xCoord, yCoord) 
+	if (!is_ocean(xCoord, yCoord)
 		&& cmp == ((-5 * (avg >> 2) - 3 * (xCoordDiff >> 2) + *MapRandSeed) & 0xF)) {
 		return 2;
 	}
@@ -938,7 +938,7 @@ void __cdecl site_radius(int xCoord, int yCoord, BOOL UNUSED(tgl)) {
 
 /*
 Purpose: Check if coordinates are considered near or on coast. Radius (excludes actual coordinates)
-         can either be all the squares directly around the coordinates or same as Base '+' radius.
+		 can either be all the squares directly around the coordinates or same as Base '+' radius.
 Original Offset: 004E49D0
 Return Value: Is tile coast? true/false
 Status: Complete
@@ -947,7 +947,7 @@ BOOL __cdecl is_coast(int xCoord, int yCoord, BOOL isBaseRadius) {
 	uint32_t radius = isBaseRadius ? 21 : 9;
 	for (uint32_t i = 1; i < radius; i++) {
 		int xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
-		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0 
+		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
 			&& xRadius < (int)*MapHorizontalBounds && is_ocean(xRadius, yRadius)) {
 			return true; // modified original that would return i, all calls check return as boolean
 		}
@@ -998,7 +998,7 @@ void __cdecl rebuild_vehicle_bits() {
 			for (int vehID = 0; vehID < *VehCurrentCount; vehID++) {
 				if (Veh[vehID].xCoord == (int)x && Veh[vehID].yCoord == (int)y) {
 					bit_set(x, y, BIT_VEH_IN_TILE, true);
-					if(!(bit_at(x, y) & BIT_BASE_IN_TILE)) {
+					if (!(bit_at(x, y) & BIT_BASE_IN_TILE)) {
 						owner_set(x, y, Veh[vehID].factionID);
 					}
 					break;
@@ -1031,7 +1031,7 @@ void __cdecl rebuild_base_bits() {
 		}
 	}
 }
- 
+
 /*
 Purpose: Calculate the distance between two xCoords with handling for round maps.
 Original Offset: 00579790
@@ -1166,7 +1166,7 @@ Return Value: Did an error occur? true/false
 Status: Complete
 */
 BOOL __cdecl map_write(FILE *mapFile) {
-	if (_fwrite(&*MapHorizontalBounds, 2724, 1, mapFile) 
+	if (_fwrite(&*MapHorizontalBounds, 2724, 1, mapFile)
 		&& _fwrite(*Map, *MapArea * sizeof(map), 1, mapFile)
 		&& _fwrite(*MapAbstract, *MapAbstractArea, 1, mapFile)) {
 		return false;
@@ -1190,7 +1190,7 @@ BOOL __cdecl map_read(FILE *mapFile) {
 	if (map_init()) {
 		return true;
 	}
-	if(!_fread(*Map, *MapArea * sizeof(map), 1, mapFile)
+	if (!_fread(*Map, *MapArea * sizeof(map), 1, mapFile)
 		|| !_fread(*MapAbstract, *MapAbstractArea, 1, mapFile)) {
 		return true;
 	}
@@ -1209,7 +1209,7 @@ uint8_t __cdecl abstract_at(int xCoord, int yCoord) {
 }
 
 /*
-Purpose: Set the region value for coordinates. 
+Purpose: Set the region value for coordinates.
 Original Offset: 00591230
 Return Value: n/a
 Status: Complete
@@ -1219,13 +1219,13 @@ void __cdecl abstract_set(int xCoord, int yCoord, uint8_t region) {
 }
 
 /*
-Purpose: Quick check for Veh related zone of control conflicts. If a ZOC conflict is found, store 
-         coordinates of tile inside xCoordZoc/yCoordZoc.
+Purpose: Quick check for Veh related zone of control conflicts. If a ZOC conflict is found, store
+		 coordinates of tile inside xCoordZoc/yCoordZoc.
 Original Offset: 00593830
 Return Value: n/a
 Status: Complete - testing
 */
-void __cdecl quick_zoc(int xCoordSrc, int yCoordSrc, int factionID, int xCoordDst, int yCoordDst, 
+void __cdecl quick_zoc(int xCoordSrc, int yCoordSrc, int factionID, int xCoordDst, int yCoordDst,
 	int *xCoordZoc, int *yCoordZoc) {
 	BOOL isSrcOcean = is_ocean(xCoordSrc, yCoordSrc);
 	int searchZoc = -1;
@@ -1364,7 +1364,7 @@ uint32_t __cdecl zoc_any(int xCoord, int yCoord, uint32_t factionID) {
 		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
 			&& xRadius < (int)*MapHorizontalBounds) {
 			int owner = anything_at(xRadius, yRadius);
-			if (owner >= 0 && owner != (int)factionID 
+			if (owner >= 0 && owner != (int)factionID
 				&& !(PlayersData[factionID].diploTreaties[owner] & DTREATY_PACT)) {
 				return owner + 1;
 			}
@@ -1415,9 +1415,9 @@ uint32_t __cdecl zoc_sea(int xCoord, int yCoord, uint32_t factionID) {
 				&& !(PlayersData[factionID].diploTreaties[owner] & DTREATY_PACT)) {
 				for (int vehID = veh_at(xRadius, yRadius); vehID >= 0;
 					vehID = Veh[vehID].nextVehIDStack) {
-					if(Veh[vehID].factionID != factionID 
+					if (Veh[vehID].factionID != factionID
 						&& (Veh[vehID].visibility & (1 << factionID)
-						|| (!*IsMultiplayer && !(Veh[vehID].flags & VFLAG_INVISIBLE)))) {
+							|| (!*IsMultiplayer && !(Veh[vehID].flags & VFLAG_INVISIBLE)))) {
 						return owner + 1;
 					}
 				}
@@ -1436,7 +1436,7 @@ Status: Complete
 uint32_t __cdecl zoc_move(int xCoord, int yCoord, uint32_t factionID) {
 	int owner;
 	if (!(bit_at(xCoord, yCoord) & BIT_BASE_IN_TILE)
-	|| ((owner = owner_at(xCoord, yCoord)), owner >= 8 || owner < 0)) {
+		|| ((owner = owner_at(xCoord, yCoord)), owner >= 8 || owner < 0)) {
 		return zoc_sea(xCoord, yCoord, factionID);
 	}
 	return 0;

@@ -30,31 +30,31 @@ Return Value: Faction vote count
 Status: Complete
 */
 uint32_t __cdecl council_votes(uint32_t factionID) {
-    if (*ExpansionEnabled && Players[factionID].ruleFlags & RFLAG_ALIEN) {
-        return 0;
-    }
-    uint32_t votes = 0;
-    for (int i = 0; i < *BaseCurrentCount; i++) {
-        if (factionID == Base[i].factionIDCurrent) {
-            votes += Base[i].populationSize;
-        }
-    }
-    if (has_project(SP_EMPATH_GUILD, factionID)) {
-        votes += votes / 2; // +50% votes
-    }
+	if (*ExpansionEnabled && Players[factionID].ruleFlags & RFLAG_ALIEN) {
+		return 0;
+	}
+	uint32_t votes = 0;
+	for (int i = 0; i < *BaseCurrentCount; i++) {
+		if (factionID == Base[i].factionIDCurrent) {
+			votes += Base[i].populationSize;
+		}
+	}
+	if (has_project(SP_EMPATH_GUILD, factionID)) {
+		votes += votes / 2; // +50% votes
+	}
 	if (has_project(SP_CLINICAL_IMMORTALITY, factionID)) {
 		votes *= 2; // Doubles votes
 	}
-    int bonusCount = Players[factionID].factionBonusCount;
+	int bonusCount = Players[factionID].factionBonusCount;
 	for (int i = 0; i < bonusCount; i++) {
 		if (Players[factionID].factionBonusID[i] == RULE_VOTES) {
 			int votesBonus = Players[factionID].factionBonusVal1[i];
 			if (votesBonus >= 0) {
-                votes *= votesBonus; // Peacekeeper bonus
+				votes *= votesBonus; // Peacekeeper bonus
 			}
 		}
 	}
-    return votes;
+	return votes;
 }
 
 /*
@@ -67,12 +67,12 @@ BOOL __cdecl eligible(uint32_t factionID) {
 	if (*ExpansionEnabled && Players[factionID].ruleFlags & RFLAG_ALIEN) {
 		return 0;
 	}
-    uint32_t votes = council_votes(factionID);
-    uint32_t factionCount = 0;
-    for (uint32_t i = 1; i < MaxPlayerNum; i++) {
-        if (factionID != i && is_alive(i) && council_votes(i) > votes) {
-            factionCount++;
-        }
-    }
-    return factionCount < 2;
+	uint32_t votes = council_votes(factionID);
+	uint32_t factionCount = 0;
+	for (uint32_t i = 1; i < MaxPlayerNum; i++) {
+		if (factionID != i && is_alive(i) && council_votes(i) > votes) {
+			factionCount++;
+		}
+	}
+	return factionCount < 2;
 }

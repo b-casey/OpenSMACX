@@ -28,7 +28,7 @@
 
 player *Players = (player *)0x00946A50;
 player_data *PlayersData = (player_data *)0x0096C9E0;
-faction_art *FactionArt = (faction_art*)0x0078E978;
+faction_art *FactionArt = (faction_art *)0x0078E978;
 rules_social_category *SocialCategory = (rules_social_category *)0x0094B000;
 rules_social_effect *SocialEffect = (rules_social_effect *)0x00946580;
 LPSTR *Mood = (LPSTR *)0x0094C9E4;
@@ -79,8 +79,8 @@ LPSTR __cdecl get_noun(int factionID) {
 }
 
 /*
-Purpose: Check whether specified faction is nearing the diplomatic victory requirements to be able 
-         to call a Supreme Leader vote. Optional 2nd parameter (0/-1 to disable) specifies a faction
+Purpose: Check whether specified faction is nearing the diplomatic victory requirements to be able
+		 to call a Supreme Leader vote. Optional 2nd parameter (0/-1 to disable) specifies a faction
 		 to skip if they have pact with faction from 1st parameter.
 Original Offset: 00539D40
 Return Value: factionID nearing diplomatic victory or zero
@@ -96,7 +96,7 @@ uint32_t __cdecl aah_ooga(int factionID, int pactFactionID) {
 	}
 	uint32_t factionIDRet = 0;
 	for (int i = 1; i < MaxPlayerNum; i++) {
-		if (i != pactFactionID 
+		if (i != pactFactionID
 			&& (pactFactionID <= 0 || !(PlayersData[i].diploTreaties[pactFactionID] & DTREATY_PACT)
 				|| !(*GameRules & RULES_VICTORY_COOPERATIVE))) {
 			int proposalPreq = Proposal[PROP_UNITE_SUPREME_LEADER].preqTech;
@@ -119,13 +119,13 @@ Status: Complete
 */
 BOOL __cdecl climactic_battle() {
 	for (uint32_t i = 1; i < MaxPlayerNum; i++) {
-		if (is_human(i) && PlayersData[i].cornerMarketTurn > *TurnCurrentNum) {
-			return true; // Human controlled player initiated Corner Global Energy Market 
+		if (is_human(i) && PlayersData[i].cornerMarketTurn > * TurnCurrentNum) {
+			return true; // Human controlled player initiated Corner Global Energy Market
 		}
 	}
 	if (aah_ooga(0, -1)) { // nearing Supreme Leader, these parameters will always return false
-		return true; // TODO: Revisit in future once more end game code is complete. This may have 
-		             //       been effectively disabled as a design decision rather than a bug.
+		return true; // TODO: Revisit in future once more end game code is complete. This may have
+					 //       been effectively disabled as a design decision rather than a bug.
 	}
 	if (ascending(0)) {
 		for (uint32_t i = 1; i < MaxPlayerNum; i++) {
@@ -174,7 +174,7 @@ void __cdecl add_goal(uint32_t factionID, int16_t type, int16_t priority, int xC
 		return;
 	}
 	for (int i = 0; i < MaxGoalsNum; i++) {
-		if (PlayersData[factionID].goals[i].xCoord == xCoord && 
+		if (PlayersData[factionID].goals[i].xCoord == xCoord &&
 			PlayersData[factionID].goals[i].yCoord == yCoord &&
 			PlayersData[factionID].goals[i].type == type) {
 			if (PlayersData[factionID].goals[i].priority <= priority) {
@@ -185,7 +185,7 @@ void __cdecl add_goal(uint32_t factionID, int16_t type, int16_t priority, int xC
 	}
 	int prioritySearch = 0, goalID = -1;
 	for (int i = 0; i < MaxGoalsNum; i++) {
-		int typeCmp = PlayersData[factionID].goals[i].type, 
+		int typeCmp = PlayersData[factionID].goals[i].type,
 			prirotyCmp = PlayersData[factionID].goals[i].priority;
 		if (typeCmp < 0 || prirotyCmp < priority) {
 			int cmp = typeCmp >= 0 ? 0 : 1000;
@@ -342,7 +342,7 @@ Status: Complete - testing
 void __cdecl del_site(uint32_t factionID, int16_t type, int xCoord, int yCoord, int proximity) {
 	for (int i = 0; i < MaxSitesNum; i++) {
 		if (PlayersData[factionID].sites[i].type == type) {
-			int dist = vector_dist(xCoord, yCoord, PlayersData[factionID].sites[i].xCoord, 
+			int dist = vector_dist(xCoord, yCoord, PlayersData[factionID].sites[i].xCoord,
 				PlayersData[factionID].sites[i].yCoord);
 			if (dist <= proximity) {
 				PlayersData[factionID].sites[i].type = AI_GOAL_UNUSED;
@@ -381,7 +381,7 @@ uint32_t __cdecl corner_market(uint32_t factionID) {
 
 /*
 Purpose: Validate whether each faction meets the requirements to have the Map revealed. Added some
-         minor tweaks to improve performance.
+		 minor tweaks to improve performance.
 Original Offset: 005A96D0
 Return Value: n/a
 Status: Complete
@@ -413,7 +413,7 @@ Return Value: Is social category/model available to faction? true/false
 Status: Complete
 */
 BOOL __cdecl society_avail(int socCategory, int socModel, int factionID) {
-	if (Players[factionID].socAntiIdeologyCategory == socCategory 
+	if (Players[factionID].socAntiIdeologyCategory == socCategory
 		&& Players[factionID].socAntiIdeologyModel == socModel) {
 		return false;
 	}

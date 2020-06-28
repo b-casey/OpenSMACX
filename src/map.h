@@ -110,7 +110,7 @@ enum terrain_landmark_bit2 {
 * Region notes:
 * a tile's region is visible with debug mode in the bottom left of the main interface tile area
 * region id is used to index the [128] planning variable arrays in player_data struct
-* 
+*
 * 0: bad region, n/a
 * 1...62: any offshoots from poles starting at 1,1 up to continents and islands
 * 63: bad region - both poles land + single tile islands (this seems specific to huge Planet map)
@@ -123,7 +123,7 @@ struct map {
 	uint8_t climate; // 000 00 000 | altitude (3 bit) ; rainfall (2 bit) ; temperature (3 bit)
 	uint8_t contour; // altitude details
 	uint8_t val2; // 0000 0000 | site (0xF0) ; owner (0x0F) - last immediate control occupying tile
-	                                                        // or 0x0F for unoccupied
+															// or 0x0F for unoccupied
 	uint8_t region; // grouping of disjoint water/land areas; see above notes for more details
 	uint8_t visibility; // faction bitfield of those who can see tile (mapped: dim/bright)
 	uint8_t val3; // 00 000 000 | rocky (2 bit); lock - factionID (3 bit); using - factionID (3 bit)
@@ -247,7 +247,7 @@ OPENSMACX_API BOOL __cdecl bad_reg(int region);
 OPENSMACX_API BOOL __cdecl get_there(uint32_t vehID, int xCoordDst, int yCoordDst);
 OPENSMACX_API BOOL __cdecl coast_or_border(int xCoordPtA, int yCoordPtA,
 	int xCoordPtB, int yCoordPtB, int factionID);
-OPENSMACX_API map * __cdecl map_loc(int xCoord, int yCoord);
+OPENSMACX_API map *__cdecl map_loc(int xCoord, int yCoord);
 OPENSMACX_API uint32_t __cdecl temp_at(int xCoord, int yCoord);
 OPENSMACX_API void __cdecl temp_set(int xCoord, int yCoord, uint8_t temperature);
 OPENSMACX_API void __cdecl climate_set(int xCoord, int yCoord, uint8_t climate);
@@ -301,7 +301,7 @@ OPENSMACX_API void __cdecl abstract_set(int xCoord, int yCoord, uint8_t region);
 OPENSMACX_API void __cdecl quick_zoc(int xCoordSrc, int yCoordSrc, int factionID, int xCoordDst,
 	int yCoordDst, int *xCoordZoc, int *yCoordZoc);
 OPENSMACX_API int __cdecl radius_move(int xRadiusOff, int yRadiusOff, int range);
-OPENSMACX_API  int __cdecl radius_move(int xCoordSrc, int yCoordSrc, int xCoordDst, int yCoordDst, 
+OPENSMACX_API  int __cdecl radius_move(int xCoordSrc, int yCoordSrc, int xCoordDst, int yCoordDst,
 	int range);
 OPENSMACX_API int __cdecl compass_move(int xCoordSrc, int yCoordSrc, int xCoordDst, int yCoordDst);
 OPENSMACX_API int __cdecl is_sensor(int xCoord, int yCoord);

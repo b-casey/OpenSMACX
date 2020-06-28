@@ -677,7 +677,7 @@ void __cdecl read_faction(player *Player, int toggle) {
 		LPSTR socEffect = text_item();
 		for (int j = 0; j < MaxSocialEffectNum; j++) {
 			if (!_stricmp(SocialEffect[j].set1, socEffect)) {
-				// Bug fix: Original code sets this value to -1, disabling AI faction "Emphasis" 
+				// Bug fix: Original code sets this value to -1, disabling AI faction "Emphasis"
 				// value. No indication this was intentional.
 				*(&Player->socIdeologyEffect + i) = j;
 				break;
@@ -735,7 +735,7 @@ BOOL __cdecl read_factions() {
 		strncpy_s(Players[i].filename, text_item(), 24);
 		strncpy_s(Players[i].searchKey, text_item(), 24);
 	}
-	// SMACX only: Will override any values parsed from alphax.txt #NEWFACTIONS if set in ini; 
+	// SMACX only: Will override any values parsed from alphax.txt #NEWFACTIONS if set in ini;
 	prefs_fac_load(); // Removed an extra SMACX_Enabled check around call since there is one inside
 	uint32_t factionCount = 14;
 	if (!text_open(AlphaxFileID, "CUSTOMFACTIONS")) { // get count of custom factions
@@ -836,15 +836,15 @@ BOOL __cdecl read_units() {
 			switch (protoID) {
 				// There was a pointless explicit check for BSC_BATTLE_OGRE_MK1 to set reactor to 1
 				// The parameters set by check are no different than default
-				case BSC_BATTLE_OGRE_MK2:
-					reactorID = RECT_FUSION;
-					break;
-				case BSC_BATTLE_OGRE_MK3:
-					reactorID = RECT_QUANTUM;
-					break;
-				default:
-					reactorID = RECT_FISSION;
-					break;
+			case BSC_BATTLE_OGRE_MK2:
+				reactorID = RECT_FUSION;
+				break;
+			case BSC_BATTLE_OGRE_MK3:
+				reactorID = RECT_QUANTUM;
+				break;
+			default:
+				reactorID = RECT_FISSION;
+				break;
 			}
 		}
 		make_proto(protoID, chasID, weapID, armorID, ability, reactorID);
@@ -970,8 +970,8 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		text_get();
 		Reactor[i].name = text_item_string();
 		Reactor[i].nameShort = text_item_string();
-		// Bug fix/Enhancement: original function skips this value and is left as zero, isn't 
-		// referenced elsewhere in code. Likely because default power value is sequential. 
+		// Bug fix/Enhancement: original function skips this value and is left as zero, isn't
+		// referenced elsewhere in code. Likely because default power value is sequential.
 		// This will allow future modifications.
 		Reactor[i].power = (uint16_t)text_item_number();
 		Reactor[i].preqTech = (int16_t)tech_name(text_item());
@@ -1274,7 +1274,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		Natural[i].name = text_item_string();
 		Natural[i].nameShort = text_item_string();
 	}
-	// Revised original nested for loop code to be more efficient; Logic is still same. 
+	// Revised original nested for loop code to be more efficient; Logic is still same.
 	// Buttons used by "Edit Map" menus.
 	for (int i = 0, j = 0; i < MaxTerrainNum; i++) {
 		// excludes: Fungus (removal), Aquifer, Raise Land, Lower Land, Level Terrain
@@ -1321,13 +1321,13 @@ Return Value: Default preferences
 Status: Complete - testing
 */
 uint32_t __cdecl default_prefs() {
-	uint32_t basePrefs = PREF_ADV_RADIO_BTN_NOT_SEL_SING_CLK | PREF_AUTO_FORMER_BUILD_ADV 
-		| PREF_AUTO_FORMER_PLANT_FORESTS | PREF_AUTO_END_MOVE_SPOT_VEH_WAR 
-		| PREF_AUTO_END_MOVE_SPOT_VEH_TRUCE | PREF_AUTO_END_MOVE_SPOT_VEH_TREATY 
-		| PREF_AUTO_AIR_VEH_RET_HOME_FUEL_RNG | PREF_BSC_DONT_QUICK_MOVE_ALLY_VEH 
-		| PREF_BSC_AUTO_DESIGN_VEH | PREF_BSC_MOUSE_EDGE_SCROLL_VIEW | PREF_AV_BACKGROUND_MUSIC 
-		| PREF_AV_SOUND_EFFECTS | PREF_MAP_SHOW_GRID | PREF_UNK_10 
-		| PREF_BSC_DONT_QUICK_MOVE_ENEMY_VEH | PREF_BSC_AUTOSAVE_EACH_TURN 
+	uint32_t basePrefs = PREF_ADV_RADIO_BTN_NOT_SEL_SING_CLK | PREF_AUTO_FORMER_BUILD_ADV
+		| PREF_AUTO_FORMER_PLANT_FORESTS | PREF_AUTO_END_MOVE_SPOT_VEH_WAR
+		| PREF_AUTO_END_MOVE_SPOT_VEH_TRUCE | PREF_AUTO_END_MOVE_SPOT_VEH_TREATY
+		| PREF_AUTO_AIR_VEH_RET_HOME_FUEL_RNG | PREF_BSC_DONT_QUICK_MOVE_ALLY_VEH
+		| PREF_BSC_AUTO_DESIGN_VEH | PREF_BSC_MOUSE_EDGE_SCROLL_VIEW | PREF_AV_BACKGROUND_MUSIC
+		| PREF_AV_SOUND_EFFECTS | PREF_MAP_SHOW_GRID | PREF_UNK_10
+		| PREF_BSC_DONT_QUICK_MOVE_ENEMY_VEH | PREF_BSC_AUTOSAVE_EACH_TURN
 		| PREF_AUTO_WAKE_VEH_TRANS_REACH_LAND;
 	return prefs_get("Laptop", 0, false) ? basePrefs : basePrefs  // 0xA3E1DD16 : 0xBBE1DD96
 		| PREF_AV_SECRET_PROJECT_MOVIES | PREF_AV_SLIDING_WINDOWS | PREF_AV_MAP_ANIMATIONS;
@@ -1355,9 +1355,9 @@ Return Value: Default warning preferences
 Status: Complete - testing
 */
 uint32_t __cdecl default_warn() {
-	return WARN_STOP_RANDOM_EVENT | WARN_STOP_ENERGY_SHORTAGE | WARN_STOP_MINERAL_SHORTAGE 
+	return WARN_STOP_RANDOM_EVENT | WARN_STOP_ENERGY_SHORTAGE | WARN_STOP_MINERAL_SHORTAGE
 		| WARN_STOP_STARVATION | WARN_STOP_BUILD_OUT_OF_DATE | WARN_STOP_UNK_100
-		| WARN_STOP_NUTRIENT_SHORTAGE | WARN_STOP_GOLDEN_AGE | WARN_STOP_DRONE_RIOTS 
+		| WARN_STOP_NUTRIENT_SHORTAGE | WARN_STOP_GOLDEN_AGE | WARN_STOP_DRONE_RIOTS
 		| WARN_STOP_NEW_FAC_BUILT; // 0x3C3A9
 }
 
@@ -1368,7 +1368,7 @@ Return Value: Default rule preferences
 Status: Complete - testing
 */
 uint32_t __cdecl default_rules() {
-	return RULES_VICTORY_COOPERATIVE | RULES_VICTORY_TRANSCENDENCE | RULES_BLIND_RESEARCH 
+	return RULES_VICTORY_COOPERATIVE | RULES_VICTORY_TRANSCENDENCE | RULES_BLIND_RESEARCH
 		| RULES_VICTORY_DIPLOMATIC | RULES_VICTORY_ECONOMIC | RULES_VICTORY_CONQUEST; // 0x1A0E
 }
 

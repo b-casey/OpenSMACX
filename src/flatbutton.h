@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
  /*
   * FlatButton class
   */
-class OPENSMACX_API FlatButton: public BaseButton {
+class OPENSMACX_API FlatButton : public BaseButton {
 	uint32_t field_AB8;
 	uint32_t field_ABC;
 	uint32_t field_AC0;

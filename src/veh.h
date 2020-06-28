@@ -497,7 +497,7 @@ OPENSMACX_API uint32_t __cdecl drop_range(int factionID);
 OPENSMACX_API uint32_t __cdecl planet_buster2(int protoID);
 OPENSMACX_API uint32_t __cdecl planet_buster(int vehID);
 OPENSMACX_API uint32_t __cdecl morale_alien(int vehID, int factionIDvsNative);
-OPENSMACX_API int __cdecl psi_factor(int combatRatio, int factionID, BOOL isAttack, 
+OPENSMACX_API int __cdecl psi_factor(int combatRatio, int factionID, BOOL isAttack,
 	BOOL isFungalTower);
 OPENSMACX_API void __cdecl go_to(int vehID, char type, int xCoord, int yCoord);
 OPENSMACX_API void __cdecl invasions(uint32_t baseID);
@@ -522,14 +522,14 @@ OPENSMACX_API int __cdecl pick_chassis(int factionID, int triadChk, int speedChk
 OPENSMACX_API int __cdecl weapon_budget(int factionID, int condition, BOOL checkMode);
 OPENSMACX_API int __cdecl armor_budget(int factionID, int maxCost);
 OPENSMACX_API int __cdecl abil_index(int abilityID);
-OPENSMACX_API int __cdecl hex_cost(int protoID, int factionID, int xCoordSrc, int yCoordSrc, 
+OPENSMACX_API int __cdecl hex_cost(int protoID, int factionID, int xCoordSrc, int yCoordSrc,
 	int xCoordDst, int yCoordDst, BOOL toggle);
 OPENSMACX_API void __cdecl veh_put(int vehID, int xCoord, int yCoord);
 OPENSMACX_API uint32_t __cdecl veh_health(int vehID);
-OPENSMACX_API uint32_t __cdecl proto_cost(uint32_t chassisID, uint32_t weaponID, uint32_t armorID, 
+OPENSMACX_API uint32_t __cdecl proto_cost(uint32_t chassisID, uint32_t weaponID, uint32_t armorID,
 	uint32_t ability, uint32_t reactorID);
 OPENSMACX_API uint32_t __cdecl base_cost(int protoID);
-OPENSMACX_API void __cdecl make_proto(int protoID, uint32_t chassisID, uint32_t weaponID, 
+OPENSMACX_API void __cdecl make_proto(int protoID, uint32_t chassisID, uint32_t weaponID,
 	uint32_t armorID, uint32_t ability, uint32_t reactorID);
 OPENSMACX_API int __cdecl get_plan(uint32_t factionID, uint32_t plan);
 OPENSMACX_API BOOL __cdecl want_to_wake(uint32_t factionID, uint32_t vehID, int vehID2);

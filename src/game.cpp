@@ -24,7 +24,7 @@ uint32_t *GamePreferences = (uint32_t *)0x009A6490;
 uint32_t *GameMorePreferences = (uint32_t *)0x009A6494;
 uint32_t *GameWarnings = (uint32_t *)0x009A6498;
 uint32_t *GameRules = (uint32_t *)0x009A649C;
-uint32_t *GameState  = (uint32_t *)0x009A64C0;
+uint32_t *GameState = (uint32_t *)0x009A64C0;
 int *DiffLevelCurrent = (int *)0x009A64C4;
 int *TurnCurrentNum = (int *)0x009A64D4;
 uint32_t *ObjectiveReqVictory = (uint32_t *)0x0094B4C0;
@@ -49,12 +49,12 @@ Status: Complete
 */
 void __cdecl clear_scenario() {
 	*ObjectiveReqVictory = 9999;
-    *ObjectivesSuddenDeathVictory = 9999;
-    *ObjectiveAchievePts = 0;
-    *VictoryAchieveBonusPts = 0;
-    *StartingMissionYear = Rules->NormalStartingYear;
-    *EndingMissionYear = *DiffLevelCurrent < DLVL_LIBRARIAN
-        ? Rules->NormalEndYearLowThreeDiff : Rules->NormalEndYearHighThreeDiff;
+	*ObjectivesSuddenDeathVictory = 9999;
+	*ObjectiveAchievePts = 0;
+	*VictoryAchieveBonusPts = 0;
+	*StartingMissionYear = Rules->NormalStartingYear;
+	*EndingMissionYear = *DiffLevelCurrent < DLVL_LIBRARIAN
+		? Rules->NormalEndYearLowThreeDiff : Rules->NormalEndYearHighThreeDiff;
 }
 
 /*

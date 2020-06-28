@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,10 +18,10 @@
 #pragma once
 #include "heap.h"
 
-/*
-* Designed to speed up the time it takes to find string resources
-* in text files by creating an index of the file sections prefixed by '#'
-*/
+ /*
+ * Designed to speed up the time it takes to find string resources
+ * in text files by creating an index of the file sections prefixed by '#'
+ */
 class OPENSMACX_API TextIndex {
 	char fileName[256]; // name of file to be mapped
 	uint32_t sectionCount; // number of section entries
@@ -34,15 +34,15 @@ public:
 
 	void make_index(LPCSTR sourceTxt);
 	int search_index(LPCSTR sourceTxt, LPCSTR sectionTxt);
-	
+
 	// additional functions to assist with encapsulation
 	uint32_t getCount() { return sectionCount; }
 };
 
-/* 
+/*
 // global
-Can skip setting TxtIndex constructor/destructor; Messy vector logic otherwise trying to assign to 
-existing memory location. Existing code maps to class TextIndex() and ~TextIndex() that redirect to 
+Can skip setting TxtIndex constructor/destructor; Messy vector logic otherwise trying to assign to
+existing memory location. Existing code maps to class TextIndex() and ~TextIndex() that redirect to
 dll so no need replace them. Revisit in future.
 void __cdecl `dynamic initializer for 'TxtIndex''(): 005FD4E0
 void __cdecl `dynamic atexit destructor for 'TxtIndex''(): 005FD510

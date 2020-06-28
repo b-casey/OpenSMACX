@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,9 +19,9 @@
 #include "graphicwin.h"
 #include "flatbutton.h"
 
-/*
- * BasePop class
- */
+ /*
+  * BasePop class
+  */
 class OPENSMACX_API BasePop : GraphicWin {
 	uint32_t field_A14;
 	uint32_t field_A18;
@@ -337,4 +337,3 @@ public:
 	BasePop() { ; }
 	~BasePop() { ; }
 };
-

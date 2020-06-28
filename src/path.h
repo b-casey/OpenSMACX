@@ -35,7 +35,7 @@ private:
 	int protoID;
 
 public:
-	Path() : mapTable(0), xCoordTable(0), yCoordTable(0), index1(0), index2(0), factionID1(0), 
+	Path() : mapTable(0), xCoordTable(0), yCoordTable(0), index1(0), index2(0), factionID1(0),
 		xCoordDst(0), yCoordDst(0), field_20(5), factionID2(0), protoID(0) { } // n/a
 	~Path() { shutdown(); } // 0059A320
 

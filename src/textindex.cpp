@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,8 @@
 #include "filemap.h"
 
 /*
-Purpose: Read specified file in from parameter and create an index of section headers ("#EXAMPLE"). 
-         Store the file offset of each section for improved search time.
+Purpose: Read specified file in from parameter and create an index of section headers ("#EXAMPLE").
+		Store the file offset of each section for improved search time.
 Original Offset: 005FDF80
 Return Value: n/a
 Status: Complete

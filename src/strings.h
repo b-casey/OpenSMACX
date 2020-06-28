@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2019 Brendan Casey
+ * Copyright (C) 2013-2020 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,15 +18,15 @@
 #pragma once
 #include "heap.h"
 
-/*
- * Strings class: Create and interact with a basic string table.
- */
-class OPENSMACX_API Strings: Heap {
+ /*
+  * Strings class: Create and interact with a basic string table.
+  */
+class OPENSMACX_API Strings : Heap {
 	BOOL isPopulated; // (+20) -> set to true when table is created
 
 public:
 	// Constructor, other variables are from subclass (Heap)
-	Strings(): isPopulated(false) { } // 006168D0
+	Strings() : isPopulated(false) { } // 006168D0
 	~Strings() { Heap::shutdown(); }  // 006169C0
 
 	BOOL init(size_t memSize);

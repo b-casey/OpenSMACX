@@ -83,7 +83,7 @@ BOOL __cdecl valid_tech_leap(uint32_t techID, int factionID) {
 
 /*
 Purpose: Craft an output string related to a specific technology. For techIDs outside the standard
-         range, craft a string related to world map, comm links or prototypes.
+		 range, craft a string related to world map, comm links or prototypes.
 Original Offset: 005B9C40
 Return Value: n/a
 Status: Complete
@@ -116,7 +116,7 @@ void __cdecl say_tech(LPSTR output, int techID, BOOL categoryLvl) {
 		}
 	}
 	else {
-		sprintf_s(&output[strlen(output)], 80, "%s %s", VehPrototype[techID - 97].vehName, 
+		sprintf_s(&output[strlen(output)], 80, "%s %s", VehPrototype[techID - 97].vehName,
 			label_get(185)); // 'Prototype'
 	}
 }
@@ -173,7 +173,7 @@ int __cdecl tech_recurse(int techID, int baseLevel) {
 
 /*
 Purpose: Determine what category is dominate for techID. If there is a tie, the order of precedence
-         is as follows: growth > tech > wealth > power.
+		 is as follows: growth > tech > wealth > power.
 Original Offset: 005B9FE0
 Return Value: Tech category id: growth (0), tech (1), wealth (2) or power (3).
 Status: Complete
@@ -201,8 +201,8 @@ Status: Complete
 */
 BOOL __cdecl tech_avail(int techID, int factionID) {
 	if (has_tech(techID, factionID) || techID >= MaxTechnologyNum || (!*ExpansionEnabled
-		&& (techID == TECH_PRPSYCH || techID == TECH_FLDMOD || techID == TECH_ADAPDOC 
-			|| techID == TECH_ADAPECO || techID == TECH_BIOADAP || techID == TECH_SENTRES 
+		&& (techID == TECH_PRPSYCH || techID == TECH_FLDMOD || techID == TECH_ADAPDOC
+			|| techID == TECH_ADAPECO || techID == TECH_BIOADAP || techID == TECH_SENTRES
 			|| techID == TECH_SECMANI || techID == TECH_NEWMISS || techID == TECH_BFG9000))) {
 		return false;
 	}
@@ -254,7 +254,7 @@ void __cdecl tech_effects(int factionID) {
 		}
 	}
 	// if values are below zero, cap at zero
-	for (int *techFungus = &PlayersData[factionID].techFungusNutrient, 
+	for (int *techFungus = &PlayersData[factionID].techFungusNutrient,
 		*end = &PlayersData[factionID].techFungusUnk; techFungus <= end; techFungus++) {
 		if (*techFungus < 0) {
 			*techFungus = 0;
@@ -292,8 +292,8 @@ BOOL __cdecl tech_is_preq(int preqTechID, int parentTechID, uint32_t range) {
 }
 
 /*
-Purpose: Determine how valuable the specified techID is to a faction. This id either corresponds to 
-         a technology (0-88), another faction (89-96) or a prototype (97-608). The 3rd parameter 
+Purpose: Determine how valuable the specified techID is to a faction. This id either corresponds to
+		 a technology (0-88), another faction (89-96) or a prototype (97-608). The 3rd parameter
 		 determines whether a simplistic or extended calculation is required for a technology id.
 Original Offset: 005BCBE0
 Return Value: Value of techID to the specified faction
@@ -322,7 +322,7 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 		valueRet = growthVal * (factorAI * aiGrowth + 1) + wealthVal * (factorAI * aiWealth + 1)
 			+ techVal * (factorAI * aiTech + 1) + powerVal * (factorAI * aiPower + 1);
 		uint32_t baseCount = PlayersData[factionID].currentNumBases;
-		if ((!powerVal || !aiPower && !vendettaCount) && (!techVal || !aiTech) 
+		if ((!powerVal || !aiPower && !vendettaCount) && (!techVal || !aiTech)
 			&& (!wealthVal || !aiWealth) && (!growthVal || !aiGrowth && baseCount >= 4)) {
 			valueRet = (valueRet + 1) / 2;
 		}
@@ -366,7 +366,7 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 					}
 					else if (plan == PLAN_OFFENSIVE) {
 						valueRet += (pwrBase * ((PlayersData[factionID].bestWeaponValue
-								>= PlayersData[factionID].enemyBestWeaponValue) ? 2 : 4)) 
+							>= PlayersData[factionID].enemyBestWeaponValue) ? 2 : 4))
 							/ (baseCount * (isHuman + 1));
 					}
 					else {
@@ -375,8 +375,8 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 								&& PlayersData[factionID].regionTotalBases[region] &&
 								(diplo = PlayersData[factionID].diploTreaties[i],
 									diplo & DTREATY_COMMLINK && (!(diplo & (DTREATY_PACT
-									| DTREATY_TREATY)) || diplo & DTREATY_WANT_REVENGE))) {
-								valueRet += (pwrBase / (baseCount  * (isHuman + 1)));
+										| DTREATY_TREATY)) || diplo & DTREATY_WANT_REVENGE))) {
+								valueRet += (pwrBase / (baseCount * (isHuman + 1)));
 							}
 						}
 					}
@@ -386,7 +386,7 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 		if (has_tech(techID, factionID)) {
 			return valueRet; // should this be moved further up?
 		}
-		if (climactic_battle() 
+		if (climactic_battle()
 			&& tech_is_preq(techID, Facility[FAC_ASCENT_TO_TRANSCENDENCE].preqTech, 2)) {
 			valueRet *= 4;
 		}
@@ -402,7 +402,7 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 			}
 		}
 		if (PlayersData[factionID].SE_ProbeBase <= 0) {
-			if(tech_is_preq(techID, Facility[FAC_HUNTER_SEEKER_ALGO].preqTech, aiTech + 2)) {
+			if (tech_is_preq(techID, Facility[FAC_HUNTER_SEEKER_ALGO].preqTech, aiTech + 2)) {
 				if (!aiPower) {
 					valueRet *= 2;
 				}
@@ -496,7 +496,7 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 							break;
 						}
 					}
-					if (search 
+					if (search
 						&& PlayersData[factionID].unk_79[region] >= Continents[region].tiles) {
 						valueRet *= 3;
 						if (isHuman) {
@@ -523,7 +523,7 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 	}
 	else {  // prototypes
 		uint32_t protoID = techID - 97;
-		valueRet = range(Weapon[VehPrototype[protoID].weaponID].offenseRating, 1, 2) 
+		valueRet = range(Weapon[VehPrototype[protoID].weaponID].offenseRating, 1, 2)
 			+ range(Armor[VehPrototype[protoID].armorID].defenseRating, 1, 2)
 			+ range(Chassis[VehPrototype[protoID].chassisID].speed, 1, 2)
 			+ VehPrototype[protoID].reactorID - 2;
@@ -544,8 +544,8 @@ int __cdecl tech_ai(int factionID) {
 		if (tech_avail(i, factionID)) {
 			int techValue = tech_val(i, factionID, false), compare;
 			if (*GameRules & RULES_BLIND_RESEARCH) {
-				if (isHuman && (PlayersData[factionID].AI_Growth 
-					|| PlayersData[factionID].AI_Wealth) 
+				if (isHuman && (PlayersData[factionID].AI_Growth
+					|| PlayersData[factionID].AI_Wealth)
 					&& i == VehPrototype[BSC_FORMERS].preqTech) {
 					return i; // Direct human player research toward gaining Formers
 				}
@@ -650,9 +650,9 @@ uint32_t __cdecl tech_rate(uint32_t factionID) {
 	uint32_t finFactor = range(playerFactor - (*TurnCurrentNum / (ruleFactor >> 3)),
 		0, (diffFactor * (ruleFactor >> 5)) >> 1) + diffFactor;
 	int reschBase = range(PlayersData[factionID].SE_ResearchBase, -1, 1);
-	uint32_t discovRate = (finFactor 
-		- range((topFactor - diffLvl - playerFactor + 7) / (8 - diffLvl), 
-			0, diffLvl * finFactor / 10 + 1)) 
+	uint32_t discovRate = (finFactor
+		- range((topFactor - diffLvl - playerFactor + 7) / (8 - diffLvl),
+			0, diffLvl * finFactor / 10 + 1))
 		* range(playerFactor - reschBase, 1, 99999);
 	if (Rules->TechDiscovRatePctStd != 100) {
 		discovRate = 100 * discovRate / Rules->TechDiscovRatePctStd;

@@ -165,32 +165,32 @@ struct rules_basic {
 	// Original bounds: 1 to 100
 	// Default value: 3
 	uint32_t MoveRateRoads;
-	
+
 	// Alpha(x).txt #RULES: Nutrient intake requirement for citizens
 	// Original bounds: 0 to 100
 	// Default value: 2
 	uint32_t NutrientReqCitizen;
-	
+
 	// Alpha(x).txt #RULES: Max airdrop range w/o orbital insertion
 	// Original bounds: 1 to 500
 	// Default value: 8
 	uint32_t MaxAirdropSansOrbInsert;
-	
+
 	// Alpha(x).txt #RULES: Max artillery range (larger will break multiplayer)
 	// Original bounds: 1 to 8
 	// Default value: 2
 	uint32_t ArtilleryMaxRng;
-	
+
 	// Alpha(x).txt #RULES: Numerator for artillery fire damage
 	// Original bounds: 1 to 1000
 	// Default value: 3
 	uint32_t ArtilleryDmgNum;
-	
+
 	// Alpha(x).txt #RULES: Denominator for artillery fire damage
 	// Original bounds: 1 to 1000
 	// Default value: 2
 	uint32_t ArtilleryDmgDenom;
-	
+
 	// Alpha(x).txt #RULES: Nutrient cost multiplier
 	// Original bounds: 1 to 100
 	// Default value: 10
@@ -263,7 +263,7 @@ struct rules_basic {
 	// Alpha(x).txt #RULES: Technology to allow 3 energy in a square
 	// Default value: EnvEcon (59)
 	int TechThreeEnergySqr;
-	
+
 	// Alpha(x).txt #RULES: Extra percentage cost of prototype LAND unit
 	// Original bounds: 0 to 500
 	// Default value: 50
@@ -284,7 +284,7 @@ struct rules_basic {
 	// Default value: 3 (LAND)
 	// Default value: 1 (SEA/AIR)
 	uint32_t PsiCombatRatioAtk[3]; // LAND, SEA, AIR
-	
+
 	// Alpha(x).txt #RULES: Psi combat offense-to-defense ratio (unit defending) Denominator
 	// Original bounds: 1 to 1000
 	// Default value: 2 (LAND)
@@ -315,11 +315,11 @@ struct rules_basic {
 	// Original bounds: -100 to 1000
 	// Default value: 0
 	int CombatPenPctAtkLwrElev;
-	
+
 	// Alpha(x).txt #RULES: Technology to allow orbital insertion w/o Space Elevator
 	// Default value: Gravity (21)
 	int TechOrbInsertSansSpcElev;
-	
+
 	// Alpha(x).txt #RULES: Minimum # of turns between councils
 	// Original bounds: 0 to 1000
 	// Default value: 20
@@ -339,7 +339,7 @@ struct rules_basic {
 	// Original bounds: 1 to 100
 	// Default value: 20
 	uint32_t TurnsCornerGblEnergyMrkt;
-	
+
 	// Alpha(x).txt #RULES: Technology for +1 mining platform bonus
 	// Default value: EcoEng2 (62)
 	int TechMiningPlatformBonus;
@@ -347,7 +347,7 @@ struct rules_basic {
 	// Alpha(x).txt #RULES: Technology for economic victory
 	// Default value: PlaEcon (61)
 	int TechEconomicVictory;
-	
+
 	// Alpha(x).txt #RULES: Combat penalty % -> attack after airdrop
 	// Original bounds: -100 to 1000
 	// Default value: 50
@@ -362,12 +362,12 @@ struct rules_basic {
 	// Original bounds: -100 to 1000
 	// Default value: 50
 	int CombatPctLandGunVsShipArt;
-	
+
 	// Alpha(x).txt #RULES: Combat % -> Artillery bonus per level of altitude
 	// Original bounds: -100 to 1000
 	// Default value: 25
 	int CombatPctArtBonusLvlAlt;
-	
+
 	// Alpha(x).txt #RULES: Combat % -> Mobile unit in open ground
 	// Original bounds: -100 to 1000
 	// Default value: 25
@@ -377,7 +377,7 @@ struct rules_basic {
 	// Original bounds: -100 to 1000
 	// Default value: 0
 	int CombatPctDefVsMobileRough;
-	
+
 	// Alpha(x).txt #RULES: Combat % -> Trance bonus defending vs. psi
 	// Original bounds: -100 to 1000
 	// Default value: 50
@@ -392,7 +392,7 @@ struct rules_basic {
 	// Original bounds: -100 to 1000
 	// Default value: 25
 	int CombatPctInfantryVsBase;
-	
+
 	// Alpha(x).txt #RULES: Combat penalty % -> Air superiority unit vs. ground unit
 	// Original bounds: -100 to 1000
 	// Default value: 50
@@ -432,8 +432,8 @@ struct rules_basic {
 	// Original bounds: -100 to 1000
 	// Default value: 10
 	int CombatPctPsiAtkBonusPLANET;
-	
-	// Alpha(x).txt #RULES: Retool strictness 
+
+	// Alpha(x).txt #RULES: Retool strictness
 	// (0 = Always Free, 1 = Free in Category, 2 = Free if Project, 3 = Never Free)
 	// Original bounds: 0 to 2 (Bug Fix: Should be 0 to 3)
 	// Default value: 2
@@ -571,7 +571,7 @@ struct rules_worldbuilder {
 	// Default value: 12
 	int RiversRainMod;
 
-	// Alpha(x).txt #WORLDBUILDER: Latitude DIVISOR for temperature based on HEAT; 
+	// Alpha(x).txt #WORLDBUILDER: Latitude DIVISOR for temperature based on HEAT;
 	// Smaller # increases effect of HEAT selection
 	// Original bounds: 1 to 64
 	// Default value: 14
@@ -587,7 +587,7 @@ struct rules_worldbuilder {
 	// Default value: 8
 	int ThermalDeviance;
 
-	// Alpha(x).txt #WORLDBUILDER: Latitude DIVISOR for global warming; 
+	// Alpha(x).txt #WORLDBUILDER: Latitude DIVISOR for global warming;
 	// Smaller # increases effect of warming
 	// Original bounds: 1 to 64
 	// Default value: 8
@@ -665,7 +665,7 @@ struct rules_worldbuilder {
 
 	// Alpha(x).txt #WORLDBUILDER: Continent size ratios #4
 	// Original bounds: n/a
-	// Default value: 18	
+	// Default value: 18
 	int ContSizeRatio4;
 
 	// Alpha(x).txt #WORLDBUILDER: Continent size ratios #5
