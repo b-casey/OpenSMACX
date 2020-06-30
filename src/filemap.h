@@ -28,7 +28,7 @@ class OPENSMACX_API Filemap {
 
 public:
 	Filemap() : mapViewAddr(NULL), hFile(INVALID_HANDLE_VALUE), hFileMap(NULL),
-		fileSize(0) { } // 00628380
+		fileSize(0) { }      // 00628380
 	~Filemap() { close(); }  // 006283E0
 
 	Filemap *init(LPCSTR fileName, BOOL isSequential);

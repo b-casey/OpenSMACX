@@ -164,7 +164,6 @@ int __cdecl base_find(int xCoord, int yCoord, int factionID, int region, int fac
 					: (factionID2 >= 0 && factionID2 == Base[i].factionIDCurrent)))) {
 				if (factionID3 < 0 || Base[i].factionIDCurrent == factionID3
 					|| ((1 << factionID3) & Base[i].visibility)) {
-					// removed redundant abs() around yCoord difference
 					int dist = vector_dist(xCoord, yCoord, Base[i].xCoord, Base[i].yCoord);
 					if (dist <= proximity) {
 						proximity = dist;

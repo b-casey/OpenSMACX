@@ -834,8 +834,8 @@ BOOL __cdecl read_units() {
 		int reactorID = text_item_number(); // Add ability to read reactor for #UNITS
 		if (!reactorID) { // if not set or 0, default behavior
 			switch (protoID) {
-				// There was a pointless explicit check for BSC_BATTLE_OGRE_MK1 to set reactor to 1
-				// The parameters set by check are no different than default
+			// There was a pointless explicit check for BSC_BATTLE_OGRE_MK1 to set reactor to 1
+			// The parameters set by check are no different than default
 			case BSC_BATTLE_OGRE_MK2:
 				reactorID = RECT_FUSION;
 				break;
@@ -1481,7 +1481,7 @@ void prefs_put(LPCSTR keyName, LPCSTR value) {
 Purpose: Write value as either integer or binary to pref key inside ini.
 Original Offset: 0059E530
 Return Value: n/a
-Status: Complete - testing
+Status: Complete - re-testing
 */
 void prefs_put(LPCSTR keyName, int value, BOOL binaryTgl) {
 	char temp[33];
