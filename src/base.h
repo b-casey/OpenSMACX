@@ -302,8 +302,8 @@ struct base {
 	uint8_t visibility; // faction bitfield of those who can see base (mapped: dim/bright)
 	uint8_t factionPopSizeIntel[8]; // last know population size for each faction
 	char nameString[25];
-	int16_t unkX; // related to goals?
-	int16_t unkY; // related to goals?
+	int16_t unkX; // terraforming related
+	int16_t unkY; // terraforming related
 	uint32_t status; // see base_status_bitfield
 	uint32_t event; // see base_event_bitfield
 	uint32_t governor; // see governor_base_bitfield
@@ -325,7 +325,7 @@ struct base {
 	uint32_t spec[2]; // specialist types
 	uint8_t facilitiesBuilt[12];
 	int mineralSurplusFinal;
-	int mineralsAccumulated2;
+	int mineralsAccumulated2; // original minerals before retooling?
 	int unk_6; // unused?
 	int unk_7; // unused?
 	int unk_8; // unused?

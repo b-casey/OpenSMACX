@@ -1295,7 +1295,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 }
 
 /*
-Purpose: Attempt to read setting's value from Alpha Centauri ini file.
+Purpose: Attempt to read the setting's value from the ini file.
 Original Offset: 0059D980
 Return Value: Key's string value from ini or default if not set
 Status: Complete with internal string pointers. Eventually, clean up dependent code on string
@@ -1315,10 +1315,10 @@ LPSTR prefs_get(LPCSTR keyName, LPCSTR defaultValue, BOOL useDefault) {
 }
 
 /*
-Purpose: TBD
+Purpose: Get the default value for the 1st set of preferences.
 Original Offset: 0059DA20
 Return Value: Default preferences
-Status: Complete - testing
+Status: Complete
 */
 uint32_t __cdecl default_prefs() {
 	uint32_t basePrefs = PREF_ADV_RADIO_BTN_NOT_SEL_SING_CLK | PREF_AUTO_FORMER_BUILD_ADV
@@ -1334,10 +1334,10 @@ uint32_t __cdecl default_prefs() {
 }
 
 /*
-Purpose: TBD
+Purpose: Get the default value for the 2nd set of preferences.
 Original Offset: 0059DAA0
-Return Value: Second set of default preferences
-Status: Complete - testing
+Return Value: Default preferences 2nd set
+Status: Complete
 */
 uint32_t __cdecl default_prefs2() {
 	uint32_t basePrefs2 = MPREF_ADV_DETAIL_MAIN_MENUS | MPREF_BSC_AUTO_PRUNE_OBS_VEH
@@ -1349,10 +1349,10 @@ uint32_t __cdecl default_prefs2() {
 }
 
 /*
-Purpose: TBD
+Purpose: Get the default value for the warning pop-up preferences.
 Original Offset: 0059DB20
 Return Value: Default warning preferences
-Status: Complete - testing
+Status: Complete
 */
 uint32_t __cdecl default_warn() {
 	return WARN_STOP_RANDOM_EVENT | WARN_STOP_ENERGY_SHORTAGE | WARN_STOP_MINERAL_SHORTAGE
@@ -1362,10 +1362,10 @@ uint32_t __cdecl default_warn() {
 }
 
 /*
-Purpose: TBD
+Purpose: Get the default value for the rule related preferences.
 Original Offset: 0059DB30
 Return Value: Default rule preferences
-Status: Complete - testing
+Status: Complete
 */
 uint32_t __cdecl default_rules() {
 	return RULES_VICTORY_COOPERATIVE | RULES_VICTORY_TRANSCENDENCE | RULES_BLIND_RESEARCH
@@ -1373,7 +1373,7 @@ uint32_t __cdecl default_rules() {
 }
 
 /*
-Purpose: Attempt to read setting's value from Alpha Centauri ini file.
+Purpose: Attempt to read the setting's value from the ini file.
 Original Offset: 0059DB40
 Return Value: Key's integer value from ini or default if not set
 Status: Complete with internal string pointers. Eventually, clean up code dependent on string
@@ -1383,15 +1383,16 @@ int prefs_get(LPCSTR keyName, int defaultValue, BOOL useDefault) {
 	_itoa_s(defaultValue, stringTemp->str, 256, 10);
 	if (useDefault) {
 		strcpy_s(*TextBufferGetPtr, 256, stringTemp->str);
-		return defaultValue;
 	}
-	GetPrivateProfileStringA("Alpha Centauri", keyName, stringTemp->str, *TextBufferGetPtr, 256,
-		".\\Alpha Centauri.ini");
+	else {
+		GetPrivateProfileStringA("Alpha Centauri", keyName, stringTemp->str, *TextBufferGetPtr, 256,
+			".\\Alpha Centauri.ini");
+	}
 	return atoi(Txt->update());
 }
 
 /*
-Purpose: Read faction filenames and search keys from ini file (SMACX only). Has added effect of
+Purpose: Read faction filenames and search keys from the ini file (SMACX only). Has added effect of
 		 forcing Player searchKey to be set to filename value. Rewrote almost the entire function
 		 because of how terrible the original code logic was.
 Original Offset: 0059DBD0
@@ -1423,10 +1424,10 @@ void __cdecl prefs_fac_load() {
 }
 
 /*
-Purpose: TBD ; not all will reset to default
+Purpose: Load the most common preferences from the game's ini to memory.
 Original Offset: 0059DCF0
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl prefs_load(BOOL useDefault) {
 	set_language(prefs_get("Language", 0, false));
@@ -1440,7 +1441,7 @@ void __cdecl prefs_load(BOOL useDefault) {
 	DefaultPrefs->FactionID = text_item_number();
 	uint32_t prefs = default_prefs();
 	if (DefaultPrefs->Difficulty < DLVL_TALENT) {
-		prefs |= 0x20;
+		prefs |= PREF_BSC_TUTORIAL_MSGS;
 	}
 	prefs_get("Preferences", prefs_get_binary(prefs).c_str(), useDefault);
 	AlphaIni->Preferences = text_item_binary();
@@ -1468,7 +1469,7 @@ void __cdecl prefs_load(BOOL useDefault) {
 }
 
 /*
-Purpose: Write string value to pref key of ini.
+Purpose: Write the string value to the pref key of the ini.
 Original Offset: 0059E510
 Return Value: n/a
 Status: Complete
@@ -1478,10 +1479,10 @@ void prefs_put(LPCSTR keyName, LPCSTR value) {
 }
 
 /*
-Purpose: Write value as either integer or binary to pref key inside ini.
+Purpose: Write the value as either an integer or a binary string to the pref key inside the ini.
 Original Offset: 0059E530
 Return Value: n/a
-Status: Complete - re-testing
+Status: Complete
 */
 void prefs_put(LPCSTR keyName, int value, BOOL binaryTgl) {
 	char temp[33];
@@ -1490,10 +1491,10 @@ void prefs_put(LPCSTR keyName, int value, BOOL binaryTgl) {
 }
 
 /*
-Purpose: TBD
+Purpose: Save the most common preferences from memory to the game's ini. 
 Original Offset: 0059E5D0
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl prefs_save(BOOL saveFactions) {
 	prefs_put("Prefs Format", 12, false);
@@ -1510,7 +1511,7 @@ void __cdecl prefs_save(BOOL saveFactions) {
 	std::stringstream ss;
 	for (uint32_t i = 0; i < 7; i++) {
 		if (i != 0) {
-			ss << ", ";
+			ss << ", "; // removed last trailing comma
 		}
 		ss << AlphaIni->CustomWorld[i];
 	}
@@ -1526,10 +1527,10 @@ void __cdecl prefs_save(BOOL saveFactions) {
 }
 
 /*
-Purpose: TBD
+Purpose: Set the internal game preference globals from the ini setting globals.
 Original Offset: 0059E950
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl prefs_use() {
 	*GamePreferences = AlphaIni->Preferences;
@@ -1540,8 +1541,8 @@ void __cdecl prefs_use() {
 /*
 Purpose: Convert value to binary string used by preferences.
 Original Offset: n/a
-Return Value: n/a
-Status: Complete - testing
+Return Value: Binary string
+Status: Complete
 */
 std::string prefs_get_binary(int value) {
 	char temp[33];
@@ -1600,7 +1601,7 @@ void __cdecl labels_shutdown() {
 Purpose: Set the game's language.
 Original Offset: 00627100
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl set_language(uint32_t language) {
 	*Language = language;

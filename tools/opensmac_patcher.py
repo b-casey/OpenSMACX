@@ -51,7 +51,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
 	bin_app = mmap.mmap(f.fileno(), 0)
-	# next: 383
+	# next: 391
 	#
 	
 	# ALPHA
@@ -108,7 +108,43 @@ with open(exe_path, "r+b") as f:
 	bin_app.write(struct.pack("<L", addr+4*120))
 	bin_app.seek(0x001A5880) # ?say_label@@YAXH@Z
 	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*291))	
+	bin_app.write(struct.pack("<L", addr+4*291))
+	bin_app.seek(0x0019DB40) # ?prefs_get@@YAHPBDHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*137))
+	bin_app.seek(0x0019D980) # ?prefs_get@@YAPADPBD0H@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*138))
+	bin_app.seek(0x0019E510) # ?prefs_put@@YAXPBD0@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*139))
+	bin_app.seek(0x0019E530) # ?prefs_put@@YAXPBDHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*140))
+	bin_app.seek(0x0019DA20) # ?default_prefs@@YAIXZ
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*383))
+	bin_app.seek(0x0019DAA0) # ?default_prefs2@@YAIXZ
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*384))
+	bin_app.seek(0x0019DB20) # ?default_warn@@YAIXZ
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*385))	
+	bin_app.seek(0x0019DB30) # ?default_rules@@YAIXZ
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*386))
+	bin_app.seek(0x0019DCF0) # ?prefs_load@@YAXH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*387))
+	bin_app.seek(0x0019E5D0) # ?prefs_save@@YAXH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*388))
+	bin_app.seek(0x0019E950) # ?prefs_use@@YAXXZ
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*389))	
+	bin_app.seek(0x00227100) # ?set_language@@YAXI@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*390))
 	# BASE
 	bin_app.seek(0x000E3B80) # ?base_find@@YAHHH@Z
 	patch_call_bytes(bin_app)
@@ -387,18 +423,6 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x0022D570) # ?jackal_version_check@@YAHPBD@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*136))
-	bin_app.seek(0x0019DB40) # ?prefs_get@@YAHPBDHH@Z
-	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*137))
-	bin_app.seek(0x0019D980) # ?prefs_get@@YAPADPBD0H@Z
-	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*138))
-	bin_app.seek(0x0019E510) # ?prefs_put@@YAXPBD0@Z
-	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*139))
-	bin_app.seek(0x0019E530) # ?prefs_put@@YAXPBDHH@Z
-	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*140))
 	bin_app.seek(0x002003A0) # ?filefind_cd_drive_letter@@YADXZ
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*141))
