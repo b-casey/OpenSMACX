@@ -645,7 +645,7 @@ void __cdecl read_faction(player *Player, int toggle) {
 		}
 		parseRuleCheck = text_item();
 		len = strlen(parseRuleCheck);
-		delete parseRule;
+		delete [] parseRule;
 	}
 	// Societal Ideology + Anti-Ideology
 	for (int i = 0; i < 2; i++) {

@@ -172,10 +172,11 @@ int __cdecl psi_factor(int combatRatio, int factionID, BOOL isAttack, BOOL isFun
 }
 
 /*
-Purpose: Determine whether enemy units of base are within range to attack.
+Purpose: Determine whether any enemy naval transports are carrying land units within range to 
+		 attack the specified base. If so, set the units to move towards the base.
 Original Offset: 00506490
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl invasions(uint32_t baseID) {
 	uint32_t factionIDBase = Base[baseID].factionIDCurrent;
@@ -185,9 +186,9 @@ void __cdecl invasions(uint32_t baseID) {
 		if (factionIDVeh && !is_human(factionIDVeh) && factionIDVeh != factionIDBase
 			&& !(PlayersData[factionIDVeh].diploTreaties[factionIDBase] & DTREATY_TREATY)) {
 			int xCoordVeh = Veh[i].xCoord, yCoordVeh = Veh[i].yCoord;
-			if (!is_ocean(xCoordVeh, yCoordVeh) && veh_cargo(i)
+			if (is_ocean(xCoordVeh, yCoordVeh) && veh_cargo(i)
 				&& stack_check(i, 3, TRIAD_LAND, -1, -1)) {
-				int proximity = vector_dist(xCoordVeh, yCoordVeh, xCoordBase, yCoordBase);
+				int proximity = vector_dist(xCoordBase, yCoordBase, xCoordVeh, yCoordVeh);
 				if (proximity <= (int)speed(i, false)) {
 					Veh[i].orders = ORDER_MOVE_TO;
 					Veh[i].waypoint_xCoord[0] = xCoordBase;
@@ -256,10 +257,10 @@ uint32_t __cdecl proto_power(int vehID) {
 }
 
 /*
-Purpose: Determine whether vehID has already received upgrade or could use it.
+Purpose: Determine whether the specified Veh is eligible for a monolith morale upgrade.
 Original Offset: 00579F80
-Return Value: Does unit want monolith? true/false
-Status: Complete - testing
+Return Value: Is Veh eligible for monolith morale upgrade? true/false
+Status: Complete
 */
 BOOL __cdecl want_monolith(uint32_t vehID) {
 	if (!(Veh[vehID].state & VSTATE_MONOLITH_UPGRADED)
@@ -1087,10 +1088,10 @@ void __cdecl make_proto(int protoID, uint32_t chassisID, uint32_t weaponID, uint
 }
 
 /*
-Purpose: Search for the 1st prototype that matches specified plan.
+Purpose: Search for the 1st prototype (basic + faction specific) that matches the specified plan.
 Original Offset: 005AED50
-Return Value: protoID or -1
-Status: Complete - testing
+Return Value: protoID or -1 if not found
+Status: Complete
 */
 int __cdecl get_plan(uint32_t factionID, uint32_t plan) {
 	for (int i = 0; i < 128; i++) {
@@ -1098,7 +1099,7 @@ int __cdecl get_plan(uint32_t factionID, uint32_t plan) {
 			: (factionID * MaxVehProtoFactionNum) + i - MaxVehProtoFactionNum;
 		if (VehPrototype[protoID].flags & PROTO_ACTIVE
 			&& !(VehPrototype[protoID].obsoleteFactions & (1 << factionID))
-			&& (protoID > MaxVehProtoFactionNum
+			&& (protoID >= MaxVehProtoFactionNum
 				|| has_tech(VehPrototype[protoID].preqTech, factionID))
 			&& VehPrototype[protoID].plan == plan) {
 			return protoID;
@@ -1108,70 +1109,60 @@ int __cdecl get_plan(uint32_t factionID, uint32_t plan) {
 }
 
 /*
-Purpose: Determine if Veh wants to wake up based on certain conditions and preferences.
+Purpose: Determine if Veh wants to wake up based on certain conditions and preferences. Optional 
+		 parameter for spotted vehID (-1 to skip).
 Original Offset: 005B5EA0
-Return Value: Does veh want to wake? true/false
-Status: Complete - testing
+Return Value: Does Veh want to wake? true/false
+Status: Complete
 */
-BOOL __cdecl want_to_wake(uint32_t factionID, uint32_t vehID, int vehID2) {
+BOOL __cdecl want_to_wake(uint32_t factionID, uint32_t vehID, int spottedVehID) {
+	int baseFactionID;
 	uint32_t triad = get_triad(vehID), vehFactionID = Veh[vehID].factionID;
-	if (triad == TRIAD_AIR && Veh[vehID].terraformingTurns && Veh[vehID].orders == ORDER_MOVE_TO) {
-		int baseFactionID = base_who(Veh[vehID].waypoint_xCoord[0], Veh[vehID].waypoint_yCoord[0]);
-		if (baseFactionID >= 0 && ((uint32_t)baseFactionID == vehFactionID)
+	if (triad == TRIAD_AIR && Veh[vehID].terraformingTurns && Veh[vehID].orders == ORDER_MOVE_TO
+		&& (baseFactionID = base_who(Veh[vehID].waypoint_xCoord[0], Veh[vehID].waypoint_yCoord[0]),
+			baseFactionID >= 0)) {
+		if (((uint32_t)baseFactionID == vehFactionID) 
 			|| PlayersData[vehFactionID].diploTreaties[baseFactionID] & DTREATY_PACT) {
 			return false;
 		}
 	}
 	uint32_t treaties = PlayersData[vehFactionID].diploTreaties[factionID];
 	BOOL wantToWake;
-	if (treaties & DTREATY_PACT) {
-		if (!*IsMultiplayer) {
-			wantToWake = *GamePreferences & PREF_AUTO_END_MOVE_SPOT_VEH_PACT;
-			if (!(*GamePreferences & PREF_AUTO_DONT_END_MOVE_DIFF_TRIAD)) {
-				return wantToWake;
-			}
-		}
-		else {
+	if (*IsMultiplayer) { // restructured to be more efficient with same logic
+		if (treaties & DTREATY_PACT) {
 			wantToWake = false;
 		}
-	}
-	else if (treaties & DTREATY_TREATY) {
-		if (!*IsMultiplayer) {
-			wantToWake = *GamePreferences & PREF_AUTO_END_MOVE_SPOT_VEH_TREATY;
-			if (!(*GamePreferences & PREF_AUTO_DONT_END_MOVE_DIFF_TRIAD)) {
-				return wantToWake;
-			}
-		}
-		else {
+		else if (treaties & DTREATY_TREATY) {
 			wantToWake = true;
 		}
-	}
-	else if (treaties & DTREATY_TRUCE) {
-		if (!*IsMultiplayer) {
-			wantToWake = *GamePreferences & PREF_AUTO_END_MOVE_SPOT_VEH_TRUCE;
-			if (!(*GamePreferences & PREF_AUTO_DONT_END_MOVE_DIFF_TRIAD)) {
-				return wantToWake;
-			}
+		else if (treaties & DTREATY_TRUCE) {
+			wantToWake = true;
 		}
 		else {
 			wantToWake = true;
 		}
 	}
 	else {
-		if (!*IsMultiplayer) {
-			wantToWake = *GamePreferences & PREF_AUTO_END_MOVE_SPOT_VEH_WAR;
-			if (!(*GamePreferences & PREF_AUTO_DONT_END_MOVE_DIFF_TRIAD)) {
-				return wantToWake;
-			}
+		if (treaties & DTREATY_PACT) {
+			wantToWake = *GamePreferences & PREF_AUTO_END_MOVE_SPOT_VEH_PACT;
+		}
+		else if (treaties & DTREATY_TREATY) {
+			wantToWake = *GamePreferences & PREF_AUTO_END_MOVE_SPOT_VEH_TREATY;
+		}
+		else if (treaties & DTREATY_TRUCE) {
+			wantToWake = *GamePreferences & PREF_AUTO_END_MOVE_SPOT_VEH_TRUCE;
 		}
 		else {
-			wantToWake = true;
+			wantToWake = *GamePreferences & PREF_AUTO_END_MOVE_SPOT_VEH_WAR;
+		}
+		if (!(*GamePreferences & PREF_AUTO_DONT_END_MOVE_DIFF_TRIAD)) {
+			return wantToWake;
 		}
 	}
-	if (vehID2 >= 0) { // removed a check if vehID is also >= 0 since it should always be unsigned
-		uint32_t triad2 = get_triad(vehID2);
-		if (triad != triad2 && ((Veh[vehID].state & (VSTATE_UNK_1000000 | VSTATE_UNK_200))
-			!= (VSTATE_UNK_1000000 | VSTATE_UNK_200) || triad2 == TRIAD_LAND)) {
+	if (spottedVehID >= 0) { // removed a check if vehID is also >= 0 (always unsigned)
+		uint32_t triadSpotted = get_triad(spottedVehID);
+		if (triad != triadSpotted && ((Veh[vehID].state & (VSTATE_UNK_1000000 | VSTATE_UNK_200))
+			!= (VSTATE_UNK_1000000 | VSTATE_UNK_200) || triadSpotted == TRIAD_LAND)) {
 			wantToWake = false;
 		}
 	}
@@ -1179,10 +1170,10 @@ BOOL __cdecl want_to_wake(uint32_t factionID, uint32_t vehID, int vehID2) {
 }
 
 /*
-Purpose: Wake up the stack where vehID is located.
+Purpose: Wake up veh meeting conditions from the stack where vehID is located.
 Original Offset: 005B6060
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl wake_stack(int vehID) {
 	for (int i = veh_top(vehID); i >= 0; i = Veh[i].nextVehIDStack) {
@@ -1694,10 +1685,10 @@ void __cdecl veh_demote(int vehID) {
 }
 
 /*
-Purpose: Move vehID to top of stack.
+Purpose: Move the specified vehID to the top of the stack.
 Original Offset: 005C0260
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl veh_promote(int vehID) {
 	int vehIDTop = veh_top(vehID);
@@ -1705,23 +1696,6 @@ void __cdecl veh_promote(int vehID) {
 		veh_lift(vehID);
 		veh_drop(vehID, Veh[vehIDTop].xCoord, Veh[vehIDTop].yCoord);
 	}
-	/*
-	if (vehID >= 0) {
-		int16_t prevVehID = Veh[vehID].prevVehIDStack;
-		if (prevVehID >= 0) {
-			int16_t firstVehID;
-			do {
-				firstVehID = prevVehID;
-				prevVehID = Veh[firstVehID].prevVehIDStack;
-			} while (prevVehID >= 0);
-
-			if (firstVehID != vehID) {
-				veh_lift(vehID);
-				veh_drop(vehID, Veh[firstVehID].xCoord, Veh[firstVehID].yCoord);
-			}
-		}
-	}
-	*/
 }
 
 /*

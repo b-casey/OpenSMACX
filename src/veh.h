@@ -532,7 +532,7 @@ OPENSMACX_API uint32_t __cdecl base_cost(int protoID);
 OPENSMACX_API void __cdecl make_proto(int protoID, uint32_t chassisID, uint32_t weaponID,
 	uint32_t armorID, uint32_t ability, uint32_t reactorID);
 OPENSMACX_API int __cdecl get_plan(uint32_t factionID, uint32_t plan);
-OPENSMACX_API BOOL __cdecl want_to_wake(uint32_t factionID, uint32_t vehID, int vehID2);
+OPENSMACX_API BOOL __cdecl want_to_wake(uint32_t factionID, uint32_t vehID, int spottedVehID);
 OPENSMACX_API void __cdecl wake_stack(int vehID);
 OPENSMACX_API void __cdecl stack_put(int vehID, int xCoord, int yCoord);
 OPENSMACX_API void __cdecl stack_sort(int vehID);
