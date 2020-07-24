@@ -51,7 +51,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
 	bin_app = mmap.mmap(f.fileno(), 0)
-	# next: 396
+	# next: 401
 	#
 	
 	# ALPHA
@@ -729,6 +729,21 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001A5910) # ?vector_dist@@YAHHHHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*372))
+	bin_app.seek(0x00192400) # ?site_radius@@YAXHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*396))
+	bin_app.seek(0x00193830) # ?quick_zoc@@YAXHHHHHPAH0@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*397))
+	bin_app.seek(0x001A65A0) # ?radius_move@@YAHHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*398))
+	bin_app.seek(0x001A65D0) # ?radius_move@@YAHHHHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*399))
+	bin_app.seek(0x001A6630) # ?compass_move@@YAHHHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*400))
 	# PATH
 	bin_app.seek(0x0019A220) # ?init@Path@@QAEXXZ
 	patch_call_bytes(bin_app)

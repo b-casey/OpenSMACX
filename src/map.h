@@ -281,7 +281,7 @@ OPENSMACX_API void __cdecl synch_bit(int xCoord, int yCoord, int factionID);
 OPENSMACX_API uint32_t __cdecl minerals_at(int xCoord, int yCoord);
 OPENSMACX_API uint32_t __cdecl bonus_at(int xCoord, int yCoord, int unkVal);
 OPENSMACX_API uint32_t __cdecl goody_at(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl site_radius(int xCoord, int yCoord, BOOL tgl);
+OPENSMACX_API void __cdecl site_radius(int xCoord, int yCoord, int valUnk);
 OPENSMACX_API BOOL __cdecl is_coast(int xCoord, int yCoord, BOOL isBaseRadius);
 OPENSMACX_API BOOL __cdecl is_ocean(int xCoord, int yCoord);
 OPENSMACX_API int __cdecl veh_who(int xCoord, int yCoord);

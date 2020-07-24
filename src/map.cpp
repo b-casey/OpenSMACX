@@ -920,12 +920,12 @@ uint32_t __cdecl goody_at(int xCoord, int yCoord) {
 }
 
 /*
-Purpose: Reset site radius. The 3rd parameter is unused.
+Purpose: Clear the map's site values in a radius from the tile. The 3rd parameter is unused.
 Original Offset: 00592400
 Return Value: n/a
-Status: Complete - test
+Status: Complete
 */
-void __cdecl site_radius(int xCoord, int yCoord, BOOL UNUSED(tgl)) {
+void __cdecl site_radius(int xCoord, int yCoord, int UNUSED(valUnk)) {
 	for (int i = 0; i < 21; i++) {
 		int xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
 		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
@@ -1219,11 +1219,11 @@ void __cdecl abstract_set(int xCoord, int yCoord, uint8_t region) {
 }
 
 /*
-Purpose: Quick check for Veh related zone of control conflicts. If a ZOC conflict is found, store
-		 coordinates of tile inside xCoordZoc/yCoordZoc.
+Purpose: Quickly check for Veh related zone of control conflicts. If a ZOC conflict is found, store
+		 the coordinates of the tile inside xCoordZoc/yCoordZoc pointers.
 Original Offset: 00593830
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl quick_zoc(int xCoordSrc, int yCoordSrc, int factionID, int xCoordDst, int yCoordDst,
 	int *xCoordZoc, int *yCoordZoc) {
@@ -1248,10 +1248,10 @@ void __cdecl quick_zoc(int xCoordSrc, int yCoordSrc, int factionID, int xCoordDs
 }
 
 /*
-Purpose: Check to see if radius offsets are within range.
+Purpose: Determine if the specified offsets are within the range's radius.
 Original Offset: 005A65A0
 Return Value: -1 if not within range, otherwise range radius
-Status: Complete - testing
+Status: Complete
 */
 int __cdecl radius_move(int xRadiusOff, int yRadiusOff, int range) {
 	for (int i = 0; i < range; i++) {
@@ -1263,10 +1263,10 @@ int __cdecl radius_move(int xRadiusOff, int yRadiusOff, int range) {
 }
 
 /*
-Purpose: Determine if the specified two tiles are within radial range of each other.
+Purpose: Determine if the specified two tiles are within the range's radius of each other.
 Original Offset: 005A65D0
 Return Value: -1 if not within range, otherwise range radius
-Status: Complete - testing
+Status: Complete
 */
 int __cdecl radius_move(int xCoordSrc, int yCoordSrc, int xCoordDst, int yCoordDst, int range) {
 	int xRadiusOff = xCoordDst - xCoordSrc;
@@ -1280,10 +1280,10 @@ int __cdecl radius_move(int xCoordSrc, int yCoordSrc, int xCoordDst, int yCoordD
 }
 
 /*
-Purpose: Determine if the specified two tiles are within range via North, South, East, West.
+Purpose: Determine if the specified two tiles are within the radius directionally of each other.
 Original Offset: 005A6630
-Return Value: -1 if not within range, otherwise range offset
-Status: Complete - testing
+Return Value: -1 if not within radius, otherwise radius offset
+Status: Complete
 */
 int __cdecl compass_move(int xCoordSrc, int yCoordSrc, int xCoordDst, int yCoordDst) {
 	int xRadiusOff = xCoordDst - xCoordSrc;
@@ -1294,11 +1294,11 @@ int __cdecl compass_move(int xCoordSrc, int yCoordSrc, int xCoordDst, int yCoord
 		xRadiusOff -= *MapHorizontalBounds;
 	}
 	int yRadiusOff = yCoordDst - yCoordSrc;
-	int directionX = (xRadiusOff <= 0) ? (xRadiusOff >= 0) - 1 : 1;
-	int directionY = (yRadiusOff <= 0) ? (yRadiusOff >= 0) - 1 : 1;
+	int directionX = (xRadiusOff > 0) ? 1 : (xRadiusOff >= 0) - 1;
+	int directionY = (yRadiusOff > 0) ? 1 : (yRadiusOff >= 0) - 1;
 	for (int i = 0; i < 9; i++) {
-		if (directionX == (xRadiusOffset[i] <= 0 ? (xRadiusOffset[i] >= 0) - 1 : 1)
-			&& directionY == (yRadiusOffset[i] <= 0 ? (yRadiusOffset[i] >= 0) - 1 : 1)) {
+		if (directionX == (xRadiusBase[i] > 0 ? 1 : (xRadiusBase[i] >= 0) - 1)
+			&& directionY == (yRadiusBase[i] > 0 ? 1 : (yRadiusBase[i] >= 0) - 1)) {
 			return i;
 		}
 	}
