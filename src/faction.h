@@ -462,7 +462,7 @@ struct player_data {
 	uint8_t regionBasePlan[128]; // visible in map UI with omni view + debug mode under base name
 	/* End of block */
 	goal goals[75];
-	goal sites[25]; // same struct as goals
+	goal sites[25]; // same struct as goals, subset of general goals?
 	int unk_93;
 	int unk_94;
 	int unk_95;
@@ -536,15 +536,15 @@ OPENSMACX_API LPSTR __cdecl get_noun(int factionID);
 OPENSMACX_API uint32_t __cdecl aah_ooga(int factionID, int pactFactionID);
 OPENSMACX_API BOOL __cdecl climactic_battle();
 OPENSMACX_API uint32_t __cdecl guard_check(uint32_t factionID, uint32_t region);
-OPENSMACX_API void __cdecl add_goal(uint32_t factionID, int16_t type, int16_t priority, int xCoord,
+OPENSMACX_API void __cdecl add_goal(uint32_t factionID, int type, int priority, int xCoord,
 	int yCoord, int baseID);
-OPENSMACX_API void __cdecl add_site(uint32_t factionID, int16_t type, int16_t priority, int xCoord,
+OPENSMACX_API void __cdecl add_site(uint32_t factionID, int type, int priority, int xCoord,
 	int yCoord);
-OPENSMACX_API BOOL __cdecl at_goal(uint32_t factionID, int16_t type, int xCoord, int yCoord);
-OPENSMACX_API BOOL __cdecl at_site(uint32_t factionID, int16_t type, int xCoord, int yCoord);
+OPENSMACX_API BOOL __cdecl at_goal(uint32_t factionID, int type, int xCoord, int yCoord);
+OPENSMACX_API BOOL __cdecl at_site(uint32_t factionID, int type, int xCoord, int yCoord);
 OPENSMACX_API void __cdecl wipe_goals(uint32_t factionID);
 OPENSMACX_API void __cdecl init_goals(uint32_t factionID);
-OPENSMACX_API void __cdecl del_site(uint32_t factionID, int16_t type, int xCoord, int yCoord,
+OPENSMACX_API void __cdecl del_site(uint32_t factionID, int type, int xCoord, int yCoord,
 	int proximity);
 OPENSMACX_API uint32_t __cdecl corner_market(uint32_t factionID);
 OPENSMACX_API void __cdecl see_map_check();

@@ -51,7 +51,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
 	bin_app = mmap.mmap(f.fileno(), 0)
-	# next: 401
+	# next: 408
 	#
 	
 	# ALPHA
@@ -299,6 +299,27 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x0019EE50) # ?corner_market@@YAII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*369))
+	bin_app.seek(0x00179A30) # ?add_goal@@YAXIHHHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*401))
+	bin_app.seek(0x00179B70) # ?add_site@@YAXIHHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*402))
+	bin_app.seek(0x00179CC0) # ?at_goal@@YAHIHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*403))
+	bin_app.seek(0x00179D20) # ?at_site@@YAHIHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*404))
+	bin_app.seek(0x00179D80) # ?wipe_goals@@YAXI@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*405))
+	bin_app.seek(0x00179E00) # ?init_goals@@YAXI@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*406))
+	bin_app.seek(0x00179E70) # ?del_site@@YAXIHHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*407))	
 	# FILEMAP
 	bin_app.seek(0x00228380) # ??0Filemap@@QAE@XZ
 	patch_call_bytes(bin_app)

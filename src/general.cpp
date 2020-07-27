@@ -355,14 +355,14 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
 	if (!input || !output) { // EBX || ESI
 		return 3;
 	}
-	LPSTR outputCopy = output;
+	//LPSTR outputCopy = output;
 	LPSTR var; // EDI
 	do {
 		var = strstr(input, "$");
 		if (!var) {
 			break;
 		}
-		LPSTR parsingInput = &input[1];
+		//LPSTR parsingInput = &input[1];
 		switch (var[1]) {
 		case '$': // done -> needs testing
 		{
@@ -474,7 +474,7 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
 			var += 2;
 			input = endBracket + 1;
 			purge_leading(var);
-			int gender, plural = 0, num = -1;
+			int gender;// , plural = 0, num = -1;
 			switch (var[0]) {
 			case 'M':
 			case 'm':
@@ -595,7 +595,7 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
 	if (*Language == 1) { // French : handling for poor translations
 		do {
 			//LPSTR partSpeach[] = { " de ", " le ", " la ", "De ", "Le ", "La " };
-			LPSTR langParse = output;
+			//LPSTR langParse = output;
 			LPSTR searching = 0;
 			for (int i = 0; i < 6; i++) {
 				LPSTR partFound = 0;// strstr(langParse, partSpeach[i]);
