@@ -49,9 +49,6 @@ func5 *load_faction_art = (func5 *)0x00453710;
 func6 *X_pop = (func6 *)0x005BF310;
 func9 *fixup_landmarks = (func9 *)0x00592940;
 func9 *mapwin_terrain_fixup = (func9 *)0x00471240;
-func9 *do_video = (func9 *)0x00636300;
-func9 *check_net = (func9 *)0x0062D5D0;
-func9 *do_net = (func9 *)0x0062D5B0;
 func14 *base_at = (func14 *)0x004E3A50;
 func11 *wants_to_attack = (func11 *)0x0055BC80;
 func7 *popp = (func7 *)0x0048C0A0;
@@ -76,7 +73,6 @@ int *ParseStrPlurality = (int *)0x009BB570;
 int *ParseStrGender = (int *)0x009BB5C0;
 int *GenderDefault = (int *)0x009BBFEC;
 int *PluralityDefault = (int *)0x009BBFF0;
-int *MsgStatus = (int *)0x009B7B9C;
 HWND *HandleMain = (HWND *)0x009B7B28;
 
 uint32_t *UnkBitfield1 = (uint32_t *)0x0090D91C;
@@ -591,57 +587,121 @@ void tech_calc_output() {
 	}
 }
 
-// 005FCA30
+// message handling testing
+// possible issues different SDKs?
+func_msg *do_video = (func_msg *)0x00636300;
+func_msg *check_net = (func_msg *)0x0062D5D0;
+func_msg *do_net = (func_msg *)0x0062D5B0;
+func_msg *do_non_input_ = (func_msg *)0x005FCA30;
+
+uint32_t *MsgStatus = (uint32_t *)0x009B7B9C;
+
+/*
+Purpose: Process non-input related message.
+Original Offset: 005FCA30
+Return Value: Is message available? true/false
+Status: Complete - testing
+*/
 BOOL __cdecl do_non_input() {
 	do_video();
 	check_net();
 	do_net();
-	MSG Msg;
-	/*
-	DWORD *msgTime = &Msg.time;
-	for (int i = 3; i > 0; i--) {
-		*msgTime = -1;
-		msgTime += 7;
+	MSG msg[3];
+	for (int i = 0; i < 3; i++) {
+		msg[i].time = 0xFFFFFFFF;
 	}
-	*/
-	if (!PeekMessage(&Msg, 0, WM_NULL, WM_INPUT, PM_NOREMOVE)
-		|| !PeekMessage(&Msg, 0, WM_UNICHAR, WM_KEYDOWN | WM_INPUT, PM_NOREMOVE)
-		|| !PeekMessage(&Msg, 0, WM_MOUSELAST, 0xFFFF, PM_NOREMOVE)) {
+	if (!PeekMessage(&msg[0], NULL, WM_NULL, WM_INPUT, PM_NOREMOVE)
+		|| !PeekMessage(&msg[1], NULL, WM_UNICHAR, WM_KEYDOWN | WM_INPUT, PM_NOREMOVE)
+		|| !PeekMessage(&msg[2], NULL, WM_MOUSELAST, UNICODE_NOCHAR, PM_NOREMOVE)) {
 		return false;
 	}
-	/*
-	DWORD *msgTime2 = &Msg.time;
-	for (uint32_t i = 1; i < 4; i++) {
+	int a = 0;
+	for (int c = 1; c < 3; c++) {
+		if (msg[c].time < msg[a].time) {
+			a = c;
+		}
 	}
-	*/
-	// PeekMessage
-	TranslateMessage(&Msg);
-	DispatchMessage(&Msg);
+	PeekMessage(&msg[0], msg[a].hwnd, msg[a].message, msg[a].message, PM_REMOVE);
+	TranslateMessage(&msg[0]);
+	DispatchMessage(&msg[0]);
 	return true;
 }
 
-// 005FCB20
+/*
+Purpose: Process all non-input related messages.
+Original Offset: 005FCB20
+Return Value: n/a
+Status: Complete - testing
+*/
 void __cdecl do_all_non_input() {
 	do {
 		*MsgStatus = 32;
-	} while (do_non_input());
+	} while (do_non_input_());
 	*MsgStatus = 0;
 	do_net();
 	check_net();
 }
 
+/*
+Purpose: Process draw related message.
+Original Offset: 005FCB60
+Return Value: Is message available? true/false
+Status: Complete - testing
+*/
 BOOL __cdecl do_draw() {
+	do_video();
+	check_net();
+	do_net();
+	MSG msg;
+	if (PeekMessage(&msg, NULL, WM_PAINT, WM_PAINT, WM_CREATE)) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+		return true;
+	}
 	return false;
 }
 
+/*
+Purpose: Process all draw related messages.
+Original Offset: 005FCBB0
+Return Value: n/a
+Status: Complete - testing
+*/
 void __cdecl do_all_draws() {
-	//
+	do {
+		*MsgStatus = 1;
+	} while (do_draw());
+	*MsgStatus = 0;
 }
 
+/*
+Purpose: Process keyboard related message.
+Original Offset: 005FCC20
+Return Value: Is message available? true/false
+Status: Complete - testing
+*/
 BOOL __cdecl do_keyboard() {
+	do_video();
+	check_net();
+	MSG msg;
+	if (PeekMessage(&msg, NULL, WM_KEYDOWN, WM_KEYLAST, WM_CREATE)) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+		return true;
+	}
 	return false;
 }
 
+/*
+Purpose: Process all keyboard related messages.
+Original Offset: 005FCC70
+Return Value: n/a
+Status: Complete - testing
+*/
 void __cdecl do_all_keyboard() {
-	//
+	do {
+		*MsgStatus = 2;
+	} while (do_keyboard());
+	*MsgStatus = 0;
+	do_net();
 }

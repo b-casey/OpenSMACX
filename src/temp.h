@@ -56,9 +56,6 @@ extern func6 *X_pop;
 typedef void *func9(void);
 extern func9 *fixup_landmarks;
 extern func9 *mapwin_terrain_fixup;
-extern func9 *do_video;
-extern func9 *check_net;
-extern func9 *do_net;
 typedef int func7(LPCSTR, LPCSTR, int, LPCSTR, int(__cdecl *)());
 extern func7 *popp;
 typedef int func14(int, int);
@@ -87,7 +84,6 @@ extern int *ParseStrPlurality;
 extern int *ParseStrGender;
 extern int *GenderDefault;
 extern int *PluralityDefault;
-extern int *MsgStatus;
 extern HWND *HandleMain;
 
 extern uint32_t *UnkBitfield1;
@@ -97,14 +93,23 @@ extern MainInterface *MainInterfaceVar;
 
 OPENSMACX_API int __cdecl tester();
 
+// tech_val output
+typedef int func13(int, int, BOOL);
+extern func13 *tech_val_OG;
+OPENSMACX_API void __cdecl tech_calc_output();
+
+// message handling testing
+typedef void *func_msg(void);
+extern func_msg *do_video;
+extern func_msg *check_net;
+extern func_msg *do_net;
+extern func_msg *do_non_input_;
+
+extern uint32_t *MsgStatus;
+
 OPENSMACX_API BOOL __cdecl do_non_input();
 OPENSMACX_API void __cdecl do_all_non_input();
 OPENSMACX_API BOOL __cdecl do_draw();
 OPENSMACX_API void __cdecl do_all_draws();
 OPENSMACX_API BOOL __cdecl do_keyboard();
 OPENSMACX_API void __cdecl do_all_keyboard();
-
-// tech_val output
-typedef int func13(int, int, BOOL);
-extern func13 *tech_val_OG;
-OPENSMACX_API void __cdecl tech_calc_output();
