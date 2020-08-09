@@ -41,14 +41,19 @@ public:
 
 	void init();
 	void shutdown();
+	int get(int xCoord, int yCoord);
+	void set(int xCoord, int yCoord, int val);
 	int zoc_path(int xCoord, int yCoord, int factionID);
 	int find(int xCoordSrc, int yCoordSrc, int xCoordDstA, int yCoordDstA, int protoID_,
 		int factionID, int unk1, int unk2);
 	int move(int vehID, int factionID);
 	void make_abstract();
-	void replace(uint32_t regionOld, uint32_t regionNew);
+	void merge(uint32_t regionOld, uint32_t regionNew);
 	void territory(int xCoord, int yCoord, int region, int factionID);
 	void continent(int xCoord, int yCoord, uint32_t region);
 	void continents();
 	BOOL sensors(int factionID, int *xCoordPtr, int *yCoordPtr);
 };
+
+// global
+extern Path *Paths;

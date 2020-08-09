@@ -62,11 +62,31 @@ void Path::shutdown() {
 }
 
 /*
+ Purpose: Get the value from the map table for the specified coordinates.
+ Original Offset: n/a ; Optimized out of x86 binary, present in PPC.
+ Return Value: mapTable value
+ Status: Complete
+*/
+int Path::get(int xCoord, int yCoord) {
+	return mapTable[(xCoord >> 1) + yCoord * *MapHorizontal];
+}
+
+/*
+ Purpose: Set the value in the map table for the specified coordinates.
+ Original Offset: n/a
+ Return Value: n/a
+ Status: Complete
+*/
+void Path::set(int xCoord, int yCoord, int val) {
+	mapTable[(xCoord >> 1) + yCoord * *MapHorizontal] = val;
+}
+
+/*
  Purpose: Check for Veh related zone of control conflicts taking into account land or ocean. This is
 		  a slightly modified version of zoc_move() / zoc_sea().
  Original Offset: 0059A370
  Return Value: zoc: factionID + 1; no zoc: 0 (however return seems to be treated as boolean)
- Status: Complete - testing
+ Status: Complete
 */
 int Path::zoc_path(int xCoord, int yCoord, int factionID) {
 	if (bit_at(xCoord, yCoord) & BIT_BASE_IN_TILE && owner_at(xCoord, yCoord) < 8) {
@@ -81,7 +101,7 @@ int Path::zoc_path(int xCoord, int yCoord, int factionID) {
 			if (owner >= 0 && owner != factionID && is_ocean(xRadius, yRadius) == isOcean
 				&& !(PlayersData[factionID].diploTreaties[owner]
 					& (DTREATY_VENDETTA | DTREATY_PACT))) {
-				if (is_human(factionID)) {
+				if (!is_human(factionID)) {
 					return owner + 1;
 				}
 				for (int vehID = veh_at(xRadius, yRadius); vehID >= 0;
@@ -101,8 +121,8 @@ int Path::zoc_path(int xCoord, int yCoord, int factionID) {
 /*
  Purpose: Find path between points and conditions?
  Original Offset: 0059A530
- Return Value:
- Status: wip
+ Return Value: TBD
+ Status: WIP
 */
 int Path::find(int xCoordSrc, int yCoordSrc, int xCoordDstA, int yCoordDstA, int protoID_,
 	int factionID, int unk1, int unk2) {
@@ -112,8 +132,8 @@ int Path::find(int xCoordSrc, int yCoordSrc, int xCoordDstA, int yCoordDstA, int
 /*
  Purpose: TBD
  Original Offset: 0059BC10
- Return Value:
- Status: wip
+ Return Value: TBD
+ Status: WIP
 */
 int Path::move(int vehID, int factionID) {
 	int factionIDVeh = Veh[vehID].factionID;
@@ -157,17 +177,18 @@ int Path::move(int vehID, int factionID) {
  Purpose: Populate the abstract map with the radial region value.
  Original Offset: 0059C200
  Return Value: n/a
- Status: Complete - testing
+ Status: Complete
 */
 void Path::make_abstract() {
 	for (uint32_t y = 0; y < *MapAbstractVertBounds; y++) {
 		for (uint32_t x = y & 1; x < *MapAbstractHorizBounds; x += 2) {
 			uint8_t region = 0;
-			for (uint32_t i = 0; i < 8; i++) {
-				int xRadius = xrange(x * 5 + xRadiusOffset[i]), yRadius = y + yRadiusOffset[i];
+			for (uint32_t i = 0; i < 9; i++) {
+				int xRadius = xrange(x * 5 + xRadiusOffset[i]), yRadius = y * 5 + yRadiusOffset[i];
 				if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
 					&& xRadius < (int)*MapHorizontalBounds && !is_ocean(xRadius, yRadius)) {
 					region = (uint8_t)region_at(xRadius, yRadius);
+					break;
 				}
 			}
 			abstract_set(x, y, region);
@@ -176,17 +197,17 @@ void Path::make_abstract() {
 }
 
 /*
- Purpose: Replace the old region with the new region. Add the old tile count to the new Continent.
+ Purpose: Merge the old region into the new region.
  Original Offset: 0059C340
  Return Value: n/a
- Status: Complete - testing
+ Status: Complete
 */
-void Path::replace(uint32_t regionOld, uint32_t regionNew) {
+void Path::merge(uint32_t regionOld, uint32_t regionNew) {
 	Continents[regionNew].tiles += Continents[regionOld].tiles;
 	Continents[regionOld].tiles = 0;
 	for (uint32_t i = 0; i < *MapArea; i++) {
-		if ((uint32_t)Map[i]->region == regionOld) {
-			Map[i]->region = (uint8_t)regionNew;
+		if ((uint32_t)(*Map)[i].region == regionOld) {
+			(*Map)[i].region = (uint8_t)regionNew;
 		}
 	}
 }
@@ -317,11 +338,11 @@ void Path::continents() {
 						}
 					}
 					if (searchRegion < 0) {
-						replace(regionCurrent, regionMax + 1);
+						merge(regionCurrent, regionMax + 1);
 					}
 					else {
-						replace(searchRegion, regionMax + 1);
-						replace(regionCurrent, searchRegion);
+						merge(searchRegion, regionMax + 1);
+						merge(regionCurrent, searchRegion);
 					}
 				}
 			}
@@ -416,9 +437,7 @@ BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
 								&& xRadius < (int)*MapHorizontalBounds) {
 								if (!is_sensor(xRadius, yRadius)
 									&& (whose_territory(factionID, xRadius, yRadius, NULL, false)
-										== factionID
-										|| &((mapTable)[(xRadius >> 1) + yRadius * *MapHorizontal])
-										!= 0)) {
+										== factionID || get(xRadius, yRadius))) {
 									if (i >= 9) {
 										flags |= 1;
 									}
@@ -446,9 +465,7 @@ BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
 												if (!is_sensor(xRadius2, yRadius2)
 													&& (whose_territory(factionID, xRadius2,
 														yRadius2, NULL, false) == factionID
-														|| &((mapTable)[(xRadius2 >> 1) + yRadius2
-															* *MapHorizontal])
-														!= 0)) {
+														|| get(xRadius2, yRadius2))) {
 													check = false;
 													break;
 												}
@@ -468,7 +485,7 @@ BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
 							}
 							if (!(flags & 2) || flags & 8) {
 								proxminity++;
-								((mapTable)[(x >> 1) + y * *MapHorizontal]) = 0;
+								set(x, y, 0);
 							}
 							else {
 								proxminity += 200;
@@ -488,3 +505,6 @@ BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
 	do_all_non_input();
 	return isSensor;
 }
+
+// global
+Path *Paths = (Path *)0x00945B00;
