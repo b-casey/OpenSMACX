@@ -61,3 +61,8 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
+
+###############################################################################
+# fix language statistics, some headers identified as C
+###############################################################################
+*.h linguist-language=cpp
