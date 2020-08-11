@@ -213,44 +213,41 @@ void Path::merge(uint32_t regionOld, uint32_t regionNew) {
 }
 
 /*
- Purpose: Map out connected territory?
+ Purpose: Build the pathing tables using the provided coordinates to radiate outward for connected 
+          land tiles owned by the specified faction. The region parameter is unused.
  Original Offset: 0059C3C0
  Return Value: n/a
- Status: Complete - testing
+ Status: Complete
 */
 void Path::territory(int xCoord, int yCoord, int UNUSED(region), int factionID) {
 	if (is_ocean(xCoord, yCoord)) {
-		return;
+		return; // skip ocean terrain
 	}
 	index1 = 0; index2 = 0;
 	xCoordTable[index1] = (int16_t)xCoord;
-	yCoordTable[index1] = (int16_t)yCoord;
-	index1++;
-
-	for (int16_t xCoordIt, yCoordIt; index2 && index1 != index2;) {
-		xCoordIt = xCoordTable[index2], yCoordIt = yCoordTable[index2];
-		index2++;
+	yCoordTable[index1++] = (int16_t)yCoord;
+	do {
+		int16_t xCoordIt = xCoordTable[index2], yCoordIt = yCoordTable[index2++];
 		for (uint32_t i = 0; i < 8; i++) {
 			int xRadius = xrange(xCoordIt + xRadiusBase[i]);
 			int yRadius = yCoordIt + yRadiusBase[i];
-			if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-				&& xRadius < (int)*MapHorizontalBounds) {
-				if (yCoordIt && yCoordIt != ((int)*MapVerticalBounds - 1)
-					&& !is_ocean(xCoordIt, yCoordIt) && !map_loc(xCoordIt, yCoordIt)->unk_1
-					&& map_loc(xCoord, yCoord)->territory == factionID) {
-					map_loc(xCoordIt, yCoordIt)->unk_1 = 1;
-					xCoordTable[index1] = xCoordIt;
-					yCoordTable[index1] = yCoordIt;
-					index1++;
-				}
+			map *tile;
+			if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds 
+				&& xRadius >= 0 && xRadius < (int)*MapHorizontalBounds 
+				&& yCoordIt && yCoordIt != ((int)*MapVerticalBounds - 1) // excluding poles
+				&& !is_ocean(xRadius, yRadius) && (tile = map_loc(xRadius, yRadius),
+					!tile->unk_1 && tile->territory == factionID)) {
+				tile->unk_1 = 1;
+				xCoordTable[index1] = (int16_t)xRadius;
+				yCoordTable[index1++] = (int16_t)yRadius;
 			}
 		}
-	}
+	} while (index2 && index1 != index2);
 	do_all_non_input();
 }
 
 /*
- Purpose: Set up continent.
+ Purpose: Populate the continent and path table for the specified tile and region.
  Original Offset: 0059C520
  Return Value: n/a
  Status: Complete - testing
@@ -258,41 +255,38 @@ void Path::territory(int xCoord, int yCoord, int UNUSED(region), int factionID) 
 void Path::continent(int xCoord, int yCoord, uint32_t region) {
 	Continents[region].tiles = 0;
 	index1 = 0; index2 = 0;
-	uint32_t oceanCount = 0;
+	uint32_t freshWaterCount = 0;
 	xCoordTable[index1] = (int16_t)xCoord;
-	yCoordTable[index1] = (int16_t)yCoord;
-	index1++;
+	yCoordTable[index1++] = (int16_t)yCoord;
 	region_set(xCoord, yCoord, (uint8_t)region);
 	BOOL isOcean = is_ocean(xCoord, yCoord);
-
-	for (int16_t xCoordIt, yCoordIt; index2 && index1 != index2;) {
-		xCoordIt = xCoordTable[index2], yCoordIt = yCoordTable[index2];
-		index2++;
+	do {
+		int16_t xCoordIt = xCoordTable[index2], yCoordIt = yCoordTable[index2++];
 		Continents[region].tiles++;
 		for (uint32_t i = 0; i < 8; i++) {
 			int xRadius = xrange(xCoordIt + xRadiusBase[i]);
 			int yRadius = yCoordIt + yRadiusBase[i];
+			BOOL isOceanIt;
 			if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-				&& xRadius < (int)*MapHorizontalBounds) {
-				BOOL isOceanIt = is_ocean(xCoordIt, yCoordIt);
-				if (yCoordIt && yCoordIt != ((int)*MapVerticalBounds - 1)
-					&& isOceanIt == isOcean && !region) {
-					if (isOcean && bit2_at(xCoordIt, yCoordIt) & LM_FRESH && isOceanIt) {
-						oceanCount++;
-					}
-					region_set(xRadius, yRadius, (uint8_t)region);
-					xCoordTable[index1] = xCoordIt;
-					yCoordTable[index1] = yCoordIt;
-					index1++;
+				&& xRadius < (int)*MapHorizontalBounds
+				&& yCoordIt && yCoordIt != ((int)*MapVerticalBounds - 1) // excluding poles
+				&& (isOceanIt = is_ocean(xRadius, yRadius), isOceanIt == isOcean && !region)) {
+				if (isOcean && bit2_at(xRadius, yRadius) & LM_FRESH && isOceanIt) {
+					freshWaterCount++;
 				}
+				region_set(xRadius, yRadius, (uint8_t)region);
+				xCoordTable[index1] = (int16_t)xRadius;
+				yCoordTable[index1++] = (int16_t)yRadius;
 			}
 		}
-	}
-	BOOL isFreshWater = oceanCount < ((Continents[region].tiles * 3) / 4); // land locked?
-	for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
-		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
-			if (region == region_at(x, y)) {
-				bit2_set(x, y, LM_FRESH, isFreshWater);
+	} while (index2 && index1 != index2);
+	if (freshWaterCount) {
+		BOOL isFreshWater = freshWaterCount >= ((Continents[region].tiles * 3) / 4); // land locked?
+		for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
+			for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
+				if (region == region_at(x, y)) {
+					bit2_set(x, y, LM_FRESH, isFreshWater);
+				}
 			}
 		}
 	}
