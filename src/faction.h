@@ -276,7 +276,7 @@ struct player_data {
 	int diffLevel;
 	uint32_t baseNameOffset; // keep track which base names have been used
 	uint32_t baseSeaNameOffset; // keep track which sea base names have been used
-	int lastBaseTurn; // turn for last built, captured or acquired (drone riot) base
+	int lastTurnNewBase; // turn for last built, captured or acquired (drone riot) base
 	int diploTreaties[8];
 	int diploAgenda[8];
 	int diploFriction[8];

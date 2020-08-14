@@ -250,7 +250,7 @@ void Path::territory(int xCoord, int yCoord, int UNUSED(region), int factionID) 
  Purpose: Populate the continent and path table for the specified tile and region.
  Original Offset: 0059C520
  Return Value: n/a
- Status: Complete - testing
+ Status: Complete
 */
 void Path::continent(int xCoord, int yCoord, uint32_t region) {
 	Continents[region].tiles = 0;
@@ -266,12 +266,13 @@ void Path::continent(int xCoord, int yCoord, uint32_t region) {
 		for (uint32_t i = 0; i < 8; i++) {
 			int xRadius = xrange(xCoordIt + xRadiusBase[i]);
 			int yRadius = yCoordIt + yRadiusBase[i];
-			BOOL isOceanIt;
-			if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-				&& xRadius < (int)*MapHorizontalBounds
+			BOOL isOceanRad;
+			if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds 
+				&& xRadius >= 0 && xRadius < (int)*MapHorizontalBounds
 				&& yCoordIt && yCoordIt != ((int)*MapVerticalBounds - 1) // excluding poles
-				&& (isOceanIt = is_ocean(xRadius, yRadius), isOceanIt == isOcean && !region)) {
-				if (isOcean && bit2_at(xRadius, yRadius) & LM_FRESH && isOceanIt) {
+				&& (isOceanRad = is_ocean(xRadius, yRadius), isOceanRad == isOcean 
+					&& !region_at(xRadius, yRadius))) {
+				if (isOcean && bit2_at(xRadius, yRadius) & LM_FRESH && isOceanRad) {
 					freshWaterCount++;
 				}
 				region_set(xRadius, yRadius, (uint8_t)region);
@@ -284,7 +285,7 @@ void Path::continent(int xCoord, int yCoord, uint32_t region) {
 		BOOL isFreshWater = freshWaterCount >= ((Continents[region].tiles * 3) / 4); // land locked?
 		for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
 			for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
-				if (region == region_at(x, y)) {
+				if (region_at(x, y) == region) {
 					bit2_set(x, y, LM_FRESH, isFreshWater);
 				}
 			}
