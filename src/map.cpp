@@ -1417,7 +1417,7 @@ uint32_t __cdecl zoc_sea(int xCoord, int yCoord, uint32_t factionID) {
 					vehID = Veh[vehID].nextVehIDStack) {
 					if (Veh[vehID].factionID != factionID
 						&& (Veh[vehID].visibility & (1 << factionID)
-							|| (!*IsMultiplayer && !(Veh[vehID].flags & VFLAG_INVISIBLE)))) {
+							|| (!*IsMultiplayerNet && !(Veh[vehID].flags & VFLAG_INVISIBLE)))) {
 						return owner + 1;
 					}
 				}

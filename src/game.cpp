@@ -39,7 +39,8 @@ int *SunspotDuration = (int *)0x009A6800;
 uint32_t *MountPlanetXCoord = (uint32_t *)0x009A6804;
 uint32_t *MountPlanetYCoord = (uint32_t *)0x009A6808;
 int *DustCloudDuration = (int *)0x009A680C;
-BOOL *IsMultiplayer = (BOOL *)0x0093F660;
+BOOL *IsMultiplayerNet = (BOOL *)0x0093F660; // DirectPlay - Serial, Modem, Internet (TCP/IP)
+BOOL *IsMultiplayerPBEM = (BOOL *)0x0093A95C; // HotSeat / PBEM
 
 /*
 Purpose: Clear and reset scenario game variables.

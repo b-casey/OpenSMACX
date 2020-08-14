@@ -462,7 +462,7 @@ struct rules_basic {
 	// Alpha(x).txt #RULES: If non-zero, humans can always contact each other in hotseat/email games
 	// Original bounds: 0, 1 or -1 (Changed to 0 or 1 since -1 is treated same as 1)
 	// Default value: 1
-	BOOL TglHumansAlwaysContactPbem;
+	BOOL TglHumansAlwaysContactPBEM;
 
 	// Alpha(x).txt #RULES: Maximum % damage inflicted by arty versus units in base/bunker
 	// Original bounds: 10 to 100

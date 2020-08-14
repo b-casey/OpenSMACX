@@ -1128,7 +1128,7 @@ BOOL __cdecl want_to_wake(uint32_t factionID, uint32_t vehID, int spottedVehID) 
 	}
 	uint32_t treaties = PlayersData[vehFactionID].diploTreaties[factionID];
 	BOOL wantToWake;
-	if (*IsMultiplayer) { // restructured to be more efficient with same logic
+	if (*IsMultiplayerNet) { // restructured to be more efficient with same logic
 		if (treaties & DTREATY_PACT) {
 			wantToWake = false;
 		}
@@ -1268,7 +1268,7 @@ Return Value: vehID or top vehID of stack; return is checked if >= 0
 Status: Complete
 */
 int __cdecl stack_fix(int vehID) {
-	if (vehID < 0 || !*IsMultiplayer
+	if (vehID < 0 || !*IsMultiplayerNet
 		|| (Veh[vehID].nextVehIDStack < 0 && Veh[vehID].prevVehIDStack < 0)) {
 		return vehID; // invalid vehID, not DirectPlay MP or no stack
 	}
@@ -1534,7 +1534,7 @@ int __cdecl veh_at(int xCoord, int yCoord) {
 	if (!*VehBitError) {
 		log_say("Vehicle Bit Error  (x, y)", xCoord, yCoord, 0);
 	}
-	if (*GameState & STATE_SCENARIO_EDITOR || *GameState & STATE_DEBUG_MODE || *IsMultiplayer) {
+	if (*GameState & STATE_SCENARIO_EDITOR || *GameState & STATE_DEBUG_MODE || *IsMultiplayerNet) {
 		if (*VehBitError) {
 			return -1;
 		}

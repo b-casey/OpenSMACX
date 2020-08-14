@@ -242,7 +242,7 @@ BOOL __cdecl read_basic_rules() {
 	Rules->TechEconomicVictory = tech_item();
 	Rules->TglProbeCanStealTech = text_get_number(0, 1); // Fix: set min param to 0
 	Rules->TglHumanAlwaysContactNet = text_get_number(0, 1); // Fix: set min param to 0
-	Rules->TglHumansAlwaysContactPbem = text_get_number(0, 1); // Fix: set min param to 0
+	Rules->TglHumansAlwaysContactPBEM = text_get_number(0, 1); // Fix: set min param to 0
 	Rules->MaxPctDmgArtVsUnitBaseBnkr = text_get_number(10, 100);
 	Rules->MaxPctDmgArtVsUnitsOpen = text_get_number(10, 100);
 	Rules->MaxPctDmgArtVsUnitsSea = text_get_number(10, 100);
