@@ -1004,7 +1004,7 @@ void auto_save() {
 }
 
 /*
-Purpose: Extended auto-saving regardless of game type or settings for debuging purposes.
+Purpose: Extended auto-saving regardless of game type or settings for debugging purposes.
 Original Offset: n/a
 Return Value: n/a
 Status: Complete
