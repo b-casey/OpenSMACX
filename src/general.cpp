@@ -17,8 +17,9 @@
  */
 #include "stdafx.h"
 #include "temp.h"
-#include "alpha.h"
 #include "general.h"
+#include "alpha.h"
+#include "game.h"
 #include "log.h" // log_say
 #include "strings.h"
 #include "text.h"
@@ -949,4 +950,55 @@ void __cdecl danger(LPCSTR msg1, LPCSTR msg2, int num1, int num2, int num3) {
 	parse_num(2, num3);
 	log_say(msg1, msg2, num1, num2, num3);
 	popp(ScriptTxtID, "DANGER", 0, "hasty_sm.pcx", 0);
+}
+
+/*
+Purpose: Delete the initial auto-saved game.
+Original Offset: 005ABD10
+Return Value: n/a
+Status: Complete
+*/
+void kill_auto_save() {
+	remove("saves\\auto\\Alpha Centauri Autosave 1.SAV");
+}
+
+/*
+Purpose: Handle the creation and management of auto-save games.
+Original Offset: 005ABD20
+Return Value: n/a
+Status: Complete
+*/
+void auto_save() {
+	if (!*IsMultiplayerPBEM || *IsMultiplayerNet) { // auto-saving disabled for PBEM/HotSeat games
+		if (*GameRules & RULES_IRONMAN && !(*GameState & STATE_SCENARIO_EDITOR)) {
+			remove("saves\\auto\\Alpha Centauri Autosave 30.SAV");
+			remove("saves\\auto\\Alpha Centauri Autosave 20.SAV");
+			remove("saves\\auto\\Alpha Centauri Autosave 10.SAV");
+			remove("saves\\auto\\Alpha Centauri Autosave 5.SAV");
+			remove("saves\\auto\\Alpha Centauri Autosave 4.SAV");
+			remove("saves\\auto\\Alpha Centauri Autosave 3.SAV");
+			remove("saves\\auto\\Alpha Centauri Autosave 2.SAV");
+			save_daemon("saves\\auto\\Alpha Centauri Autosave 1");
+		}
+		else { // standard auto saves
+			if (!(*TurnCurrentNum % 10)) {
+				remove("saves\\auto\\Alpha Centauri Autosave 30.SAV");
+				rename("saves\\auto\\Alpha Centauri Autosave 20.SAV",
+					"saves\\auto\\Alpha Centauri Autosave 30.SAV");
+				rename("saves\\auto\\Alpha Centauri Autosave 10.SAV",
+					"saves\\auto\\Alpha Centauri Autosave 20.SAV");
+				save_daemon("saves\\auto\\Alpha Centauri Autosave 10");
+			}
+			remove("saves\\auto\\Alpha Centauri Autosave 5.SAV");
+			rename("saves\\auto\\Alpha Centauri Autosave 4.SAV",
+				"saves\\auto\\Alpha Centauri Autosave 5.SAV");
+			rename("saves\\auto\\Alpha Centauri Autosave 3.SAV",
+				"saves\\auto\\Alpha Centauri Autosave 4.SAV");
+			rename("saves\\auto\\Alpha Centauri Autosave 2.SAV",
+				"saves\\auto\\Alpha Centauri Autosave 3.SAV");
+			rename("saves\\auto\\Alpha Centauri Autosave 1.SAV",
+				"saves\\auto\\Alpha Centauri Autosave 2.SAV");
+			save_daemon("saves\\auto\\Alpha Centauri Autosave 1");
+		}
+	}
 }
