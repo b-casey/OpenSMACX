@@ -1002,3 +1002,36 @@ void auto_save() {
 		}
 	}
 }
+
+/*
+Purpose: Extended auto-saving regardless of game type or settings for debuging purposes.
+Original Offset: n/a
+Return Value: n/a
+Status: Complete
+*/
+void auto_save_debug() {
+	if (*TurnCurrentNum == 1) {
+		remove("saves\\auto\\Alpha Centauri Autosave Turn 1.SAV");
+		save_daemon("saves\\auto\\Alpha Centauri Autosave Turn 1");
+	}
+	if (!(*TurnCurrentNum % 10)) {
+		remove("saves\\auto\\Alpha Centauri Autosave 500.SAV");
+		char savePathNew[45], savePathOld[45];
+		for (int i = 0; i < 490; i += 10) {
+			sprintf_s(savePathOld, "saves\\auto\\Alpha Centauri Autosave %d.SAV", 490-i);
+			sprintf_s(savePathNew, "saves\\auto\\Alpha Centauri Autosave %d.SAV", 500-i);
+			rename(savePathOld, savePathNew);
+		}
+		save_daemon("saves\\auto\\Alpha Centauri Autosave 10");
+	}
+	remove("saves\\auto\\Alpha Centauri Autosave 5.SAV");
+	rename("saves\\auto\\Alpha Centauri Autosave 4.SAV",
+		"saves\\auto\\Alpha Centauri Autosave 5.SAV");
+	rename("saves\\auto\\Alpha Centauri Autosave 3.SAV",
+		"saves\\auto\\Alpha Centauri Autosave 4.SAV");
+	rename("saves\\auto\\Alpha Centauri Autosave 2.SAV",
+		"saves\\auto\\Alpha Centauri Autosave 3.SAV");
+	rename("saves\\auto\\Alpha Centauri Autosave 1.SAV",
+		"saves\\auto\\Alpha Centauri Autosave 2.SAV");
+	save_daemon("saves\\auto\\Alpha Centauri Autosave 1");
+}

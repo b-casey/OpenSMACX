@@ -66,6 +66,7 @@ OPENSMACX_API uint32_t __cdecl rnd(int bounds, LPSTR input);
 OPENSMACX_API void __cdecl danger(LPCSTR msg1, LPCSTR msg2, int num1, int num2, int num3);
 OPENSMACX_API void kill_auto_save();
 OPENSMACX_API void auto_save();
+OPENSMACX_API void auto_save_debug();
 
 // WIP
 int filefind_init(LPCSTR path, BOOL isComplete);
