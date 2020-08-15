@@ -17,19 +17,11 @@
  */
 #include "stdafx.h"
 #include "temp.h"
-#include "alpha.h"
-#include "council.h"
-#include "faction.h"
-#include "general.h"
-#include "game.h"
-#include "base.h"
-#include "map.h"
-#include "veh.h"
-#include "maininterface.h"
-#include "technology.h"
-#include "terraforming.h"
 #include "log.h"
-#include "probe.h"
+#include "game.h"
+#include "veh.h"
+#include "technology.h"
+#include "path.h"
 
 // built-in functions > used to prevent crash from mixed alloc/free SDKs
 func1 *_malloc = (func1 *)0x006470A6;
@@ -84,6 +76,8 @@ MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
 int __cdecl tester() {
 	log_set_state(true);
 	log_say("Start test", 0, 0, 0);
+	Paths->continents();
+	Paths->continents();
 	/*
 	for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
 		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {

@@ -295,19 +295,19 @@ void Path::continent(int xCoord, int yCoord, uint32_t region) {
 }
 
 /*
- Purpose: Set up continents.
+ Purpose: Populate and set up all continents and path tables.
  Original Offset: 0059C790
  Return Value: n/a
  Status: Complete - testing
 */
 void Path::continents() {
 	for (uint32_t i = 0; i < *MapArea; i++) {
-		Map[i]->region = 0;
+		(*Map)[i].region = 0;
 	}
 	uint32_t oceanRegion = 64;
 	uint32_t landRegion = 0;
-	for (uint32_t y = 1; y < *MapAbstractVertBounds - 1; y++) {
-		for (uint32_t x = y & 1; x < *MapAbstractHorizBounds; x += 2) {
+	for (uint32_t y = 1; y < *MapVerticalBounds - 1; y++) {
+		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
 			if (!region_at(x, y)) {
 				uint32_t regionCurrent, regionMin, regionMax;
 				if (is_ocean(x, y)) {
@@ -362,22 +362,23 @@ void Path::continents() {
 			mostTiles = tiles;
 		}
 	}
-	*GameState = (mostTiles < ((totalTiles * 4) / 5)) ? *GameState & ~0x100 : *GameState | 0x100;
+	*GameState = (mostTiles < ((totalTiles * 4) / 5)) 
+		? *GameState & ~STATE_UNK_100 : *GameState | STATE_UNK_100;
 	for (uint32_t i = 0; i < MaxRegionLandNum; i++) {
 		*(uint32_t *)Continents[i].seaCoasts = 0;
 		*(uint32_t *)(Continents[i].seaCoasts + 1) = 0;
 	}
-	for (uint32_t y = 1; y < *MapAbstractVertBounds - 1; y++) {
-		for (uint32_t x = y & 1; x < *MapAbstractHorizBounds; x += 2) {
+	for (uint32_t y = 1; y < *MapVerticalBounds - 1; y++) {
+		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
 			if (region_at(x, y) < MaxRegionLandNum) {
 				for (uint32_t i = 0; i < 8; i++) {
 					int xRadius = xrange(x + xRadiusBase[i]), yRadius = y + yRadiusBase[i];
-					if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-						&& xRadius < (int)*MapHorizontalBounds) {
+					if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds 
+						&& xRadius >= 0 && xRadius < (int)*MapHorizontalBounds) {
 						uint32_t region = region_at(xRadius, yRadius);
-						if (region >= 64) {
+						if (region >= MaxRegionLandNum) {
 							uint32_t offset, mask;
-							bitmask(region - 64, &offset, &mask);
+							bitmask(region - MaxRegionLandNum, &offset, &mask);
 							Continents[region].seaCoasts[offset] |= mask;
 							i += 2 - (i & 1);
 						}
@@ -394,7 +395,7 @@ void Path::continents() {
  Purpose: TBD
  Original Offset: 0059CCA0
  Return Value: true/false
- Status: Complete -testing
+ Status: Complete - testing
 */
 BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
 	BOOL isSensor = true;
@@ -406,91 +407,84 @@ BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
 	uint32_t region = region_at(xCoord, yCoord);
 	for (uint32_t y = 1; y < *MapAbstractVertBounds - 1; y++) {
 		for (uint32_t x = y & 1; x < *MapAbstractHorizBounds; x += 2) {
+			int factionIDVeh;
 			if (region_at(x, y) == region
 				&& whose_territory(factionID, x, y, NULL, false) == factionID
-				&& base_who(x, y) < 0) {
-				int factionIDVeh = veh_who(x, y);
-				if (factionIDVeh < 0 || factionIDVeh == factionID
-					|| PlayersData[factionID].diploTreaties[factionIDVeh] & DTREATY_PACT) {
-					int factionIDZoc = zoc_veh(x, y, factionID);
-					uint32_t bit = bit_at(x, y);
-					map *tile = map_loc(x, y);
-					if (factionIDZoc != 1 && (!factionIDZoc
-						|| PlayersData[factionID].diploTreaties[factionIDZoc] & DTREATY_PACT)
-						&& bit & (BIT_MINE | BIT_SOLAR_TIDAL)
-						&& bit & (BIT_MONOLITH | BIT_CONDENSER | BIT_THERMAL_BORE)
-						&& !bonus_at(x, y, 0) && ((tile->val3 & 0xC0u) > TERRAIN_ROLLING
-							|| !(tile->climate & (RAINFALL_RAINY | RAINFALL_MOIST))
-							|| !(bit & BIT_FUNGUS) || !is_ocean(x, y))
-						&& (!(bit & BIT_FUNGUS) || (!is_ocean(x, y)
-							&& has_tech(Rules->TechImproveFungusSqr, factionID)))) {
-						uint32_t flags = 0;
+				&& base_who(x, y) < 0 && (factionIDVeh = veh_who(x, y), factionIDVeh < 0 
+					|| factionIDVeh == factionID
+					|| PlayersData[factionID].diploTreaties[factionIDVeh] & DTREATY_PACT)) {
+				int factionIDZoc = zoc_veh(x, y, factionID);
+				uint32_t bit = bit_at(x, y);
+				map *tile = map_loc(x, y);
+				if (factionIDZoc != 1 && (!factionIDZoc
+					|| PlayersData[factionID].diploTreaties[factionIDZoc] & DTREATY_PACT)
+					&& bit & (BIT_MINE | BIT_SOLAR_TIDAL)
+					&& bit & (BIT_MONOLITH | BIT_CONDENSER | BIT_THERMAL_BORE)
+					&& !bonus_at(x, y, 0) && ((tile->val3 & 0xC0u) > TERRAIN_ROLLING
+						|| !(tile->climate & (RAINFALL_RAINY | RAINFALL_MOIST))
+						|| !(bit & BIT_FUNGUS) || !is_ocean(x, y)) 
+					&& (!(bit & BIT_FUNGUS) || (!is_ocean(x, y) 
+						&& has_tech(Rules->TechImproveFungusSqr, factionID)))) {
+					uint32_t flags = 0;
+					for (uint32_t i = 0; i < 25; i++) {
+						int xRadius = xrange(x + xRadiusOffset[i]);
+						int yRadius = y + yRadiusOffset[i];
+						if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
+							&& xRadius < (int)*MapHorizontalBounds && !is_sensor(xRadius, yRadius)
+							&& (whose_territory(factionID, xRadius, yRadius, NULL, false)
+								== factionID || get(xRadius, yRadius))) {
+							if (i >= 9) {
+								flags |= 1;
+							}
+							flags |= 2;
+						}
+					}
+					if (!(flags & 1)) {
+						int proxminity = vector_dist(xCoord, yCoord, x, y);
 						for (uint32_t i = 0; i < 25; i++) {
-							int xRadius = xrange(x + xRadiusOffset[i]);
+							int xRadius = xrange(x + xRadiusOffset[i]), tileFactionID;
 							int yRadius = y + yRadiusOffset[i];
-							if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-								&& xRadius < (int)*MapHorizontalBounds) {
-								if (!is_sensor(xRadius, yRadius)
-									&& (whose_territory(factionID, xRadius, yRadius, NULL, false)
-										== factionID || get(xRadius, yRadius))) {
-									if (i >= 9) {
-										flags |= 1;
+							if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds
+								&& xRadius >= 0 && xRadius < (int)*MapHorizontalBounds 
+								&& (tileFactionID = base_who(xRadius, yRadius), 
+									tileFactionID == factionID)) {
+								flags |= 4;
+								BOOL check = true;
+								for (uint32_t j = 0; j < 25; j++) {
+									int xRadius2 = xrange(xRadius + xRadiusOffset[j]);
+									int yRadius2 = yRadius + yRadiusOffset[j];
+									if (yRadius2 >= 0 && yRadius2 < (int)*MapVerticalBounds
+										&& xRadius2 >= 0 && xRadius2 < (int)*MapHorizontalBounds 
+										&& !is_sensor(xRadius2, yRadius2) 
+										&& (whose_territory(factionID, xRadius2, yRadius2, NULL,
+											false) == factionID || get(xRadius2, yRadius2))) {
+										check = false;
+										break;
 									}
-									flags |= 2;
+								}
+								if (check) {
+									flags |= 8;
 								}
 							}
 						}
-						if (!(flags & 1)) {
-							int proxminity = vector_dist(xCoord, yCoord, x, y);
-							for (uint32_t i = 0; i < 25; i++) {
-								int xRadius = xrange(x + xRadiusOffset[i]);
-								int yRadius = y + yRadiusOffset[i];
-								if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds
-									&& xRadius >= 0 && xRadius < (int)*MapHorizontalBounds) {
-									int tileFactionID = base_who(xRadius, yRadius);
-									if (tileFactionID == factionID) {
-										flags |= 4;
-										BOOL check = true;
-										for (uint32_t j = 0; j < 25; j++) {
-											int xRadius2 = xrange(xRadius + xRadiusOffset[j]);
-											int yRadius2 = yRadius + yRadiusOffset[j];
-											if (yRadius2 >= 0 && yRadius2 < (int)*MapVerticalBounds
-												&& xRadius2 >= 0
-												&& xRadius2 < (int)*MapHorizontalBounds) {
-												if (!is_sensor(xRadius2, yRadius2)
-													&& (whose_territory(factionID, xRadius2,
-														yRadius2, NULL, false) == factionID
-														|| get(xRadius2, yRadius2))) {
-													check = false;
-													break;
-												}
-											}
-										}
-										if (check) {
-											flags |= 8;
-										}
-									}
-								}
-							}
-							if (flags & 4) {
-								proxminity += 400;
-							}
-							if (flags & 8) {
-								proxminity += 800;
-							}
-							if (!(flags & 2) || flags & 8) {
-								proxminity++;
-								set(x, y, 0);
-							}
-							else {
-								proxminity += 200;
-							}
-							if (proxminity < search) {
-								*xCoordPtr = x;
-								*yCoordPtr = y;
-								search = proxminity;
-								isSensor = false;
-							}
+						if (flags & 4) {
+							proxminity += 400;
+						}
+						if (flags & 8) {
+							proxminity += 800;
+						}
+						if (!(flags & 2) || flags & 8) {
+							proxminity++;
+							set(x, y, 0);
+						}
+						else {
+							proxminity += 200;
+						}
+						if (proxminity < search) {
+							*xCoordPtr = x;
+							*yCoordPtr = y;
+							search = proxminity;
+							isSensor = false;
 						}
 					}
 				}
