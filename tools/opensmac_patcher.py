@@ -26,7 +26,7 @@ parser.add_argument("-e",    "--exe", help="Input exe", required=True)
 parser.add_argument("-d",    "--dll", help="Input dll", required=True)
 parser.add_argument("-o", "--output", help="Output folder path to write exe + dll to", required=True)
 args = parser.parse_args()
-exe_path = os.path.normpath(args.output) + "\\terranx_opensmacx_v0.2.exe"
+exe_path = os.path.normpath(args.output) + "\\terranx_opensmacx.exe"
 
 # copying exe+dll to SMACX directory
 shutil.copy2(args.exe, exe_path)
@@ -51,7 +51,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
 	bin_app = mmap.mmap(f.fileno(), 0)
-	# next: 415
+	# next: 418
 	#
 	
 	# ALPHA
@@ -494,7 +494,16 @@ with open(exe_path, "r+b") as f:
 	bin_app.write(struct.pack("<L", addr+4*413))
 	bin_app.seek(0x001ABD20) # ?auto_save@@YAXXZ
 	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*414))	
+	bin_app.write(struct.pack("<L", addr+4*414))
+	bin_app.seek(0x001ABE40) # ?load_undo@@YAXH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*415))
+	bin_app.seek(0x001ABEC0) # ?wipe_undo@@YAXXZ
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*416))
+	bin_app.seek(0x001ABF20) # ?auto_undo@@YAXXZ
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*417))	
 	# HEAP
 	bin_app.seek(0x001D4560) # ??0Heap@@QAE@XZ
 	patch_call_bytes(bin_app)

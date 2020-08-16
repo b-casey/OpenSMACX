@@ -51,6 +51,7 @@ extern func10 *_fwrite;
 // other
 typedef void func5(int);
 extern func5 *load_faction_art;
+extern func5 *draw_map;
 typedef void *func6(char const *, int(*)(void));
 extern func6 *X_pop;
 typedef int func7(LPCSTR, LPCSTR, int, LPCSTR, int(__cdecl *)());
@@ -64,6 +65,8 @@ typedef int func14(int, int);
 extern func14 *base_at;
 typedef uint32_t func15(LPCSTR);
 extern func15 *save_daemon;
+typedef uint32_t func16(LPCSTR, BOOL);
+extern func16 *load_daemon;
 // Time
 typedef void func30(int);
 extern func30 *blink_timer;

@@ -36,6 +36,7 @@ func10 *_fwrite = (func10 *)0x0064603F;
 
 // other
 func5 *load_faction_art = (func5 *)0x00453710;
+func5 *draw_map = (func5 *)0x0046B190;
 // TODO: crash bug; X_pop > ... > BasePop::start > text_close > NULLs 009B7CF4 (FILE *Txt.textFile)
 // Next call to text_get() tries to access 009B7CF4 and the game crashes.
 func6 *X_pop = (func6 *)0x005BF310;
@@ -45,6 +46,7 @@ func9 *mapwin_terrain_fixup = (func9 *)0x00471240;
 func11 *wants_to_attack = (func11 *)0x0055BC80;
 func14 *base_at = (func14 *)0x004E3A50;
 func15 *save_daemon = (func15 *)0x005A94F0;
+func16 *load_daemon = (func16 *)0x005A9760;
 
 // Time
 func30 *blink_timer = (func30 *)0x0050EA40;

@@ -24,6 +24,8 @@
 #include "strings.h"
 #include "text.h"
 
+uint32_t ScenEditorUndoPosition = 1; // 0x00690D7C
+
 /*
 Purpose: Trim trailing spaces inline from end of string
 Original Offset: 00600780
@@ -1018,8 +1020,8 @@ void auto_save_debug() {
 		remove("saves\\auto\\Alpha Centauri Autosave 500.SAV");
 		char savePathNew[45], savePathOld[45];
 		for (int i = 0; i < 490; i += 10) {
-			sprintf_s(savePathOld, "saves\\auto\\Alpha Centauri Autosave %d.SAV", 490-i);
-			sprintf_s(savePathNew, "saves\\auto\\Alpha Centauri Autosave %d.SAV", 500-i);
+			sprintf_s(savePathOld, 45, "saves\\auto\\Alpha Centauri Autosave %d.SAV", 490 - i);
+			sprintf_s(savePathNew, 45, "saves\\auto\\Alpha Centauri Autosave %d.SAV", 500 - i);
 			rename(savePathOld, savePathNew);
 		}
 		save_daemon("saves\\auto\\Alpha Centauri Autosave 10");
@@ -1034,4 +1036,61 @@ void auto_save_debug() {
 	rename("saves\\auto\\Alpha Centauri Autosave 1.SAV",
 		"saves\\auto\\Alpha Centauri Autosave 2.SAV");
 	save_daemon("saves\\auto\\Alpha Centauri Autosave 1");
+}
+
+/*
+Purpose: Load a Scenario Editor undo (type: 1) or redo (type: -1) auto-save. TODO: Revisit in the 
+         future to fix some of the underlying issues with the undo/redo process.
+Original Offset: 005ABE40
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl load_undo(int type) {
+	if (type == -1 && ScenEditorUndoPosition == 1) {
+		return; // bug fix: skip redo if undo hasn't been triggered yet or on 1st undo
+	}
+	if (type < 0 && ScenEditorUndoPosition > 1) {
+		ScenEditorUndoPosition--;
+	}
+	char loadPath[38];
+	sprintf_s(loadPath, 38, "saves\\auto\\Scenario Editor Undo %d.SAV", ScenEditorUndoPosition);
+	if (type > 0 && ScenEditorUndoPosition < 9) {
+		ScenEditorUndoPosition++;
+	}
+	load_daemon(loadPath, false);
+	draw_map(true); // bug fix: map artifacts display issue; TODO: best method of refreshing map?
+}
+
+/*
+Purpose: Remove all existing Scenario Editor undo auto-saves.
+Original Offset: 005ABEC0
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl wipe_undo() {
+	char undoPath[38];
+	for (int i = 9; i >= 1; i--) {
+		sprintf_s(undoPath, 38, "saves\\auto\\Scenario Editor Undo %d.SAV", i);
+		remove(undoPath);
+	}
+}
+
+/*
+Purpose: Handle the creation of an undo auto-save when certain Scenario Editor changes are made.
+Original Offset: 005ABF20
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl auto_undo() {
+	if (*GamePreferences & PREF_BSC_AUTOSAVE_EACH_TURN) {
+		ScenEditorUndoPosition = 1;
+		remove("saves\\auto\\Scenario Editor Undo 9.SAV");
+		char savePathNew[38], savePathOld[38];
+		for (int i = 9; i >= 2; i--) {
+			sprintf_s(savePathOld, 38, "saves\\auto\\Scenario Editor Undo %d.SAV", i - 1);
+			sprintf_s(savePathNew, 38, "saves\\auto\\Scenario Editor Undo %d.SAV", i);
+			rename(savePathOld, savePathNew);
+		}
+		save_daemon("saves\\auto\\Scenario Editor Undo 1");
+	}
 }

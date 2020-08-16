@@ -28,6 +28,8 @@ struct Filefind {
 	char relativePath[256]; // internal
 };
 
+extern uint32_t ScenEditorUndoPosition;
+
 OPENSMACX_API void __cdecl purge_trailing(LPSTR input);
 OPENSMACX_API void __cdecl purge_leading(LPSTR input);
 OPENSMACX_API void __cdecl purge_spaces(LPSTR input);
@@ -67,6 +69,9 @@ OPENSMACX_API void __cdecl danger(LPCSTR msg1, LPCSTR msg2, int num1, int num2, 
 OPENSMACX_API void kill_auto_save();
 OPENSMACX_API void auto_save();
 OPENSMACX_API void auto_save_debug();
+OPENSMACX_API void __cdecl load_undo(int type);
+OPENSMACX_API void __cdecl wipe_undo();
+OPENSMACX_API void __cdecl auto_undo();
 
 // WIP
 int filefind_init(LPCSTR path, BOOL isComplete);
