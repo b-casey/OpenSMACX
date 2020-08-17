@@ -18,6 +18,7 @@
 #include "stdafx.h"
 #include "temp.h"
 #include "faction.h"
+#include "alpha.h"
 #include "base.h"
 #include "council.h"
 #include "game.h"
@@ -76,6 +77,19 @@ Status: Complete
 LPSTR __cdecl get_noun(int factionID) {
 	parse_set(Players[factionID].nounGender, Players[factionID].isNounPlural);
 	return Players[factionID].nounFaction;
+}
+
+/*
+Purpose: Determine whether automatic contact is enabled for net or PBEM games.
+Original Offset: 00539160
+Return Value: Is always contact enabled? true/false
+Status: Complete
+*/
+BOOL __cdecl auto_contact() {
+	if (*IsMultiplayerNet && Rules->TglHumanAlwaysContactNet) {
+		return true;
+	}
+	return *IsMultiplayerPBEM && Rules->TglHumansAlwaysContactPBEM;
 }
 
 /*

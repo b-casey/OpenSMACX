@@ -533,6 +533,7 @@ OPENSMACX_API BOOL is_human(uint32_t factionID);
 OPENSMACX_API BOOL is_alive(uint32_t factionID);
 OPENSMACX_API LPSTR __cdecl get_adjective(int factionID);
 OPENSMACX_API LPSTR __cdecl get_noun(int factionID);
+OPENSMACX_API BOOL __cdecl auto_contact();
 OPENSMACX_API uint32_t __cdecl aah_ooga(int factionID, int pactFactionID);
 OPENSMACX_API BOOL __cdecl climactic_battle();
 OPENSMACX_API uint32_t __cdecl guard_check(uint32_t factionID, uint32_t region);
