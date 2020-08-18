@@ -37,7 +37,7 @@ void Path::init() {
 	mapTable = (int *)mem_get(*MapArea * 4);
 	xCoordTable = (int16_t *)mem_get(*MapArea * 2);
 	yCoordTable = (int16_t *)mem_get(*MapArea * 2);
-	memset(mapTable, 0, *MapArea * 4);
+	ZeroMemory(mapTable, *MapArea * 4);
 }
 
 /*
@@ -298,15 +298,16 @@ void Path::continent(int xCoord, int yCoord, uint32_t region) {
  Purpose: Populate and set up all continents and path tables.
  Original Offset: 0059C790
  Return Value: n/a
- Status: Complete - testing
+ Status: Complete
 */
 void Path::continents() {
 	for (uint32_t i = 0; i < *MapArea; i++) {
 		(*Map)[i].region = 0;
 	}
+	uint32_t yCoordSouthPole = *MapVerticalBounds - 1;
 	uint32_t oceanRegion = 64;
 	uint32_t landRegion = 0;
-	for (uint32_t y = 1; y < *MapVerticalBounds - 1; y++) {
+	for (uint32_t y = 1; y < yCoordSouthPole; y++) {
 		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
 			if (!region_at(x, y)) {
 				uint32_t regionCurrent, regionMin, regionMax;
@@ -332,25 +333,24 @@ void Path::continents() {
 							searchRegion = i;
 						}
 					}
-					if (searchRegion < 0) {
-						merge(regionCurrent, regionMax + 1);
-					}
-					else {
+					if (searchRegion >= 0) {
 						merge(searchRegion, regionMax + 1);
 						merge(regionCurrent, searchRegion);
+					}
+					else {
+						merge(regionCurrent, regionMax + 1);
 					}
 				}
 			}
 		}
 	}
 	for (uint32_t x = 0; x < *MapHorizontalBounds; x += 2) { // north pole
-		uint8_t poleRegion = is_ocean(x, 0) ? 63 : 127;
+		uint8_t poleRegion = is_ocean(x, 0) ? 127 : 63;
 		region_set(x, 0, poleRegion);
 		Continents[poleRegion].tiles++;
 	}
-	uint32_t yCoordSouthPole = *MapVerticalBounds - 1;
 	for (uint32_t x = yCoordSouthPole & 1; x < *MapHorizontalBounds; x += 2) { // south pole
-		uint8_t poleRegion = is_ocean(x, yCoordSouthPole) ? 63 : 127;
+		uint8_t poleRegion = is_ocean(x, yCoordSouthPole) ? 127 : 63;
 		region_set(x, yCoordSouthPole, poleRegion);
 		Continents[poleRegion].tiles++;
 	}
@@ -358,27 +358,27 @@ void Path::continents() {
 	for (uint32_t i = 1; i < 63; i++) {
 		uint32_t tiles = Continents[i].tiles;
 		totalTiles += tiles;
-		if (tiles < mostTiles) {
+		if (tiles > mostTiles) {
 			mostTiles = tiles;
 		}
 	}
-	*GameState = (mostTiles < ((totalTiles * 4) / 5)) 
-		? *GameState & ~STATE_UNK_100 : *GameState | STATE_UNK_100;
+	*GameState = (mostTiles >= ((totalTiles * 4) / 5))
+		? *GameState | STATE_UNK_100 : *GameState & ~STATE_UNK_100;
 	for (uint32_t i = 0; i < MaxRegionLandNum; i++) {
-		*(uint32_t *)Continents[i].seaCoasts = 0;
-		*(uint32_t *)(Continents[i].seaCoasts + 1) = 0;
+		ZeroMemory(Continents[i].seaCoasts, 8);
 	}
-	for (uint32_t y = 1; y < *MapVerticalBounds - 1; y++) {
+	for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
 		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
-			if (region_at(x, y) < MaxRegionLandNum) {
+			uint32_t region = region_at(x, y);
+			if (region < MaxRegionLandNum) {
 				for (uint32_t i = 0; i < 8; i++) {
 					int xRadius = xrange(x + xRadiusBase[i]), yRadius = y + yRadiusBase[i];
 					if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds 
 						&& xRadius >= 0 && xRadius < (int)*MapHorizontalBounds) {
-						uint32_t region = region_at(xRadius, yRadius);
-						if (region >= MaxRegionLandNum) {
+						uint32_t regionRad = region_at(xRadius, yRadius);
+						if (regionRad >= MaxRegionLandNum) {
 							uint32_t offset, mask;
-							bitmask(region - MaxRegionLandNum, &offset, &mask);
+							bitmask(regionRad - MaxRegionLandNum, &offset, &mask);
 							Continents[region].seaCoasts[offset] |= mask;
 							i += 2 - (i & 1);
 						}
@@ -399,7 +399,7 @@ void Path::continents() {
 */
 BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
 	BOOL isSensor = true;
-	memset(mapTable, 0, *MapArea * 4);
+	ZeroMemory(mapTable, *MapArea * 4);
 	xCoordDst = -1;
 	yCoordDst = -1;
 	int xCoord = *xCoordPtr, yCoord = *yCoordPtr;
