@@ -228,8 +228,7 @@ BOOL __cdecl base_on_sea(uint32_t baseID, uint32_t regionSea) {
 	int xCoord = Base[baseID].xCoord, yCoord = Base[baseID].yCoord;
 	for (uint32_t i = 0; i < 8; i++) {
 		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
-		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-			&& xRadius < (int)*MapHorizontalBounds && is_ocean(xRadius, yRadius)
+		if (on_map(xRadius, yRadius) && is_ocean(xRadius, yRadius) 
 			&& (region_at(xRadius, yRadius) & RegionBounds) == regionSea) {
 			return true;
 		}
@@ -256,8 +255,7 @@ int __cdecl base_coast(uint32_t baseID) {
 	int xCoord = Base[baseID].xCoord, yCoord = Base[baseID].yCoord;
 	for (uint32_t i = 0; i < 8; i++) { // is_coast()
 		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
-		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-			&& xRadius < (int)*MapHorizontalBounds && is_ocean(xRadius, yRadius)) {
+		if (on_map(xRadius, yRadius) && is_ocean(xRadius, yRadius)) {
 			region = region_at(xRadius, yRadius);
 			int compare = (region >= 127) ? 1 : Continents[region].tiles;
 			if (compare >= val) {
@@ -282,8 +280,7 @@ BOOL __cdecl port_to_coast(uint32_t baseID, uint32_t region) {
 	}
 	for (uint32_t i = 0; i < 8; i++) { // is_coast()
 		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
-		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-			&& xRadius < (int)*MapHorizontalBounds && is_ocean(xRadius, yRadius)) {
+		if (on_map(xRadius, yRadius) && is_ocean(xRadius, yRadius)) {
 			if (sea_coast(region, region_at(xRadius, yRadius))) {
 				return true;
 			}
@@ -303,8 +300,7 @@ BOOL __cdecl port_to_port(uint32_t baseIDSrc, uint32_t baseIDDst) {
 	int xCoord = Base[baseIDSrc].xCoord, yCoord = Base[baseIDSrc].yCoord, lastRegion = -1;
 	for (uint32_t i = 0; i < 8; i++) { // is_coast()
 		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
-		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-			&& xRadius < (int)*MapHorizontalBounds && is_ocean(xRadius, yRadius)) {
+		if (on_map(xRadius, yRadius) && is_ocean(xRadius, yRadius)) {
 			int regionSrc = region_at(xRadius, yRadius);
 			if (regionSrc != lastRegion) { // reduce redundant checks especially sea bases
 				lastRegion = regionSrc;
@@ -437,8 +433,7 @@ BOOL __cdecl coast_or_border(int xCoordPtA, int yCoordPtA, int xCoordPtB, int yC
 	uint32_t regionA = region_at(xCoordPtA, yCoordPtA), regionB = region_at(xCoordPtB, yCoordPtB);
 	for (uint32_t i = 1; i < 9; i++) {
 		int xRadius = xrange(xCoordPtA + xRadiusOffset[i]), yRadius = yCoordPtA + yRadiusOffset[i];
-		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-			&& xRadius < (int)*MapHorizontalBounds && (is_ocean(xRadius, yRadius)
+		if (on_map(xRadius, yRadius) && (is_ocean(xRadius, yRadius)
 				|| whose_territory(factionID, xRadius, yRadius, NULL, false) != factionID
 				|| regionA != regionB)) { // not sure about reason for this
 			return true; // modified to boolean rather than returning i
@@ -928,8 +923,7 @@ Status: Complete
 void __cdecl site_radius(int xCoord, int yCoord, int UNUSED(valUnk)) {
 	for (int i = 0; i < 21; i++) {
 		int xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
-		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-			&& xRadius < (int)*MapHorizontalBounds) {
+		if (on_map(xRadius, yRadius)) {
 			map *tile = map_loc(xRadius, yRadius);
 			tile->val2 &= 0x0F;
 		}
@@ -947,8 +941,7 @@ BOOL __cdecl is_coast(int xCoord, int yCoord, BOOL isBaseRadius) {
 	uint32_t radius = isBaseRadius ? 21 : 9;
 	for (uint32_t i = 1; i < radius; i++) {
 		int xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
-		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-			&& xRadius < (int)*MapHorizontalBounds && is_ocean(xRadius, yRadius)) {
+		if (on_map(xRadius, yRadius) && is_ocean(xRadius, yRadius)) {
 			return true; // modified original that would return i, all calls check return as boolean
 		}
 	}
@@ -989,9 +982,6 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl rebuild_vehicle_bits() {
-	if (*MapVerticalBounds <= 0) {
-		return;
-	}
 	for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
 		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
 			bit_set(x, y, BIT_VEH_IN_TILE, false);
@@ -1015,9 +1005,6 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl rebuild_base_bits() {
-	if (*MapVerticalBounds <= 0) {
-		return;
-	}
 	for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
 		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
 			bit_set(x, y, BIT_BASE_IN_TILE, false);
@@ -1231,8 +1218,7 @@ void __cdecl quick_zoc(int xCoordSrc, int yCoordSrc, int factionID, int xCoordDs
 	int searchZoc = -1;
 	for (uint32_t i = 0; i < 8; i++) {
 		int xRadius = xrange(xCoordSrc + xRadiusBase[i]), yRadius = yCoordSrc + yRadiusBase[i];
-		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-			&& xRadius < (int)*MapHorizontalBounds) {
+		if (on_map(xRadius, yRadius)) {
 			int owner = veh_who(xRadius, yRadius);
 			if (owner >= 0 && owner != factionID && is_ocean(xRadius, yRadius) == isSrcOcean
 				&& !(PlayersData[factionID].diploTreaties[owner] & DTREATY_PACT)) {
@@ -1361,8 +1347,7 @@ Status: Complete
 uint32_t __cdecl zoc_any(int xCoord, int yCoord, uint32_t factionID) {
 	for (uint32_t i = 0; i < 8; i++) {
 		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
-		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-			&& xRadius < (int)*MapHorizontalBounds) {
+		if (on_map(xRadius, yRadius)) {
 			int owner = anything_at(xRadius, yRadius);
 			if (owner >= 0 && owner != (int)factionID
 				&& !(PlayersData[factionID].diploTreaties[owner] & DTREATY_PACT)) {
@@ -1383,8 +1368,7 @@ uint32_t __cdecl zoc_veh(int xCoord, int yCoord, uint32_t factionID) {
 	uint32_t ret = 0;
 	for (uint32_t i = 0; i < 8; i++) {
 		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
-		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-			&& xRadius < (int)*MapHorizontalBounds) {
+		if (on_map(xRadius, yRadius)) {
 			int owner = veh_who(xRadius, yRadius);
 			if (owner >= 0 && owner != (int)factionID
 				&& !(PlayersData[factionID].diploTreaties[owner] & DTREATY_PACT)) {
@@ -1408,8 +1392,7 @@ uint32_t __cdecl zoc_sea(int xCoord, int yCoord, uint32_t factionID) {
 	BOOL isOcean = is_ocean(xCoord, yCoord);
 	for (uint32_t i = 0; i < 8; i++) {
 		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
-		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-			&& xRadius < (int)*MapHorizontalBounds) {
+		if (on_map(xRadius, yRadius)) {
 			int owner = veh_who(xRadius, yRadius);
 			if (owner >= 0 && owner != (int)factionID && is_ocean(xRadius, yRadius) == isOcean
 				&& !(PlayersData[factionID].diploTreaties[owner] & DTREATY_PACT)) {

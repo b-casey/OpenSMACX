@@ -95,8 +95,7 @@ int Path::zoc_path(int xCoord, int yCoord, int factionID) {
 	BOOL isOcean = is_ocean(xCoord, yCoord);
 	for (uint32_t i = 0; i < 8; i++) {
 		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
-		if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-			&& xRadius < (int)*MapHorizontalBounds) {
+		if (on_map(xRadius, yRadius)) {
 			int owner = veh_who(xRadius, yRadius);
 			if (owner >= 0 && owner != factionID && is_ocean(xRadius, yRadius) == isOcean
 				&& !(PlayersData[factionID].diploTreaties[owner]
@@ -146,9 +145,8 @@ int Path::move(int vehID, int factionID) {
 	int xCoordVeh = Veh[vehID].xCoord, yCoordVeh = Veh[vehID].yCoord,
 		xCoordWayPt = Veh[vehID].waypoint_xCoord[0], yCoordWayPt = Veh[vehID].waypoint_yCoord[0];
 
-	if (yCoordWayPt < 0 || yCoordWayPt >= (int)*MapVerticalBounds || xCoordWayPt < 0
-		|| xCoordWayPt >= (int)*MapHorizontalBounds || (xCoordVeh == xCoordWayPt
-			&& yCoordVeh == yCoordWayPt)) {
+	if (!on_map(xCoordWayPt, yCoordWayPt) || (xCoordVeh == xCoordWayPt 
+		&& yCoordVeh == yCoordWayPt)) {
 		return -1;
 	}
 	BOOL isHuman = is_human(factionIDVeh);
@@ -185,8 +183,7 @@ void Path::make_abstract() {
 			uint8_t region = 0;
 			for (uint32_t i = 0; i < 9; i++) {
 				int xRadius = xrange(x * 5 + xRadiusOffset[i]), yRadius = y * 5 + yRadiusOffset[i];
-				if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-					&& xRadius < (int)*MapHorizontalBounds && !is_ocean(xRadius, yRadius)) {
+				if (on_map(xRadius, yRadius) && !is_ocean(xRadius, yRadius)) {
 					region = (uint8_t)region_at(xRadius, yRadius);
 					break;
 				}
@@ -232,9 +229,7 @@ void Path::territory(int xCoord, int yCoord, int UNUSED(region), int factionID) 
 			int xRadius = xrange(xCoordIt + xRadiusBase[i]);
 			int yRadius = yCoordIt + yRadiusBase[i];
 			map *tile;
-			if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds 
-				&& xRadius >= 0 && xRadius < (int)*MapHorizontalBounds 
-				&& yCoordIt && yCoordIt != ((int)*MapVerticalBounds - 1) // excluding poles
+			if (on_map(xRadius, yRadius) && yCoordIt && yCoordIt != ((int)*MapVerticalBounds - 1)
 				&& !is_ocean(xRadius, yRadius) && (tile = map_loc(xRadius, yRadius),
 					!tile->unk_1 && tile->territory == factionID)) {
 				tile->unk_1 = 1;
@@ -267,9 +262,7 @@ void Path::continent(int xCoord, int yCoord, uint32_t region) {
 			int xRadius = xrange(xCoordIt + xRadiusBase[i]);
 			int yRadius = yCoordIt + yRadiusBase[i];
 			BOOL isOceanRad;
-			if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds 
-				&& xRadius >= 0 && xRadius < (int)*MapHorizontalBounds
-				&& yCoordIt && yCoordIt != ((int)*MapVerticalBounds - 1) // excluding poles
+			if (on_map(xRadius, yRadius) && yCoordIt && yCoordIt != ((int)*MapVerticalBounds - 1)
 				&& (isOceanRad = is_ocean(xRadius, yRadius), isOceanRad == isOcean 
 					&& !region_at(xRadius, yRadius))) {
 				if (isOcean && bit2_at(xRadius, yRadius) & LM_FRESH && isOceanRad) {
@@ -373,8 +366,7 @@ void Path::continents() {
 			if (region < MaxRegionLandNum) {
 				for (uint32_t i = 0; i < 8; i++) {
 					int xRadius = xrange(x + xRadiusBase[i]), yRadius = y + yRadiusBase[i];
-					if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds 
-						&& xRadius >= 0 && xRadius < (int)*MapHorizontalBounds) {
+					if (on_map(xRadius, yRadius)) {
 						uint32_t regionRad = region_at(xRadius, yRadius);
 						if (regionRad >= MaxRegionLandNum) {
 							uint32_t offset, mask;
@@ -429,8 +421,7 @@ BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
 					for (uint32_t i = 0; i < 25; i++) {
 						int xRadius = xrange(x + xRadiusOffset[i]);
 						int yRadius = y + yRadiusOffset[i];
-						if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-							&& xRadius < (int)*MapHorizontalBounds && !is_sensor(xRadius, yRadius)
+						if (on_map(xRadius, yRadius) && !is_sensor(xRadius, yRadius)
 							&& (whose_territory(factionID, xRadius, yRadius, NULL, false)
 								== factionID || get(xRadius, yRadius))) {
 							if (i >= 9) {
@@ -444,8 +435,7 @@ BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
 						for (uint32_t i = 0; i < 25; i++) {
 							int xRadius = xrange(x + xRadiusOffset[i]), tileFactionID;
 							int yRadius = y + yRadiusOffset[i];
-							if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds
-								&& xRadius >= 0 && xRadius < (int)*MapHorizontalBounds 
+							if (on_map(xRadius, yRadius)
 								&& (tileFactionID = base_who(xRadius, yRadius), 
 									tileFactionID == factionID)) {
 								flags |= 4;
@@ -453,9 +443,7 @@ BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
 								for (uint32_t j = 0; j < 25; j++) {
 									int xRadius2 = xrange(xRadius + xRadiusOffset[j]);
 									int yRadius2 = yRadius + yRadiusOffset[j];
-									if (yRadius2 >= 0 && yRadius2 < (int)*MapVerticalBounds
-										&& xRadius2 >= 0 && xRadius2 < (int)*MapHorizontalBounds 
-										&& !is_sensor(xRadius2, yRadius2) 
+									if (on_map(xRadius2, yRadius2) && !is_sensor(xRadius2, yRadius2) 
 										&& (whose_territory(factionID, xRadius2, yRadius2, NULL,
 											false) == factionID || get(xRadius2, yRadius2))) {
 										check = false;

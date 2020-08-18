@@ -102,8 +102,7 @@ uint32_t __cdecl morale_alien(int vehID, int factionIDvsNative) {
 		// similar to is_coast() > except with fungus check + Ocean Shelf included
 		for (uint32_t i = 1; i < 9; i++) {
 			int xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
-			if (yRadius >= 0 && yRadius < (int)*MapVerticalBounds && xRadius >= 0
-				&& xRadius < (int)*MapHorizontalBounds && bit_at(xRadius, yRadius) & BIT_FUNGUS
+			if (on_map(xRadius, yRadius) && bit_at(xRadius, yRadius) & BIT_FUNGUS
 				&& altitude_at(xRadius, yRadius) >= ALT_BIT_OCEAN_SHELF) {
 				morale++;
 			}
@@ -1518,8 +1517,7 @@ Return Value: vehID or -1 if nothing found or on error
 Status: Complete
 */
 int __cdecl veh_at(int xCoord, int yCoord) {
-	if (yCoord >= 0 && yCoord < (int)*MapVerticalBounds && xCoord >= 0
-		&& xCoord < (int)*MapHorizontalBounds && !(bit_at(xCoord, yCoord) & BIT_VEH_IN_TILE)) {
+	if (on_map(xCoord, yCoord) && !(bit_at(xCoord, yCoord) & BIT_VEH_IN_TILE)) {
 		return -1; // not found
 	}
 	for (int vehID = 0; vehID < *VehCurrentCount; vehID++) {
@@ -1527,8 +1525,7 @@ int __cdecl veh_at(int xCoord, int yCoord) {
 			return veh_top(vehID);
 		}
 	}
-	if (yCoord < 0 || yCoord >= (int)*MapVerticalBounds || xCoord < 0
-		|| xCoord >= (int)*MapHorizontalBounds) {
+	if (!on_map(xCoord, yCoord)) {
 		return -1;
 	}
 	if (!*VehBitError) {
@@ -1596,8 +1593,7 @@ int __cdecl veh_lift(int vehID) {
 	if (nextVehID >= 0) {
 		Veh[nextVehID].prevVehIDStack = prevVehID;
 	}
-	else if (!prevStackExists && yCoord >= 0 && yCoord < (int)*MapVerticalBounds && xCoord >= 0
-		&& xCoord < (int)*MapHorizontalBounds) {
+	else if (!prevStackExists && on_map(xCoord, yCoord)) {
 		bit_set(xCoord, yCoord, BIT_VEH_IN_TILE, false);
 	}
 	*VehDropLiftVehID = vehID;
@@ -1627,16 +1623,14 @@ int __cdecl veh_drop(int vehID, int xCoord, int yCoord) {
 		if (yCoord < 0) {
 			return vehID;
 		}
-		if (yCoord < (int)*MapVerticalBounds && xCoord >= 0 && xCoord < (int)*MapHorizontalBounds
-			&& !(bit_at(xCoord, yCoord) & BIT_BASE_IN_TILE)) {
+		if (on_map(xCoord, yCoord) && !(bit_at(xCoord, yCoord) & BIT_BASE_IN_TILE)) {
 			owner_set(xCoord, yCoord, Veh[vehID].factionID);
 		}
 	}
 	else {
 		Veh[vehIDDest].prevVehIDStack = (int16_t)vehID;
 	}
-	if (yCoord >= 0 && yCoord < (int)*MapVerticalBounds && xCoord >= 0
-		&& xCoord < (int)*MapHorizontalBounds) {
+	if (on_map(xCoord, yCoord)) {
 		uint32_t flags = (Veh[vehID].factionID && get_triad(vehID) != TRIAD_AIR)
 			? BIT_SUPPLY_REMOVE | BIT_VEH_IN_TILE : BIT_VEH_IN_TILE;
 		bit_set(xCoord, yCoord, flags, true);

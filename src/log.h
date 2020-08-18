@@ -51,6 +51,7 @@ public:
 // global
 extern Log *Logging;
 extern BOOL *IsLoggingDisabled;
+
 OPENSMACX_API void __cdecl log_logging();
 OPENSMACX_API void __cdecl log_logging_exit();
 OPENSMACX_API void __cdecl log_reset();
