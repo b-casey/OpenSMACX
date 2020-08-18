@@ -126,7 +126,7 @@ LPVOID Filemap::create(LPCSTR fileName, uint32_t size, BOOL isSequential) {
 			if (hFileMap) {
 				mapViewAddr = MapViewOfFile(hFileMap, FILE_MAP_ALL_ACCESS, 0, 0, 0);
 				if (mapViewAddr) {
-					memset(mapViewAddr, 0, size);
+					ZeroMemory(mapViewAddr, size);
 					return mapViewAddr;
 				}
 			}

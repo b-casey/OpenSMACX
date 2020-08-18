@@ -1155,7 +1155,7 @@ void __cdecl map_wipe() {
 		(*Map)[i].val3 = 0;
 		(*Map)[i].bit = 0;
 		(*Map)[i].bit2 = 0;
-		memset((*Map)[i].bitVisible, 0, sizeof((*Map)[i].bitVisible));
+		ZeroMemory((*Map)[i].bitVisible, sizeof((*Map)[i].bitVisible));
 	}
 }
 

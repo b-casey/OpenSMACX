@@ -1189,7 +1189,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 			text_get();
 			SocialCategory[i].name[j] = text_item_string();
 			SocialCategory[i].preqTech[j] = tech_name(text_item());
-			memset(&SocialCategory[i].effect[j], 0, sizeof(rules_social_category_effect));
+			ZeroMemory(&SocialCategory[i].effect[j], sizeof(rules_social_category_effect));
 			LPSTR modValue = text_item();
 			int modLen = strlen(modValue);
 			while (modLen) {
