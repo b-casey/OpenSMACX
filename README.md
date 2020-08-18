@@ -150,7 +150,7 @@ Bug fixes:
 Changes:
 * Improved how Random::reseed sets new seed value.
 * Improved performance of proto_cost() without changes to original logic.
-* <a>Removed debug code related to non-existent faction JENN282. Nothing of value. SMACX binary only.</a>
+* <strike>Removed debug code related to non-existent faction JENN282. Nothing of value. SMACX binary only.</strike>
 * Various optimizations without changes to original logic.
 
 Enhancement: 
