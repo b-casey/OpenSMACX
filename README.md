@@ -2,15 +2,56 @@
 A project to decompile SMAC/X to C++ with the long term goal of creating a full open source clone.
 
 Source tested and compiled as an x86 DLL with Visual Studio 2019 using Visual C++ with default 
-settings. Source was also tested using Visual Studio 2015/2017 Visual C++.
+settings.
 
-Tested with CodeBlocks using GCC 8.1.0 compiler. Added project file (cbp) courtesy of induktio.
+Tested with CodeBlocks 20.03 using GCC 8.1.0 compiler. Project file (cbp) courtesy of induktio.
 
 The patcher script found under tools is compatible with the latest GOG version as well as the most
 recent version of my unofficial patch. Cursory testing shows it is compatible with PRACX.
 
 You can follow development progress, discuss ideas or issues here:
 https://alphacentauri2.info/index.php?board=23.0
+
+v0.2.3
+* Lots of additional analysis, clean up, refactoring, and optimization of the existing code base.
+* Fixed four bugs within OpenSMACX code. 
+* Created new probe related source files (two net new functions, shifted one existing).
+* Implemented one of the probe related fixes from my unofficial patch.
+* Additional work on Path class (almost complete, 3 functions left).
+* 55 net new functions across multiple areas.
+* Cumulative decompiled and redirected function count: 420
+
+Bug Fixes:
+* Fixed a bug with OpenSMACX where a small change to how the Random class was reseeded from the 
+  default behavior caused rivers globally to shift. This happened whenever a Borehole or Condenser 
+  was built by any faction. I'm still unsure as to why. Something to review again in the future when 
+  more of the world code is decompiled.
+* Fixed a bug with OpenSMACX where after selecting a random faction for a game, afterward on game
+  start the game would throw a faction parsing error related to JENN282. This was due to the 
+  JENN282 code not being implemented in read_factions(). Originally, it looked like this was left 
+  over debug code so it was skipped. As it turns out, JENN282 is the internal faction identifier 
+  that SMACX uses for a random faction. Thankfully, this was the only place in the project where 
+  code wasn't implemented like this (excluding obvious optimizations). Multiple improvements to the 
+  code's performance and fixes for fringe cases were applied to this parsing code.
+* Fixed an issue with OpenSMACX where two functions (tech_ai, rnd) weren't having rand() reseeded
+  properly. This was caused by my_srand() only having the old built-in version of srand(). Both need 
+  to be initialized while the project straddles new and old code base.
+* Fixed a preference parsing bug with OpenSMACX where "Time Controls" default value could have been 
+  set as "0" rather than "1". This was due to an oversight in how the return value was processed 
+  by prefs_get(LPCSTR, int, BOOL) when the useDefault parameter was set to true. This code is part 
+  of some of the earliest decompiled functions prior to my including comprehensive regression tests
+  into the decompile process.
+* Fixed a bug inside success_rates() where a probe wouldn't receive a penalty to its survival rate 
+  when it targeted a faction that has the Hunter-Seeker Algorithm secret project. Instead, its 
+  success rate would be given an erroneous 2nd penalty. This issue was somewhat masked because the
+  2nd penalty happened after the success rate had already been written for display by the UI. This 
+  bug caused a lower success rate and increased survival rate of probes targeting an HSA faction. 
+* Fixed various issues related to the Scenario Editor undo/redo mechanic. Undo auto-saves weren't 
+  properly saved outside of the 1st one because auto_undo() didn't include the ".SAV" extension
+  to process previous auto-saves. Undo auto-saves weren't properly removed because wipe_undo() 
+  didn't include the ".SAV" extension. Added in logic to prevent being able to attempt a redo before 
+  an undo has taken place. Fixed a map redraw issue after loading an undo or redo where units and 
+  tiles wouldn't be properly redrawn.
 
 v0.2.2
 * Lots of clean up and optimization of the existing code base.
@@ -109,7 +150,7 @@ Bug fixes:
 Changes:
 * Improved how Random::reseed sets new seed value.
 * Improved performance of proto_cost() without changes to original logic.
-* Removed debug code related to non-existent faction JENN282. Nothing of value. SMACX binary only.
+* <a>Removed debug code related to non-existent faction JENN282. Nothing of value. SMACX binary only.</a>
 * Various optimizations without changes to original logic.
 
 Enhancement: 
