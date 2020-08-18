@@ -9,7 +9,7 @@ Tested with CodeBlocks 20.03 using GCC 8.1.0 compiler. Project file (cbp) courte
 The patcher script found under tools is compatible with the latest GOG version as well as the most
 recent version of my unofficial patch. Cursory testing shows it is compatible with PRACX.
 
-You can follow development progress, discuss ideas or issues here:
+You can follow development progress, discuss ideas or issues here:  
 https://alphacentauri2.info/index.php?board=23.0
 
 v0.2.3
