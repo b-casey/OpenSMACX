@@ -25,6 +25,8 @@
 #include "text.h"
 
 uint32_t ScenEditorUndoPosition = 1; // 0x00690D7C
+int *GenderDefault = (int *)0x009BBFEC;
+BOOL *PluralityDefault = (BOOL *)0x009BBFF0;
 
 /*
 Purpose: Trim trailing spaces inline from end of string
@@ -183,7 +185,7 @@ Original Offset: 005A58E0
 Return Value: n/a
 Status: Complete
 */
-void __cdecl parse_set(int gender, int plurality) {
+void __cdecl parse_set(int gender, BOOL plurality) {
 	*GenderDefault = gender;
 	*PluralityDefault = plurality;
 }
@@ -636,7 +638,7 @@ Original Offset: 006003A0
 Return Value: Drive letter
 Status: Complete
 */
-char filefind_cd_drive_letter() { return FilefindPath->cdPath[0]; }
+char __cdecl filefind_cd_drive_letter() { return FilefindPath->cdPath[0]; }
 
 /*
 Purpose: Sets an alternative path for filefind checks
@@ -644,7 +646,7 @@ Original Offset: 006003B0
 Return Value: n/a
 Status: Complete
 */
-void filefind_set_alternative(LPCSTR path) {
+void __cdecl filefind_set_alternative(LPCSTR path) {
 	FilefindPath->altPath[0] = 0;
 	if (path) {
 		if (!strchr(path, ':') && path[0] != '\\') {
@@ -661,7 +663,7 @@ Original Offset: 00600400
 Return Value: Zero: no errors; Non-zero: error
 Status: WIP
 */
-int filefind_init(LPCSTR fileCheck, BOOL isComplete) {
+int __cdecl filefind_init(LPCSTR fileCheck, BOOL isComplete) {
 	FilefindPath->altPath[0] = 0;
 	GetCurrentDirectoryA(256, FilefindPath->exeDir);
 	strcat_s(FilefindPath->exeDir, 256, "\\");
@@ -720,7 +722,7 @@ Original Offset: 006005D0
 Return Value: File path string or 0 if not found
 Status: Complete
 */
-LPSTR filefind_get(LPCSTR fileName) {
+LPSTR __cdecl filefind_get(LPCSTR fileName) {
 	if (!fileName) {
 		return 0;
 	}
@@ -960,7 +962,7 @@ Original Offset: 005ABD10
 Return Value: n/a
 Status: Complete
 */
-void kill_auto_save() {
+void __cdecl kill_auto_save() {
 	remove("saves\\auto\\Alpha Centauri Autosave 1.SAV");
 }
 
@@ -970,7 +972,7 @@ Original Offset: 005ABD20
 Return Value: n/a
 Status: Complete
 */
-void auto_save() {
+void __cdecl auto_save() {
 	if (!*IsMultiplayerPBEM || *IsMultiplayerNet) { // auto-saving disabled for PBEM/HotSeat games
 		if (*GameRules & RULES_IRONMAN && !(*GameState & STATE_SCENARIO_EDITOR)) {
 			remove("saves\\auto\\Alpha Centauri Autosave 30.SAV");
@@ -1011,7 +1013,7 @@ Original Offset: n/a
 Return Value: n/a
 Status: Complete
 */
-void auto_save_debug() {
+void __cdecl auto_save_debug() {
 	if (*TurnCurrentNum == 1) {
 		remove("saves\\auto\\Alpha Centauri Autosave Turn 1.SAV");
 		save_daemon("saves\\auto\\Alpha Centauri Autosave Turn 1");
@@ -1093,4 +1095,41 @@ void __cdecl auto_undo() {
 		}
 		save_daemon("saves\\auto\\Scenario Editor Undo 1");
 	}
+}
+
+/*
+Purpose: Read the specified header from a file. Assumes header string buffer is at least 256 chars.
+Original Offset: 0057D1F0
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl header_check(LPSTR header, FILE *file) {
+	int headerChr = fgetc(file);
+	*header++ = (char)headerChr;
+	if (headerChr) {
+		int i = 0;
+		do {
+			if (++i >= 256) {
+				break;
+			}
+			headerChr = fgetc(file);
+			*header++ = (char)headerChr;
+		} while (headerChr);
+	}
+	fgetc(file);
+}
+
+/*
+Purpose: Write the specified header to a file.
+Original Offset: 0057D240
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl header_write(LPCSTR header, FILE *file) {
+	int headerChr;
+	do {
+		headerChr = *header++;
+		fputc(headerChr, file);
+	} while (headerChr);
+	fputc(0x1A, file);
 }

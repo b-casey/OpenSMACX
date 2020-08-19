@@ -561,5 +561,5 @@ OPENSMACX_API BOOL __cdecl veh_jail(int vehID);
 OPENSMACX_API void __cdecl veh_skip(int vehID);
 OPENSMACX_API int __cdecl veh_fake(int protoID, int factionID);
 OPENSMACX_API int __cdecl veh_wake(int vehID);
-OPENSMACX_API uint8_t get_proto_triad(uint32_t protoID);
-OPENSMACX_API uint8_t get_triad(uint32_t vehID);
+OPENSMACX_API uint8_t __cdecl get_proto_triad(uint32_t protoID);
+OPENSMACX_API uint8_t __cdecl get_triad(uint32_t vehID);

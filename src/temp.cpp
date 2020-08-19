@@ -66,8 +66,6 @@ int *BufferStrHeight = (int *)0x009B3A9C;
 int *ParseNumTable = (int *)0x009BB598;
 int *ParseStrPlurality = (int *)0x009BB570;
 int *ParseStrGender = (int *)0x009BB5C0;
-int *GenderDefault = (int *)0x009BBFEC;
-int *PluralityDefault = (int *)0x009BBFF0;
 HWND *HandleMain = (HWND *)0x009B7B28;
 
 uint32_t *UnkBitfield1 = (uint32_t *)0x0090D91C;

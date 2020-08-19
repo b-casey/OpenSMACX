@@ -1158,7 +1158,7 @@ Original Offset: n/a
 Return Value: -1 if not found, otherwise offset value
 Status: Complete
 */
-int facility_offset(LPCSTR facilSearch) {
+int __cdecl facility_offset(LPCSTR facilSearch) {
 	int offset = -1;
 	for (uint32_t i = 0; i < MaxFacilityNum; i++) {
 		LPSTR facName = Facility[i].name;

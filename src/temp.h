@@ -87,8 +87,6 @@ extern int *BufferStrHeight;
 extern int *ParseNumTable;
 extern int *ParseStrPlurality;
 extern int *ParseStrGender;
-extern int *GenderDefault;
-extern int *PluralityDefault;
 extern HWND *HandleMain;
 
 extern uint32_t *UnkBitfield1;

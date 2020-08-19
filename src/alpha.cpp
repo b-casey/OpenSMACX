@@ -68,7 +68,7 @@ int __cdecl tech_name(LPSTR techName) {
 	parse_says(0, Txt->getFilePath(), -1, -1);
 	parse_says(1, techName, -1, -1);
 	parse_says(2, *TextBufferGetPtr, -1, -1);
-	X_pop("BADTECHKEY", 0);
+	X_pop("BADTECHKEY", NULL);
 	return DisabledValue;
 }
 
@@ -94,7 +94,7 @@ int __cdecl chas_name(LPSTR chasName) {
 	parse_says(0, Txt->getFilePath(), -1, -1);
 	parse_says(1, chasName, -1, -1);
 	parse_says(2, *TextBufferGetPtr, -1, -1);
-	X_pop("BADCHASKEY", 0);
+	X_pop("BADCHASKEY", NULL);
 	return 0;
 }
 
@@ -120,7 +120,7 @@ int __cdecl weap_name(LPSTR weapName) {
 	parse_says(0, Txt->getFilePath(), -1, -1);
 	parse_says(1, weapName, -1, -1);
 	parse_says(2, *TextBufferGetPtr, -1, -1);
-	X_pop("BADWEAPKEY", 0);
+	X_pop("BADWEAPKEY", NULL);
 	return 0;
 }
 
@@ -146,7 +146,7 @@ int __cdecl arm_name(LPSTR armName) {
 	parse_says(0, Txt->getFilePath(), -1, -1);
 	parse_says(1, armName, -1, -1);
 	parse_says(2, *TextBufferGetPtr, -1, -1);
-	X_pop("BADARMKEY", 0);
+	X_pop("BADARMKEY", NULL);
 	return DisabledValue;
 }
 
@@ -317,7 +317,7 @@ BOOL __cdecl read_tech() {
 				parse_says(0, Technology[i].id, -1, -1);
 				parse_says(1, FilefindPath->lastPath, -1, -1);
 				parse_says(2, *TextBufferGetPtr, -1, -1);
-				X_pop("DUPLICATETECH", 0);
+				X_pop("DUPLICATETECH", NULL);
 			}
 		}
 	}
@@ -398,7 +398,7 @@ void __cdecl read_faction(player *Player, int toggle) {
 		&& text_open(Player->filename, Player->filename)) {
 		parse_says(0, Player->searchKey, -1, -1);
 		parse_says(1, Player->filename, -1, -1);
-		X_pop("PLAYERFILE", 0);
+		X_pop("PLAYERFILE", NULL);
 		return;
 	}
 	text_get();
@@ -1301,7 +1301,7 @@ Return Value: Key's string value from ini or default if not set
 Status: Complete with internal string pointers. Eventually, clean up dependent code on string
 		globals and remove these references.
 */
-LPSTR prefs_get(LPCSTR keyName, LPCSTR defaultValue, BOOL useDefault) {
+LPSTR __cdecl prefs_get(LPCSTR keyName, LPCSTR defaultValue, BOOL useDefault) {
 	if (useDefault ||
 		(GetPrivateProfileStringA("Alpha Centauri", "Prefs Format", "0", *TextBufferGetPtr, 256,
 			".\\Alpha Centauri.ini"), atoi(*TextBufferGetPtr) != 12)) {
@@ -1379,7 +1379,7 @@ Return Value: Key's integer value from ini or default if not set
 Status: Complete with internal string pointers. Eventually, clean up code dependent on string
 		globals and remove these references.
 */
-int prefs_get(LPCSTR keyName, int defaultValue, BOOL useDefault) {
+int __cdecl prefs_get(LPCSTR keyName, int defaultValue, BOOL useDefault) {
 	_itoa_s(defaultValue, stringTemp->str, 256, 10);
 	if (useDefault) {
 		strcpy_s(*TextBufferGetPtr, 256, stringTemp->str);
@@ -1474,7 +1474,7 @@ Original Offset: 0059E510
 Return Value: n/a
 Status: Complete
 */
-void prefs_put(LPCSTR keyName, LPCSTR value) {
+void __cdecl prefs_put(LPCSTR keyName, LPCSTR value) {
 	WritePrivateProfileStringA("Alpha Centauri", keyName, value, ".\\Alpha Centauri.ini");
 }
 
@@ -1484,7 +1484,7 @@ Original Offset: 0059E530
 Return Value: n/a
 Status: Complete
 */
-void prefs_put(LPCSTR keyName, int value, BOOL binaryTgl) {
+void __cdecl prefs_put(LPCSTR keyName, int value, BOOL binaryTgl) {
 	char temp[33];
 	binaryTgl ? strcpy_s(temp, 33, prefs_get_binary(value).c_str()) : _itoa_s(value, temp, 33, 10);
 	WritePrivateProfileStringA("Alpha Centauri", keyName, temp, ".\\Alpha Centauri.ini");
@@ -1544,7 +1544,7 @@ Original Offset: n/a
 Return Value: Binary string
 Status: Complete
 */
-std::string prefs_get_binary(int value) {
+std::string __cdecl prefs_get_binary(int value) {
 	char temp[33];
 	temp[0] = 0;
 	for (int shift = 31, nonPad = 0; shift >= 0; shift--) {

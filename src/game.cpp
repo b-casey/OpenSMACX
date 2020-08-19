@@ -16,8 +16,11 @@
  * along with OpenSMACX. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "stdafx.h"
+#include "temp.h"
 #include "game.h"
 #include "alpha.h"
+#include "base.h"
+#include "general.h"
 
 BOOL *ExpansionEnabled = (BOOL *)0x009A6488;
 uint32_t *GamePreferences = (uint32_t *)0x009A6490;
@@ -41,6 +44,42 @@ uint32_t *MountPlanetYCoord = (uint32_t *)0x009A6808;
 int *DustCloudDuration = (int *)0x009A680C;
 BOOL *IsMultiplayerNet = (BOOL *)0x0093F660; // DirectPlay - Serial, Modem, Internet (TCP/IP)
 BOOL *IsMultiplayerPBEM = (BOOL *)0x0093A95C; // HotSeat / PBEM
+
+/*
+Purpose: Handle creation of pop-up message on Planetfall.
+Original Offset: 00589180
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl planetfall(int factionID) {
+	parse_set(Players[factionID].isLeaderFemale, false);
+	parse_says(0, Players[factionID].adjNameFaction, -1, -1);
+	parse_says(2, Players[factionID].titleLeader, -1, -1);
+	parse_says(3, Players[factionID].nameLeader, -1, -1);
+	parse_set(Players[factionID].nounGender, Players[factionID].isNounPlural);
+	parse_says(1, Players[factionID].nounFaction, -1, -1); // unused in script
+	char scriptID[13];
+	if (Players[factionID].ruleFlags & RFLAG_ALIEN
+		&& _stricmp(Players[factionID].filename, "USURPER")) {
+		strcpy_s(scriptID, 13, "PLANETFALLX");
+	}
+	else if (_stricmp(Players[factionID].filename, "FUNGBOY")) {
+		strcpy_s(scriptID, 13, "PLANETFALLF");
+	}
+	else {
+		strcpy_s(scriptID, 13, "PLANETFALL");
+	}
+	if (*TurnCurrentNum) {
+		parse_num(0, *TurnCurrentNum);
+		for (uint32_t i = 0; i < MaxSecretProjectNum; i++) {
+			if (has_project(i, factionID)) {
+				parse_says(4, Facility[FAC_HUMAN_GENOME_PROJ + i].name, -1, -1);
+			}
+		}
+		strcat_s(scriptID, 13, "2");
+	}
+	X_pop(scriptID, NULL);
+}
 
 /*
 Purpose: Clear and reset scenario game variables.

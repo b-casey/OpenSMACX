@@ -49,6 +49,6 @@ public:
 */
 constexpr int MaxTextIndexNum = 4;
 extern TextIndex *TxtIndex;
-OPENSMACX_API void text_make_index(LPCSTR sourceTxt);
-OPENSMACX_API int text_search_index(LPCSTR sourceTxt, LPCSTR sectionTxt);
-OPENSMACX_API void text_clear_index();
+OPENSMACX_API void __cdecl text_make_index(LPCSTR sourceTxt);
+OPENSMACX_API int __cdecl text_search_index(LPCSTR sourceTxt, LPCSTR sectionTxt);
+OPENSMACX_API void __cdecl text_clear_index();

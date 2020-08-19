@@ -2077,7 +2077,7 @@ Original Offset: n/a
 Return Value: triad (see veh_triad)
 Status: Complete
 */
-uint8_t get_proto_triad(uint32_t protoID) {
+uint8_t __cdecl get_proto_triad(uint32_t protoID) {
 	return Chassis[VehPrototype[protoID].chassisID].triad;
 }
 
@@ -2087,6 +2087,6 @@ Original Offset: n/a
 Return Value: triad (see veh_triad)
 Status: Complete
 */
-uint8_t get_triad(uint32_t vehID) {
+uint8_t __cdecl get_triad(uint32_t vehID) {
 	return get_proto_triad(Veh[vehID].protoID);
 }

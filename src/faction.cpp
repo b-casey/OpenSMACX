@@ -44,7 +44,7 @@ Original Offset: n/a
 Return Value: Is faction a human? true/false
 Status: Complete
 */
-BOOL is_human(uint32_t factionID) {
+BOOL __cdecl is_human(uint32_t factionID) {
 	return FactionsStatus[0] & (1 << factionID);
 }
 
@@ -54,7 +54,7 @@ Original Offset: n/a
 Return Value: Is faction alive? true/false
 Status: Complete
 */
-BOOL is_alive(uint32_t factionID) {
+BOOL __cdecl is_alive(uint32_t factionID) {
 	return FactionsStatus[1] & (1 << factionID);
 }
 

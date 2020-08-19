@@ -525,4 +525,4 @@ OPENSMACX_API BOOL __cdecl ascending(int factionID);
 OPENSMACX_API BOOL __cdecl redundant(int facilityID, int factionID);
 OPENSMACX_API BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID,
 	int queueCount);
-OPENSMACX_API int facility_offset(LPCSTR facilSearch);
+OPENSMACX_API int __cdecl facility_offset(LPCSTR facilSearch);

@@ -93,7 +93,7 @@ int TextIndex::search_index(LPCSTR sourceTxt, LPCSTR sectionTxt) {
 // global
 TextIndex *TxtIndex = (TextIndex *)0x009B7D08;
 
-void text_make_index(LPCSTR sourceTxt) { // 005FE1F0
+void __cdecl text_make_index(LPCSTR sourceTxt) { // 005FE1F0
 	for (int i = 0; i < MaxTextIndexNum; i++) {
 		if (!TxtIndex[i].getCount()) {
 			TxtIndex[i].make_index(sourceTxt);
@@ -102,7 +102,7 @@ void text_make_index(LPCSTR sourceTxt) { // 005FE1F0
 	}
 }
 
-int text_search_index(LPCSTR sourceTxt, LPCSTR sectionTxt) { // 005FE230
+int __cdecl text_search_index(LPCSTR sourceTxt, LPCSTR sectionTxt) { // 005FE230
 	for (int i = 0; i < MaxTextIndexNum; i++) {
 		if (TxtIndex[i].getCount()) {
 			int addr = TxtIndex[i].search_index(sourceTxt, sectionTxt);
@@ -114,7 +114,7 @@ int text_search_index(LPCSTR sourceTxt, LPCSTR sectionTxt) { // 005FE230
 	return -1;
 }
 
-void text_clear_index() { // 005FE270
+void __cdecl text_clear_index() { // 005FE270
 	for (int i = 0; i < MaxTextIndexNum; i++) {
 		if (TxtIndex[i].getCount()) {
 			TxtIndex[i].shutdown();

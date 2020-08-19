@@ -29,6 +29,8 @@ struct Filefind {
 };
 
 extern uint32_t ScenEditorUndoPosition;
+extern int *GenderDefault;
+extern BOOL *PluralityDefault;
 
 OPENSMACX_API void __cdecl purge_trailing(LPSTR input);
 OPENSMACX_API void __cdecl purge_leading(LPSTR input);
@@ -41,7 +43,7 @@ OPENSMACX_API LPVOID __cdecl mem_get_old(size_t size);
 OPENSMACX_API LPVOID __cdecl mem_get(size_t size);
 OPENSMACX_API FILE *__cdecl env_open_old(LPCSTR source, LPCSTR mode);
 OPENSMACX_API FILE *__cdecl env_open(LPCSTR source, LPCSTR mode);
-OPENSMACX_API void __cdecl parse_set(int gender, int plurality);
+OPENSMACX_API void __cdecl parse_set(int gender, BOOL plurality);
 OPENSMACX_API int __cdecl parse_num(uint32_t id, int value);
 OPENSMACX_API int __cdecl parse_say(uint32_t id, int input, int gender, int pluralality);
 OPENSMACX_API int __cdecl parse_says(uint32_t id, LPCSTR input, int gender, int pluralality);
@@ -50,9 +52,9 @@ OPENSMACX_API int __cdecl htoi(LPCSTR str);
 OPENSMACX_API int __cdecl stoi(LPCSTR str);
 OPENSMACX_API LPSTR __cdecl findnum(LPSTR str);
 OPENSMACX_API BOOL __cdecl jackal_version_check(LPCSTR version);
-OPENSMACX_API char filefind_cd_drive_letter();
-OPENSMACX_API void filefind_set_alternative(LPCSTR path);
-OPENSMACX_API LPSTR filefind_get(LPCSTR fileName);
+OPENSMACX_API char __cdecl filefind_cd_drive_letter();
+OPENSMACX_API void __cdecl filefind_set_alternative(LPCSTR path);
+OPENSMACX_API LPSTR __cdecl filefind_get(LPCSTR fileName);
 OPENSMACX_API uint32_t __cdecl bit_count(uint32_t bitfield);
 OPENSMACX_API uint32_t __cdecl bit_count_signed(int bitfield);
 OPENSMACX_API void __cdecl my_srand(uint32_t reseed);
@@ -66,13 +68,15 @@ OPENSMACX_API uint8_t __cdecl checksum(uint8_t *input, uint32_t length, uint8_t 
 OPENSMACX_API uint32_t __cdecl checksum_password(LPCSTR password);
 OPENSMACX_API uint32_t __cdecl rnd(int bounds, LPSTR input);
 OPENSMACX_API void __cdecl danger(LPCSTR msg1, LPCSTR msg2, int num1, int num2, int num3);
-OPENSMACX_API void kill_auto_save();
-OPENSMACX_API void auto_save();
-OPENSMACX_API void auto_save_debug();
+OPENSMACX_API void __cdecl kill_auto_save();
+OPENSMACX_API void __cdecl auto_save();
+OPENSMACX_API void __cdecl auto_save_debug();
 OPENSMACX_API void __cdecl load_undo(int type);
 OPENSMACX_API void __cdecl wipe_undo();
 OPENSMACX_API void __cdecl auto_undo();
+OPENSMACX_API void __cdecl header_check(LPSTR header, FILE *file);
+OPENSMACX_API void __cdecl header_write(LPCSTR header, FILE *file);
 
 // WIP
-int filefind_init(LPCSTR path, BOOL isComplete);
+int __cdecl filefind_init(LPCSTR path, BOOL isComplete);
 int __cdecl parse_string(LPSTR input, LPSTR output);
