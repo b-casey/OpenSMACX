@@ -49,34 +49,34 @@ BOOL *IsMultiplayerPBEM = (BOOL *)0x0093A95C; // HotSeat / PBEM
 Purpose: Handle creation of pop-up message on Planetfall.
 Original Offset: 00589180
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
-void __cdecl planetfall(int factionID) {
+void __cdecl planetfall(uint32_t factionID) {
 	parse_set(Players[factionID].isLeaderFemale, false);
 	parse_says(0, Players[factionID].adjNameFaction, -1, -1);
 	parse_says(2, Players[factionID].titleLeader, -1, -1);
 	parse_says(3, Players[factionID].nameLeader, -1, -1);
 	parse_set(Players[factionID].nounGender, Players[factionID].isNounPlural);
-	parse_says(1, Players[factionID].nounFaction, -1, -1); // unused in script
+	parse_says(1, Players[factionID].nounFaction, -1, -1); // unused in script, leaving in for now
 	char scriptID[13];
-	if (Players[factionID].ruleFlags & RFLAG_ALIEN
-		&& _stricmp(Players[factionID].filename, "USURPER")) {
+	if (*TurnCurrentNum) { // shifted logic to top to fix nonexistent accelerated script ids
+		parse_num(0, *TurnCurrentNum);
+		for (uint32_t i = 0; i < MaxSecretProjectNum; i++) {
+			if (has_project(i, factionID)) { // script assumes at least one SP is built per faction?
+				parse_says(4, Facility[FAC_HUMAN_GENOME_PROJ + i].name, -1, -1);
+			}
+		}
+		strcpy_s(scriptID, 13, "PLANETFALL2"); // bug fix: changed to fixed id rather than concat 2
+	}
+	else if (Players[factionID].ruleFlags & RFLAG_ALIEN
+		&& !_stricmp(Players[factionID].filename, "USURPER")) {
 		strcpy_s(scriptID, 13, "PLANETFALLX");
 	}
-	else if (_stricmp(Players[factionID].filename, "FUNGBOY")) {
+	else if (!_stricmp(Players[factionID].filename, "FUNGBOY")) {
 		strcpy_s(scriptID, 13, "PLANETFALLF");
 	}
 	else {
 		strcpy_s(scriptID, 13, "PLANETFALL");
-	}
-	if (*TurnCurrentNum) {
-		parse_num(0, *TurnCurrentNum);
-		for (uint32_t i = 0; i < MaxSecretProjectNum; i++) {
-			if (has_project(i, factionID)) {
-				parse_says(4, Facility[FAC_HUMAN_GENOME_PROJ + i].name, -1, -1);
-			}
-		}
-		strcat_s(scriptID, 13, "2");
 	}
 	X_pop(scriptID, NULL);
 }

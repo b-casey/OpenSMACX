@@ -1099,12 +1099,13 @@ void __cdecl auto_undo() {
 
 /*
 Purpose: Read the specified header from a file. Assumes header string buffer is at least 256 chars.
+         TODO: Replace built-in versions of _fgetc and change return to std::string.
 Original Offset: 0057D1F0
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl header_check(LPSTR header, FILE *file) {
-	int headerChr = fgetc(file);
+	int headerChr = _fgetc(file);
 	*header++ = (char)headerChr;
 	if (headerChr) {
 		int i = 0;
@@ -1112,24 +1113,24 @@ void __cdecl header_check(LPSTR header, FILE *file) {
 			if (++i >= 256) {
 				break;
 			}
-			headerChr = fgetc(file);
+			headerChr = _fgetc(file);
 			*header++ = (char)headerChr;
 		} while (headerChr);
 	}
-	fgetc(file);
+	_fgetc(file);
 }
 
 /*
-Purpose: Write the specified header to a file.
+Purpose: Write the specified header to a file. TODO: Replace built-in versions of _fputc.
 Original Offset: 0057D240
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl header_write(LPCSTR header, FILE *file) {
 	int headerChr;
 	do {
 		headerChr = *header++;
-		fputc(headerChr, file);
+		_fputc(headerChr, file);
 	} while (headerChr);
-	fputc(0x1A, file);
+	_fputc(0x1A, file);
 }

@@ -51,7 +51,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
 	bin_app = mmap.mmap(f.fileno(), 0)
-	# next: 420
+	# next: 423
 	#
 	
 	# ALPHA
@@ -395,6 +395,9 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001B38D0) # ?clear_scenario@@YAXXZ
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*324))
+	bin_app.seek(0x00189180) # ?planetfall@@YAXI@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*420))
 	# GENERAL
 	bin_app.seek(0x00200780) # ?purge_trailing@@YAXPAD@Z
 	patch_call_bytes(bin_app)
@@ -504,9 +507,12 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001ABEC0) # ?wipe_undo@@YAXXZ
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*416))
-	bin_app.seek(0x001ABF20) # ?auto_undo@@YAXXZ
+	bin_app.seek(0x0017D1F0) # ?header_check@@YAXPADPAU_iobuf@@@Z
 	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*417))	
+	bin_app.write(struct.pack("<L", addr+4*421))
+	bin_app.seek(0x0017D240) # ?header_write@@YAXPBDPAU_iobuf@@@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*422))
 	# HEAP
 	bin_app.seek(0x001D4560) # ??0Heap@@QAE@XZ
 	patch_call_bytes(bin_app)
