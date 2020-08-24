@@ -145,7 +145,7 @@ enum player_flags_extended_bitfield {
 	PFLAGEXT_STRAT_LOTS_ARTILLERY = 0x40,
 };
 
-enum social_effect {
+enum social_effect_id {
 	SE_ECONOMY = 0,
 	SE_EFFIC = 1,
 	SE_SUPPORT = 2,
@@ -178,15 +178,16 @@ enum ai_goal_types {
 	AI_GOAL_SENSOR_ARRAY = 121,                                   // 0111 1001
 };
 
-struct rules_social_effect {
-	char set1[24];
-	char set2[24];
-	char padding[56];
+struct social_category {
+	int politics;
+	int economics;
+	int values;
+	int future;
 };
 
-struct rules_social_category_effect {
+struct social_effect {
 	int economy;
-	int effic;
+	int effiency;
 	int support;
 	int talent;
 	int morale;
@@ -198,11 +199,17 @@ struct rules_social_category_effect {
 	int research;
 };
 
+struct rules_social_effect {
+	char set1[24];
+	char set2[24];
+	char padding[56];
+};
+
 struct rules_social_category {
 	LPSTR type;
 	int preqTech[4];
 	LPSTR name[4];
-	rules_social_category_effect effect[4];
+	social_effect effect[4]; // break out into individual vars?
 };
 
 struct rules_might {
@@ -316,59 +323,13 @@ struct player_data {
 	uint32_t stolenDataCount[8]; // probe successfully procured research data (tech/map) per faction
 	int energyReserves; // current energy credits
 	int energyCost; // ?
-	int SE_PoliticsPending;
-	int SE_EconomicsPending;
-	int SE_ValuesPending;
-	int SE_FuturePending;
-	int SE_Politics;
-	int SE_Economics;
-	int SE_Values;
-	int SE_Future;
-	int SE_UpheavalCostPaid;
-	int SE_EconomyPending;
-	int SE_EffiencyPending;
-	int SE_SupportPending;
-	int SE_TalentPending;
-	int SE_MoralePending;
-	int SE_PolicePending;
-	int SE_GrowthPending;
-	int SE_PlanetPending;
-	int SE_ProbePending;
-	int SE_IndustryPending;
-	int SE_ResearchPending;
-	int SE_Economy;
-	int SE_Effiency;
-	int SE_Support;
-	int SE_Talent;
-	int SE_Morale;
-	int SE_Police;
-	int SE_Growth;
-	int SE_Planet;
-	int SE_Probe;
-	int SE_Industry;
-	int SE_Research;
-	int SE_Economy_2;
-	int SE_Effiency_2;
-	int SE_Support_2;
-	int SE_Talent_2;
-	int SE_Morale_2;
-	int SE_Police_2;
-	int SE_Growth_2;
-	int SE_Planet_2;
-	int SE_Probe_2;
-	int SE_Industry_2;
-	int SE_Research_2;
-	int SE_EconomyBase;
-	int SE_EffiencyBase;
-	int SE_SupportBase;
-	int SE_TalentBase;
-	int SE_MoraleBase;
-	int SE_PoliceBase;
-	int SE_GrowthBase;
-	int SE_PlanetBase;
-	int SE_ProbeBase;
-	int SE_IndustryBase;
-	int SE_ResearchBase;
+	social_category socCategoryPending;
+	social_category socCategoryActive;
+	int socUpheavalCostPaid;
+	social_effect socEffectPending;
+	social_effect socEffectActive; // ?
+	social_effect socEffectTemp; // maybe previous turn?
+	social_effect socEffectBase; // from faction files?
 	int unk_13;
 	int unk_14;
 	int techCommerceBonus; // Increases commerce income

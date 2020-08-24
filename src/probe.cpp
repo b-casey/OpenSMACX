@@ -139,7 +139,8 @@ int __cdecl success_rates(uint32_t id, uint32_t morale, int diffModifier, int ba
 			morale = 1;
 		}
 		int probeDefRating = (baseID != -1 && has_fac_built(FAC_COVERT_OPS_CENTER, baseID)) ? 2 : 0;
-		probeDefRating = range(PlayersData[*ProbeTargetFactionID].SE_Probe + probeDefRating, -2, 0);
+		probeDefRating = range(PlayersData[*ProbeTargetFactionID].socEffectActive.probe 
+			+ probeDefRating, -2, 0);
 		uint32_t failureRate = (diffModifier * 100) / ((morale / 2) - probeDefRating + 1);
 		if (*ProbeHasAlgoEnhancement && !*ProbeTargetHasHSA) {
 			failureRate /= 2; // Algo Ench: failure cut in half when acting against normal targets

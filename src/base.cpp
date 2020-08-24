@@ -484,7 +484,7 @@ uint32_t __cdecl morale_mod(uint32_t baseID, uint32_t factionID, uint32_t triad)
 		|| has_project(SP_CYBORG_FACTORY, factionID)) {
 		moraleMod += 2;
 	}
-	if (PlayersData[factionID].SE_MoralePending < -1) {
+	if (PlayersData[factionID].socEffectPending.morale < -1) {
 		moraleMod /= 2;
 	}
 	return moraleMod;
@@ -548,7 +548,7 @@ Status: Complete
 */
 void __cdecl base_nutrient() {
 	uint32_t factionID = (*BaseCurrent)->factionIDCurrent;
-	*BaseCurrentGrowthRate = PlayersData[factionID].SE_GrowthPending;
+	*BaseCurrentGrowthRate = PlayersData[factionID].socEffectPending.growth;
 	if (has_fac_built(FAC_CHILDREN_CRECHE, *BaseIDCurrentSelected)) {
 		*BaseCurrentGrowthRate += 2;
 	}
@@ -654,7 +654,7 @@ void __cdecl base_minerals() {
 	}
 	(*BaseCurrent)->ecoDamage = ((PlayersData[factionID].techRanking
 		- PlayersData[factionID].theoryOfEverything)
-		* (3 - range(PlayersData[factionID].SE_PlanetPending, -3, 2))
+		* (3 - range(PlayersData[factionID].socEffectPending.planet, -3, 2))
 		* (*MapNativeLifeForms + 1) * (*BaseCurrent)->ecoDamage * diffFactor) / 6;
 	(*BaseCurrent)->ecoDamage = ((*BaseCurrent)->ecoDamage + 50) / 100;
 	int queueID;
@@ -715,7 +715,7 @@ uint32_t __cdecl black_market(int energy) {
 			}
 		}
 	}
-	int ineffciency = 4 - PlayersData[factionID].SE_EffiencyPending;
+	int ineffciency = 4 - PlayersData[factionID].socEffectPending.effiency;
 	if (hasCreche) {
 		ineffciency -= 2;
 	}
@@ -904,7 +904,7 @@ uint32_t __cdecl garrison_check(uint32_t baseID) {
 		|| PlayersData[seaFactionID].integrityBlemishes >= 4)) {
 		garrison++;
 	}
-	int support = PlayersData[factionID].SE_SupportPending;
+	int support = PlayersData[factionID].socEffectPending.support;
 	if (support <= -4) {
 		garrison--;
 	}

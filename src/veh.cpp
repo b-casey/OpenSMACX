@@ -764,7 +764,7 @@ int __cdecl hex_cost(int protoID, int factionID, int xCoordSrc, int yCoordSrc, i
 		|| Weapon[VehPrototype[protoID].weaponID].offenseRating >= 0)) {
 		uint8_t plan = VehPrototype[protoID].plan;
 		if (plan != PLAN_TERRAFORMING && plan != PLAN_ALIEN_ARTIFACT
-			&& PlayersData[factionID].SE_Planet <= 0) {
+			&& PlayersData[factionID].socEffectActive.planet <= 0) {
 			return cost + Rules->MoveRateRoads * 2;
 		}
 		uint32_t speed = speed_proto(protoID);
@@ -1766,7 +1766,7 @@ uint32_t __cdecl morale_veh(int vehID, BOOL checkDroneRiot, int factionIDvsNativ
 	}
 	int16_t protoID = Veh[vehID].protoID;
 	if (VehPrototype[protoID].plan == PLAN_INFO_WARFARE) { // probe
-		int probeMorale = range(PlayersData[factionID].SE_Probe, 0, 3);
+		int probeMorale = range(PlayersData[factionID].socEffectActive.probe, 0, 3);
 		probeMorale += has_project(SP_TELEPATHIC_MATRIX, factionID) ? 2 : 0;
 		for (int i = 0; i < MaxTechnologyNum; i++) {
 			if (Technology[i].flags & TFLAG_IMPROVED_PROBES && has_tech(i, factionID)) {
@@ -1780,7 +1780,7 @@ uint32_t __cdecl morale_veh(int vehID, BOOL checkDroneRiot, int factionIDvsNativ
 	if (protoID < MaxVehProtoFactionNum && offenseRating < 0) {
 		return range(Veh[vehID].morale, 0, 6); // Basic Psi Veh
 	}
-	int morale = range(PlayersData[factionID].SE_Morale, -4, 4); // everything else
+	int morale = range(PlayersData[factionID].socEffectActive.morale, -4, 4); // everything else
 	if (morale <= -2) {
 		morale++;
 	}

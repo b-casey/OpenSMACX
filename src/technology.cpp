@@ -260,11 +260,11 @@ void __cdecl tech_effects(int factionID) {
 			*techFungus = 0;
 		}
 	}
-	if (PlayersData[factionID].SE_EconomyPending > 2) {
+	if (PlayersData[factionID].socEffectPending.economy > 2) {
 		PlayersData[factionID].techCommerceBonus++;
-		if (PlayersData[factionID].SE_EconomyPending > 3) {
+		if (PlayersData[factionID].socEffectPending.economy > 3) {
 			PlayersData[factionID].techCommerceBonus++;
-			if (PlayersData[factionID].SE_EconomyPending > 4) {
+			if (PlayersData[factionID].socEffectPending.economy > 4) {
 				PlayersData[factionID].techCommerceBonus++;
 			}
 		}
@@ -390,7 +390,7 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 			&& tech_is_preq(techID, Facility[FAC_ASCENT_TO_TRANSCENDENCE].preqTech, 2)) {
 			valueRet *= 4;
 		}
-		if (PlayersData[factionID].SE_PlanetBase > 0 && aiGrowth) {
+		if (PlayersData[factionID].socEffectBase.planet > 0 && aiGrowth) {
 			if (tech_is_preq(techID, TECH_CENTMED, 9999)) {
 				valueRet *= 3;
 			}
@@ -401,7 +401,7 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 				valueRet *= 2;
 			}
 		}
-		if (PlayersData[factionID].SE_ProbeBase <= 0) {
+		if (PlayersData[factionID].socEffectBase.probe <= 0) {
 			if (tech_is_preq(techID, Facility[FAC_HUNTER_SEEKER_ALGO].preqTech, aiTech + 2)) {
 				if (!aiPower) {
 					valueRet *= 2;
@@ -649,7 +649,7 @@ uint32_t __cdecl tech_rate(uint32_t factionID) {
 	uint32_t ruleFactor = techStagnation | 0x40; // 64 or 96
 	uint32_t finFactor = range(playerFactor - (*TurnCurrentNum / (ruleFactor >> 3)),
 		0, (diffFactor * (ruleFactor >> 5)) >> 1) + diffFactor;
-	int reschBase = range(PlayersData[factionID].SE_ResearchBase, -1, 1);
+	int reschBase = range(PlayersData[factionID].socEffectBase.research, -1, 1);
 	uint32_t discovRate = (finFactor
 		- range((topFactor - diffLvl - playerFactor + 7) / (8 - diffLvl),
 			0, diffLvl * finFactor / 10 + 1))
