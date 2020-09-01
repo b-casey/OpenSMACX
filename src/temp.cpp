@@ -59,6 +59,8 @@ func30 *turn_timer = (func30 *)0x0050EF10;
 // testing
 func8 *parse_string_OG = (func8 *)0x00625880;
 func12 *enemy_capabilities_OG = (func12 *)0x00560DD0;
+//
+funct1 *social_calc_OG = (funct1 *)0x005B4210;
 ///
 char1032 *stringTemp = (char1032 *)0x009B86A0;
 char256 *ParseStrBuffer = (char256 *)0x009BB5E8;
@@ -79,6 +81,32 @@ int __cdecl tester() {
 	log_set_state(true);
 	log_say("Start test", 0, 0, 0);
 	log_say("size", sizeof(social_effect), sizeof(player_data), 0);
+
+	social_category temp;
+	social_effect se_cmp, se_og;
+
+	for (int a = 0; a < MaxSocialCatNum; a++) {
+		temp.economics = a;
+		for (int b = 0; b < MaxSocialCatNum; b++) {
+			temp.future = b;
+			for (int c = 0; c < MaxSocialCatNum; c++) {
+				temp.politics = c;
+				for (int d = 0; d < MaxSocialCatNum; d++) {
+					temp.values = d;
+					for (int f = 0; f < MaxPlayerNum; f++) {
+						for (int type = 0; type < 2; type++) {
+							social_calc(&temp, &se_cmp, f, false, type);
+							social_calc_OG(&temp, &se_og, f, false, type);
+							if (memcmp(&se_cmp, &se_og, sizeof(social_effect))) {
+								log_say("social_calc_error:", 0, 0, 0);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	/*
 	for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
 		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {

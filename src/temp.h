@@ -84,6 +84,9 @@ extern func8 *parse_string_OG;
 typedef void func12(int);
 extern func12 *enemy_capabilities_OG;
 ///
+typedef void funct1(social_category *, social_effect *, uint32_t, BOOL, BOOL);
+extern funct1 *social_calc_OG;
+//
 extern char1032 *stringTemp;
 extern char256 *ParseStrBuffer;
 

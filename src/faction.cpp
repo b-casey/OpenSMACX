@@ -422,6 +422,126 @@ void __cdecl see_map_check() {
 }
 
 /*
+Purpose: Calculate the social engineering effect modifiers for the specified faction.
+Original Offset: 005B4210
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl social_calc(social_category *category, social_effect *effect, uint32_t factionID, 
+	BOOL UNUSED(tgl1), BOOL isQuickCalc) {
+	ZeroMemory(effect, sizeof(social_effect));
+	BOOL hasCloningVatSP = has_project(SP_CLONING_VATS, factionID);
+	BOOL hasNetBackboneSP = has_project(SP_NETWORK_BACKBONE, factionID);
+	for (int i = 0; i < MaxSocialCatNum; i++) {
+		uint32_t modelVal = *(&category->politics + i);
+		for (int j = 0; j < MaxSocialEffectNum; j++) {
+			int effectVal = *(&SocialCategory[i].modelEffect[modelVal].economy + j);
+			if (effectVal < 0) {
+				if ((i == 3 && j == 1 && hasNetBackboneSP) ||
+					(((i == 3 && j == 3) || (i == 2 && j == 1)) && hasCloningVatSP)) {
+					effectVal = 0;
+				}
+				else {
+					for (int k = 0; k < Players[factionID].factionBonusCount; k++) {
+						if (Players[factionID].factionBonusVal1[k] == i
+							&& Players[factionID].factionBonusVal2[k] == j) {
+							if (Players[factionID].factionBonusID[i] == RULE_IMPUNITY) {
+								*(&effect->economy + j) -= effectVal;
+							}
+							else if (Players[factionID].factionBonusID[i] == RULE_PENALTY) {
+								*(&effect->economy + j) += effectVal;
+							}
+						}
+					}
+				}
+			}
+			*(&effect->economy + j) += effectVal;
+		}
+	}
+	if (!isQuickCalc) {
+		if (has_project(SP_ASCETIC_VIRTUES, factionID)) {
+			effect->police++;
+		}
+		if (has_project(SP_LIVING_REFINERY, factionID)) {
+			effect->support += 2;
+		}
+		if (has_temple(factionID)) {
+			effect->planet++;
+			if (Players[factionID].ruleFlags & RFLAG_ALIEN) {
+				effect->research++; // undocumented bonus for ALIEN faction
+			}
+		}
+		int count = 11;
+		social_effect *effectCalc = effect, *effectBase = &PlayersData[factionID].socEffectBase;
+		do {
+			effectCalc->economy += effectBase->economy;
+			effectCalc++;
+			effectBase++;
+			--count;
+		} while (count);
+
+		for (int i = 0; i < Players[factionID].factionBonusCount; i++) {
+			if (Players[factionID].factionBonusID[i] == RULE_IMMUNITY) {
+				*(&effect->economy + Players[factionID].factionBonusVal1[i]) 
+					= range(*(&effect->economy + Players[factionID].factionBonusVal1[i]), 0, 999);
+			}
+			else if (Players[factionID].factionBonusID[i] == RULE_ROBUST) {
+				int effectVal = *(&effect->economy + Players[factionID].factionBonusVal1[i]);
+				if (effectVal < 0) {
+					*(&effect->economy + Players[factionID].factionBonusVal1[i]) = effectVal / 2;
+				}
+			}
+		}
+	}
+}
+
+/*
+Purpose: Handle the social engineering turn upkeep for the specified faction.
+Original Offset: 005B44D0
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl social_upkeep(uint32_t factionID) {
+	for (int i = 0; i < MaxSocialCatNum; i++) {
+		*(&PlayersData[factionID].socCategoryActive.politics + i) =
+			*(&PlayersData[factionID].socCategoryPending.politics + i);
+	}
+	social_calc(&PlayersData[factionID].socCategoryPending, 
+		&PlayersData[factionID].socEffectPending, factionID, false, false);
+	social_calc(&PlayersData[factionID].socCategoryPending,
+		&PlayersData[factionID].socEffectActive, factionID, false, false);
+	social_calc(&PlayersData[factionID].socCategoryPending,
+		&PlayersData[factionID].socEffectTemp, factionID, true, false);
+	PlayersData[factionID].socUpheavalCostPaid = 0;
+}
+
+/*
+Purpose: Calculate the cost of social upheaval for the specified faction.
+Original Offset: 005B4550
+Return Value: Social upheaval cost
+Status: Complete
+*/
+uint32_t __cdecl social_upheaval(uint32_t factionID, social_category *categoryNew) {
+	uint32_t changeCount = 0;
+	for (int i = 0; i < MaxSocialCatNum; i++) {
+		if (*(&categoryNew->politics + i) != 
+			*(&PlayersData[factionID].socCategoryActive.politics + i)) {
+			changeCount++;
+		}
+	}
+	if (!changeCount) {
+		return 0;
+	}
+	changeCount++;
+	uint32_t diffLvl = is_human(factionID) ? PlayersData[factionID].diffLevel : DLVL_LIBRARIAN;
+	uint32_t cost = changeCount * changeCount * changeCount * diffLvl;
+	if (Players[factionID].ruleFlags & RFLAG_ALIEN) {
+		cost += cost / 2;
+	}
+	return cost;
+}
+
+/*
 Purpose: Check to see whether provided faction can utilize a specific social category and model.
 Original Offset: 005B4730
 Return Value: Is social category/model available to faction? true/false
@@ -433,6 +553,23 @@ BOOL __cdecl society_avail(int socCategory, int socModel, int factionID) {
 		return false;
 	}
 	return has_tech(SocialCategory[socCategory].preqTech[socModel], factionID);
+}
+
+/*
+Purpose: Calculate social engineering for AI.
+Original Offset: 005B4790
+Return Value: n/a
+Status: wip
+*/
+void __cdecl social_ai(uint32_t factionID, int tgl1, int tgl2, int tgl3, int tgl4, BOOL tgl5) {
+	if (!tgl5) {
+		if (is_human(factionID)) {
+			return;
+		}
+	}
+	else if (tgl1 < 0) {
+		return;
+	}
 }
 
 /*

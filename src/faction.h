@@ -179,10 +179,10 @@ enum ai_goal_types {
 };
 
 struct social_category {
-	int politics;
-	int economics;
-	int values;
-	int future;
+	uint32_t politics;
+	uint32_t economics;
+	uint32_t values;
+	uint32_t future;
 };
 
 struct social_effect {
@@ -209,7 +209,7 @@ struct rules_social_category {
 	LPSTR type;
 	int preqTech[4];
 	LPSTR name[4];
-	social_effect effect[4]; // break out into individual vars?
+	social_effect modelEffect[4];
 };
 
 struct rules_might {
@@ -521,6 +521,12 @@ OPENSMACX_API void __cdecl del_site(uint32_t factionID, int type, int xCoord, in
 	int proximity);
 OPENSMACX_API uint32_t __cdecl corner_market(uint32_t factionID);
 OPENSMACX_API void __cdecl see_map_check();
+OPENSMACX_API void __cdecl social_calc(social_category *category, social_effect *effect,
+	uint32_t factionID, BOOL tgl1, BOOL isQuickCalc);
+OPENSMACX_API void __cdecl social_upkeep(uint32_t factionID);
+OPENSMACX_API uint32_t __cdecl social_upheaval(uint32_t factionID, social_category *categoryNew);
 OPENSMACX_API BOOL __cdecl society_avail(int socCategory, int socModel, int factionID);
+OPENSMACX_API void __cdecl social_ai(uint32_t factionID, int tgl1, int tgl2, int tgl3, int tgl4, 
+	BOOL tgl5);
 OPENSMACX_API void __cdecl enemy_capabilities(uint32_t factionID);
 OPENSMACX_API void __cdecl enemy_capabilities_t(uint32_t factionID);

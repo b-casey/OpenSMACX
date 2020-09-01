@@ -1189,7 +1189,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 			text_get();
 			SocialCategory[i].name[j] = text_item_string();
 			SocialCategory[i].preqTech[j] = tech_name(text_item());
-			ZeroMemory(&SocialCategory[i].effect[j], sizeof(social_effect));
+			ZeroMemory(&SocialCategory[i].modelEffect[j], sizeof(social_effect));
 			LPSTR modValue = text_item();
 			int modLen = strlen(modValue);
 			while (modLen) {
@@ -1200,7 +1200,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 				}
 				for (int k = 0; k < MaxSocialEffectNum; k++) {
 					if (!_stricmp(modValue, SocialEffect[k].set1)) {
-						*(&SocialCategory[i].effect[j].economy + k) = value;
+						*(&SocialCategory[i].modelEffect[j].economy + k) = value;
 						break;
 					}
 				}
