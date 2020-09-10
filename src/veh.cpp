@@ -183,7 +183,7 @@ void __cdecl invasions(uint32_t baseID) {
 	for (int i = 0; i < *VehCurrentCount; i++) {
 		uint32_t factionIDVeh = Veh[i].factionID;
 		if (factionIDVeh && !is_human(factionIDVeh) && factionIDVeh != factionIDBase
-			&& !(PlayersData[factionIDVeh].diploTreaties[factionIDBase] & DTREATY_TREATY)) {
+			&& !has_treaty(factionIDVeh, factionIDBase, DTREATY_TREATY)) {
 			int xCoordVeh = Veh[i].xCoord, yCoordVeh = Veh[i].yCoord;
 			if (is_ocean(xCoordVeh, yCoordVeh) && veh_cargo(i)
 				&& stack_check(i, 3, TRIAD_LAND, -1, -1)) {
@@ -1121,20 +1121,19 @@ BOOL __cdecl want_to_wake(uint32_t factionID, uint32_t vehID, int spottedVehID) 
 		&& (baseFactionID = base_who(Veh[vehID].waypoint_xCoord[0], Veh[vehID].waypoint_yCoord[0]),
 			baseFactionID >= 0)) {
 		if (((uint32_t)baseFactionID == vehFactionID) 
-			|| PlayersData[vehFactionID].diploTreaties[baseFactionID] & DTREATY_PACT) {
+			|| has_treaty(vehFactionID, baseFactionID, DTREATY_PACT)) {
 			return false;
 		}
 	}
-	uint32_t treaties = PlayersData[vehFactionID].diploTreaties[factionID];
 	BOOL wantToWake;
 	if (*IsMultiplayerNet) { // restructured to be more efficient with same logic
-		if (treaties & DTREATY_PACT) {
+		if (has_treaty(vehFactionID, factionID, DTREATY_PACT)) {
 			wantToWake = false;
 		}
-		else if (treaties & DTREATY_TREATY) {
+		else if (has_treaty(vehFactionID, factionID, DTREATY_TREATY)) {
 			wantToWake = true;
 		}
-		else if (treaties & DTREATY_TRUCE) {
+		else if (has_treaty(vehFactionID, factionID, DTREATY_TRUCE)) {
 			wantToWake = true;
 		}
 		else {
@@ -1142,13 +1141,13 @@ BOOL __cdecl want_to_wake(uint32_t factionID, uint32_t vehID, int spottedVehID) 
 		}
 	}
 	else {
-		if (treaties & DTREATY_PACT) {
+		if (has_treaty(vehFactionID, factionID, DTREATY_PACT)) {
 			wantToWake = *GamePreferences & PREF_AUTO_END_MOVE_SPOT_VEH_PACT;
 		}
-		else if (treaties & DTREATY_TREATY) {
+		else if (has_treaty(vehFactionID, factionID, DTREATY_TREATY)) {
 			wantToWake = *GamePreferences & PREF_AUTO_END_MOVE_SPOT_VEH_TREATY;
 		}
-		else if (treaties & DTREATY_TRUCE) {
+		else if (has_treaty(vehFactionID, factionID, DTREATY_TRUCE)) {
 			wantToWake = *GamePreferences & PREF_AUTO_END_MOVE_SPOT_VEH_TRUCE;
 		}
 		else {

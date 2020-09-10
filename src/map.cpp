@@ -99,9 +99,8 @@ int __cdecl whose_territory(int factionID, int xCoord, int yCoord, int *baseID, 
 	}
 	if (factionID != owner) {
 		if (!ignoreComm && !(*GameState & STATE_OMNISCIENT_VIEW)
-			&& (PlayersData[factionID].diploTreaties[owner]
-				& (DTREATY_COMMLINK | DTREATY_UNK_8000000))
-			!= (DTREATY_COMMLINK | DTREATY_UNK_8000000)) {
+			&& has_treaty(factionID, owner, DTREATY_COMMLINK | DTREATY_UNK_8000000)
+				!= (DTREATY_COMMLINK | DTREATY_UNK_8000000)) {
 			return -1; // owner unknown to faction
 		}
 		if (baseID) {
@@ -121,7 +120,7 @@ int __cdecl base_territory(int factionID, int xCoord, int yCoord) {
 	int baseID;
 	int owner = whose_territory(factionID, xCoord, yCoord, &baseID, false);
 	if (owner >= 0 && owner != factionID && (is_human(factionID) || is_human(owner))
-		&& !(PlayersData[factionID].diploTreaties[owner] & DTREATY_VENDETTA)) {
+		&& !has_treaty(factionID, owner, DTREATY_VENDETTA)) {
 		return baseID;
 	}
 	return -1;
@@ -1221,7 +1220,7 @@ void __cdecl quick_zoc(int xCoordSrc, int yCoordSrc, int factionID, int xCoordDs
 		if (on_map(xRadius, yRadius)) {
 			int owner = veh_who(xRadius, yRadius);
 			if (owner >= 0 && owner != factionID && is_ocean(xRadius, yRadius) == isSrcOcean
-				&& !(PlayersData[factionID].diploTreaties[owner] & DTREATY_PACT)) {
+				&& !has_treaty(factionID, owner, DTREATY_PACT)) {
 				int proximity = vector_dist(xRadius, yRadius, xCoordDst, yCoordDst);
 				if (proximity >= searchZoc) {
 					searchZoc = proximity;
@@ -1350,7 +1349,7 @@ uint32_t __cdecl zoc_any(int xCoord, int yCoord, uint32_t factionID) {
 		if (on_map(xRadius, yRadius)) {
 			int owner = anything_at(xRadius, yRadius);
 			if (owner >= 0 && owner != (int)factionID
-				&& !(PlayersData[factionID].diploTreaties[owner] & DTREATY_PACT)) {
+				&& !has_treaty(factionID, owner, DTREATY_PACT)) {
 				return owner + 1;
 			}
 		}
@@ -1371,7 +1370,7 @@ uint32_t __cdecl zoc_veh(int xCoord, int yCoord, uint32_t factionID) {
 		if (on_map(xRadius, yRadius)) {
 			int owner = veh_who(xRadius, yRadius);
 			if (owner >= 0 && owner != (int)factionID
-				&& !(PlayersData[factionID].diploTreaties[owner] & DTREATY_PACT)) {
+				&& !has_treaty(factionID, owner, DTREATY_PACT)) {
 				owner++;
 				if (ret <= (uint32_t)owner) {
 					ret = owner; // any point in continuing after 1st instance of zoc is found?
@@ -1395,7 +1394,7 @@ uint32_t __cdecl zoc_sea(int xCoord, int yCoord, uint32_t factionID) {
 		if (on_map(xRadius, yRadius)) {
 			int owner = veh_who(xRadius, yRadius);
 			if (owner >= 0 && owner != (int)factionID && is_ocean(xRadius, yRadius) == isOcean
-				&& !(PlayersData[factionID].diploTreaties[owner] & DTREATY_PACT)) {
+				&& !has_treaty(factionID, owner, DTREATY_PACT)) {
 				for (int vehID = veh_at(xRadius, yRadius); vehID >= 0;
 					vehID = Veh[vehID].nextVehIDStack) {
 					if (Veh[vehID].factionID != factionID

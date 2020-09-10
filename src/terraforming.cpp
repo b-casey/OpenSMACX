@@ -53,8 +53,7 @@ uint32_t __cdecl terraform_cost(int xCoord, int yCoord, uint32_t factionID) {
 		int cursorDist = cursor_dist(xCoord, yCoord, Base[baseID].xCoord, Base[baseID].yCoord);
 		cost *= range(cursorDist, 1, 100);
 		int baseID2 = base_find(xCoord, yCoord, -1, -1, factionID, -1);
-		if (baseID2 >= 0 && !(PlayersData[factionID].diploTreaties[Base[baseID2].factionIDCurrent]
-			& DTREATY_PACT)) {
+		if (baseID2 >= 0 && !has_treaty(factionID, Base[baseID2].factionIDCurrent, DTREATY_PACT)) {
 			int numProx = (cursorDist * (Base[baseID2].populationSize + 2)) / 3;
 			int denomProx = (cursor_dist(xCoord, yCoord, Base[baseID2].xCoord, Base[baseID2].yCoord)
 				* (Base[baseID].populationSize + 2)) / 3;

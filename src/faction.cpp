@@ -59,6 +59,17 @@ BOOL __cdecl is_alive(uint32_t factionID) {
 }
 
 /*
+Purpose: Check whether the primary faction has at least one of the specified treaties (bitfield) 
+         with the secondary faction.
+Original Offset: 005002F0
+Return Value: Treaty status between the two factions, generally treated as a boolean
+Status: Complete
+*/
+uint32_t __cdecl has_treaty(uint32_t factionID, uint32_t factionIDWith, uint32_t treaty) {
+	return PlayersData[factionID].diploTreaties[factionIDWith] & treaty;
+}
+
+/*
 Purpose: Get Player's faction name adjective.
 Original Offset: 0050B910
 Return Value: Faction name adjective
@@ -111,7 +122,7 @@ uint32_t __cdecl aah_ooga(int factionID, int pactFactionID) {
 	uint32_t factionIDRet = 0;
 	for (int i = 1; i < MaxPlayerNum; i++) {
 		if (i != pactFactionID
-			&& (pactFactionID <= 0 || !(PlayersData[i].diploTreaties[pactFactionID] & DTREATY_PACT)
+			&& (pactFactionID <= 0 || !has_treaty(i, pactFactionID, DTREATY_PACT)
 				|| !(*GameRules & RULES_VICTORY_COOPERATIVE))) {
 			int proposalPreq = Proposal[PROP_UNITE_SUPREME_LEADER].preqTech;
 			if ((has_tech(proposalPreq, factionID)
@@ -385,8 +396,8 @@ uint32_t __cdecl corner_market(uint32_t factionID) {
 	for (int i = 0; i < *BaseCurrentCount; i++) {
 		uint32_t targetFactionID = Base[i].factionIDCurrent;
 		if (targetFactionID != factionID) {
-			uint32_t treaties = PlayersData[targetFactionID].diploTreaties[factionID];
-			if (!(treaties & DTREATY_PACT) || !(treaties & DTREATY_HAVE_SURRENDERED)) {
+			if (!has_treaty(targetFactionID, factionID, DTREATY_PACT)
+				|| !has_treaty(targetFactionID, factionID, DTREATY_HAVE_SURRENDERED)) {
 				cost += mind_control(i, factionID, true);
 			}
 		}
@@ -626,13 +637,14 @@ void __cdecl enemy_capabilities(uint32_t factionID) {
 		// 2nd pass: no treaty, has commlink
 		// 3rd pass: has commlink
 		// 4th pass: any non-pact faction
-		for (uint32_t j = 1, treaties; j < MaxPlayerNum; j++) {
+		for (uint32_t j = 1; j < MaxPlayerNum; j++) {
 			if (j != factionID
-				&& (treaties = PlayersData[i].diploTreaties[j], !(treaties & DTREATY_PACT))
-				&& ((!i && treaties & DTREATY_VENDETTA && !(treaties & DTREATY_TREATY)
-					&& treaties & DTREATY_COMMLINK)
-					|| (i == 1 && !(treaties & DTREATY_TREATY) && treaties & DTREATY_COMMLINK)
-					|| (i == 2 && treaties & DTREATY_COMMLINK) || (i == 3))) {
+				&& !has_treaty(i, j, DTREATY_PACT)
+				&& ((!i && has_treaty(i, j, DTREATY_VENDETTA) && !has_treaty(i, j, DTREATY_TREATY)
+					&& has_treaty(i, j, DTREATY_COMMLINK)) 
+					|| (i == 1 && !has_treaty(i, j, DTREATY_TREATY) 
+						&& has_treaty(i, j, DTREATY_COMMLINK))
+					|| (i == 2 && has_treaty(i, j, DTREATY_COMMLINK)) || (i == 3))) {
 				if (PlayersData[factionID].enemyBestWeaponValue < PlayersData[j].bestWeaponValue) {
 					PlayersData[factionID].enemyBestWeaponValue = PlayersData[j].bestWeaponValue;
 				}

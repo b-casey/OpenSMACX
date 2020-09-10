@@ -82,12 +82,12 @@ int __cdecl mind_control(uint32_t baseID, uint32_t factionID, BOOL isCornerMarke
 			cost = (cost * 3) / diff;
 		}
 	}
-	int treaties = PlayersData[factionID].diploTreaties[targetFactionID];
+	BOOL hasPact = has_treaty(factionID, targetFactionID, DTREATY_PACT);
 	if (isCornerMarket) {
-		if (treaties & DTREATY_PACT) {
+		if (hasPact) {
 			cost /= 2;
 		}
-		if (treaties & DTREATY_TREATY) {
+		if (has_treaty(factionID, targetFactionID, DTREATY_TREATY)) {
 			cost /= 2;
 		}
 		int techCommTarget = PlayersData[targetFactionID].techCommerceBonus;
@@ -95,7 +95,7 @@ int __cdecl mind_control(uint32_t baseID, uint32_t factionID, BOOL isCornerMarke
 		cost = (cost * (techCommTarget * techCommTarget + 1)) / (techCommProbe * techCommProbe + 1);
 	}
 	else {
-		if (treaties & DTREATY_PACT) {
+		if (hasPact) {
 			cost *= 2;
 		}
 	}
@@ -109,11 +109,10 @@ int __cdecl mind_control(uint32_t baseID, uint32_t factionID, BOOL isCornerMarke
 	if (baseStatus & BSTATUS_GOLDEN_AGE_ACTIVE) {
 		cost *= 2;
 	}
-	int targetTreaties = PlayersData[targetFactionID].diploTreaties[factionID];
-	if (targetTreaties & DTREATY_ATROCITY_VICTIM) {
+	if (has_treaty(targetFactionID, factionID, DTREATY_ATROCITY_VICTIM)) {
 		cost *= 2;
 	}
-	else if (targetTreaties & DTREATY_WANT_REVENGE) {
+	else if (has_treaty(targetFactionID, factionID, DTREATY_WANT_REVENGE)) {
 		cost += cost / 2;
 	}
 	return cost;

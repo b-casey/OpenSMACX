@@ -98,8 +98,7 @@ int Path::zoc_path(int xCoord, int yCoord, int factionID) {
 		if (on_map(xRadius, yRadius)) {
 			int owner = veh_who(xRadius, yRadius);
 			if (owner >= 0 && owner != factionID && is_ocean(xRadius, yRadius) == isOcean
-				&& !(PlayersData[factionID].diploTreaties[owner]
-					& (DTREATY_VENDETTA | DTREATY_PACT))) {
+				&& !has_treaty(factionID, owner, DTREATY_VENDETTA | DTREATY_PACT)) {
 				if (!is_human(factionID)) {
 					return owner + 1;
 				}
@@ -404,12 +403,12 @@ BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
 				&& whose_territory(factionID, x, y, NULL, false) == factionID
 				&& base_who(x, y) < 0 && (factionIDVeh = veh_who(x, y), factionIDVeh < 0 
 					|| factionIDVeh == factionID
-					|| PlayersData[factionID].diploTreaties[factionIDVeh] & DTREATY_PACT)) {
+					|| has_treaty(factionID, factionIDVeh, DTREATY_PACT))) {
 				int factionIDZoc = zoc_veh(x, y, factionID);
 				uint32_t bit = bit_at(x, y);
 				map *tile = map_loc(x, y);
 				if (factionIDZoc != 1 && (!factionIDZoc
-					|| PlayersData[factionID].diploTreaties[factionIDZoc] & DTREATY_PACT)
+					|| has_treaty(factionID, factionIDZoc, DTREATY_PACT))
 					&& bit & (BIT_MINE | BIT_SOLAR_TIDAL)
 					&& bit & (BIT_MONOLITH | BIT_CONDENSER | BIT_THERMAL_BORE)
 					&& !bonus_at(x, y, 0) && ((tile->val3 & 0xC0u) > TERRAIN_ROLLING

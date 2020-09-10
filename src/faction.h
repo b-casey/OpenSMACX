@@ -295,7 +295,7 @@ struct player_data {
 	uint32_t baseNameOffset; // keep track which base names have been used
 	uint32_t baseSeaNameOffset; // keep track which sea base names have been used
 	int lastTurnNewBase; // turn for last built, captured or acquired (drone riot) base
-	int diploTreaties[8];
+	uint32_t diploTreaties[8];
 	int diploAgenda[8];
 	int diploFriction[8];
 	int diploSpoke[8]; // Turn for the last player-to-AI communication; -1 for never
@@ -503,6 +503,8 @@ extern uint8_t *FactionsStatus;
 
 OPENSMACX_API BOOL __cdecl is_human(uint32_t factionID);
 OPENSMACX_API BOOL __cdecl is_alive(uint32_t factionID);
+OPENSMACX_API uint32_t __cdecl has_treaty(uint32_t factionID, uint32_t factionIDWith, 
+	uint32_t treaties);
 OPENSMACX_API LPSTR __cdecl get_adjective(int factionID);
 OPENSMACX_API LPSTR __cdecl get_noun(int factionID);
 OPENSMACX_API BOOL __cdecl auto_contact();

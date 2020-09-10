@@ -307,7 +307,7 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 	if (techID < MaxTechnologyNum) {
 		uint32_t vendettaCount = 0;
 		for (int i = 1; i < MaxPlayerNum; i++) {
-			if (i != factionID && PlayersData[factionID].diploTreaties[i] & DTREATY_VENDETTA) {
+			if (i != factionID && has_treaty(factionID, i, DTREATY_VENDETTA)) {
 				vendettaCount++;
 			}
 		}
@@ -355,7 +355,6 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 		if (baseCount) {
 			for (int region = 1; region < MaxRegionLandNum; region++) {
 				if (!bad_reg(region)) {
-					uint32_t diplo;
 					uint32_t pwrBase = PlayersData[factionID].regionTotalBases[region] * powerVal;
 					uint8_t plan = PlayersData[factionID].regionBasePlan[region];
 					if (plan == PLAN_NAVAL_TRANSPORT && vendettaCount && !isHuman) {
@@ -372,10 +371,10 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 					else {
 						for (int i = 1; i < MaxPlayerNum; i++) {
 							if (i != factionID && PlayersData[i].regionTotalBases[region]
-								&& PlayersData[factionID].regionTotalBases[region] &&
-								(diplo = PlayersData[factionID].diploTreaties[i],
-									diplo & DTREATY_COMMLINK && (!(diplo & (DTREATY_PACT
-										| DTREATY_TREATY)) || diplo & DTREATY_WANT_REVENGE))) {
+								&& PlayersData[factionID].regionTotalBases[region] 
+								&& has_treaty(factionID, i, DTREATY_COMMLINK) 
+								&& (!has_treaty(factionID, i, DTREATY_PACT | DTREATY_TREATY)
+									|| has_treaty(factionID, i, DTREATY_WANT_REVENGE))) {
 								valueRet += (pwrBase / (baseCount * (isHuman + 1)));
 							}
 						}
