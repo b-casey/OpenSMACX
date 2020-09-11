@@ -223,15 +223,26 @@ enum  secret_project {
 	SP_EMPTY_64 = 63,
 };
 
-enum base_status_bitfield {
-	BSTATUS_UNK_1 = 0x1,
-	BSTATUS_DRONE_RIOTS_ACTIVE = 0x2,
-	BSTATUS_GOLDEN_AGE_ACTIVE = 0x4,
-	BSTATUS_RESEARCH_DATA_STOLEN = 0x40,
-	BSTATUS_GENETIC_PLAGUE_INTRO = 0x20000,
-	BSTATUS_ENERGY_RESERVES_DRAINED = 0x400000,
-	BSTATUS_PRODUCTION_DONE = 0x800000,
-	BSTATUS_PRODUCTION_HURRIED = 0x40000000,
+enum base_state_bitfield {
+	BSTATE_UNK_1 = 0x1,
+	BSTATE_DRONE_RIOTS_ACTIVE = 0x2,
+	BSTATE_GOLDEN_AGE_ACTIVE = 0x4,
+	BSTATE_COMBAT_LOSS_LAST_TURN = 0x8, // reset on upkeep
+	//
+	BSTATE_RESEARCH_DATA_STOLEN = 0x40,
+	//
+	BSTATE_ARTIFACT_LINKED = 0x400, // Alien Artifact linked to Network Node
+	BSTATE_ARTIFACT_ALREADY_LINKED = 0x800, // Only show already linked alert once
+	//
+	BSTATE_GENETIC_PLAGUE_INTRO = 0x20000,
+	BSTATE_ASSISTANT_KILLER_HOME = 0x40000, // Veh home base (or closest) of Assistant worm killer
+	//
+	BSTATE_ENERGY_RESERVES_DRAINED = 0x400000,
+	BSTATE_PRODUCTION_DONE = 0x800000,
+	BSTATE_NET_LOCKED = 0x10000000,
+	BSTATE_PSI_GATE_USED = 0x20000000,
+	BSTATE_PRODUCTION_HURRIED = 0x40000000,
+	//
 };
 
 enum base_event_bitfield {
@@ -298,13 +309,13 @@ struct base {
 	int8_t populationSize;
 	uint8_t assimilationTurnsLeft;
 	uint8_t nerveStapleTurnsLeft;
-	uint8_t unk_1; // AI plan status?
+	uint8_t unk_1; // AI plan state?
 	uint8_t visibility; // faction bitfield of those who can see base (mapped: dim/bright)
 	uint8_t factionPopSizeIntel[8]; // last know population size for each faction
 	char nameString[25];
 	int16_t unkX; // terraforming related
 	int16_t unkY; // terraforming related
-	uint32_t status; // see base_status_bitfield
+	uint32_t state; // see base_state_bitfield
 	uint32_t event; // see base_event_bitfield
 	uint32_t governor; // see governor_base_bitfield
 	int nutrientsAccumulated;

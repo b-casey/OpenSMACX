@@ -1807,7 +1807,7 @@ uint32_t __cdecl morale_veh(int vehID, BOOL checkDroneRiot, int factionIDvsNativ
 	if (moraleFlag && morale < 0) {
 		morale = 0;
 	}
-	if (checkDroneRiot && homeBaseID >= 0 && Base[homeBaseID].status & BSTATUS_DRONE_RIOTS_ACTIVE
+	if (checkDroneRiot && homeBaseID >= 0 && Base[homeBaseID].state & BSTATE_DRONE_RIOTS_ACTIVE
 		&& !moraleFlag) {
 		morale = range(--morale, 0, 6);
 	}

@@ -102,11 +102,11 @@ int __cdecl mind_control(uint32_t baseID, uint32_t factionID, BOOL isCornerMarke
 	if (Base[baseID].factionIDFormer == factionID) {
 		cost /= 2;
 	}
-	uint32_t baseStatus = Base[baseID].status;
-	if (baseStatus & BSTATUS_DRONE_RIOTS_ACTIVE) {
+	uint32_t baseState = Base[baseID].state;
+	if (baseState & BSTATE_DRONE_RIOTS_ACTIVE) {
 		cost /= 2;
 	}
-	if (baseStatus & BSTATUS_GOLDEN_AGE_ACTIVE) {
+	if (baseState & BSTATE_GOLDEN_AGE_ACTIVE) {
 		cost *= 2;
 	}
 	if (has_treaty(targetFactionID, factionID, DTREATY_ATROCITY_VICTIM)) {

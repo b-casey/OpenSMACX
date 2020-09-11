@@ -552,7 +552,7 @@ void __cdecl base_nutrient() {
 	if (has_fac_built(FAC_CHILDREN_CRECHE, *BaseIDCurrentSelected)) {
 		*BaseCurrentGrowthRate += 2;
 	}
-	if ((*BaseCurrent)->status & BSTATUS_GOLDEN_AGE_ACTIVE) {
+	if ((*BaseCurrent)->state & BSTATE_GOLDEN_AGE_ACTIVE) {
 		*BaseCurrentGrowthRate += 2;
 	}
 	(*BaseCurrent)->nutrientIntake2 += BaseCurrentConvoyTo[CONVOY_NUTRIENTS];
