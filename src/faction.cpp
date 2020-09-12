@@ -37,6 +37,9 @@ LPSTR *Repute = (LPSTR *)0x00946A30;
 rules_might *Might = (rules_might *)0x0094C558;
 rules_bonusname *BonusName = (rules_bonusname *)0x009461A8;
 uint8_t *FactionsStatus = (uint8_t *)0x009A64E8;
+uint32_t *FactionRankings = (uint32_t *)0x009A64EC; // [8]
+uint32_t *RankingFactionIDUnk1 = (uint32_t *)0x009A650C;
+uint32_t *RankingFactionIDUnk2 = (uint32_t *)0x009A6510;
 
 /*
 Purpose: Check whether specified faction is a human player or computer controlled AI.
@@ -572,14 +575,197 @@ Original Offset: 005B4790
 Return Value: n/a
 Status: wip
 */
-void __cdecl social_ai(uint32_t factionID, int tgl1, int tgl2, int tgl3, int tgl4, BOOL tgl5) {
-	if (!tgl5) {
+void __cdecl social_ai(uint32_t factionID, int growthVal, int techVal, int wealthVal, int powerVal, 
+	social_category *output) {
+	// setup
+	int fightVal;
+	int unkVal1 = -1;
+	if (!output) {
 		if (is_human(factionID)) {
 			return;
 		}
+		else {
+			growthVal = PlayersData[factionID].AI_Growth;
+			techVal = PlayersData[factionID].AI_Tech;
+			wealthVal = PlayersData[factionID].AI_Wealth;
+			powerVal = PlayersData[factionID].AI_Power;
+			fightVal = PlayersData[factionID].AI_Fight;
+		}
 	}
-	else if (tgl1 < 0) {
+	else if (growthVal < 0) {
 		return;
+	}
+	else if (growthVal > 100) {
+		unkVal1 = growthVal - 100;
+		growthVal = PlayersData[factionID].AI_Growth;
+		techVal = PlayersData[factionID].AI_Tech;
+		wealthVal = PlayersData[factionID].AI_Wealth;
+		powerVal = PlayersData[factionID].AI_Power;
+		fightVal = PlayersData[factionID].AI_Fight;
+	}
+	else {
+		if (!powerVal) {
+			fightVal = -(wealthVal != 0);
+		}
+		else {
+			fightVal = 1;
+		}
+	}
+	// purpose?? loop to set unkVal2 to 256
+	uint32_t unkVal2 = 4;
+	for (int i = 3; i >= 0; i--) {
+		unkVal2 *= 4;
+	}
+	// future pop growth
+	int popGoalGrowth = 0;
+	for (int i = 0; i < *BaseCurrentCount; i++) {
+		if (Base[i].factionIDCurrent == factionID) {
+			popGoalGrowth += pop_goal(i) - Base[i].populationSize;
+		}
+	}
+	// plan and enemy region metrics
+	uint32_t unkSum1 = 0;
+	uint32_t unkCount1 = 0;
+	uint32_t unkCount2 = 0;
+	uint32_t unkSum2 = 0;
+	for (int region = 1; region < MaxRegionLandNum; region++) {
+		if (!bad_reg(region)) {
+			uint8_t baseCount = PlayersData[factionID].regionTotalBases[region];
+			if (baseCount) {
+				uint8_t plan = PlayersData[factionID].regionBasePlan[region];
+				if (plan == PLAN_DEFENSIVE || PlayersData[factionID].unk_77[region] & 0x400) {
+					unkSum1 += PlayersData[factionID].regionTotalCombatVehs[region] * 2;
+				}
+				else if (plan == PLAN_OFFENSIVE) {
+					unkSum1 += PlayersData[factionID].regionTotalCombatVehs[region];
+					unkCount2++;
+				}
+				else if (plan != PLAN_COLONIZATION) {
+					unkCount1++;
+				}
+				if (plan <= PLAN_DEFENSIVE) {
+					for (int f = 1; f < MaxPlayerNum; f++) {
+						if (f != factionID) {
+							if (has_treaty(factionID, f, DTREATY_VENDETTA | DTREATY_WANT_REVENGE)
+								&& PlayersData[f].enemyBestPsiOffense 
+								>= PlayersData[f].enemyBestWeaponValue 
+								&& PlayersData[f].protoID_Active[BSC_MIND_WORMS] > 1) {
+								unkSum2 += baseCount; // not used
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if (output && powerVal && unkSum1 < 1) {
+		unkSum1 = 1;
+	}
+	// tech ranking
+	uint32_t unkVal3 = 1;
+	if (*GameState & 0x200 // set in rankings(), related to intense riv + end game
+		&& PlayersData[factionID].ranking < 6) {
+		int techRankDiff = PlayersData[*RankingFactionIDUnk1].techRanking / 2
+			- PlayersData[factionID].techRanking / 2;
+		if (techRankDiff > 5) {
+			unkVal3 = 2;
+		}
+		if (techRankDiff > 10) {
+			unkVal3++;
+		}
+	}
+	//
+	int unkVal4 = -9999; // search val?
+	int socCatBits = -1;
+	// unkSum2 = 0 > used as iterator, optimization re-use, var unused
+	for (int i = 0; i < unkVal2; i++) {
+		social_category socCat;
+		social_effect socEff;
+		int k = i;
+		for (int j = 0; j < MaxSocialCatNum; j++) {
+			uint32_t model = k & 3;
+			*(&socCat.politics + i) = model;
+			if (model) {
+				if (Players[factionID].socAntiIdeologyCategory == j
+					|| Players[factionID].socAntiIdeologyModel == model
+					|| !has_tech(SocialCategory[model].preqTech[j], factionID)) {
+					break;
+				}
+			}
+			k >>= 2;
+		}
+		do_all_non_input();
+		social_calc(&socCat, &socEff, factionID, false, false);
+		uint32_t unkVal6 = 0;
+		if (unkVal1 >= 0) {
+			unkVal6 = *(&socEff.economy + unkVal1) * 1000;
+		}
+		BOOL hasIdeology = false;
+		int ideologyCat = Players[factionID].socIdeologyCategory;
+		if (ideologyCat >= 0) {
+			int ideologyMod = Players[factionID].socIdeologyModel;
+			if (ideologyMod) {
+				uint32_t unkVal7 = *(&socCat.politics + ideologyCat);
+				if (!unkVal7 && unkVal7 == ideologyMod) {
+					unkVal6 += PlayersData[factionID].currentNumBases;
+				}
+				else {
+					hasIdeology = true;
+				}
+			}
+		}
+		int ideologyEff = Players[factionID].socAntiIdeologyEffect;
+		if (ideologyEff >= 0) {
+			uint32_t unkVal8 = *(&socEff.economy + ideologyEff);
+			if (unkVal8 > 0) {
+				unkVal6 += PlayersData[factionID].currentNumBases;
+			}
+			if (unkVal8 < 0) {
+				hasIdeology = true;
+			}
+		}
+		if (!hasIdeology) {
+			int effiencyVal = PlayersData[factionID].unk_46[range(4 - socEff.effiency, 0, 8)];
+			//
+		}
+	}
+	if (socCatBits < 0) {
+		if (output) {
+			for (int i = 0; i < MaxSocialCatNum; i++) {
+				*(&output->politics + i)
+					= *(&PlayersData[factionID].socCategoryPending.politics + i);
+			}
+		}
+	}
+	else {
+		if (!output) {
+			BOOL noCatChange = true;
+			for (int i = 0; i < MaxSocialCatNum; i++) {
+				uint32_t catBit = socCatBits & 3;
+				if (catBit != *(&PlayersData[factionID].socCategoryPending.politics + i)) {
+					*(&PlayersData[factionID].socCategoryPending.politics + i) = catBit;
+					noCatChange = false;
+				}
+				socCatBits >>= 2;
+			}
+			if (!noCatChange) {
+				social_set(factionID);
+				uint32_t cost 
+					= social_upheaval(factionID, &PlayersData[factionID].socCategoryPending);
+				PlayersData[factionID].energyReserves 
+					= range(PlayersData[factionID].energyReserves - cost, 0, 999999999);
+				PlayersData[factionID].socUpheavalCostPaid += cost;
+				if (!is_human(factionID)) {
+					consider_designs(factionID);
+				}
+			}
+		}
+		else {
+			for (int i = 0; i < MaxSocialCatNum; i++) {
+				*(&output->politics + i) = socCatBits & 3;
+				socCatBits >>= 2;
+			}
+		}
 	}
 }
 

@@ -231,6 +231,7 @@ enum base_state_bitfield {
 	//
 	BSTATE_RESEARCH_DATA_STOLEN = 0x40,
 	//
+	BSTATE_FACILITY_SCRAPPED = 0x200, // Only one facility can be scrapped/recycled per turn
 	BSTATE_ARTIFACT_LINKED = 0x400, // Alien Artifact linked to Network Node
 	BSTATE_ARTIFACT_ALREADY_LINKED = 0x800, // Only show already linked alert once
 	//

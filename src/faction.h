@@ -500,6 +500,9 @@ extern player *Players; // Players[0] is AI native life faction
 extern player_data *PlayersData;
 extern faction_art *FactionArt;
 extern uint8_t *FactionsStatus;
+extern uint32_t *FactionRankings;
+extern uint32_t *RankingFactionIDUnk1;
+extern uint32_t *RankingFactionIDUnk2;
 
 OPENSMACX_API BOOL __cdecl is_human(uint32_t factionID);
 OPENSMACX_API BOOL __cdecl is_alive(uint32_t factionID);
@@ -528,7 +531,7 @@ OPENSMACX_API void __cdecl social_calc(social_category *category, social_effect 
 OPENSMACX_API void __cdecl social_upkeep(uint32_t factionID);
 OPENSMACX_API uint32_t __cdecl social_upheaval(uint32_t factionID, social_category *categoryNew);
 OPENSMACX_API BOOL __cdecl society_avail(int socCategory, int socModel, int factionID);
-OPENSMACX_API void __cdecl social_ai(uint32_t factionID, int tgl1, int tgl2, int tgl3, int tgl4, 
-	BOOL tgl5);
+OPENSMACX_API void __cdecl social_ai(uint32_t factionID, int growthVal, int techVal, int wealthVal, 
+	int powerVal, social_category *output);
 OPENSMACX_API void __cdecl enemy_capabilities(uint32_t factionID);
 OPENSMACX_API void __cdecl enemy_capabilities_t(uint32_t factionID);

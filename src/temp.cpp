@@ -49,6 +49,8 @@ func11 *wants_to_attack = (func11 *)0x0055BC80;
 func14 *base_at = (func14 *)0x004E3A50;
 func15 *save_daemon = (func15 *)0x005A94F0;
 func16 *load_daemon = (func16 *)0x005A9760;
+func19 *social_set = (func19 *)0x005B4600;
+func19 *consider_designs = (func19 *)0x00581260;
 
 // Time
 func30 *blink_timer = (func30 *)0x0050EA40;

@@ -71,6 +71,9 @@ typedef uint32_t func15(LPCSTR);
 extern func15 *save_daemon;
 typedef uint32_t func16(LPCSTR, BOOL);
 extern func16 *load_daemon;
+typedef void func19(uint32_t);
+extern func19 *social_set;
+extern func19 *consider_designs;
 // Time
 typedef void func30(int);
 extern func30 *blink_timer;
