@@ -510,6 +510,9 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001ABEC0) # ?wipe_undo@@YAXXZ
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*416))
+	bin_app.seek(0x001ABF20) # ?auto_undo@@YAXXZ
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*417))
 	bin_app.seek(0x0017D1F0) # ?header_check@@YAXPADPAU_iobuf@@@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*421))

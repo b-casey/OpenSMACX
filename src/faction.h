@@ -121,7 +121,7 @@ enum diplo_agenda {
 
 enum player_flags_bitfield {
 	PFLAG_MAP_REVEALED = 0x200,
-	PFLAG_GENETIC_PLAGUE_INTRO = 0x400,
+	PFLAG_GENETIC_PLAGUE_INTRO = 0x400, // +1 to defense against after 1st time faction experiences
 	PFLAG_UNK_20000 = 0x20000,
 	PFLAG_STRAT_ATK_ENEMY_HQ = 0x200000,
 	PFLAG_COOP_WITH_HUMAN = 0x400000,
