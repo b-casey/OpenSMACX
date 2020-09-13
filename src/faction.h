@@ -121,6 +121,7 @@ enum diplo_agenda {
 
 enum player_flags_bitfield {
 	PFLAG_MAP_REVEALED = 0x200,
+	PFLAG_GENETIC_PLAGUE_INTRO = 0x400,
 	PFLAG_UNK_20000 = 0x20000,
 	PFLAG_STRAT_ATK_ENEMY_HQ = 0x200000,
 	PFLAG_COOP_WITH_HUMAN = 0x400000,
@@ -187,7 +188,7 @@ struct social_category {
 
 struct social_effect {
 	int economy;
-	int effiency;
+	int efficiency;
 	int support;
 	int talent;
 	int morale;
@@ -297,7 +298,7 @@ struct player_data {
 	int lastTurnNewBase; // turn for last built, captured or acquired (drone riot) base
 	uint32_t diploTreaties[8];
 	int diploAgenda[8];
-	int diploFriction[8];
+	uint32_t diploFriction[8]; // between 0-20
 	int diploSpoke[8]; // Turn for the last player-to-AI communication; -1 for never
 	int diploMerc[8]; // mercifulness? Possibly higher values indicate willingness for deal-making
 	char diploPatience[8]; // AI-to-player
@@ -503,6 +504,10 @@ extern uint8_t *FactionsStatus;
 extern uint32_t *FactionRankings;
 extern uint32_t *RankingFactionIDUnk1;
 extern uint32_t *RankingFactionIDUnk2;
+extern uint32_t *FactionRankingsUnk;
+extern uint32_t *DiploCurrentFriction;
+extern uint32_t *DiploPrimaryFactionID;
+extern uint32_t *DiploSecondaryFactionID;
 
 OPENSMACX_API BOOL __cdecl is_human(uint32_t factionID);
 OPENSMACX_API BOOL __cdecl is_alive(uint32_t factionID);
@@ -511,8 +516,20 @@ OPENSMACX_API uint32_t __cdecl has_treaty(uint32_t factionID, uint32_t factionID
 OPENSMACX_API LPSTR __cdecl get_adjective(int factionID);
 OPENSMACX_API LPSTR __cdecl get_noun(int factionID);
 OPENSMACX_API BOOL __cdecl auto_contact();
+OPENSMACX_API BOOL __cdecl great_beelzebub(uint32_t factionID, BOOL tgl);
+OPENSMACX_API BOOL __cdecl great_satan(uint32_t factionID, BOOL tgl);
 OPENSMACX_API uint32_t __cdecl aah_ooga(int factionID, int pactFactionID);
 OPENSMACX_API BOOL __cdecl climactic_battle();
+OPENSMACX_API BOOL __cdecl at_climax(uint32_t factionID);
+OPENSMACX_API void __cdecl cause_friction(uint32_t factionID, uint32_t factionIDWith, int friction);
+OPENSMACX_API uint32_t __cdecl get_mood(int friction);
+OPENSMACX_API uint32_t __cdecl reputation(uint32_t factionID, uint32_t factionIDWith);
+OPENSMACX_API uint32_t __cdecl get_patience(uint32_t factionID, uint32_t factionIDWith);
+OPENSMACX_API uint32_t __cdecl energy_value(uint32_t loanPrincipal);
+OPENSMACX_API void __cdecl set_treaty(uint32_t factionID, uint32_t factionIDWith, uint32_t treaty,
+	BOOL set);
+OPENSMACX_API void __cdecl set_agenda(uint32_t factionID, uint32_t factionIDWith, uint32_t agenda,
+	BOOL set);
 OPENSMACX_API uint32_t __cdecl guard_check(uint32_t factionID, uint32_t region);
 OPENSMACX_API void __cdecl add_goal(uint32_t factionID, int type, int priority, int xCoord,
 	int yCoord, int baseID);

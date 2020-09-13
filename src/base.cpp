@@ -715,7 +715,7 @@ uint32_t __cdecl black_market(int energy) {
 			}
 		}
 	}
-	int ineffciency = 4 - PlayersData[factionID].socEffectPending.effiency;
+	int ineffciency = 4 - PlayersData[factionID].socEffectPending.efficiency;
 	if (hasCreche) {
 		ineffciency -= 2;
 	}
