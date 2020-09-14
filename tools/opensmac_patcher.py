@@ -1271,22 +1271,22 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001C0DB0) # ?can_arty@@YAHHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*230))
-	bin_app.seek(0x001C0E40) # ?morale_veh@@YAIHHH@Z
+	bin_app.seek(0x001C0E40) # ?morale_veh@@YAIIHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*231))
-	bin_app.seek(0x001C1150) # ?offense_proto@@YAIHHH@Z
+	bin_app.seek(0x001C1150) # ?offense_proto@@YAIIHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*232))
-	bin_app.seek(0x001C1290) # ?armor_proto@@YAIHHH@Z
+	bin_app.seek(0x001C1290) # ?armor_proto@@YAIIHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*233))
-	bin_app.seek(0x001C13B0) # ?speed_proto@@YAIH@Z
+	bin_app.seek(0x001C13B0) # ?speed_proto@@YAII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*234))
-	bin_app.seek(0x001C1540) # ?speed@@YAIHH@Z
+	bin_app.seek(0x001C1540) # ?speed@@YAIIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*235))
-	bin_app.seek(0x001C1760) # ?veh_cargo@@YAIH@Z
+	bin_app.seek(0x001C1760) # ?veh_cargo@@YAII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*236))
 	bin_app.seek(0x001C17D0) # ?prototype_factor@@YAIH@Z

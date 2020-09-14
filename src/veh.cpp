@@ -49,6 +49,7 @@ int *VehDropLiftVehID = (int *)0x009B2280;
 int *VehLift_xCoord = (int *)0x009B2278;
 int *VehLift_yCoord = (int *)0x009B2284;
 BOOL *VehBitError = (BOOL *)0x009B228C;
+uint32_t *VehBasicBattleMorale = (uint32_t *)0x00912420; // [2]
 
 /*
 Purpose: Calculate maximum range for Veh drops (air drops, Drop Pods).
@@ -164,10 +165,157 @@ int __cdecl psi_factor(int combatRatio, int factionID, BOOL isAttack, BOOL isFun
 			factor += factor / 2; // Psi Defense +50%s
 		}
 		if (isFungalTower) {
-			factor += factor / 2; // SMACX only, never used: likely +50% Fungal Tower defense bonus
+			factor += factor / 2; // SMACX only: likely +50% Fungal Tower defense bonus
 		}
 	}
 	return factor;
+}
+
+/*
+Purpose: Get the basic offense value for an attacking Veh with an optional defender Veh parameter.
+Original Offset: 005015B0
+Return Value: Basic offense
+Status: Complete - testing
+*/
+int __cdecl get_basic_offense(uint32_t vehIDAtk, int vehIDDef, BOOL isPSICombat, BOOL isBombardment,
+	BOOL isArtyCombat) { // is this flag actually opposite? non-artillery combat?
+	uint32_t factionIDAtk = Veh[vehIDAtk].factionID, morale;
+	uint32_t protoIDAtk = Veh[vehIDAtk].protoID;
+	if (factionIDAtk) {
+		morale = morale_veh(vehIDAtk, true, false);
+	}
+	else {
+		morale = morale_alien(vehIDAtk, vehIDDef < 0 ? -1 : Veh[vehIDDef].factionID);
+	}
+	int baseIDAtk = base_at(Veh[vehIDAtk].xCoord, Veh[vehIDAtk].yCoord);
+	if (baseIDAtk >= 0) {
+		if (has_fac_built(FAC_CHILDREN_CRECHE, vehIDAtk)) {
+			morale++;
+			int moraleSEActive = range(PlayersData[factionIDAtk].socEffectActive.morale, -4, 4);
+			if (moraleSEActive <= -2) {
+				moraleSEActive++;
+			}
+			morale -= moraleSEActive;
+			if (has_fac_built(FAC_BROOD_PIT, vehIDAtk) && protoIDAtk < MaxVehProtoFactionNum
+				&& (Weapon[VehPrototype[vehIDAtk].weaponID].offenseRating < 0
+					|| protoIDAtk == BSC_SPORE_LAUNCHER)) {
+				morale++;
+			}
+		}
+		else if (has_fac_built(FAC_BROOD_PIT, vehIDAtk) && protoIDAtk < MaxVehProtoFactionNum
+			&& (Weapon[VehPrototype[vehIDAtk].weaponID].offenseRating < 0
+				|| protoIDAtk == BSC_SPORE_LAUNCHER)) {
+			morale++;
+			int moraleSEActive = range(PlayersData[factionIDAtk].socEffectActive.morale, -4, 4);
+			if (moraleSEActive <= -2) {
+				moraleSEActive++;
+			}
+			morale -= moraleSEActive;
+		}
+		if (isArtyCombat) {
+			int moraleSEPending = PlayersData[factionIDAtk].socEffectPending.morale;
+			if (moraleSEPending >= 2 && moraleSEPending <= 3) {
+				morale++;
+			}
+			if (vehIDDef >= 0 && Veh[vehIDDef].factionID) {
+				if ((protoIDAtk >= MaxVehProtoFactionNum
+					|| (Weapon[VehPrototype[protoIDAtk].weaponID].offenseRating >= 0
+						&& protoIDAtk != BSC_SPORE_LAUNCHER))
+					&& !has_abil(protoIDAtk, ABL_DISSOCIATIVE_WAVE)
+					&& has_abil(Veh[vehIDAtk].protoID, ABL_SOPORIFIC_GAS)) {
+					morale -= 2;
+				}
+			}
+			else {
+				morale++;
+			}
+		}
+	}
+	if (isArtyCombat) {
+		morale = range(morale, 1, 6);
+	}
+	VehBasicBattleMorale[isArtyCombat != 0] = morale; // shifted up from original; does it need !=0?
+	morale += 6;
+	uint32_t offense = offense_proto(protoIDAtk, vehIDDef, isBombardment);
+	if (isPSICombat) {
+		offense = psi_factor(offense, factionIDAtk, true, false);
+	}
+	return offense * morale * 4;
+}
+
+/*
+Purpose: Get the basic defense value for a defending Veh with an optional attacker Veh parameter.
+Original Offset: 00501940
+Return Value: Basic defense
+Status: Complete - testing
+*/
+int __cdecl get_basic_defense(uint32_t vehIDDef, int vehIDAtk, BOOL isPSICombat, 
+	BOOL isBombardment) {
+	uint32_t factionIDDef = Veh[vehIDDef].factionID, morale;
+	uint32_t protoIDDef = Veh[vehIDDef].protoID;
+	if (factionIDDef) {
+		morale = morale_veh(vehIDDef, true, false);
+	}
+	else {
+		morale = morale_alien(vehIDDef, vehIDAtk < 0 ? -1 : Veh[vehIDAtk].factionID);
+	}
+	int baseIDDef = base_at(Veh[vehIDDef].xCoord, Veh[vehIDDef].yCoord);
+	if (baseIDDef >= 0) {
+		if (has_fac_built(FAC_CHILDREN_CRECHE, baseIDDef)) {
+			morale++;
+			int moraleSEActive = range(PlayersData[factionIDDef].socEffectActive.morale, -4, 0);
+			if (moraleSEActive <= -2) {
+				moraleSEActive++;
+			}
+			morale -= moraleSEActive;
+			if (has_fac_built(FAC_BROOD_PIT, baseIDDef) && protoIDDef < MaxVehProtoFactionNum
+				&& (Weapon[VehPrototype[protoIDDef].weaponID].offenseRating < 0
+					|| protoIDDef == BSC_SPORE_LAUNCHER)) {
+				morale++;
+			}
+		}
+		else if (has_fac_built(FAC_BROOD_PIT, baseIDDef) &&  protoIDDef < MaxVehProtoFactionNum
+			&& (Weapon[VehPrototype[protoIDDef].weaponID].offenseRating < 0
+				|| protoIDDef == BSC_SPORE_LAUNCHER)) {
+			morale++;
+			int moraleSEActive = range(PlayersData[factionIDDef].socEffectActive.morale, -4, 0);
+			if (moraleSEActive <= -2) {
+				moraleSEActive++;
+			}
+			morale -= moraleSEActive;
+		}
+		int moraleSEPending = PlayersData[factionIDDef].socEffectPending.morale;
+		if (moraleSEPending >= 2 && moraleSEPending <= 3) {
+			morale++;
+		}
+		if (vehIDAtk >= 0 && !Veh[vehIDAtk].factionID) {
+			morale++;
+		}
+	}
+	if (vehIDAtk >= 0 && Veh[vehIDAtk].factionID && (protoIDDef >= MaxVehProtoFactionNum 
+		|| (Weapon[VehPrototype[protoIDDef].weaponID].offenseRating >= 0 
+			&& protoIDDef != BSC_SPORE_LAUNCHER)) && !has_abil(protoIDDef, ABL_DISSOCIATIVE_WAVE)
+		&& has_abil(Veh[vehIDAtk].protoID, ABL_SOPORIFIC_GAS)) {
+		morale -= 2;
+	}
+	morale = range(morale, 1, 6);
+	VehBasicBattleMorale[1] = morale;
+	morale += 6;
+	uint32_t planDef = VehPrototype[protoIDDef].plan;
+	if (planDef == PLAN_ALIEN_ARTIFACT) {
+		return 1;
+	}
+	if (planDef == PLAN_INFO_WARFARE
+		// bug fix: added vehIDAtk bounds check to prevent potential arbitrary memory read
+		&& Armor[VehPrototype[protoIDDef].armorID].defenseRating == 1 && vehIDAtk >= 0
+		&& VehPrototype[Veh[vehIDAtk].protoID].plan == PLAN_INFO_WARFARE) {
+		return 1;
+	}
+	uint32_t defense = armor_proto(protoIDDef, vehIDAtk, isBombardment);
+	if (isPSICombat) {
+		defense = psi_factor(defense, factionIDDef, false, protoIDDef == BSC_FUNGAL_TOWER);
+	}
+	return defense * morale;
 }
 
 /*
@@ -1758,7 +1906,7 @@ Original Offset: 005C0E40
 Return Value: Morale value
 Status: Complete
 */
-uint32_t __cdecl morale_veh(int vehID, BOOL checkDroneRiot, int factionIDvsNative) {
+uint32_t __cdecl morale_veh(uint32_t vehID, BOOL checkDroneRiot, int factionIDvsNative) {
 	uint32_t factionID = Veh[vehID].factionID;
 	if (!factionID) {
 		return morale_alien(vehID, factionIDvsNative);
@@ -1822,7 +1970,7 @@ Original Offset: 005C1150
 Return Value: Prototype's armor
 Status: Complete
 */
-uint32_t __cdecl offense_proto(int protoID, int vehIDDef, BOOL isArtyMissile) {
+uint32_t __cdecl offense_proto(uint32_t protoID, int vehIDDef, BOOL isBombardment) {
 	uint32_t weaponID = VehPrototype[protoID].weaponID;
 	if (Weapon[weaponID].mode == WPN_MODE_INFOWAR && vehIDDef >= 0
 		&& VehPrototype[Veh[vehIDDef].protoID].plan == PLAN_INFO_WARFARE) {
@@ -1830,7 +1978,7 @@ uint32_t __cdecl offense_proto(int protoID, int vehIDDef, BOOL isArtyMissile) {
 	}
 	// Bug fix: Veh[].protoID with vehIDDef -1 could cause arbitrary memory read (Reactor struct)
 	// due to lack of bounds checking when comparing vehIDDef protoID to Spore Launcher
-	if ((isArtyMissile || (Weapon[weaponID].offenseRating >= 0
+	if ((isBombardment || (Weapon[weaponID].offenseRating >= 0
 		&& (vehIDDef < 0 || Armor[VehPrototype[Veh[vehIDDef].protoID].armorID].defenseRating >= 0)))
 		&& (vehIDDef < 0 || Veh[vehIDDef].protoID != BSC_SPORE_LAUNCHER)
 		&& protoID != BSC_SPORE_LAUNCHER) {
@@ -1854,14 +2002,14 @@ Original Offset: 005C1290
 Return Value: Prototype's armor
 Status: Complete
 */
-uint32_t __cdecl armor_proto(int protoID, int vehIDAtk, BOOL isArtyMissile) {
+uint32_t __cdecl armor_proto(uint32_t protoID, int vehIDAtk, BOOL isBombardment) {
 	if (Weapon[VehPrototype[protoID].weaponID].mode == WPN_MODE_INFOWAR && vehIDAtk >= 0
 		&& VehPrototype[Veh[vehIDAtk].protoID].plan == PLAN_INFO_WARFARE) {
 		return 16; // probe defending against another probe
 	}
 	// Bug fix: Veh[].protoID with vehIDAtk -1 could cause arbitrary memory read (Reactor struct)
 	// due to lack of bounds checking when comparing vehIDAtk protoID to Spore Launcher
-	if (isArtyMissile && (vehIDAtk < 0 || Veh[vehIDAtk].protoID != BSC_SPORE_LAUNCHER)
+	if (isBombardment && (vehIDAtk < 0 || Veh[vehIDAtk].protoID != BSC_SPORE_LAUNCHER)
 		&& protoID != BSC_SPORE_LAUNCHER
 		|| (Armor[VehPrototype[protoID].armorID].defenseRating >= 0
 			&& (vehIDAtk < 0
@@ -1879,7 +2027,7 @@ Original Offset: 005C13B0
 Return Value: Prototype's speed
 Status: Complete
 */
-uint32_t __cdecl speed_proto(int protoID) {
+uint32_t __cdecl speed_proto(uint32_t protoID) {
 	if (protoID == BSC_FUNGAL_TOWER) {
 		return 0; // cannot move
 	}
@@ -1925,7 +2073,7 @@ Original Offset: 005C1540
 Return Value: speed
 Status: Complete
 */
-uint32_t __cdecl speed(int vehID, BOOL skipMorale) {
+uint32_t __cdecl speed(uint32_t vehID, BOOL skipMorale) {
 	uint32_t protoID = Veh[vehID].protoID;
 	if (protoID == BSC_FUNGAL_TOWER) { // moved this check to top vs bottom, same logic
 		return 0; // cannot move
@@ -1964,7 +2112,7 @@ Original Offset: 005C1760
 Return Value: Cargo value
 Status: Complete
 */
-uint32_t __cdecl veh_cargo(int vehID) {
+uint32_t __cdecl veh_cargo(uint32_t vehID) {
 	uint32_t protoID = Veh[vehID].protoID;
 	uint32_t cargo = VehPrototype[protoID].carryCapacity;
 	return (cargo && protoID < MaxVehProtoFactionNum

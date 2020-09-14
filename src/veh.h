@@ -492,6 +492,7 @@ extern int *VehDropLiftVehID;
 extern int *VehLift_xCoord;
 extern int *VehLift_yCoord;
 extern BOOL *VehBitError;
+extern uint32_t *VehBasicBattleMorale;
 
 OPENSMACX_API uint32_t __cdecl drop_range(int factionID);
 OPENSMACX_API uint32_t __cdecl planet_buster2(int protoID);
@@ -499,6 +500,10 @@ OPENSMACX_API uint32_t __cdecl planet_buster(int vehID);
 OPENSMACX_API uint32_t __cdecl morale_alien(int vehID, int factionIDvsNative);
 OPENSMACX_API int __cdecl psi_factor(int combatRatio, int factionID, BOOL isAttack,
 	BOOL isFungalTower);
+OPENSMACX_API int __cdecl get_basic_offense(uint32_t vehIDAtk, int vehIDDef, BOOL isPSICombat, 
+	BOOL isBombardment, BOOL isArtyCombat);
+OPENSMACX_API int __cdecl get_basic_defense(uint32_t vehIDDef, int vehIDAtk, BOOL isPSICombat,
+	BOOL isBombardment);
 OPENSMACX_API void __cdecl go_to(int vehID, char type, int xCoord, int yCoord);
 OPENSMACX_API void __cdecl invasions(uint32_t baseID);
 OPENSMACX_API int __cdecl veh_top(int vehID);
@@ -550,12 +555,13 @@ OPENSMACX_API void __cdecl veh_demote(int vehID);
 OPENSMACX_API void __cdecl veh_promote(int vehID);
 OPENSMACX_API void __cdecl veh_clear(int vehID, int protoID, int factionID);
 OPENSMACX_API BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn);
-OPENSMACX_API uint32_t __cdecl morale_veh(int vehID, BOOL checkDroneRiot, int factionIDvsNative);
-OPENSMACX_API uint32_t __cdecl offense_proto(int protoID, int vehIDDef, BOOL isArtyMissile);
-OPENSMACX_API uint32_t __cdecl armor_proto(int protoID, int vehIDAtk, BOOL isArtyMissile);
-OPENSMACX_API uint32_t __cdecl speed_proto(int protoID);
-OPENSMACX_API uint32_t __cdecl speed(int vehID, BOOL skipMorale);
-OPENSMACX_API uint32_t __cdecl veh_cargo(int vehID);
+OPENSMACX_API uint32_t __cdecl morale_veh(uint32_t vehID, BOOL checkDroneRiot, 
+	int factionIDvsNative);
+OPENSMACX_API uint32_t __cdecl offense_proto(uint32_t protoID, int vehIDDef, BOOL isBombardment);
+OPENSMACX_API uint32_t __cdecl armor_proto(uint32_t protoID, int vehIDAtk, BOOL isBombardment);
+OPENSMACX_API uint32_t __cdecl speed_proto(uint32_t protoID);
+OPENSMACX_API uint32_t __cdecl speed(uint32_t vehID, BOOL skipMorale);
+OPENSMACX_API uint32_t __cdecl veh_cargo(uint32_t vehID);
 OPENSMACX_API uint32_t __cdecl prototype_factor(int protoID);
 OPENSMACX_API BOOL __cdecl veh_jail(int vehID);
 OPENSMACX_API void __cdecl veh_skip(int vehID);
