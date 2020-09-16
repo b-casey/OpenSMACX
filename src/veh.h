@@ -543,10 +543,10 @@ OPENSMACX_API int __cdecl veh_at(int xCoord, int yCoord);
 OPENSMACX_API BOOL __cdecl has_abil(int protoID, int abilityID);
 OPENSMACX_API int __cdecl veh_lift(int vehID);
 OPENSMACX_API int __cdecl veh_drop(int vehID, int xCoord, int yCoord);
-OPENSMACX_API void __cdecl sleep(int vehID);
+OPENSMACX_API void __cdecl sleep(uint32_t vehID);
 OPENSMACX_API void __cdecl veh_demote(int vehID);
 OPENSMACX_API void __cdecl veh_promote(int vehID);
-OPENSMACX_API void __cdecl veh_clear(int vehID, int protoID, int factionID);
+OPENSMACX_API void __cdecl veh_clear(uint32_t vehID, int protoID, uint32_t factionID);
 OPENSMACX_API BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn);
 OPENSMACX_API uint32_t __cdecl morale_veh(uint32_t vehID, BOOL checkDroneRiot, 
 	int factionIDvsNative);

@@ -1256,7 +1256,7 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001C0080) # ?veh_drop@@YAHHHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*225))
-	bin_app.seek(0x001C01A0) # ?sleep@@YAXH@Z
+	bin_app.seek(0x001C01A0) # ?sleep@@YAXI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*226))
 	bin_app.seek(0x001C01D0) # ?veh_demote@@YAXH@Z
@@ -1265,7 +1265,7 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001C0260) # ?veh_promote@@YAXH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*228))
-	bin_app.seek(0x001C02D0) # ?veh_clear@@YAXHHH@Z
+	bin_app.seek(0x001C02D0) # ?veh_clear@@YAXIHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*229))
 	bin_app.seek(0x001C0DB0) # ?can_arty@@YAHHH@Z

@@ -1787,7 +1787,7 @@ Original Offset: 005C01A0
 Return Value: n/a
 Status: Complete
 */
-void __cdecl sleep(int vehID) {
+void __cdecl sleep(uint32_t vehID) {
 	Veh[vehID].orders = ORDER_SENTRY_BOARD;
 	Veh[vehID].waypoint_xCoord[0] = -1;
 	Veh[vehID].waypoint_yCoord[0] = 0;
@@ -1841,7 +1841,7 @@ Original Offset: 005C02D0
 Return Value: n/a
 Status: Complete
 */
-void __cdecl veh_clear(int vehID, int protoID, int factionID) {
+void __cdecl veh_clear(uint32_t vehID, int protoID, uint32_t factionID) {
 	Veh[vehID].xCoord = -4;
 	Veh[vehID].yCoord = -4;
 	Veh[vehID].yearEndLurking = 0;
