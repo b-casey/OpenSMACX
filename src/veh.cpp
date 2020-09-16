@@ -89,9 +89,9 @@ uint32_t __cdecl planet_buster(int vehID) {
 }
 
 /*
-Purpose: Calculate morale of native life.
+Purpose: Calculate the lifecycle (morale) of native life.
 Original Offset: 00501350
-Return Value: Morale value
+Return Value: Lifecycle (morale) value
 Status: Complete
 */
 uint32_t __cdecl morale_alien(int vehID, int factionIDvsNative) {
@@ -253,12 +253,8 @@ int __cdecl get_basic_defense(uint32_t vehIDDef, int vehIDAtk, BOOL isPSICombat,
 	BOOL isBombardment) {
 	uint32_t factionIDDef = Veh[vehIDDef].factionID, morale;
 	uint32_t protoIDDef = Veh[vehIDDef].protoID;
-	if (factionIDDef) {
-		morale = morale_veh(vehIDDef, true, false);
-	}
-	else {
-		morale = morale_alien(vehIDDef, vehIDAtk < 0 ? -1 : Veh[vehIDAtk].factionID);
-	}
+	morale = factionIDDef ? morale_veh(vehIDDef, true, false)
+		: morale_alien(vehIDDef, vehIDAtk < 0 ? -1 : Veh[vehIDAtk].factionID);
 	int baseIDDef = base_at(Veh[vehIDDef].xCoord, Veh[vehIDDef].yCoord);
 	if (baseIDDef >= 0) {
 		if (has_fac_built(FAC_CHILDREN_CRECHE, baseIDDef)) {
@@ -1077,7 +1073,7 @@ Original Offset: 005A5D00
 Return Value: Cost of prototype
 Status: Complete
 */
-uint32_t __cdecl base_cost(int protoID) {
+uint32_t __cdecl base_cost(uint32_t protoID) {
 	return proto_cost(VehPrototype[protoID].chassisID, VehPrototype[protoID].weaponID,
 		VehPrototype[protoID].armorID, 0, VehPrototype[protoID].reactorID);
 }
@@ -2127,7 +2123,7 @@ Original Offset: 005C17D0
 Return Value: % extra prototype cost
 Status: Complete
 */
-uint32_t __cdecl prototype_factor(int protoID) {
+uint32_t __cdecl prototype_factor(uint32_t protoID) {
 	uint32_t factionID = protoID / MaxVehProtoFactionNum;
 	if (Players[factionID].ruleFlags & RFLAG_FREEPROTO
 		|| PlayersData[factionID].diffLevel <= DLVL_SPECIALIST) {
@@ -2143,6 +2139,41 @@ uint32_t __cdecl prototype_factor(int protoID) {
 	default:
 		return Rules->ExtraPctCostProtoLand;
 	}
+}
+
+/*
+Purpose: Calculate Veh overall cost including any related to prototypes. Optional output parameter
+         whether there is a prototype cost or not.
+Original Offset: 005C1850
+Return Value: Cost
+Status: Complete - testing
+*/
+uint32_t __cdecl veh_cost(uint32_t protoID, int baseID, BOOL *hasProtoCost) {
+	uint32_t cost = VehPrototype[protoID].cost;
+	if (baseID >= 0 && protoID < MaxVehProtoFactionNum // bug fix: added baseID bounds check
+		&& (Weapon[VehPrototype[protoID].weaponID].offenseRating < 0
+		|| protoID == BSC_SPORE_LAUNCHER) && has_fac_built(FAC_BROOD_PIT, baseID)) {
+		cost = (cost * 3) / 4;
+	}
+	if (VehPrototype[protoID].plan == PLAN_COLONIZATION && baseID >= 0) {
+		cost = range(cost, 1, 999);
+	}
+	if (protoID < MaxVehProtoFactionNum || VehPrototype[protoID].flags & PROTO_TYPED_COMPLETE) {
+		if (hasProtoCost) {
+			*hasProtoCost = false;
+		}
+	}
+	else {
+		uint32_t protoCost = (prototype_factor(protoID) * base_cost(protoID) + 50) / 100;
+		if (baseID >= 0 && has_fac_built(FAC_SKUNKWORKS, baseID)) {
+			protoCost = 0;
+		}
+		cost += protoCost;
+		if (hasProtoCost) {
+			*hasProtoCost = protoCost != 0;
+		}
+	}
+	return cost;
 }
 
 /*

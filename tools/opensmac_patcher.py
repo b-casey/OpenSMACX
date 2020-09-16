@@ -218,7 +218,7 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001AC060) # ?is_objective@@YAHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*334))
-	bin_app.seek(0x000F6510) # ?fac_maint@@YAHHH@Z
+	bin_app.seek(0x000F6510) # ?fac_maint@@YAIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*335))
 	bin_app.seek(0x000E4900) # ?has_fac_announced@@YAHHH@Z
@@ -1238,7 +1238,7 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001A5A60) # ?proto_cost@@YAIIIIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*219))
-	bin_app.seek(0x001A5D00) # ?base_cost@@YAIH@Z
+	bin_app.seek(0x001A5D00) # ?base_cost@@YAII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*220))
 	bin_app.seek(0x001A5D40) # ?make_proto@@YAXHIIIII@Z
@@ -1289,7 +1289,7 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001C1760) # ?veh_cargo@@YAII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*236))
-	bin_app.seek(0x001C17D0) # ?prototype_factor@@YAIH@Z
+	bin_app.seek(0x001C17D0) # ?prototype_factor@@YAII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*237))
 	bin_app.seek(0x001C1C40) # ?veh_jail@@YAHH@Z

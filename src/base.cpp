@@ -16,6 +16,7 @@
  * along with OpenSMACX. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "stdafx.h"
+#include "temp.h"
 #include "base.h"
 #include "alpha.h"
 #include "faction.h"
@@ -309,6 +310,106 @@ void __cdecl name_base(int factionID, LPSTR nameOut, BOOL isFinal, BOOL isSeaBas
 }
 
 /*
+Purpose: TBD
+Original Offset: 004E4350
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl base_mark(uint32_t baseID) {
+	int xCoord = Base[baseID].xCoord, yCoord = Base[baseID].yCoord, xRadius, yRadius;
+	uint32_t factionID = Base[baseID].factionIDCurrent;
+	for (uint32_t i = 0; i < 49; i++) {
+		xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
+		if (on_map(xRadius, yRadius)) {
+			// optimize into one conditional check?
+			(i >= 21) ? site_set(xRadius, yRadius, 0)
+				: bit_set(xRadius, yRadius, BIT_BASE_RADIUS, true);
+			if (i < 21) {
+				using_set(xRadius, yRadius, factionID);
+			}
+		}
+	}
+	for (uint32_t f = 0; f < MaxPlayerNum; f++) {
+		del_site(f, AI_GOAL_COLONIZE, xRadius, yRadius, 3); // odd it's using last radius point?
+	}
+}
+
+/*
+Purpose: Calculate cost factor for faction and resource type (resource_type). Optional base 
+         parameter.
+Original Offset: 004E4430
+Return Value: Cost factor
+Status: Complete - testing
+*/
+int __cdecl cost_factor(uint32_t factionID, uint32_t rscType, int baseID) {
+	const uint32_t diffCostBase[] = { 13, 12, 11, 10, 8, 7 };
+
+	uint32_t factor;
+	if (is_human(factionID)) {
+		factor = 10;
+	}
+	else {
+		// double negate in ASM of great_satan return value?
+		factor = diffCostBase[*DiffLevelCurrent] - great_satan(FactionRankings[7], false)
+			- (!IsMultiplayerNet && is_human(FactionRankings[7]));
+	}
+	uint32_t costMultiplier = rscType ? Rules->MineralCostMulti : Rules->NutrientCostMulti;
+	if (costMultiplier != 10) {
+		factor *= costMultiplier / 10;
+	}
+	if (*MapSizePlanet == 1) {
+		factor *= 9 / 10;
+	}
+	else if (*MapSizePlanet) {
+		factor *= 8 / 10;
+	}
+	if (rscType) {
+		if (rscType == RSC_MINERALS) {
+			switch (PlayersData[factionID].socEffectPending.industry) {
+			case -7:
+			case -6:
+			case -5:
+			case -4:
+			case -3:
+				return (factor * 13 + 9) / 10;
+			case -2:
+				return (factor * 6 + 4) / 5;
+			case -1:
+				return (factor * 11 + 9) / 10;
+			case 0:
+				return factor;
+			case 1:
+				return (factor * 9 + 9) / 10;
+			case 2:
+				return (factor * 4 + 4) / 5;
+			case 3:
+				return (factor * 7 + 9) / 10;
+			case 4:
+				return (factor * 3 + 4) / 5;
+			default:
+				return (factor + 1) / 2;
+			}
+		}
+		else {
+			return factor; // Energy/PSI? Legacy code logic in case cost used these?
+		}
+	}
+	else { // nutrient
+		int growthFactor = PlayersData[factionID].socEffectPending.growth;
+		if (baseID >= 0) {
+			if (has_fac_built(FAC_CHILDREN_CRECHE, baseID)) {
+				growthFactor += 2;
+			}
+			if (Base[baseID].state & BSTATE_GOLDEN_AGE_ACTIVE) {
+				growthFactor += 2;
+			}
+		}
+		growthFactor = range(growthFactor, -2, 5);
+		return (factor * (10 - growthFactor) + 9) / 10;
+	}
+}
+
+/*
 Purpose: Used to determine if base has any restrictions around production item retooling.
 Original Offset: 004E4700
 Return Value: Fixed value (-1, 0, 1, 2, 3, -70) or productionID
@@ -555,8 +656,8 @@ void __cdecl base_nutrient() {
 	if ((*BaseCurrent)->state & BSTATE_GOLDEN_AGE_ACTIVE) {
 		*BaseCurrentGrowthRate += 2;
 	}
-	(*BaseCurrent)->nutrientIntake2 += BaseCurrentConvoyTo[CONVOY_NUTRIENTS];
-	(*BaseCurrent)->nutrientConsumption = BaseCurrentConvoyFrom[CONVOY_NUTRIENTS]
+	(*BaseCurrent)->nutrientIntake2 += BaseCurrentConvoyTo[RSC_NUTRIENTS];
+	(*BaseCurrent)->nutrientConsumption = BaseCurrentConvoyFrom[RSC_NUTRIENTS]
 		+ (*BaseCurrent)->populationSize * Rules->NutrientReqCitizen;
 	(*BaseCurrent)->nutrientSurplus = (*BaseCurrent)->nutrientIntake2
 		- (*BaseCurrent)->nutrientConsumption;
@@ -582,7 +683,7 @@ Status: Complete
 */
 void __cdecl base_minerals() {
 	uint32_t factionID = (*BaseCurrent)->factionIDCurrent;
-	(*BaseCurrent)->mineralIntake2 += BaseCurrentConvoyTo[CONVOY_MINERALS];
+	(*BaseCurrent)->mineralIntake2 += BaseCurrentConvoyTo[RSC_MINERALS];
 	uint32_t mineralBonus = (has_fac_built(FAC_QUANTUM_CONVERTER, *BaseIDCurrentSelected)
 		|| has_project(SP_SINGULARITY_INDUCTOR, factionID)) ? 1 : 0;
 	if (has_fac_built(FAC_ROBOTIC_ASSEMBLY_PLANT, *BaseIDCurrentSelected)) {
@@ -599,7 +700,7 @@ void __cdecl base_minerals() {
 	}
 	(*BaseCurrent)->mineralIntake2 = ((*BaseCurrent)->mineralIntake2 * (mineralBonus + 2)) / 2;
 	(*BaseCurrent)->mineralConsumption = *BaseCurrentForcesMaintCost
-		+ BaseCurrentConvoyFrom[CONVOY_MINERALS];
+		+ BaseCurrentConvoyFrom[RSC_MINERALS];
 	(*BaseCurrent)->mineralSurplus = (*BaseCurrent)->mineralIntake2
 		- (*BaseCurrent)->mineralConsumption;
 	(*BaseCurrent)->mineralInefficiency = 0; // ?
@@ -787,7 +888,7 @@ void __cdecl base_energy_costs() {
 	uint32_t factionID = (*BaseCurrent)->factionIDCurrent;
 	for (int i = 0; i < *VehCurrentCount; i++) {
 		if (Veh[i].factionID == factionID && VehPrototype[Veh[i].protoID].plan == PLAN_SUPPLY_CONVOY
-			&& Veh[i].orders == ORDER_CONVOY && Veh[i].orderAutoType == CONVOY_ENERGY
+			&& Veh[i].orders == ORDER_CONVOY && Veh[i].orderAutoType == RSC_ENERGY
 			&& base_who(Veh[i].xCoord, Veh[i].yCoord) >= 0) {
 			Veh[i].orders = ORDER_NONE;
 		}
@@ -800,7 +901,7 @@ Original Offset: 004F6510
 Return Value: Facility maintenance cost
 Status: Complete
 */
-int __cdecl fac_maint(int facilityID, int factionID) {
+uint32_t __cdecl fac_maint(uint32_t facilityID, uint32_t factionID) {
 	if (facilityID == FAC_COMMAND_CENTER) {
 		int reactor = best_reactor(factionID);
 		int diff = (PlayersData[factionID].diffLevel + 1) / 2;
@@ -814,11 +915,51 @@ int __cdecl fac_maint(int facilityID, int factionID) {
 		int bonusID = Players[factionID].factionBonusID[i];
 		if ((bonusID == RULE_FACILITY || (bonusID == RULE_FREEFAC
 			&& has_tech(Facility[Players[factionID].factionBonusVal1[i]].preqTech, factionID)))
-			&& Players[factionID].factionBonusVal1[i] == facilityID) {
+			&& Players[factionID].factionBonusVal1[i] == (int)facilityID) {
 			return 0;
 		}
 	}
 	return Facility[facilityID].maint;
+}
+
+/*
+Purpose: Calculate overall maintenance cost for the currently selected base.
+Original Offset: 004F65F0
+Return Value: Base maintenance cost
+Status: Complete - testing
+*/
+void __cdecl base_maint() {
+	uint32_t factionID = (*BaseCurrent)->factionIDCurrent;
+	for (int fac = 1; fac < FacilitySPStart; fac++) {
+		if (has_fac_built(fac)) {
+			uint32_t maint = fac_maint(fac, factionID);
+			if (has_project(SP_SELF_AWARE_COLONY, factionID)) {
+				maint += (PlayersData[factionID].playerFlags & PFLAG_UNK_20) & 1;
+				if (maint & 1) {
+					PlayersData[factionID].playerFlags |= PFLAG_UNK_20;
+				}
+				else {
+					PlayersData[factionID].playerFlags &= ~PFLAG_UNK_20;
+				}
+				maint /= 2;
+			}
+			PlayersData[factionID].energyReserves -= maint;
+			PlayersData[factionID].unk_14 += maint;
+			if (PlayersData[factionID].energyReserves < 0) {
+				if (PlayersData[factionID].diffLevel <= DLVL_SPECIALIST 
+					|| (*BaseCurrent)->queueProductionID[0] == -fac) {
+					maint = 0;
+				}
+				else {
+					set_fac(fac, *BaseIDCurrentSelected, false);
+					PlayersData[factionID].energyReserves 
+						+= cost_factor(factionID, RSC_MINERALS, -1) * Facility[fac].cost;
+					parse_say(1, (int)*(Facility[fac].name), -1, -1);
+					popb("POWERSHORT", 0x10000, 14, "genwarning_sm.pcx", NULL);
+				}
+			}
+		}
+	}
 }
 
 /*

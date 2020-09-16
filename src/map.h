@@ -106,6 +106,13 @@ enum terrain_landmark_bit2 {
 	LM_FOSSIL = 0x8000,
 };
 
+enum resource_type {
+	RSC_NUTRIENTS = 0,
+	RSC_MINERALS = 1,
+	RSC_ENERGY = 2,
+	RSC_PSI = 3, // dropped mechanic
+};
+
 /*
 * Region notes:
 * a tile's region is visible with debug mode in the bottom left of the main interface tile area

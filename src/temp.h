@@ -74,6 +74,8 @@ extern func16 *load_daemon;
 typedef void func19(uint32_t);
 extern func19 *social_set;
 extern func19 *consider_designs;
+typedef int func20(LPCSTR, int, int, LPCSTR, Sprite *);
+extern func20 *popb;
 // Time
 typedef void func30(int);
 extern func30 *blink_timer;

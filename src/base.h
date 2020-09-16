@@ -384,7 +384,7 @@ struct rules_facility {
 	LPSTR effect;
 	uint32_t pad;
 	int cost;
-	int maint;
+	uint32_t maint;
 	int preqTech;
 	int freeTech;
 	int SP_AI_Fight;
@@ -507,6 +507,8 @@ OPENSMACX_API int __cdecl base_find(int xCoord, int yCoord, int factionID, int r
 	int factionID2, int factionID3);
 OPENSMACX_API uint32_t  __cdecl best_specialist();
 OPENSMACX_API void __cdecl name_base(int factionID, LPSTR nameOut, BOOL isFinal, BOOL isSeaBase);
+OPENSMACX_API void __cdecl base_mark(uint32_t baseID);
+OPENSMACX_API int __cdecl cost_factor(uint32_t factionID, uint32_t rscType, int baseID);
 OPENSMACX_API int __cdecl base_making(int productionID, int baseID);
 OPENSMACX_API int __cdecl base_lose_minerals(int baseID, int productionID);
 OPENSMACX_API void __cdecl set_fac(int facilityID, int baseID, BOOL set);
@@ -522,7 +524,8 @@ OPENSMACX_API uint32_t __cdecl black_market(int energy);
 OPENSMACX_API uint32_t __cdecl pop_goal_fac(int baseID);
 OPENSMACX_API uint32_t __cdecl pop_goal(int baseID);
 OPENSMACX_API void __cdecl base_energy_costs();
-OPENSMACX_API int __cdecl fac_maint(int facilityID, int factionID);
+OPENSMACX_API uint32_t __cdecl fac_maint(uint32_t facilityID, uint32_t factionID);
+OPENSMACX_API void __cdecl base_maint();
 OPENSMACX_API BOOL __cdecl has_project(uint32_t projectID, uint32_t factionID);
 OPENSMACX_API BOOL __cdecl has_fac_built(uint32_t facilityID);
 OPENSMACX_API BOOL __cdecl has_fac_built(uint32_t facilityID, uint32_t baseID);

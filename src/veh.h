@@ -149,13 +149,6 @@ enum veh_orders {
 	ORDER_AI_GO_TO = 88,         //  - ; ORDER_GO_TO (0x18) | 0x40 > 0x58 ? only used by AI funcs
 };
 
-enum veh_convoy_type {
-	CONVOY_NUTRIENTS = 0,
-	CONVOY_MINERALS = 1,
-	CONVOY_ENERGY = 2,
-	CONVOY_PSI = 3, // dropped mechanic
-};
-
 enum veh_orders_auto_type {
 	ORDERA_TERRA_AUTO_FULL = 0,
 	ORDERA_TERRA_AUTO_ROAD = 1,
@@ -533,7 +526,7 @@ OPENSMACX_API void __cdecl veh_put(int vehID, int xCoord, int yCoord);
 OPENSMACX_API uint32_t __cdecl veh_health(int vehID);
 OPENSMACX_API uint32_t __cdecl proto_cost(uint32_t chassisID, uint32_t weaponID, uint32_t armorID,
 	uint32_t ability, uint32_t reactorID);
-OPENSMACX_API uint32_t __cdecl base_cost(int protoID);
+OPENSMACX_API uint32_t __cdecl base_cost(uint32_t protoID);
 OPENSMACX_API void __cdecl make_proto(int protoID, uint32_t chassisID, uint32_t weaponID,
 	uint32_t armorID, uint32_t ability, uint32_t reactorID);
 OPENSMACX_API int __cdecl get_plan(uint32_t factionID, uint32_t plan);
@@ -562,7 +555,8 @@ OPENSMACX_API uint32_t __cdecl armor_proto(uint32_t protoID, int vehIDAtk, BOOL 
 OPENSMACX_API uint32_t __cdecl speed_proto(uint32_t protoID);
 OPENSMACX_API uint32_t __cdecl speed(uint32_t vehID, BOOL skipMorale);
 OPENSMACX_API uint32_t __cdecl veh_cargo(uint32_t vehID);
-OPENSMACX_API uint32_t __cdecl prototype_factor(int protoID);
+OPENSMACX_API uint32_t __cdecl prototype_factor(uint32_t protoID);
+OPENSMACX_API uint32_t __cdecl veh_cost(uint32_t protoID, int baseID, BOOL *hasProtoCost);
 OPENSMACX_API BOOL __cdecl veh_jail(int vehID);
 OPENSMACX_API void __cdecl veh_skip(int vehID);
 OPENSMACX_API int __cdecl veh_fake(int protoID, int factionID);
