@@ -189,21 +189,21 @@ int __cdecl get_basic_offense(uint32_t vehIDAtk, int vehIDDef, BOOL isPSICombat,
 	}
 	int baseIDAtk = base_at(Veh[vehIDAtk].xCoord, Veh[vehIDAtk].yCoord);
 	if (baseIDAtk >= 0) {
-		if (has_fac_built(FAC_CHILDREN_CRECHE, vehIDAtk)) {
+		if (has_fac_built(FAC_CHILDREN_CRECHE, baseIDAtk)) {
 			morale++;
 			int moraleSEActive = range(PlayersData[factionIDAtk].socEffectActive.morale, -4, 4);
 			if (moraleSEActive <= -2) {
 				moraleSEActive++;
 			}
 			morale -= moraleSEActive;
-			if (has_fac_built(FAC_BROOD_PIT, vehIDAtk) && protoIDAtk < MaxVehProtoFactionNum
-				&& (Weapon[VehPrototype[vehIDAtk].weaponID].offenseRating < 0
+			if (has_fac_built(FAC_BROOD_PIT, baseIDAtk) && protoIDAtk < MaxVehProtoFactionNum
+				&& (Weapon[VehPrototype[protoIDAtk].weaponID].offenseRating < 0
 					|| protoIDAtk == BSC_SPORE_LAUNCHER)) {
 				morale++;
 			}
 		}
-		else if (has_fac_built(FAC_BROOD_PIT, vehIDAtk) && protoIDAtk < MaxVehProtoFactionNum
-			&& (Weapon[VehPrototype[vehIDAtk].weaponID].offenseRating < 0
+		else if (has_fac_built(FAC_BROOD_PIT, baseIDAtk) && protoIDAtk < MaxVehProtoFactionNum
+			&& (Weapon[VehPrototype[protoIDAtk].weaponID].offenseRating < 0
 				|| protoIDAtk == BSC_SPORE_LAUNCHER)) {
 			morale++;
 			int moraleSEActive = range(PlayersData[factionIDAtk].socEffectActive.morale, -4, 4);
@@ -217,17 +217,19 @@ int __cdecl get_basic_offense(uint32_t vehIDAtk, int vehIDDef, BOOL isPSICombat,
 			if (moraleSEPending >= 2 && moraleSEPending <= 3) {
 				morale++;
 			}
-			if (vehIDDef >= 0 && Veh[vehIDDef].factionID) {
-				if ((protoIDAtk >= MaxVehProtoFactionNum
-					|| (Weapon[VehPrototype[protoIDAtk].weaponID].offenseRating >= 0
-						&& protoIDAtk != BSC_SPORE_LAUNCHER))
-					&& !has_abil(protoIDAtk, ABL_DISSOCIATIVE_WAVE)
-					&& has_abil(Veh[vehIDAtk].protoID, ABL_SOPORIFIC_GAS)) {
-					morale -= 2;
+			if (vehIDDef >= 0) {
+				if (Veh[vehIDDef].factionID) {
+					if ((protoIDAtk >= MaxVehProtoFactionNum
+						|| (Weapon[VehPrototype[protoIDAtk].weaponID].offenseRating >= 0
+							&& protoIDAtk != BSC_SPORE_LAUNCHER))
+						&& !has_abil(protoIDAtk, ABL_DISSOCIATIVE_WAVE)
+						&& has_abil(Veh[vehIDDef].protoID, ABL_SOPORIFIC_GAS)) {
+						morale -= 2;
+					}
 				}
-			}
-			else {
-				morale++;
+				else {
+					morale++;
+				}
 			}
 		}
 	}
@@ -303,8 +305,8 @@ int __cdecl get_basic_defense(uint32_t vehIDDef, int vehIDAtk, BOOL isPSICombat,
 	}
 	if (planDef == PLAN_INFO_WARFARE
 		// bug fix: added vehIDAtk bounds check to prevent potential arbitrary memory read
-		&& Armor[VehPrototype[protoIDDef].armorID].defenseRating == 1 && vehIDAtk >= 0
-		&& VehPrototype[Veh[vehIDAtk].protoID].plan == PLAN_INFO_WARFARE) {
+		&& Armor[VehPrototype[protoIDDef].armorID].defenseRating == 1 && (vehIDAtk < 0
+		|| VehPrototype[Veh[vehIDAtk].protoID].plan != PLAN_INFO_WARFARE)) {
 		return 1;
 	}
 	uint32_t defense = armor_proto(protoIDDef, vehIDAtk, isBombardment);
