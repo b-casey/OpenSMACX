@@ -398,7 +398,7 @@ int __cdecl cost_factor(uint32_t factionID, uint32_t rscType, int baseID) {
 		int growthFactor = PlayersData[factionID].socEffectPending.growth;
 		if (baseID >= 0) {
 			if (has_fac_built(FAC_CHILDREN_CRECHE, baseID)) {
-				growthFactor += 2;
+				growthFactor += 2; // +2 on growth scale
 			}
 			if (Base[baseID].state & BSTATE_GOLDEN_AGE_ACTIVE) {
 				growthFactor += 2;
@@ -651,7 +651,7 @@ void __cdecl base_nutrient() {
 	uint32_t factionID = (*BaseCurrent)->factionIDCurrent;
 	*BaseCurrentGrowthRate = PlayersData[factionID].socEffectPending.growth;
 	if (has_fac_built(FAC_CHILDREN_CRECHE, *BaseIDCurrentSelected)) {
-		*BaseCurrentGrowthRate += 2;
+		*BaseCurrentGrowthRate += 2; // +2 on growth scale
 	}
 	if ((*BaseCurrent)->state & BSTATE_GOLDEN_AGE_ACTIVE) {
 		*BaseCurrentGrowthRate += 2;
@@ -801,8 +801,8 @@ uint32_t __cdecl black_market(int energy) {
 		for (int i = 0, j = 0; i >= -64; i -= 8, j++) {
 			int ineff, factor;
 			if (hasCreche) {
-				ineff = j - 2;
-				factor = i + 16;
+				ineff = j - 2; // +2 on efficiency scale
+				factor = i + 16; // ?
 			}
 			else {
 				ineff = j;
@@ -818,7 +818,7 @@ uint32_t __cdecl black_market(int energy) {
 	}
 	int ineffciency = 4 - PlayersData[factionID].socEffectPending.efficiency;
 	if (hasCreche) {
-		ineffciency -= 2;
+		ineffciency -= 2; // +2 on efficiency scale
 	}
 	if (ineffciency >= 8) {
 		return energy;

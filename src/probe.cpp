@@ -61,7 +61,7 @@ int __cdecl mind_control(uint32_t baseID, uint32_t factionID, BOOL isCornerMarke
 		cost *= 2;
 	}
 	if (has_fac_built(FAC_CHILDREN_CRECHE, baseID)) {
-		cost /= 2;
+		cost /= 2; // Reduces base's vulnerability to enemy mind control
 	}
 	if (has_fac_built(FAC_PUNISHMENT_SPHERE, baseID)) {
 		cost /= 2;

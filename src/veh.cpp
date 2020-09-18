@@ -179,14 +179,9 @@ Status: Complete - testing
 */
 int __cdecl get_basic_offense(uint32_t vehIDAtk, int vehIDDef, BOOL isPSICombat, BOOL isBombardment,
 	BOOL isArtyCombat) { // is this flag actually opposite? non-artillery combat?
-	uint32_t factionIDAtk = Veh[vehIDAtk].factionID, morale;
-	uint32_t protoIDAtk = Veh[vehIDAtk].protoID;
-	if (factionIDAtk) {
-		morale = morale_veh(vehIDAtk, true, false);
-	}
-	else {
-		morale = morale_alien(vehIDAtk, vehIDDef < 0 ? -1 : Veh[vehIDDef].factionID);
-	}
+	uint32_t factionIDAtk = Veh[vehIDAtk].factionID, protoIDAtk = Veh[vehIDAtk].protoID;
+	uint32_t morale = factionIDAtk ? morale_veh(vehIDAtk, true, 0) :
+		morale_alien(vehIDAtk, vehIDDef < 0 ? -1 : Veh[vehIDDef].factionID);
 	int baseIDAtk = base_at(Veh[vehIDAtk].xCoord, Veh[vehIDAtk].yCoord);
 	if (baseIDAtk >= 0) {
 		if (has_fac_built(FAC_CHILDREN_CRECHE, baseIDAtk)) {
@@ -253,9 +248,8 @@ Status: Complete - testing
 */
 int __cdecl get_basic_defense(uint32_t vehIDDef, int vehIDAtk, BOOL isPSICombat, 
 	BOOL isBombardment) {
-	uint32_t factionIDDef = Veh[vehIDDef].factionID, morale;
-	uint32_t protoIDDef = Veh[vehIDDef].protoID;
-	morale = factionIDDef ? morale_veh(vehIDDef, true, false)
+	uint32_t factionIDDef = Veh[vehIDDef].factionID, protoIDDef = Veh[vehIDDef].protoID;
+	uint32_t morale = factionIDDef ? morale_veh(vehIDDef, true, 0)
 		: morale_alien(vehIDDef, vehIDAtk < 0 ? -1 : Veh[vehIDAtk].factionID);
 	int baseIDDef = base_at(Veh[vehIDDef].xCoord, Veh[vehIDDef].yCoord);
 	if (baseIDDef >= 0) {
@@ -1899,7 +1893,7 @@ BOOL __cdecl can_arty(int protoID, BOOL seaTriadRetn) {
 }
 
 /*
-Purpose: Calculate Veh morale.
+Purpose: Calculate Veh morale. TODO: Determine if 2nd param is toggle for display vs actual morale.
 Original Offset: 005C0E40
 Return Value: Morale value
 Status: Complete
@@ -2144,10 +2138,10 @@ uint32_t __cdecl prototype_factor(uint32_t protoID) {
 }
 
 /*
-Purpose: Calculate Veh overall cost including any related to prototypes. Optional output parameter
-         whether there is a prototype cost or not.
+Purpose: Calculate the specified prototype's overall cost to build. Optional output parameter
+		 whether there is an associated 1st time prototype cost (true) or just the base (false).
 Original Offset: 005C1850
-Return Value: Cost
+Return Value: Mineral cost
 Status: Complete - testing
 */
 uint32_t __cdecl veh_cost(uint32_t protoID, int baseID, BOOL *hasProtoCost) {
@@ -2155,7 +2149,7 @@ uint32_t __cdecl veh_cost(uint32_t protoID, int baseID, BOOL *hasProtoCost) {
 	if (baseID >= 0 && protoID < MaxVehProtoFactionNum // bug fix: added baseID bounds check
 		&& (Weapon[VehPrototype[protoID].weaponID].offenseRating < 0
 		|| protoID == BSC_SPORE_LAUNCHER) && has_fac_built(FAC_BROOD_PIT, baseID)) {
-		cost = (cost * 3) / 4;
+		cost = (cost * 3) / 4; // Decrease the cost of alien units by 25%
 	}
 	if (VehPrototype[protoID].plan == PLAN_COLONIZATION && baseID >= 0) {
 		cost = range(cost, 1, 999);
