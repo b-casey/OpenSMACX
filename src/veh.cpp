@@ -50,6 +50,121 @@ int *VehLift_xCoord = (int *)0x009B2278;
 int *VehLift_yCoord = (int *)0x009B2284;
 BOOL *VehBitError = (BOOL *)0x009B228C;
 uint32_t *VehBasicBattleMorale = (uint32_t *)0x00912420; // [2]
+int *VehMoralePlusCount = (int *)0x008C6B54; // only used by say_morale(), optimize to local var?
+
+/*
+Purpose: Craft an output string related to the specified Veh's morale.
+Original Offset: 004B3FD0
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl say_morale(LPSTR moraleOutput, uint32_t vehID, int factionIDvsNative) {
+	uint32_t morale = morale_veh(vehID, false, factionIDvsNative);
+	uint32_t factionID = Veh[vehID].factionID;
+	int protoID = Veh[vehID].protoID;
+	std::string output;
+	if (protoID < MaxVehProtoFactionNum && (Weapon[VehPrototype[protoID].weaponID].offenseRating < 0
+		|| protoID == BSC_SPORE_LAUNCHER)) {
+		output = StringTable->get((int)Morale[morale].nameLifecycle);
+	}
+	else {
+		output = StringTable->get((int)Morale[morale].name);
+	}
+	uint32_t moralePenalty = 0;
+	if (VehPrototype[protoID].plan < PLAN_COLONIZATION) {
+		int homeBaseID = Veh[vehID].homeBaseID;
+		if (homeBaseID >= 0 && Base[homeBaseID].state & BSTATE_DRONE_RIOTS_ACTIVE && morale > 0
+			&& !(Players[factionID].ruleFlags & RFLAG_MORALE)) {
+			output += " (-)";
+			moralePenalty = 1;
+		}
+	}
+	*VehMoralePlusCount = 0;
+	int baseID = base_at(Veh[vehID].xCoord, Veh[vehID].yCoord);
+	if (baseID >= 0 && morale < 6) {
+		if (has_fac_built(FAC_CHILDREN_CRECHE, baseID)) {
+			*VehMoralePlusCount++;
+			int moraleSEActive = range(PlayersData[factionID].socEffectActive.morale, -4, 4);
+			if (moraleSEActive <= -2) {
+				moraleSEActive++;
+			}
+			if (moraleSEActive < 0) {
+				morale += *VehMoralePlusCount;
+				do {
+					if (morale >= 6) {
+						break;
+					}
+					*VehMoralePlusCount++;
+					morale++;
+					moraleSEActive++;
+				} while (moraleSEActive < 0);
+			}
+			if(has_fac_built(FAC_BROOD_PIT, baseID) && protoID < MaxVehProtoFactionNum
+				&& (Weapon[VehPrototype[protoID].weaponID].offenseRating < 0 
+					|| protoID == BSC_SPORE_LAUNCHER)) {
+				*VehMoralePlusCount++;
+			}
+		}
+		else {
+			if (morale < 6 && has_fac_built(FAC_BROOD_PIT, baseID) 
+				&& protoID < MaxVehProtoFactionNum 
+				&& (Weapon[VehPrototype[protoID].weaponID].offenseRating < 0 
+					|| protoID == BSC_SPORE_LAUNCHER)) {
+				*VehMoralePlusCount++;
+				int moraleSEActive = range(PlayersData[factionID].socEffectActive.morale, -4, 4);
+				if (moraleSEActive <= -2) {
+					moraleSEActive++;
+				}
+				if (moraleSEActive < 0) {
+					morale += *VehMoralePlusCount;
+					do {
+						if (morale >= 6) {
+							break;
+						}
+						*VehMoralePlusCount++;
+						morale++;
+						moraleSEActive++;
+					} while (moraleSEActive < 0);
+				}
+			}
+		}
+	}
+	int moraleSEPending = PlayersData[factionID].socEffectPending.morale;
+	if (moraleSEPending == 2 || moraleSEPending == 3) {
+		*VehMoralePlusCount++;
+	}
+	if (!morale) {
+		if (!*VehMoralePlusCount) {
+			*VehMoralePlusCount = 1;
+		}
+		output += " (";
+		for (int i = 0; i < *VehMoralePlusCount; i++) {
+			output += "+";
+		}
+		output += ")";
+	}
+	else if(*VehMoralePlusCount) {
+		output += " (";
+		for (int i = 0; i < *VehMoralePlusCount; i++) {
+			output += "+";
+		}
+		output += ")";
+	}
+	*VehMoralePlusCount -= moralePenalty;
+	if (Veh[vehID].state & VSTATE_DESIGNATE_DEFENDER) {
+		output += "(d)";
+	}
+}
+
+/*
+Purpose: Get the morale string for the specified Veh and store it into stringTemp buffer.
+Original Offset: 004B43C0
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl say_morale(uint32_t vehID, int factionIDvsNative) {
+	say_morale(stringTemp->str, vehID, factionIDvsNative);
+}
 
 /*
 Purpose: Calculate maximum range for Veh drops (air drops, Drop Pods).
@@ -1919,40 +2034,41 @@ uint32_t __cdecl morale_veh(uint32_t vehID, BOOL checkDroneRiot, int factionIDvs
 	if (protoID < MaxVehProtoFactionNum && offenseRating < 0) {
 		return range(Veh[vehID].morale, 0, 6); // Basic Psi Veh
 	}
-	int morale = range(PlayersData[factionID].socEffectActive.morale, -4, 4); // everything else
-	if (morale <= -2) {
-		morale++;
+	// everything else
+	int moraleModifier = range(PlayersData[factionID].socEffectActive.morale, -4, 4);
+	if (moraleModifier <= -2) {
+		moraleModifier++;
 	}
-	else if (morale >= 2) {
-		morale--;
+	else if (moraleModifier >= 2) {
+		moraleModifier--;
 	}
 	int ruleMorale = Players[factionID].ruleMorale; // different from 'SOCIAL, MORALE'
 	if (ruleMorale < 0) { // negative effects 1st
-		morale += ruleMorale;
+		moraleModifier += ruleMorale;
 	}
 	int homeBaseID = Veh[vehID].homeBaseID;
 	if (homeBaseID >= 0) { // home base countering negative effects
-		if (has_fac_built(FAC_CHILDREN_CRECHE, homeBaseID) && morale < 0) {
-			morale /= 2;
+		if (has_fac_built(FAC_CHILDREN_CRECHE, homeBaseID) && moraleModifier < 0) {
+			moraleModifier /= 2;
 		}
 		if (has_fac_built(FAC_BROOD_PIT, homeBaseID) && protoID < MaxVehProtoFactionNum
-			&& (offenseRating < 0 || protoID == BSC_SPORE_LAUNCHER) && morale < 0) {
-			morale /= 2; // never reached due to above 'Basic Psi Veh' checks
+			&& (offenseRating < 0 || protoID == BSC_SPORE_LAUNCHER) && moraleModifier < 0) {
+			moraleModifier /= 2; // never reached due to above 'Basic Psi Veh' checks
 		}
 	}
 	if (ruleMorale > 0) {
-		morale += ruleMorale;
+		moraleModifier += ruleMorale;
 	}
 	BOOL moraleFlag = Players[factionID].ruleFlags & RFLAG_MORALE;
-	if (moraleFlag && morale < 0) {
-		morale = 0;
+	if (moraleFlag && moraleModifier < 0) {
+		moraleModifier = 0;
 	}
 	if (checkDroneRiot && homeBaseID >= 0 && Base[homeBaseID].state & BSTATE_DRONE_RIOTS_ACTIVE
 		&& !moraleFlag) {
-		morale = range(--morale, 0, 6);
+		// bug fix: removed premature range bounding negating negative morale effects
+		moraleModifier--;
 	}
-	morale += Veh[vehID].morale;
-	return range(morale, 0, 6);
+	return range(Veh[vehID].morale + moraleModifier, 0, 6);
 }
 
 /*

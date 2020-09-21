@@ -435,7 +435,7 @@ struct rules_ability {
 
 struct rules_morale {
 	LPSTR name;
-	LPSTR nameNative;
+	LPSTR nameLifecycle;
 };
 
 struct rules_combat_mode {
@@ -486,7 +486,10 @@ extern int *VehLift_xCoord;
 extern int *VehLift_yCoord;
 extern BOOL *VehBitError;
 extern uint32_t *VehBasicBattleMorale;
+extern int *VehMoralePlusCount;
 
+OPENSMACX_API void __cdecl say_morale(LPSTR moraleOutput, uint32_t vehID, int factionIDvsNative);
+OPENSMACX_API void __cdecl say_morale(uint32_t vehID, int factionIDvsNative);
 OPENSMACX_API uint32_t __cdecl drop_range(int factionID);
 OPENSMACX_API uint32_t __cdecl planet_buster2(int protoID);
 OPENSMACX_API uint32_t __cdecl planet_buster(int vehID);

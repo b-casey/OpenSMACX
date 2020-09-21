@@ -544,6 +544,7 @@ OPENSMACX_API void __cdecl del_site(uint32_t factionID, int type, int xCoord, in
 	int proximity);
 OPENSMACX_API uint32_t __cdecl corner_market(uint32_t factionID);
 OPENSMACX_API void __cdecl see_map_check();
+OPENSMACX_API void __cdecl compute_faction_modifiers(uint32_t factionID);
 OPENSMACX_API void __cdecl social_calc(social_category *category, social_effect *effect,
 	uint32_t factionID, BOOL tgl1, BOOL isQuickCalc);
 OPENSMACX_API void __cdecl social_upkeep(uint32_t factionID);

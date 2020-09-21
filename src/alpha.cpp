@@ -1023,7 +1023,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	for (int i = 0; i < MaxMoraleNum; i++) {
 		text_get();
 		Morale[i].name = text_item_string();
-		Morale[i].nameNative = text_item_string();
+		Morale[i].nameLifecycle = text_item_string();
 	}
 	// Defense Modes
 	if (text_open(AlphaxFileID, "DEFENSEMODES")) {

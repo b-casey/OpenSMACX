@@ -671,6 +671,23 @@ void __cdecl see_map_check() {
 }
 
 /*
+Purpose: Calculate the base social engineering modifiers for the specified faction.
+Original Offset: 005B0D70
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl compute_faction_modifiers(uint32_t factionID) {
+	ZeroMemory(&PlayersData[factionID].socEffectBase, sizeof(social_effect));
+	int count = Players[factionID].factionBonusCount;
+	for (int i = 0; i < count; i++) {
+		if (Players[factionID].factionBonusID[i] & RULE_SOCIAL) {
+			*(&PlayersData[factionID].socEffectBase.economy
+				+ Players[factionID].factionBonusVal1[i]) += Players[factionID].factionBonusVal2[i];
+		}
+	}
+}
+
+/*
 Purpose: Calculate the social engineering effect modifiers for the specified faction.
 Original Offset: 005B4210
 Return Value: n/a
@@ -717,7 +734,7 @@ void __cdecl social_calc(social_category *category, social_effect *effect, uint3
 		if (has_temple(factionID)) {
 			effect->planet++;
 			if (Players[factionID].ruleFlags & RFLAG_ALIEN) {
-				effect->research++; // undocumented bonus for ALIEN faction
+				effect->research++; // bonus documented in conceptsx.txt but not manual
 			}
 		}
 		int count = 11;
