@@ -296,7 +296,7 @@ int __cdecl get_basic_offense(uint32_t vehIDAtk, int vehIDDef, BOOL isPSICombat,
 	BOOL isArtyCombat) { // is this flag actually opposite? non-artillery combat?
 	uint32_t factionIDAtk = Veh[vehIDAtk].factionID, protoIDAtk = Veh[vehIDAtk].protoID;
 	uint32_t morale = factionIDAtk ? morale_veh(vehIDAtk, true, 0) :
-		morale_alien(vehIDAtk, vehIDDef < 0 ? -1 : Veh[vehIDDef].factionID);
+		morale_alien(vehIDAtk, vehIDDef >= 0 ? Veh[vehIDDef].factionID : -1);
 	int baseIDAtk = base_at(Veh[vehIDAtk].xCoord, Veh[vehIDAtk].yCoord);
 	if (baseIDAtk >= 0) {
 		if (has_fac_built(FAC_CHILDREN_CRECHE, baseIDAtk)) {
@@ -359,13 +359,13 @@ int __cdecl get_basic_offense(uint32_t vehIDAtk, int vehIDDef, BOOL isPSICombat,
 Purpose: Get the basic defense value for a defending Veh with an optional attacker Veh parameter.
 Original Offset: 00501940
 Return Value: Basic defense
-Status: Complete - testing
+Status: Complete
 */
 int __cdecl get_basic_defense(uint32_t vehIDDef, int vehIDAtk, BOOL isPSICombat, 
 	BOOL isBombardment) {
 	uint32_t factionIDDef = Veh[vehIDDef].factionID, protoIDDef = Veh[vehIDDef].protoID;
 	uint32_t morale = factionIDDef ? morale_veh(vehIDDef, true, 0)
-		: morale_alien(vehIDDef, vehIDAtk < 0 ? -1 : Veh[vehIDAtk].factionID);
+		: morale_alien(vehIDDef, vehIDAtk >= 0 ? Veh[vehIDAtk].factionID : -1);
 	int baseIDDef = base_at(Veh[vehIDDef].xCoord, Veh[vehIDDef].yCoord);
 	if (baseIDDef >= 0) {
 		if (has_fac_built(FAC_CHILDREN_CRECHE, baseIDDef)) {
@@ -385,7 +385,7 @@ int __cdecl get_basic_defense(uint32_t vehIDDef, int vehIDAtk, BOOL isPSICombat,
 			&& (Weapon[VehPrototype[protoIDDef].weaponID].offenseRating < 0
 				|| protoIDDef == BSC_SPORE_LAUNCHER)) {
 			morale++;
-			int moraleSEActive = range(PlayersData[factionIDDef].socEffectActive.morale, -4, 0);
+			int moraleSEActive = range(PlayersData[factionIDDef].socEffectActive.morale, -4, 4);
 			if (moraleSEActive <= -2) {
 				moraleSEActive++;
 			}
@@ -413,9 +413,9 @@ int __cdecl get_basic_defense(uint32_t vehIDDef, int vehIDAtk, BOOL isPSICombat,
 		return 1;
 	}
 	if (planDef == PLAN_INFO_WARFARE
+		&& Armor[VehPrototype[protoIDDef].armorID].defenseRating == 1
 		// bug fix: added vehIDAtk bounds check to prevent potential arbitrary memory read
-		&& Armor[VehPrototype[protoIDDef].armorID].defenseRating == 1 && (vehIDAtk < 0
-		|| VehPrototype[Veh[vehIDAtk].protoID].plan != PLAN_INFO_WARFARE)) {
+		&& (vehIDAtk < 0 || VehPrototype[Veh[vehIDAtk].protoID].plan != PLAN_INFO_WARFARE)) {
 		return 1;
 	}
 	uint32_t defense = armor_proto(protoIDDef, vehIDAtk, isBombardment);
