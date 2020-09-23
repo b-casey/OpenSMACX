@@ -49,118 +49,106 @@ int *VehDropLiftVehID = (int *)0x009B2280;
 int *VehLift_xCoord = (int *)0x009B2278;
 int *VehLift_yCoord = (int *)0x009B2284;
 BOOL *VehBitError = (BOOL *)0x009B228C;
-uint32_t *VehBasicBattleMorale = (uint32_t *)0x00912420; // [2]
-int *VehMoralePlusCount = (int *)0x008C6B54; // only used by say_morale(), optimize to local var?
+uint32_t *VehBasicBattleMorale = (uint32_t *)0x00912420; // [2] ; [0] offense, [1] defense?
+int VehMoraleModifierCount; // only used by say_morale(), optimize to local var?
 
 /*
 Purpose: Craft an output string related to the specified Veh's morale.
 Original Offset: 004B3FD0
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl say_morale(LPSTR moraleOutput, uint32_t vehID, int factionIDvsNative) {
-	uint32_t morale = morale_veh(vehID, false, factionIDvsNative);
-	uint32_t factionID = Veh[vehID].factionID;
+	uint32_t morale = morale_veh(vehID, false, factionIDvsNative), factionID = Veh[vehID].factionID;
 	int protoID = Veh[vehID].protoID;
-	std::string output;
-	if (protoID < MaxVehProtoFactionNum && (Weapon[VehPrototype[protoID].weaponID].offenseRating < 0
-		|| protoID == BSC_SPORE_LAUNCHER)) {
-		output = StringTable->get((int)Morale[morale].nameLifecycle);
-	}
-	else {
-		output = StringTable->get((int)Morale[morale].name);
-	}
-	uint32_t moralePenalty = 0;
+	std::string output = (protoID < MaxVehProtoFactionNum &&
+		(Weapon[VehPrototype[protoID].weaponID].offenseRating < 0 || protoID == BSC_SPORE_LAUNCHER))
+		? StringTable->get((int)Morale[morale].nameLifecycle)
+		: StringTable->get((int)Morale[morale].name);
 	if (VehPrototype[protoID].plan < PLAN_COLONIZATION) {
+		uint32_t moralePenalty = 0;
 		int homeBaseID = Veh[vehID].homeBaseID;
 		if (homeBaseID >= 0 && Base[homeBaseID].state & BSTATE_DRONE_RIOTS_ACTIVE && morale > 0
 			&& !(Players[factionID].ruleFlags & RFLAG_MORALE)) {
 			output += " (-)";
 			moralePenalty = 1;
 		}
-	}
-	*VehMoralePlusCount = 0;
-	int baseID = base_at(Veh[vehID].xCoord, Veh[vehID].yCoord);
-	if (baseID >= 0 && morale < 6) {
-		if (has_fac_built(FAC_CHILDREN_CRECHE, baseID)) {
-			*VehMoralePlusCount++;
-			int moraleSEActive = range(PlayersData[factionID].socEffectActive.morale, -4, 4);
-			if (moraleSEActive <= -2) {
-				moraleSEActive++;
-			}
-			if (moraleSEActive < 0) {
-				morale += *VehMoralePlusCount;
-				do {
-					if (morale >= 6) {
-						break;
-					}
-					*VehMoralePlusCount++;
-					morale++;
-					moraleSEActive++;
-				} while (moraleSEActive < 0);
-			}
-			if(has_fac_built(FAC_BROOD_PIT, baseID) && protoID < MaxVehProtoFactionNum
-				&& (Weapon[VehPrototype[protoID].weaponID].offenseRating < 0 
-					|| protoID == BSC_SPORE_LAUNCHER)) {
-				*VehMoralePlusCount++;
-			}
-		}
-		else {
-			if (morale < 6 && has_fac_built(FAC_BROOD_PIT, baseID) 
-				&& protoID < MaxVehProtoFactionNum 
-				&& (Weapon[VehPrototype[protoID].weaponID].offenseRating < 0 
-					|| protoID == BSC_SPORE_LAUNCHER)) {
-				*VehMoralePlusCount++;
+		VehMoraleModifierCount = 0;
+		int baseID = base_at(Veh[vehID].xCoord, Veh[vehID].yCoord);
+		if (baseID >= 0 && morale < 6) {
+			if (has_fac_built(FAC_CHILDREN_CRECHE, baseID)) {
+				VehMoraleModifierCount++;
 				int moraleSEActive = range(PlayersData[factionID].socEffectActive.morale, -4, 4);
 				if (moraleSEActive <= -2) {
 					moraleSEActive++;
 				}
 				if (moraleSEActive < 0) {
-					morale += *VehMoralePlusCount;
+					int moraleCap = morale + VehMoraleModifierCount;
 					do {
-						if (morale >= 6) {
+						if (moraleCap >= 6) {
 							break;
 						}
-						*VehMoralePlusCount++;
-						morale++;
+						VehMoraleModifierCount++;
+						moraleCap++;
+						moraleSEActive++;
+					} while (moraleSEActive < 0);
+				}
+				if(has_fac_built(FAC_BROOD_PIT, baseID) && protoID < MaxVehProtoFactionNum
+					&& (Weapon[VehPrototype[protoID].weaponID].offenseRating < 0 
+						|| protoID == BSC_SPORE_LAUNCHER)) {
+					VehMoraleModifierCount++;
+				}
+			}
+			else if (morale < 6 && has_fac_built(FAC_BROOD_PIT, baseID)
+				&& protoID < MaxVehProtoFactionNum
+				&& (Weapon[VehPrototype[protoID].weaponID].offenseRating < 0
+					|| protoID == BSC_SPORE_LAUNCHER)) {
+				VehMoraleModifierCount++;
+				int moraleSEActive = range(PlayersData[factionID].socEffectActive.morale, -4, 4);
+				if (moraleSEActive <= -2) {
+					moraleSEActive++;
+				}
+				if (moraleSEActive < 0) {
+					int moraleCap = morale + VehMoraleModifierCount;
+					do {
+						if (moraleCap >= 6) {
+							break;
+						}
+						VehMoraleModifierCount++;
+						moraleCap++;
 						moraleSEActive++;
 					} while (moraleSEActive < 0);
 				}
 			}
 		}
-	}
-	int moraleSEPending = PlayersData[factionID].socEffectPending.morale;
-	if (moraleSEPending == 2 || moraleSEPending == 3) {
-		*VehMoralePlusCount++;
-	}
-	if (!morale) {
-		if (!*VehMoralePlusCount) {
-			*VehMoralePlusCount = 1;
+		int moraleSEPending = PlayersData[factionID].socEffectPending.morale;
+		if (moraleSEPending == 2 || moraleSEPending == 3) {
+			VehMoraleModifierCount++;
 		}
-		output += " (";
-		for (int i = 0; i < *VehMoralePlusCount; i++) {
-			output += "+";
+		if (!morale && !VehMoraleModifierCount) {
+			VehMoraleModifierCount = 1;
 		}
-		output += ")";
-	}
-	else if(*VehMoralePlusCount) {
-		output += " (";
-		for (int i = 0; i < *VehMoralePlusCount; i++) {
-			output += "+";
+		if(VehMoraleModifierCount) {
+			output += " (";
+			for (int i = 0; i < VehMoraleModifierCount; i++) {
+				output += "+";
+			}
+			output += ")";
 		}
-		output += ")";
+		VehMoraleModifierCount -= moralePenalty;
+		if (Veh[vehID].state & VSTATE_DESIGNATE_DEFENDER) {
+			output += "(d)";
+		}
 	}
-	*VehMoralePlusCount -= moralePenalty;
-	if (Veh[vehID].state & VSTATE_DESIGNATE_DEFENDER) {
-		output += "(d)";
-	}
+	// TODO: assumes at least 1032 char nulled buffer (stringTemp), eventually remove
+	strcat_s(moraleOutput, 1032, output.c_str());
 }
 
 /*
 Purpose: Get the morale string for the specified Veh and store it into stringTemp buffer.
 Original Offset: 004B43C0
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl say_morale(uint32_t vehID, int factionIDvsNative) {
 	say_morale(stringTemp->str, vehID, factionIDvsNative);
@@ -290,10 +278,10 @@ int __cdecl psi_factor(int combatRatio, int factionID, BOOL isAttack, BOOL isFun
 Purpose: Get the basic offense value for an attacking Veh with an optional defender Veh parameter.
 Original Offset: 005015B0
 Return Value: Basic offense
-Status: Complete - testing
+Status: Complete
 */
 int __cdecl get_basic_offense(uint32_t vehIDAtk, int vehIDDef, BOOL isPSICombat, BOOL isBombardment,
-	BOOL isArtyCombat) { // is this flag actually opposite? non-artillery combat?
+	BOOL isUnkTgl) { // artillery/duel related? Is offense of defender?
 	uint32_t factionIDAtk = Veh[vehIDAtk].factionID, protoIDAtk = Veh[vehIDAtk].protoID;
 	uint32_t morale = factionIDAtk ? morale_veh(vehIDAtk, true, 0) :
 		morale_alien(vehIDAtk, vehIDDef >= 0 ? Veh[vehIDDef].factionID : -1);
@@ -322,7 +310,7 @@ int __cdecl get_basic_offense(uint32_t vehIDAtk, int vehIDDef, BOOL isPSICombat,
 			}
 			morale -= moraleSEActive;
 		}
-		if (isArtyCombat) {
+		if (isUnkTgl) {
 			int moraleSEPending = PlayersData[factionIDAtk].socEffectPending.morale;
 			if (moraleSEPending >= 2 && moraleSEPending <= 3) {
 				morale++;
@@ -343,10 +331,10 @@ int __cdecl get_basic_offense(uint32_t vehIDAtk, int vehIDDef, BOOL isPSICombat,
 			}
 		}
 	}
-	if (isArtyCombat) {
+	if (isUnkTgl) {
 		morale = range(morale, 1, 6);
 	}
-	VehBasicBattleMorale[isArtyCombat != 0] = morale; // shifted up from original; does it need !=0?
+	VehBasicBattleMorale[isUnkTgl != 0] = morale; // shifted up from original
 	morale += 6;
 	uint32_t offense = offense_proto(protoIDAtk, vehIDDef, isBombardment);
 	if (isPSICombat) {
@@ -2258,7 +2246,7 @@ Purpose: Calculate the specified prototype's overall cost to build. Optional out
 		 whether there is an associated 1st time prototype cost (true) or just the base (false).
 Original Offset: 005C1850
 Return Value: Mineral cost
-Status: Complete - testing
+Status: Complete
 */
 uint32_t __cdecl veh_cost(uint32_t protoID, int baseID, BOOL *hasProtoCost) {
 	uint32_t cost = VehPrototype[protoID].cost;
@@ -2270,20 +2258,14 @@ uint32_t __cdecl veh_cost(uint32_t protoID, int baseID, BOOL *hasProtoCost) {
 	if (VehPrototype[protoID].plan == PLAN_COLONIZATION && baseID >= 0) {
 		cost = range(cost, 1, 999);
 	}
-	if (protoID < MaxVehProtoFactionNum || VehPrototype[protoID].flags & PROTO_TYPED_COMPLETE) {
-		if (hasProtoCost) {
-			*hasProtoCost = false;
-		}
-	}
-	else {
-		uint32_t protoCost = (prototype_factor(protoID) * base_cost(protoID) + 50) / 100;
-		if (baseID >= 0 && has_fac_built(FAC_SKUNKWORKS, baseID)) {
-			protoCost = 0;
-		}
+	uint32_t protoCost = 0;
+	if (protoID >= MaxVehProtoFactionNum && !(VehPrototype[protoID].flags & PROTO_TYPED_COMPLETE)) {
+		protoCost = (baseID >= 0 && has_fac_built(FAC_SKUNKWORKS, baseID)) ? 0 // moved checks up
+			: (prototype_factor(protoID) * base_cost(protoID) + 50) / 100;
 		cost += protoCost;
-		if (hasProtoCost) {
-			*hasProtoCost = protoCost != 0;
-		}
+	}
+	if (hasProtoCost) {
+		*hasProtoCost = protoCost != 0;
 	}
 	return cost;
 }

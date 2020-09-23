@@ -486,7 +486,7 @@ extern int *VehLift_xCoord;
 extern int *VehLift_yCoord;
 extern BOOL *VehBitError;
 extern uint32_t *VehBasicBattleMorale;
-extern int *VehMoralePlusCount;
+extern int VehMoraleModifierCount;
 
 OPENSMACX_API void __cdecl say_morale(LPSTR moraleOutput, uint32_t vehID, int factionIDvsNative);
 OPENSMACX_API void __cdecl say_morale(uint32_t vehID, int factionIDvsNative);
@@ -497,7 +497,7 @@ OPENSMACX_API uint32_t __cdecl morale_alien(int vehID, int factionIDvsNative);
 OPENSMACX_API int __cdecl psi_factor(int combatRatio, int factionID, BOOL isAttack,
 	BOOL isFungalTower);
 OPENSMACX_API int __cdecl get_basic_offense(uint32_t vehIDAtk, int vehIDDef, BOOL isPSICombat, 
-	BOOL isBombardment, BOOL isArtyCombat);
+	BOOL isBombardment, BOOL isUnkTgl);
 OPENSMACX_API int __cdecl get_basic_defense(uint32_t vehIDDef, int vehIDAtk, BOOL isPSICombat,
 	BOOL isBombardment);
 OPENSMACX_API void __cdecl go_to(int vehID, char type, int xCoord, int yCoord);

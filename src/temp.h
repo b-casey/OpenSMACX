@@ -91,10 +91,6 @@ extern func12 *enemy_capabilities_OG;
 ///
 typedef void funct1(social_category *, social_effect *, uint32_t, BOOL, BOOL);
 extern funct1 *social_calc_OG;
-typedef int funct2(uint32_t, int, BOOL, BOOL, BOOL);
-extern funct2 *get_basic_offense_OG;
-typedef int funct3(uint32_t, int, BOOL, BOOL);
-extern funct3 *get_basic_defense_OG;
 //
 extern char1032 *stringTemp;
 extern char256 *ParseStrBuffer;

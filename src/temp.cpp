@@ -64,8 +64,6 @@ func8 *parse_string_OG = (func8 *)0x00625880;
 func12 *enemy_capabilities_OG = (func12 *)0x00560DD0;
 //
 funct1 *social_calc_OG = (funct1 *)0x005B4210;
-funct2 *get_basic_offense_OG = (funct2 *)0x005015B0;
-funct3 *get_basic_defense_OG = (funct3 *)0x00501940;
 ///
 char1032 *stringTemp = (char1032 *)0x009B86A0;
 char256 *ParseStrBuffer = (char256 *)0x009BB5E8;
@@ -86,23 +84,6 @@ int __cdecl tester() {
 	log_set_state(true);
 	log_say("Start test", 0, 0, 0);
 	//log_say("size", sizeof(social_effect), sizeof(player_data), 0);
-
-	for (int a = 0; a < 2; a++) {
-		for (int b = 0; b < 2; b++) {
-			for (int d = 0; d < *VehCurrentCount; d++) {
-				for (int e = -1; e < *VehCurrentCount; e++) {
-					if (get_basic_defense(d, e, a, b) != get_basic_defense_OG(d, e, a, b)) {
-						log_say("get_basic_defense_error:", d, e, a);
-					}
-					for (int c = 0; c < 2; c++) {
-						if (get_basic_offense(d, e, a, b, c) != get_basic_offense_OG(d, e, a, b, c)) {
-							log_say("get_basic_offense_error:", d, e, a);
-						}
-					}
-				}
-			}
-		}
-	}
 
 	/*
 	social_category temp;
