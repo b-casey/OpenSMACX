@@ -1355,10 +1355,10 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x000B43C0) # ?say_morale@@YAXIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*425))
-	bin_app.seek(0x001015B0) # ?get_basic_offense@@YAHIHHHH@Z
+	bin_app.seek(0x001015B0) # ?get_basic_offense@@YAHIHIHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*426))
-	bin_app.seek(0x00101940) # ?get_basic_defense@@YAHIHHH@Z
+	bin_app.seek(0x00101940) # ?get_basic_defense@@YAHIHIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*427))
 	bin_app.seek(0x001C1850) # ?veh_cost@@YAIIHPAH@Z
