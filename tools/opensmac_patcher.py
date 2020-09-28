@@ -51,7 +51,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
 	bin_app = mmap.mmap(f.fileno(), 0)
-	# next: 424
+	# next: 431
 	#
 	
 	# ALPHA
@@ -1348,7 +1348,28 @@ with open(exe_path, "r+b") as f:
 	bin_app.write(struct.pack("<L", addr+4*394))
 	bin_app.seek(0x001B6060) # ?wake_stack@@YAXH@Z
 	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*395))	
+	bin_app.write(struct.pack("<L", addr+4*395))
+	bin_app.seek(0x000B3FD0) # ?say_morale@@YAXPADIH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*424))
+	bin_app.seek(0x000B43C0) # ?say_morale@@YAXIH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*425))
+	bin_app.seek(0x001015B0) # ?get_basic_offense@@YAHIHHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*426))
+	bin_app.seek(0x00101940) # ?get_basic_defense@@YAHIHHH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*427))
+	bin_app.seek(0x001C1850) # ?veh_cost@@YAIIHPAH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*428))
+	bin_app.seek(0x00101D30) # ?battle_init@@YAXXZ
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*429))
+	bin_app.seek(0x00101D50) # ?add_bat@@YAXIHPBD@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*430))	
 	#
 	print("Functions redirected: %d" % count)
 	print("Done!")

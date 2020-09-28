@@ -487,21 +487,33 @@ extern int *VehLift_yCoord;
 extern BOOL *VehBitError;
 extern uint32_t *VehBasicBattleMorale;
 extern int VehMoraleModifierCount;
+// Battle related globals
+extern uint32_t *VehBattleModCount;
+extern BOOL *VehBattleTglUnk;
+extern int *VehBattleModifier;
+extern LPSTR *VehBattleDisplay;
+extern LPSTR VehBattleDisplayTerrain;
 
 OPENSMACX_API void __cdecl say_morale(LPSTR moraleOutput, uint32_t vehID, int factionIDvsNative);
 OPENSMACX_API void __cdecl say_morale(uint32_t vehID, int factionIDvsNative);
 OPENSMACX_API uint32_t __cdecl drop_range(int factionID);
 OPENSMACX_API uint32_t __cdecl planet_buster2(int protoID);
 OPENSMACX_API uint32_t __cdecl planet_buster(int vehID);
+OPENSMACX_API uint32_t __cdecl defense_value(uint32_t factionID, uint32_t xCoord, uint32_t yCoord,
+	uint32_t vehIDDef, int vehIDAtk);
 OPENSMACX_API uint32_t __cdecl morale_alien(int vehID, int factionIDvsNative);
 OPENSMACX_API int __cdecl psi_factor(int combatRatio, int factionID, BOOL isAttack,
 	BOOL isFungalTower);
-OPENSMACX_API int __cdecl get_basic_offense(uint32_t vehIDAtk, int vehIDDef, BOOL isPSICombat, 
+OPENSMACX_API int __cdecl get_basic_offense(uint32_t vehIDAtk, int vehIDDef, uint32_t psiCombatType,
 	BOOL isBombardment, BOOL isUnkTgl);
-OPENSMACX_API int __cdecl get_basic_defense(uint32_t vehIDDef, int vehIDAtk, BOOL isPSICombat,
+OPENSMACX_API int __cdecl get_basic_defense(uint32_t vehIDDef, int vehIDAtk, uint32_t psiCombatType,
 	BOOL isBombardment);
-OPENSMACX_API void __cdecl go_to(int vehID, char type, int xCoord, int yCoord);
+OPENSMACX_API void __cdecl battle_init();
+OPENSMACX_API void __cdecl add_bat(uint32_t type, int modifier, LPCSTR displayStr);
+OPENSMACX_API void __cdecl battle_compute(int vehIDAtk, int vehIDDef, int *offenseOutput,
+	int *defenseOutput, int combatType);
 OPENSMACX_API void __cdecl invasions(uint32_t baseID);
+OPENSMACX_API void __cdecl go_to(int vehID, char type, int xCoord, int yCoord);
 OPENSMACX_API int __cdecl veh_top(int vehID);
 OPENSMACX_API uint32_t __cdecl veh_moves(int vehID);
 OPENSMACX_API uint32_t __cdecl proto_power(int vehID);
