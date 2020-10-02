@@ -123,6 +123,7 @@ enum player_flags_bitfield {
 	PFLAG_UNK_20 = 0x20,
 	PFLAG_MAP_REVEALED = 0x200,
 	PFLAG_GENETIC_PLAGUE_INTRO = 0x400, // +1 to defense against after 1st time faction experiences
+	PFLAG_BEEN_ELECTED_GOVERNOR = 0x8000, // used to determine whether #GOVERNOR has been displayed
 	PFLAG_UNK_20000 = 0x20000,
 	PFLAG_STRAT_ATK_ENEMY_HQ = 0x200000,
 	PFLAG_COOP_WITH_HUMAN = 0x400000,
@@ -306,7 +307,7 @@ struct player_data {
 	int sanctionTurns; // Turns left for economic sanctions imposed by other factions for atrocities
 	int loanBalance[8]; // Loan balance remaining this faction owes another to be paid over term
 	int loanPayment[8]; // The per turn payment amount this faction owes another faction
-	char gap_104[32];
+	int unk_12[8];
 	int integrityBlemishes; // Blacken
 	int globalReputation; // ? integrity? related to signing treaties, freeing faction
 	int diploUnk_1[8]; // ? rights (vs wrongs below)? gift, bribe; Gifts and bribes we have received
@@ -344,9 +345,8 @@ struct player_data {
 	int techFungusUnk; // PSI? Dropped mechanic?
 	int SE_AllocPsych;
 	int SE_AllocLabs;
-	int unk_25;
-	char gap_330[44];
-	int techRanking; // Twice the number of techs discovered
+	uint32_t techPactSharedGoals[12]; // Bitfield; Suggested techID goals from pacts (TEAMTECH)
+	int techRanking; // Twice the number of techs achieved
 	int unk_26;
 	uint32_t satODPDeployed;
 	int theoryOfEverything;
@@ -371,7 +371,8 @@ struct player_data {
 	int unk_32;
 	char unk_33;
 	char unk_34;
-	char gap_462[2];
+	char unk_35;
+	char unk_36;
 	int planetEcology;
 	int baseIDAtkTarget; // Battle planning of base to attack, -1 if not set
 	int unk_37;
@@ -442,10 +443,10 @@ struct player_data {
 	int unk_95;
 	int unk_96;
 	int unk_97;
-	int unk_98;
-	int unk_99;
-	char gap_2058[4];
-	int unk_100[8];
+	uint32_t techAchieved; // count of technology faction has discovered/achieved
+	int timeBonusCount; // MP: Each is worth amount in seconds under Time Controls Extra
+	int unk_99; // unused?
+	uint32_t secretProjectIntel[8]; // Bitfield; News of SPs other factions are working on
 	int cornerMarketTurn;
 	int cornerMarketActive;
 	int unk_101;
@@ -506,9 +507,9 @@ extern uint32_t *FactionRankings;
 extern uint32_t *RankingFactionIDUnk1;
 extern uint32_t *RankingFactionIDUnk2;
 extern uint32_t *FactionRankingsUnk;
-extern uint32_t *DiploCurrentFriction;
-extern uint32_t *DiploPrimaryFactionID;
-extern uint32_t *DiploSecondaryFactionID;
+extern int *DiploFriction;
+extern uint32_t *DiploFrictionFactionIDWith;
+extern uint32_t *DiploFrictionFactionID;
 
 OPENSMACX_API BOOL __cdecl is_human(uint32_t factionID);
 OPENSMACX_API BOOL __cdecl is_alive(uint32_t factionID);
@@ -525,7 +526,7 @@ OPENSMACX_API BOOL __cdecl at_climax(uint32_t factionID);
 OPENSMACX_API void __cdecl cause_friction(uint32_t factionID, uint32_t factionIDWith, int friction);
 OPENSMACX_API uint32_t __cdecl get_mood(int friction);
 OPENSMACX_API uint32_t __cdecl reputation(uint32_t factionID, uint32_t factionIDWith);
-OPENSMACX_API uint32_t __cdecl get_patience(uint32_t factionID, uint32_t factionIDWith);
+OPENSMACX_API int __cdecl get_patience(uint32_t factionIDWith, uint32_t factionID);
 OPENSMACX_API uint32_t __cdecl energy_value(uint32_t loanPrincipal);
 OPENSMACX_API void __cdecl set_treaty(uint32_t factionID, uint32_t factionIDWith, uint32_t treaty,
 	BOOL set);

@@ -29,7 +29,7 @@
 #include "veh.h"
 
 rules_technology *Technology = (rules_technology *)0x0094F358;
-uint8_t *GameTechDiscovered = (uint8_t *)0x009A6670;
+uint8_t *GameTechAchieved = (uint8_t *)0x009A6670;
 rules_mandate *Mandate = (rules_mandate *)0x0094B4A0;
 int *TechValidCount = (int *)0x00949730;
 int *TechCommerceCount = (int *)0x00949734;
@@ -153,7 +153,7 @@ BOOL __cdecl has_tech(int techID, int factionID) {
 		// "none, disable" ; valid #TECH preqTech entry
 		return false;
 	}
-	return ((1 << factionID) & GameTechDiscovered[techID]) != 0;
+	return ((1 << factionID) & GameTechAchieved[techID]) != 0;
 }
 
 /*
@@ -328,9 +328,9 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 		}
 		BOOL isHuman = is_human(factionID);
 		if (!isHuman && !has_tech(techID, factionID) && simpleCalc) {
-			uint32_t discoverCount = bit_count(GameTechDiscovered[techID]);
-			if (discoverCount > 1) {
-				valueRet += 2 - 2 * discoverCount; // if more than 1 faction has tech, inc priority
+			uint32_t achievedCount = bit_count(GameTechAchieved[techID]);
+			if (achievedCount > 1) {
+				valueRet += 2 - 2 * achievedCount; // if more than 1 faction has tech, inc priority
 			}
 			int searchLvl = 1;
 			for (int i = 0; i < MaxTechnologyNum; i++) {
@@ -416,7 +416,7 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 		if ((aiWealth || !*MapCloudCover) && tech_is_preq(techID, TECH_ENVECON, 9999)) {
 			valueRet *= 2;
 		}
-		if (Technology[techID].flags & TFLAG_SECRETS && !GameTechDiscovered[techID]
+		if (Technology[techID].flags & TFLAG_SECRETS && !GameTechAchieved[techID]
 			&& !(*GameRules & RULES_BLIND_RESEARCH)) {
 			valueRet *= (aiPower + 1) * 2;
 		}
@@ -472,7 +472,7 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 		if (aiTech || !aiPower) {
 			for (int i = 0; i < MaxTechnologyNum; i++) {
 				if (!has_tech(i, factionID) && Technology[i].flags & TFLAG_SECRETS
-					&& !GameTechDiscovered[i] && tech_is_preq(techID, i, 1)) {
+					&& !GameTechAchieved[i] && tech_is_preq(techID, i, 1)) {
 					valueRet *= 3;
 				}
 			}
@@ -624,7 +624,7 @@ uint32_t __cdecl tech_rate(uint32_t factionID) {
 	if (PlayersData[factionID].techCost >= 0) {
 		return PlayersData[factionID].techCost; // already set
 	}
-	if (!Rules->TechDiscovRatePctStd) {
+	if (!Rules->TechDiscoveryRatePctStd) {
 		return 999999999; // max cost
 	}
 	uint32_t playerFactor = range(PlayersData[factionID].earnedTechsSaved * 2
@@ -653,8 +653,8 @@ uint32_t __cdecl tech_rate(uint32_t factionID) {
 		- range((topFactor - diffLvl - playerFactor + 7) / (8 - diffLvl),
 			0, diffLvl * finFactor / 10 + 1))
 		* range(playerFactor - reschBase, 1, 99999);
-	if (Rules->TechDiscovRatePctStd != 100) {
-		discovRate = 100 * discovRate / Rules->TechDiscovRatePctStd;
+	if (Rules->TechDiscoveryRatePctStd != 100) {
+		discovRate = 100 * discovRate / Rules->TechDiscoveryRatePctStd;
 	}
 	if (Players[factionID].ruleTechcost != 100) {
 		discovRate = discovRate * Players[factionID].ruleTechcost / 100;

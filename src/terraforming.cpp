@@ -44,7 +44,7 @@ uint32_t __cdecl terraform_cost(int xCoord, int yCoord, uint32_t factionID) {
 	cost *= 2;
 	if (alt < ALT_SHORE_LINE) {
 		cost *= 2;
-		if (!GameTechDiscovered[TECH_DOCAIR]) {
+		if (!GameTechAchieved[TECH_DOCAIR]) {
 			cost *= 2;
 		}
 	}

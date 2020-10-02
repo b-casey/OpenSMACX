@@ -32,12 +32,12 @@ enum game_state_bitfield { // used by GameState
 	STATE_UNK_100 = 0x100, // set or unset in Path::continents
 	STATE_UNK_200 = 0x200,
 	STATE_UNK_400 = 0x400,
-	STATE_UNK_800 = 0x800,
+	STATE_UNK_800 = 0x800, // time expired? MP related? NOBONUSATEND
 	STATE_DEBUG_MODE = 0x1000,
 	STATE_VICTORY_CONQUER = 0x2000,
-	STATE_UNK_4000 = 0x4000, // council related?
+	STATE_DISPLAYED_COUNCIL_AVAIL_MSG = 0x4000, // set when #COUNCILOPEN is displayed to show once
 	STATE_SCN_VICT_TERRITORY_COUNT_OBJ = 0x8000,
-	STATE_UNK_10000 = 0x10000,
+	STATE_COUNCIL_HAS_CONVENED = 0x10000, // set 1st time Planetary Council is convened
 	STATE_UNK_20000 = 0x20000,
 	STATE_SCN_VICT_ALL_ARTIFACTS_OBJ_UNIT = 0x40000,
 	STATE_SCN_VICT_HIGHEST_AC_SCORE_WINS = 0x80000,

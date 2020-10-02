@@ -41,9 +41,9 @@ uint32_t *FactionRankings = (uint32_t *)0x009A64EC; // [8]
 uint32_t *RankingFactionIDUnk1 = (uint32_t *)0x009A650C;
 uint32_t *RankingFactionIDUnk2 = (uint32_t *)0x009A6510;
 uint32_t *FactionRankingsUnk = (uint32_t *)0x00945DD8; // [8]
-uint32_t *DiploCurrentFriction = (uint32_t *)0x0093FA74;
-uint32_t *DiploPrimaryFactionID = (uint32_t *)0x0093FABC;
-uint32_t *DiploSecondaryFactionID = (uint32_t *)0x0093FAC0;
+int *DiploFriction = (int *)0x0093FA74; // not always bounded, should it be 0-20?
+uint32_t *DiploFrictionFactionIDWith = (uint32_t *)0x0093FABC;
+uint32_t *DiploFrictionFactionID = (uint32_t *)0x0093FAC0;
 
 /*
 Purpose: Check whether specified faction is a human player or computer controlled AI.
@@ -211,7 +211,7 @@ Status: Complete
 */
 BOOL __cdecl climactic_battle() {
 	for (uint32_t i = 1; i < MaxPlayerNum; i++) {
-		if (is_human(i) && PlayersData[i].cornerMarketTurn > * TurnCurrentNum) {
+		if (is_human(i) && PlayersData[i].cornerMarketTurn > *TurnCurrentNum) {
 			return true; // Human controlled player initiated Corner Global Energy Market
 		}
 	}
@@ -231,13 +231,13 @@ BOOL __cdecl climactic_battle() {
 }
 
 /*
-Purpose: Check if certain conditions are in place for game climax. 
+Purpose: Determine if the specified faction (AI only) is at game climax based on certain conditions.
 Original Offset: 00539EF0
 Return Value: Is at climax? true/false
 Status: Complete - testing
 */
 BOOL __cdecl at_climax(uint32_t factionID) {
-	if (is_human(factionID) || *GameState & STATE_UNK_1 || !*DiffLevelCurrent
+	if (is_human(factionID) || *GameState & STATE_UNK_1 || *DiffLevelCurrent == DLVL_CITIZEN
 		|| !climactic_battle()) {
 		return false;
 	}
@@ -245,25 +245,23 @@ BOOL __cdecl at_climax(uint32_t factionID) {
 		return true;
 	}
 	for (uint32_t i = 1; i < MaxPlayerNum; i++) {
-		if (i != factionID && PlayersData[factionID].cornerMarketTurn > * TurnCurrentNum) {
+		if (i != factionID && PlayersData[factionID].cornerMarketTurn > *TurnCurrentNum) {
 			if (has_treaty(factionID, i, DTREATY_PACT) || *GameRules & RULES_VICTORY_COOPERATIVE) {
 				return true;
 			}
 		}
 	}
-	int transMostMinerals1 = 0, transMostMinerals2 = 0;
+	int transMostMinThem = 0, transMostMinUs = 0;
 	for (int i = 0; i < *BaseCurrentCount; i++) {
 		if (Base[i].queueProductionID[0] == -FAC_ASCENT_TO_TRANSCENDENCE) {
 			int minAccum = Base[i].mineralsAccumulated;
 			if (Base[i].factionIDCurrent != factionID) {
-				if (minAccum <= transMostMinerals1) {
-					transMostMinerals1 = minAccum;
+				if (transMostMinThem <= minAccum) {
+					transMostMinThem = minAccum;
 				}
 			}
-			else {
-				if (minAccum <= transMostMinerals2) {
-					transMostMinerals2 = minAccum;
-				}
+			else if (transMostMinUs <= minAccum) {
+				transMostMinUs = minAccum;
 			}
 		}
 	}
@@ -274,28 +272,28 @@ BOOL __cdecl at_climax(uint32_t factionID) {
 			}
 		}
 	}
-	return (transMostMinerals2 && transMostMinerals2 > transMostMinerals1);
+	return transMostMinUs && transMostMinUs > transMostMinThem;
 }
 
 /*
 Purpose: Add friction between the two specified factions.
 Original Offset: 0053A030
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl cause_friction(uint32_t factionID, uint32_t factionIDWith, int friction) {
 	uint32_t *diploFriction = &PlayersData[factionID].diploFriction[factionIDWith];
 	*diploFriction = range(*diploFriction + friction, 0, 20);
-	if (*DiploSecondaryFactionID == factionID && *DiploPrimaryFactionID == factionIDWith) {
-		*DiploCurrentFriction += friction;
+	if (*DiploFrictionFactionID == factionID && *DiploFrictionFactionIDWith == factionIDWith) {
+		*DiploFriction += friction; // not bounded?
 	}
 }
 
 /*
-Purpose: Normalize the diplomatic friction value into a mood.
+Purpose: Normalize the diplomatic friction value into a mood offset.
 Original Offset: 0053A090
 Return Value: Mood (0-8)
-Status: Complete - testing
+Status: Complete
 */
 uint32_t __cdecl get_mood(int friction) {
 	if (friction <= 0) {
@@ -323,10 +321,10 @@ uint32_t __cdecl get_mood(int friction) {
 }
 
 /*
-Purpose: Negative or positive rep?
+Purpose: Calculate the negative reputation the specified faction has with another.
 Original Offset: 0053A100
-Return Value: Reputation
-Status: Complete - testing
+Return Value: Bad reputation
+Status: Complete
 */
 uint32_t __cdecl reputation(uint32_t factionID, uint32_t factionIDWith) {
 	return range(PlayersData[factionID].integrityBlemishes
@@ -337,42 +335,38 @@ uint32_t __cdecl reputation(uint32_t factionID, uint32_t factionIDWith) {
 Purpose: Get the amount of patience the specified faction has with another faction.
 Original Offset: 0053A150
 Return Value: Patience
-Status: Complete - testing
+Status: Complete
 */
-uint32_t __cdecl get_patience(uint32_t factionID, uint32_t factionIDWith) {
+int __cdecl get_patience(uint32_t factionIDWith, uint32_t factionID) {
 	if (has_treaty(factionID, factionIDWith, DTREATY_VENDETTA)) {
 		return 1;
 	}
 	if (has_treaty(factionID, factionIDWith, DTREATY_PACT)) {
 		return has_treaty(factionID, factionIDWith, DTREATY_HAVE_SURRENDERED) ? 500 : 6;
 	}
-	return (has_treaty(factionID, factionIDWith, DTREATY_TREATY) != 0)
-		- (*DiploCurrentFriction / 8) + 3;
+	return (has_treaty(factionID, factionIDWith, DTREATY_TREATY) != 0) 
+		- ((*DiploFriction + 3) / 8) + 3;
 }
 
 /*
-Purpose: TBD
+Purpose: Calculate the amount of goodwill a loan will generate. This is used to reduce friction.
 Original Offset: 0053A1C0
-Return Value: TBD
-Status: Complete - testing
+Return Value: Goodwill (friction reduction amount)
+Status: Complete
 */
 uint32_t __cdecl energy_value(uint32_t loanPrincipal) {
-	uint32_t v1 = loanPrincipal / 5;
-	uint32_t fin = 0, divsor = 2, i = 10;
-	while (v1 > 0) {
-		uint32_t v5 = (v1 <= i) ? v1 : i;
-		v1 -= i;
-		i = 20;
-		fin += v5 / divsor++;
+	uint32_t goodwill = 0, divisor = 2;
+	for (int weight = 10, energy = loanPrincipal / 5; energy > 0; energy -= weight, weight = 20) {
+		goodwill += ((weight >= 0) ? ((energy > weight) ? weight : energy) : 0) / divisor++;
 	}
-	return (fin + 4) / 5;
+	return (goodwill + 4) / 5;
 }
 
 /*
 Purpose: Set or unset the diplomatic treaty for the specified faction with another faction.
 Original Offset: 0055BB30
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl set_treaty(uint32_t factionID, uint32_t factionIDWith, uint32_t treaty, BOOL set) {
 	if (set) {
@@ -390,7 +384,7 @@ void __cdecl set_treaty(uint32_t factionID, uint32_t factionIDWith, uint32_t tre
 Purpose: Set or unset the diplomatic agenda for the specified faction with another faction.
 Original Offset: 0055BBA0
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl set_agenda(uint32_t factionID, uint32_t factionIDWith, uint32_t agenda, BOOL set) {
 	if (set) {

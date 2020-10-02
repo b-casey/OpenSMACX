@@ -51,7 +51,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
 	bin_app = mmap.mmap(f.fileno(), 0)
-	# next: 431
+	# next: 438
 	#
 	
 	# ALPHA
@@ -326,6 +326,27 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001002F0) # ?has_treaty@@YAIIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*423))
+	bin_app.seek(0x0013A030) # ?cause_friction@@YAXIIH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*431))
+	bin_app.seek(0x0013A090) # ?get_mood@@YAIH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*432))
+	bin_app.seek(0x0013A100) # ?reputation@@YAIII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*433))
+	bin_app.seek(0x0013A150) # ?get_patience@@YAHII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*434))
+	bin_app.seek(0x0013A1C0) # ?energy_value@@YAII@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*435))
+	bin_app.seek(0x0015BB30) # ?set_treaty@@YAXIIIH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*436))
+	bin_app.seek(0x0015BBA0) # ?set_agenda@@YAXIIIH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*437))
 	# FILEMAP
 	bin_app.seek(0x00228380) # ??0Filemap@@QAE@XZ
 	patch_call_bytes(bin_app)

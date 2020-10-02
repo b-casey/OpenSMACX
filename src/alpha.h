@@ -204,7 +204,7 @@ struct rules_basic {
 	// Alpha(x).txt #RULES: Technology discovery rate as a percentage of standard
 	// Original bounds: 0 to 1000
 	// Default value: 100
-	uint32_t TechDiscovRatePctStd;
+	uint32_t TechDiscoveryRatePctStd;
 
 	// Alpha(x).txt #RULES: Limits mineral increase for mine without road in square
 	// Original bounds: 0 to 100

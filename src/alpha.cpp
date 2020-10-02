@@ -182,7 +182,7 @@ BOOL __cdecl read_basic_rules() {
 	Rules->MaxAirdropSansOrbInsert = text_get_number(1, 500);
 	Rules->NutrientCostMulti = text_get_number(1, 100);
 	Rules->MineralCostMulti = text_get_number(1, 100);
-	Rules->TechDiscovRatePctStd = text_get_number(0, 1000);
+	Rules->TechDiscoveryRatePctStd = text_get_number(0, 1000);
 	Rules->LimitMineralMineSansRoad = text_get_number(0, 100);
 	Rules->TglNutrientEffectWithMine = text_get_number(-1, 0); // Weird logic behind -1/0 value
 	Rules->MinBaseSizeSpecialists = text_get_number(0, 100);

@@ -148,7 +148,7 @@ constexpr int TechDisabled = -2;
 constexpr int MaxMandateNum = 4;
 
 extern rules_technology *Technology; // [89]
-extern uint8_t *GameTechDiscovered; // [89]
+extern uint8_t *GameTechAchieved; // [89]
 extern rules_mandate *Mandate; // [4]
 extern int *TechValidCount;
 extern int *TechCommerceCount;
