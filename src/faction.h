@@ -518,8 +518,8 @@ OPENSMACX_API uint32_t __cdecl has_treaty(uint32_t factionID, uint32_t factionID
 OPENSMACX_API LPSTR __cdecl get_adjective(int factionID);
 OPENSMACX_API LPSTR __cdecl get_noun(int factionID);
 OPENSMACX_API BOOL __cdecl auto_contact();
-OPENSMACX_API BOOL __cdecl great_beelzebub(uint32_t factionID, BOOL tgl);
-OPENSMACX_API BOOL __cdecl great_satan(uint32_t factionID, BOOL tgl);
+OPENSMACX_API BOOL __cdecl great_beelzebub(uint32_t factionID, BOOL isAggressive);
+OPENSMACX_API BOOL __cdecl great_satan(uint32_t factionID, BOOL isAggressive);
 OPENSMACX_API uint32_t __cdecl aah_ooga(int factionID, int pactFactionID);
 OPENSMACX_API BOOL __cdecl climactic_battle();
 OPENSMACX_API BOOL __cdecl at_climax(uint32_t factionID);

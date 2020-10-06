@@ -111,58 +111,55 @@ BOOL __cdecl auto_contact() {
 }
 
 /*
-Purpose: TBD
+Purpose: Determine if the overall dominant human faction is a minor threat based on base count.
 Original Offset: 00539B70
-Return Value: Is specified faction the great Beelzebub? true/false
-Status: Complete - testing
+Return Value: Is faction minor threat? true/false
+Status: Complete
 */
-BOOL __cdecl great_beelzebub(uint32_t factionID, BOOL tgl) {
-	if (!is_human(factionID) || FactionRankings[7] == factionID) {
-		return false;
-	}
-	uint32_t minBaseReq = (*TurnCurrentNum + 25) / 50;
-	if (minBaseReq < 4) {
-		minBaseReq = 4;
-	}
-	if(PlayersData[factionID].currentNumBases >= minBaseReq 
-		&& (PlayersData[factionID].diffLevel > DLVL_SPECIALIST
-			|| *GameRules & RULES_INTENSE_RIVALRY || tgl)) { // 0053C09A only place with tgl true
-		return true;
+BOOL __cdecl great_beelzebub(uint32_t factionID, BOOL isAggressive) {
+	if (is_human(factionID) && FactionRankings[7] == factionID) {
+		uint32_t basesThreat = (*TurnCurrentNum + 25) / 50;
+		if (basesThreat < 4) {
+			basesThreat = 4;
+		}
+		if (PlayersData[factionID].currentNumBases > basesThreat
+			&& (PlayersData[factionID].diffLevel > DLVL_SPECIALIST
+				|| *GameRules & RULES_INTENSE_RIVALRY || isAggressive)) {
+			return true;
+		}
 	}
 	return false;
 }
 
 /*
-Purpose: TBD
+Purpose: Determine if specified faction is considered a threat based on game state and ranking.
 Original Offset: 00539C00
-Return Value: Is specified faction the great Satan? true/false
-Status: Complete - testing
+Return Value: Is specified faction a threat? true/false
+Status: Complete
 */
-BOOL __cdecl great_satan(uint32_t factionID, BOOL tgl) {
-	if (great_beelzebub(factionID, tgl)) {
+BOOL __cdecl great_satan(uint32_t factionID, BOOL isAggressive) {
+	if (great_beelzebub(factionID, isAggressive)) {
 		BOOL hasIntenseRiv = (*GameRules & RULES_INTENSE_RIVALRY);
-		if (*TurnCurrentNum <= ((hasIntenseRiv ? 0 : (DLVL_TRANSCEND 
-			- PlayersData[factionID].diffLevel) * 50) + 100)) {
+		if (*TurnCurrentNum <= ((hasIntenseRiv ? 0 
+			: (DLVL_TRANSCEND - PlayersData[factionID].diffLevel) * 50) + 100)) {
 			return false;
 		}
 		if (climactic_battle() && aah_ooga(factionID, -1) == factionID) {
 			return true;
 		}
 		uint32_t diffFactor, factor;
-		if (!hasIntenseRiv) {
-			if (PlayersData[factionID].diffLevel < DLVL_LIBRARIAN
-				|| !(*GameRules & RULES_VICTORY_CONQUEST) || *ObjectiveReqVictory > 1000) {
-				factor = 1;
-				diffFactor = DLVL_TALENT;
-			}
-			else {
-				factor = 2;
-				diffFactor = DLVL_LIBRARIAN;
-			}
-		}
-		else {
+		if (hasIntenseRiv) {
 			factor = 4;
 			diffFactor = DLVL_TRANSCEND;
+		}
+		else if (PlayersData[factionID].diffLevel >= DLVL_LIBRARIAN 
+			|| *GameRules & RULES_VICTORY_CONQUEST || *ObjectiveReqVictory <= 1000) {
+			factor = 2;
+			diffFactor = DLVL_LIBRARIAN;
+		}
+		else {
+			factor = 1;
+			diffFactor = DLVL_TALENT;
 		}
 		return (factor * FactionRankingsUnk[FactionRankings[7]] 
 			>= diffFactor * FactionRankingsUnk[FactionRankings[6]]);

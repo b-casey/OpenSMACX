@@ -198,40 +198,40 @@ uint32_t __cdecl planet_buster(int vehID) {
 }
 
 /*
-Purpose: Calculate terrain defensive value.
+Purpose: Calculate the specified tile's defensive value based on the terrain.
 Original Offset: 005010C0
 Return Value: Defense terrain value
-Status: Complete - testing
+Status: Complete
 */
 uint32_t __cdecl defense_value(uint32_t factionID, uint32_t xCoord, uint32_t yCoord, 
 	uint32_t vehIDDef, int vehIDAtk) {
-	uint32_t alt = altitude_at(xCoord, yCoord);
-	if (alt < ALT_BIT_SHORE_LINE || base_who(xCoord, yCoord) >= 0) {
+	if (is_ocean(xCoord, yCoord) || base_who(xCoord, yCoord) >= 0) {
 		return 2;
 	}
 	uint32_t bit = bit_at(xCoord, yCoord);
-	if (bit & BIT_FUNGUS && alt >= ALT_BIT_OCEAN_SHELF && vehIDAtk >= 0 
+	if (bit & BIT_FUNGUS && altitude_at(xCoord, yCoord) >= ALT_BIT_OCEAN_SHELF && vehIDAtk >= 0
 		&& (!Veh[vehIDAtk].factionID || has_project(SP_PHOLUS_MUTAGEN, Veh[vehIDAtk].factionID) 
 			|| (Weapon[VehPrototype[Veh[vehIDAtk].protoID].weaponID].offenseRating < 0
 				&& Veh[vehIDAtk].protoID < MaxVehProtoFactionNum))) {
 				return 2;
 	}
-	uint32_t rocky = rocky_at(xCoord, yCoord);
+	uint32_t isRocky = rocky_at(xCoord, yCoord) > TERRAIN_ROLLING;
 	VehBattleDisplayTerrain = label_get(91); // "Rocky"
-	uint32_t defense = (rocky <= TERRAIN_ROLLING);
-	if (bit & BIT_FUNGUS && alt >= ALT_BIT_OCEAN_SHELF && defense 
+	uint32_t defense = isRocky;
+	if (bit & BIT_FUNGUS && altitude_at(xCoord, yCoord) >= ALT_BIT_OCEAN_SHELF && !defense
 		&& get_triad(vehIDDef) != TRIAD_AIR) {
-		if ((vehIDAtk >= 0 
-			&& (Weapon[VehPrototype[Veh[vehIDAtk].protoID].weaponID].offenseRating >= 0
-			&& Veh[vehIDAtk].protoID >= MaxVehProtoFactionNum)) 
-			|| has_project(SP_PHOLUS_MUTAGEN, Veh[vehIDAtk].factionID)) {
-			defense = 1;
-			if (has_project(SP_PHOLUS_MUTAGEN, factionID) ||
-				((Veh[vehIDAtk].protoID < MaxVehProtoFactionNum
-					&& Weapon[VehPrototype[Veh[vehIDAtk].protoID].weaponID].offenseRating < 0))) {
-				defense = 2;
-			}
+		if (vehIDAtk >= 0
+			&& ((Weapon[VehPrototype[Veh[vehIDAtk].protoID].weaponID].offenseRating < 0
+				&& Veh[vehIDAtk].protoID < MaxVehProtoFactionNum)
+			|| has_project(SP_PHOLUS_MUTAGEN, Veh[vehIDAtk].factionID))) {
+			defense = isRocky;
+		}
+		else {
 			VehBattleDisplayTerrain = label_get(338); // "Fungus"
+			defense = (has_project(SP_PHOLUS_MUTAGEN, factionID) 
+				|| ((Veh[vehIDDef].protoID < MaxVehProtoFactionNum 
+					&& Weapon[VehPrototype[Veh[vehIDDef].protoID].weaponID].offenseRating < 0)))
+				? 2 : 1;
 		}
 	}
 	if (bit & BIT_FOREST && !defense && (vehIDAtk < 0 || get_triad(vehIDAtk) == TRIAD_LAND)) {
@@ -795,7 +795,7 @@ void __cdecl battle_compute(int vehIDAtk, int vehIDDef, int *offenseOutput, int 
 						}
 					}
 				}
-				if (altitude_at(xCoordDef, yCoordDef) >= ALT_BIT_SHORE_LINE) {
+				if (!is_ocean(xCoordDef, yCoordDef)) {
 					uint32_t sensorDef = 0;
 					if (factionIDDef) {
 						for (int i = 0; i < 25; i++) {
@@ -805,7 +805,7 @@ void __cdecl battle_compute(int vehIDAtk, int vehIDDef, int *offenseOutput, int 
 							if (on_map(xRadius, yRadius)
 								&& (sensorStatus = is_sensor(xRadius, yRadius), sensorStatus)) {
 								BOOL hasSensor = false;
-								if (altitude_at(xRadius, yRadius) >= ALT_BIT_SHORE_LINE) {
+								if (!is_ocean(xRadius, yRadius)) {
 									int factionIDTerr = whose_territory(factionIDDef, xRadius, 
 										yRadius, NULL, false);
 									if (factionIDTerr < 0 
