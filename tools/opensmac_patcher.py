@@ -51,7 +51,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
 	bin_app = mmap.mmap(f.fileno(), 0)
-	# next: 441
+	# next: 444
 	#
 	
 	# ALPHA
@@ -179,10 +179,10 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x00179A00) # ?is_port@@YAHHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*260))
-	bin_app.seek(0x000EF090) # ?pop_goal@@YAIH@Z
+	bin_app.seek(0x000EF090) # ?pop_goal@@YAII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*261))
-	bin_app.seek(0x000EEF80) # ?pop_goal_fac@@YAIH@Z
+	bin_app.seek(0x000EEF80) # ?pop_goal_fac@@YAII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*262))
 	bin_app.seek(0x001BA0E0) # ?facility_avail@@YAHHHHH@Z
@@ -259,7 +259,13 @@ with open(exe_path, "r+b") as f:
 	bin_app.write(struct.pack("<L", addr+4*378))	
 	bin_app.seek(0x000E9CB0) # ?base_minerals@@YAXXZ
 	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*379))		
+	bin_app.write(struct.pack("<L", addr+4*379))
+	bin_app.seek(0x000E4430) # ?cost_factor@@YAHIIH@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*441))
+	bin_app.seek(0x000F7FE0) # ?make_base_unique@@YAXI@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*442))
 	# BASEBUTTON
 	bin_app.seek(0x00207550) # ?set_bubble_text@BaseButton@@QAEHPBD@Z
 	patch_call_bytes(bin_app)
@@ -352,7 +358,10 @@ with open(exe_path, "r+b") as f:
 	bin_app.write(struct.pack("<L", addr+4*438))
 	bin_app.seek(0x00139C00) # ?great_satan@@YAHIH@Z
 	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*439))	
+	bin_app.write(struct.pack("<L", addr+4*439))
+	bin_app.seek(0x001B0D70) # ?compute_faction_modifiers@@YAXI@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*443))
 	# FILEMAP
 	bin_app.seek(0x00228380) # ??0Filemap@@QAE@XZ
 	patch_call_bytes(bin_app)

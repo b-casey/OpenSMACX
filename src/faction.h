@@ -325,7 +325,7 @@ struct player_data {
 	uint32_t diploMindControl[8]; // total action value against this player by each faction
 	uint32_t stolenDataCount[8]; // probe successfully procured research data (tech/map) per faction
 	int energyReserves; // current energy credits
-	int energyCost; // ?
+	uint32_t hurryCostTotal; // Net MP: Total paid energy to hurry production (current turn)
 	social_category socCategoryPending;
 	social_category socCategoryActive;
 	int socUpheavalCostPaid;
@@ -334,7 +334,7 @@ struct player_data {
 	social_effect socEffectTemp; // maybe previous turn?
 	social_effect socEffectBase; // from faction files?
 	int unk_13;
-	int unk_14;
+	uint32_t maintCostTotal; // Total maintenance costs for all bases (current turn)
 	int techCommerceBonus; // Increases commerce income
 	int turnCommerceIncome;
 	int unk_17;
@@ -407,9 +407,9 @@ struct player_data {
 	int unk_67;
 	int unk_68;
 	char unk_69[4];
-	uint8_t protoID_Active[512];
-	uint8_t protoID_Queue[512];
-	int16_t protoID_Lost[512];
+	uint8_t protoIDActive[512];
+	uint8_t protoIDQueue[512];
+	int16_t protoIDLost[512];
 	int totalMilVeh; // total combat units
 	uint32_t currentNumBases;
 	int milStrength_1;
@@ -444,7 +444,7 @@ struct player_data {
 	int unk_96;
 	int unk_97;
 	uint32_t techAchieved; // count of technology faction has discovered/achieved
-	int timeBonusCount; // MP: Each is worth amount in seconds under Time Controls Extra
+	int timeBonusCount; // Net MP: Each is worth amount in seconds under Time Controls Extra
 	int unk_99; // unused?
 	uint32_t secretProjectIntel[8]; // Bitfield; News of SPs other factions are working on
 	int cornerMarketTurn;

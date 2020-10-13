@@ -22,6 +22,9 @@
 #include "veh.h"
 #include "technology.h"
 #include "path.h"
+#include "map.h"
+#include "base.h"
+#include "alpha.h"
 
 // built-in functions > used to prevent crash from mixed alloc/free SDKs
 func1 *_malloc = (func1 *)0x006470A6;
@@ -39,6 +42,7 @@ func18 *_fputc = (func18 *)0x00646886;
 // other
 func5 *load_faction_art = (func5 *)0x00453710;
 func5 *draw_map = (func5 *)0x0046B190;
+func5 *wave_it = (func5 *)0x004455F0;
 // TODO: crash bug; X_pop > ... > BasePop::start > text_close > NULLs 009B7CF4 (FILE *Txt.textFile)
 // Next call to text_get() tries to access 009B7CF4 and the game crashes.
 func6 *X_pop = (func6 *)0x005BF310;
@@ -52,6 +56,7 @@ func16 *load_daemon = (func16 *)0x005A9760;
 func19 *social_set = (func19 *)0x005B4600;
 func19 *consider_designs = (func19 *)0x00581260;
 func20 *popb = (func20 *)0x0048C650;
+func21 *draw_radius = (func21 *)0x0046AEF0;
 
 // Time
 func30 *blink_timer = (func30 *)0x0050EA40;
@@ -64,6 +69,9 @@ func8 *parse_string_OG = (func8 *)0x00625880;
 func12 *enemy_capabilities_OG = (func12 *)0x00560DD0;
 //
 funct1 *social_calc_OG = (funct1 *)0x005B4210;
+//
+funct2 *at_climax_OG = (funct2 *)0x00539EF0;
+funct3 *base_queue_OG = (funct3 *)0x004F06E0;
 ///
 char1032 *stringTemp = (char1032 *)0x009B86A0;
 char256 *ParseStrBuffer = (char256 *)0x009BB5E8;
@@ -83,7 +91,47 @@ MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
 int __cdecl tester() {
 	log_set_state(true);
 	log_say("Start test", 0, 0, 0);
+
+
+	base_queue_OG(1);
+	base_queue(1);
+
+	base_queue(2);
+	base_queue_OG(2);
+	
+
 	//log_say("size", sizeof(social_effect), sizeof(player_data), 0);
+	/*
+	for (int i = 0; i < MaxPlayerNum; i++) {
+		if (at_climax(i) != at_climax_OG(i)) {
+			log_say("error", 0, 0, 0);
+		}
+	}
+	*/
+	/*
+	for (int i = 0; i < *BaseCurrentCount; i++) {
+		log_say(Base[i].nameString, Base[i].xCoord, Base[i].yCoord, 0);
+		log_say("economyTotal: ", Base[i].economyTotal, 0, 0);
+		log_say("psychTotal: ", Base[i].psychTotal, 0, 0);
+		log_say("labsTotal: ",  Base[i].labsTotal, 0, 0);
+		log_say("unk_10: ", Base[i].unk_10, 0, 0);
+	}
+
+	/*
+	char szTemp[80];
+	for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
+		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
+			map *tile = map_loc(x, y);
+			if (tile->unk_1) {
+				log_say("map_unk1:", x, y, tile->unk_1);
+			}
+			if (tile->bit2 & 0x80000000) {
+				sprintf_s(szTemp, 80, "0x%08X", tile->bit2);
+				log_say("map_bit2:", szTemp, x, y, 0);
+			}
+		}
+	}
+	*/
 
 	/*
 	social_category temp;

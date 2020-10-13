@@ -227,23 +227,35 @@ enum base_state_bitfield {
 	BSTATE_UNK_1 = 0x1,
 	BSTATE_DRONE_RIOTS_ACTIVE = 0x2,
 	BSTATE_GOLDEN_AGE_ACTIVE = 0x4,
-	BSTATE_COMBAT_LOSS_LAST_TURN = 0x8, // reset on upkeep
-	//
+	BSTATE_COMBAT_LOSS_LAST_TURN = 0x8, // Reset on upkeep
+	BSTATE_UNK_10 = 0x10,
+	BSTATE_UNK_20 = 0x20,
 	BSTATE_RESEARCH_DATA_STOLEN = 0x40,
-	//
+	BSTATE_UNK_80 = 0x80,
+	BSTATE_UNK_100 = 0x100,
 	BSTATE_FACILITY_SCRAPPED = 0x200, // Only one facility can be scrapped/recycled per turn
 	BSTATE_ARTIFACT_LINKED = 0x400, // Alien Artifact linked to Network Node
 	BSTATE_ARTIFACT_ALREADY_LINKED = 0x800, // Only show already linked alert once
-	//
+	BSTATE_UNK_1000 = 0x1000,
+	BSTATE_UNK_2000 = 0x2000,
+	BSTATE_UNK_4000 = 0x4000,
+	BSTATE_UNK_8000 = 0x8000,
+	BSTATE_UNK_10000 = 0x10000,
 	BSTATE_GENETIC_PLAGUE_INTRO = 0x20000,
 	BSTATE_ASSISTANT_KILLER_HOME = 0x40000, // Veh home base (or closest) of Assistant worm killer
-	//
+	BSTATE_UNK_80000 = 0x80000,
+	BSTATE_UNK_100000 = 0x100000,
+	BSTATE_UNK_200000 = 0x200000,
 	BSTATE_ENERGY_RESERVES_DRAINED = 0x400000,
 	BSTATE_PRODUCTION_DONE = 0x800000,
+	BSTATE_UNK_1000000 = 0x1000000,
+	BSTATE_UNK_2000000 = 0x2000000,
+	BSTATE_UNK_4000000 = 0x4000000,
+	BSTATE_UNK_8000000 = 0x8000000,
 	BSTATE_NET_LOCKED = 0x10000000,
 	BSTATE_PSI_GATE_USED = 0x20000000,
 	BSTATE_PRODUCTION_HURRIED = 0x40000000,
-	//
+	BSTATE_UNK_8000000000 = 0x80000000,
 };
 
 enum base_event_bitfield {
@@ -323,7 +335,7 @@ struct base {
 	int mineralsAccumulated;
 	int productionIDLast;
 	int ecoDamage;
-	int queueSize;
+	uint32_t queueSize;
 	int queueProductionID[10]; // items in the production queue
 	int resourceSqrRadius; // worked tiles
 	int specialistTotal;
@@ -476,6 +488,7 @@ constexpr int MaxBaseNum = 512;
 constexpr int MaxFacilityNum = 134; // 0 slot unused
 constexpr int MaxSecretProjectNum = 64;
 constexpr int FacilitySPStart = 70; // Special Project start offset
+constexpr int FacilityRepStart = 65; // Sky Hydro Lab; Nessus Mining Stat; OPT; ODP; Stockpile Eng
 constexpr int MaxCitizenNum = 10;
 constexpr int MaxSpecialistNum = 7;
 constexpr int SP_Unbuilt = -1;
@@ -521,11 +534,15 @@ OPENSMACX_API uint32_t __cdecl worm_mod(uint32_t baseID, uint32_t factionID);
 OPENSMACX_API void __cdecl base_nutrient();
 OPENSMACX_API void __cdecl base_minerals();
 OPENSMACX_API uint32_t __cdecl black_market(int energy);
-OPENSMACX_API uint32_t __cdecl pop_goal_fac(int baseID);
-OPENSMACX_API uint32_t __cdecl pop_goal(int baseID);
+OPENSMACX_API void __cdecl psych_check(uint32_t factionID, uint32_t *drones, uint32_t *talents);
+OPENSMACX_API void __cdecl base_psych();
+OPENSMACX_API uint32_t __cdecl pop_goal_fac(uint32_t baseID);
+OPENSMACX_API uint32_t __cdecl pop_goal(uint32_t baseID);
+OPENSMACX_API BOOL __cdecl base_queue(uint32_t baseID);
 OPENSMACX_API void __cdecl base_energy_costs();
 OPENSMACX_API uint32_t __cdecl fac_maint(uint32_t facilityID, uint32_t factionID);
 OPENSMACX_API void __cdecl base_maint();
+OPENSMACX_API void __cdecl make_base_unique(uint32_t baseID);
 OPENSMACX_API BOOL __cdecl has_project(uint32_t projectID, uint32_t factionID);
 OPENSMACX_API BOOL __cdecl has_fac_built(uint32_t facilityID);
 OPENSMACX_API BOOL __cdecl has_fac_built(uint32_t facilityID, uint32_t baseID);

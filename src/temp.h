@@ -56,6 +56,7 @@ extern func18 *_fputc;
 typedef void func5(int);
 extern func5 *load_faction_art;
 extern func5 *draw_map;
+extern func5 *wave_it;
 typedef void *func6(char const *, int(*)(void));
 extern func6 *X_pop;
 typedef int func7(LPCSTR, LPCSTR, int, LPCSTR, int(__cdecl *)());
@@ -76,6 +77,9 @@ extern func19 *social_set;
 extern func19 *consider_designs;
 typedef int func20(LPCSTR, int, int, LPCSTR, Sprite *);
 extern func20 *popb;
+typedef void func21(int, int, int, int);
+extern func21 *draw_radius;
+
 // Time
 typedef void func30(int);
 extern func30 *blink_timer;
@@ -91,6 +95,11 @@ extern func12 *enemy_capabilities_OG;
 ///
 typedef void funct1(social_category *, social_effect *, uint32_t, BOOL, BOOL);
 extern funct1 *social_calc_OG;
+//
+typedef BOOL funct2(uint32_t);
+extern funct2 *at_climax_OG;
+typedef void funct3(uint32_t);
+extern funct3 *base_queue_OG;
 //
 extern char1032 *stringTemp;
 extern char256 *ParseStrBuffer;

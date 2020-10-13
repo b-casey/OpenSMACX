@@ -230,7 +230,7 @@ BOOL __cdecl climactic_battle() {
 /*
 Purpose: Determine if the specified faction (AI only) is at game climax based on certain conditions.
 Original Offset: 00539EF0
-Return Value: Is at climax? true/false
+Return Value: Is faction at climax? true/false
 Status: Complete - testing
 */
 BOOL __cdecl at_climax(uint32_t factionID) {
@@ -665,13 +665,13 @@ void __cdecl see_map_check() {
 Purpose: Calculate the base social engineering modifiers for the specified faction.
 Original Offset: 005B0D70
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl compute_faction_modifiers(uint32_t factionID) {
 	ZeroMemory(&PlayersData[factionID].socEffectBase, sizeof(social_effect));
 	int count = Players[factionID].factionBonusCount;
 	for (int i = 0; i < count; i++) {
-		if (Players[factionID].factionBonusID[i] & RULE_SOCIAL) {
+		if (Players[factionID].factionBonusID[i] == RULE_SOCIAL) {
 			*(&PlayersData[factionID].socEffectBase.economy
 				+ Players[factionID].factionBonusVal1[i]) += Players[factionID].factionBonusVal2[i];
 		}
@@ -892,7 +892,7 @@ void __cdecl social_ai(uint32_t factionID, int growthVal, int techVal, int wealt
 							if (has_treaty(factionID, f, DTREATY_VENDETTA | DTREATY_WANT_REVENGE)
 								&& PlayersData[f].enemyBestPsiOffense 
 								>= PlayersData[f].enemyBestWeaponValue 
-								&& PlayersData[f].protoID_Active[BSC_MIND_WORMS] > 1) {
+								&& PlayersData[f].protoIDActive[BSC_MIND_WORMS] > 1) {
 								unkSum2 += baseCount; // not used
 							}
 						}

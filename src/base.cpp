@@ -335,33 +335,30 @@ void __cdecl base_mark(uint32_t baseID) {
 }
 
 /*
-Purpose: Calculate cost factor for faction and resource type (resource_type). Optional base 
-         parameter.
+Purpose: Calculate the cost factor for the specified faction and resource type. Optional base param.
 Original Offset: 004E4430
 Return Value: Cost factor
-Status: Complete - testing
+Status: Complete
 */
 int __cdecl cost_factor(uint32_t factionID, uint32_t rscType, int baseID) {
 	const uint32_t diffCostBase[] = { 13, 12, 11, 10, 8, 7 };
-
 	uint32_t factor;
 	if (is_human(factionID)) {
 		factor = 10;
 	}
 	else {
-		// double negate in ASM of great_satan return value?
 		factor = diffCostBase[*DiffLevelCurrent] - great_satan(FactionRankings[7], false)
-			- (!IsMultiplayerNet && is_human(FactionRankings[7]));
+			- (!*IsMultiplayerNet && is_human(FactionRankings[7]));
 	}
 	uint32_t costMultiplier = rscType ? Rules->MineralCostMulti : Rules->NutrientCostMulti;
 	if (costMultiplier != 10) {
-		factor *= costMultiplier / 10;
+		factor = (factor * costMultiplier) / 10;
 	}
 	if (*MapSizePlanet == 1) {
-		factor *= 9 / 10;
+		factor = (factor * 9) / 10;
 	}
-	else if (*MapSizePlanet) {
-		factor *= 8 / 10;
+	else if (!*MapSizePlanet) {
+		factor = (factor * 8) / 10;
 	}
 	if (rscType) {
 		if (rscType == RSC_MINERALS) {
@@ -441,9 +438,9 @@ int __cdecl base_making(int productionID, int baseID) {
 			return 0; // Veh
 		}
 		// SP (1), repeatable facility (2), non-repeatable facility (3)
-		return (productionID > -70) ? (productionID > -65) + 2 : 1;
+		return (productionID > -FacilitySPStart) ? (productionID > -FacilityRepStart) + 2 : 1;
 	case 2: // Free switching between SPs (default behavior)
-		return (productionID <= -70) ? -70 : productionID;
+		return (productionID <= -FacilitySPStart) ? -FacilitySPStart : productionID;
 	case 3: // Never Free
 		return productionID;
 	default:
@@ -827,13 +824,125 @@ uint32_t __cdecl black_market(int energy) {
 }
 
 /*
+Purpose: Calculate two psych related check values for the specified faction.
+Original Offset: 004EA4A0
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl psych_check(uint32_t factionID, uint32_t *drones, uint32_t *talents) {
+	*drones = 6 - (is_human(factionID) ? PlayersData[factionID].diffLevel : DLVL_LIBRARIAN);
+	*talents = (((*drones + 2) * (PlayersData[factionID].socEffectPending.efficiency < 0 ? 4
+		: PlayersData[factionID].socEffectPending.efficiency + 4) * *MapAreaSqRoot) / 56) / 2;
+}
+
+/*
+Purpose: Calculate the current base's psych values.
+Original Offset: 004EA540
+Return Value: n/a
+Status: WIP
+*/
+void __cdecl base_psych() {
+	uint32_t factionID = (*BaseCurrent)->factionIDCurrent;
+	int popSize = (*BaseCurrent)->populationSize;
+	uint32_t dronesBase, talentsBase;
+	int diffLvl = is_human(factionID) ? PlayersData[factionID].diffLevel : DLVL_LIBRARIAN;
+	psych_check(factionID, &dronesBase, &talentsBase);
+	if (talentsBase) {
+		talentsBase = range((*BaseIDCurrentSelected % talentsBase
+			+ PlayersData[factionID].currentNumBases - talentsBase) / talentsBase, 0, popSize);
+	}
+	int psychVal = range(popSize - dronesBase, 0, popSize);
+	psychVal += range(((*BaseCurrent)->assimilationTurnsLeft + 9) / 10, 
+		0, (popSize + diffLvl - 2) / 4);
+	if (Players[factionID].ruleDrone) {
+		psychVal += popSize / Players[factionID].ruleDrone;
+	}
+	int psychVal2 = 0;
+	if (Players[factionID].ruleTalent) {
+		psychVal2 += (Players[factionID].ruleTalent + popSize - 1) / Players[factionID].ruleTalent;
+	}
+	for (int i = 0; i < Players[factionID].factionBonusCount; i++) {
+		if (Players[factionID].factionBonusID[i] == RULE_NODRONE) {
+			psychVal -= Players[factionID].factionBonusVal1[i];
+			break;
+		}
+	}
+	int drones = has_fac_built(FAC_GENEJACK_FACTORY) ? Rules->DronesGenejackFactory : 0;
+	if (has_fac_built(FAC_CHILDREN_CRECHE)) {
+		drones -= 2;
+	}
+	if ((has_fac_built(FAC_NETWORK_NODE) && has_project(SP_VIRTUAL_WORLD, factionID)) 
+		|| has_fac_built(FAC_HOLOGRAM_THEATRE)) {
+		drones -= 2;
+	}
+	if (has_project(SP_PLANETARY_TRANS_SYS, factionID) && popSize <= 3) {
+		drones--;
+	}
+	int talentsFac = has_fac_built(FAC_PARADISE_GARDEN) ? 2 : 0;
+	if (has_fac_built(FAC_RESEARCH_HOSPITAL)) {
+		drones--;
+	}
+	if (has_fac_built(FAC_NANOHOSPITAL)) {
+		drones--;
+	}
+	int talentsSP = has_project(SP_HUMAN_GENOME_PROJ, factionID) ? 1 : 0;
+	if (has_project(SP_CLINICAL_IMMORTALITY, factionID)) {
+		talentsSP += 2; // TODO: eval - bug fix per manual: one extra talent at every base
+	}
+	BOOL hasPunishmentSphere = has_fac_built(FAC_PUNISHMENT_SPHERE);
+	for (int i = 8; i >= 0; i--) {
+		int val;
+		if (!i) {
+			//j = 9;
+			val = PlayersData[factionID].socEffectPending.talent;
+		}
+		else if(*BaseUpkeepStage != 1) {
+			break;
+		}
+		else {
+			//j = 9;
+			val = i - 4;
+		}
+		for (int j = 9; j >= 0; j--) {
+			int val2;// , k;
+			if (!j) {
+				val2 = PlayersData[factionID].socEffectPending.police 
+					+ has_fac_built(FAC_BROOD_PIT) * 2;
+				if (i) {
+					break;
+				}
+			}
+			else if (*BaseUpkeepStage != 1 || !i) {
+				break;
+			}
+			else {
+				val2 = j - 6;
+				//val2 = val;
+			}
+			val2 = range(val2 + 2, 0, 4);
+			if (val2 > 1) {
+				val2--;
+			}
+			(*BaseCurrent)->droneTotal = dronesBase;
+			(*BaseCurrent)->talentTotal = talentsBase;
+			if (val2 >= 0) {
+				(*BaseCurrent)->talentTotal += val2;
+			}
+			else {
+				(*BaseCurrent)->droneTotal -= val2;
+			}
+		}
+	}
+}
+
+/*
 Purpose: Check what facility (if any) a base needs for additional population growth. Stand alone
 		 function unused in original game and likely optimized out.
 Original Offset: 004EEF80
 Return Value: Facility id needed for pop growth or zero if base already has Hab Complex and Dome.
 Status: Complete
 */
-uint32_t __cdecl pop_goal_fac(int baseID) {
+uint32_t __cdecl pop_goal_fac(uint32_t baseID) {
 	uint32_t factionID = Base[baseID].factionIDCurrent;
 	uint32_t limitMod = has_project(SP_ASCETIC_VIRTUES, factionID) ? 2 : 0;
 	int pop = Base[baseID].populationSize - limitMod + Players[factionID].rulePopulation;
@@ -852,7 +961,7 @@ Original Offset: 004EF090
 Return Value: Goal population
 Status: Complete
 */
-uint32_t __cdecl pop_goal(int baseID) {
+uint32_t __cdecl pop_goal(uint32_t baseID) {
 	uint32_t factionID = Base[baseID].factionIDCurrent;
 	uint32_t limitMod = has_project(SP_ASCETIC_VIRTUES, factionID) ? 2 : 0;
 	int goal = (36 - Base[baseID].populationSize) / 6 + Base[baseID].populationSize;
@@ -872,6 +981,36 @@ uint32_t __cdecl pop_goal(int baseID) {
 		}
 	}
 	return goal;
+}
+
+/*
+Purpose: Move the specified base's production queue forward if applicable.
+Original Offset: 004F06E0
+Return Value: Is there a valid item in queue to be built? true/false
+Status: Complete - testing
+*/
+BOOL __cdecl base_queue(uint32_t baseID) {
+	uint32_t factionID = Base[baseID].factionIDCurrent;
+	while (Base[baseID].queueSize) {
+		int queueProdID = Base[baseID].queueProductionID[0];
+		if (queueProdID >= 0) {
+			PlayersData[factionID].protoIDQueue[queueProdID]--;
+		}
+		for (uint32_t i = 0; i < Base[baseID].queueSize; i++) {
+			Base[baseID].queueProductionID[i] = Base[baseID].queueProductionID[i + 1];
+		}
+		Base[baseID].queueSize--;
+		queueProdID = Base[baseID].queueProductionID[0];
+		if ((queueProdID >= 0 && veh_avail(queueProdID, factionID, baseID))
+			|| facility_avail(-queueProdID, factionID, baseID, 0)) {
+			if (queueProdID <= -FAC_HUMAN_GENOME_PROJ) {
+				wave_it(36); // CPU project initiated
+			}
+			draw_radius(Base[baseID].xCoord, Base[baseID].yCoord, 2, 2);
+			return true;
+		}
+	}
+	return false;
 }
 
 /*
@@ -931,7 +1070,7 @@ Status: Complete - testing
 void __cdecl base_maint() {
 	uint32_t factionID = (*BaseCurrent)->factionIDCurrent;
 	for (int fac = 1; fac < FacilitySPStart; fac++) {
-		if (has_fac_built(fac)) {
+		if (fac < FacilityRepStart && has_fac_built(fac)) {
 			uint32_t maint = fac_maint(fac, factionID);
 			if (has_project(SP_SELF_AWARE_COLONY, factionID)) {
 				maint += (PlayersData[factionID].playerFlags & PFLAG_UNK_20) & 1;
@@ -944,7 +1083,7 @@ void __cdecl base_maint() {
 				maint /= 2;
 			}
 			PlayersData[factionID].energyReserves -= maint;
-			PlayersData[factionID].unk_14 += maint;
+			PlayersData[factionID].maintCostTotal += maint;
 			if (PlayersData[factionID].energyReserves < 0) {
 				if (PlayersData[factionID].diffLevel <= DLVL_SPECIALIST 
 					|| (*BaseCurrent)->queueProductionID[0] == -fac) {
@@ -958,6 +1097,31 @@ void __cdecl base_maint() {
 					popb("POWERSHORT", 0x10000, 14, "genwarning_sm.pcx", NULL);
 				}
 			}
+		}
+	}
+}
+
+/*
+Purpose: Check if the initial base name is unique. If not, append a sequential number after it.
+         The function has been rewritten to work as intended.
+Original Offset: 004F7FE0
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl make_base_unique(uint32_t baseID) {
+	purge_spaces(Base[baseID].nameString); // added to remove extraneous whitespace
+	uint32_t found = 0;
+	std::string coreUniqueName;
+	for (int i = 0; i < *BaseCurrentCount; i++) {
+		if (baseID != (uint32_t)i && !strcmp(Base[i].nameString, Base[baseID].nameString)) {
+			if (!found) { // only create core part of base name on first collision
+				Base[baseID].nameString[21] = 0;
+				coreUniqueName = Base[baseID].nameString;
+			}
+			std::string uniqueName = coreUniqueName;
+			uniqueName += "-" + std::to_string(++found + 1); // start with appending "-2"
+			strcpy_s(Base[baseID].nameString, 25, uniqueName.c_str());
+			i = 0; // reset loop to verify base name is still unique
 		}
 	}
 }
