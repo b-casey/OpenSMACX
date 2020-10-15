@@ -68,8 +68,7 @@ void __cdecl planetfall(uint32_t factionID) {
 		}
 		strcpy_s(scriptID, 13, "PLANETFALL2"); // bug fix: changed to fixed id rather than concat 2
 	}
-	else if (Players[factionID].ruleFlags & RFLAG_ALIEN
-		&& !_stricmp(Players[factionID].filename, "USURPER")) {
+	else if (is_alien_faction(factionID) && !_stricmp(Players[factionID].filename, "USURPER")) {
 		strcpy_s(scriptID, 13, "PLANETFALLX");
 	}
 	else if (!_stricmp(Players[factionID].filename, "FUNGBOY")) {

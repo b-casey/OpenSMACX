@@ -1325,7 +1325,7 @@ BOOL __cdecl has_temple(int factionID) {
 	for (uint32_t yCoord = 0; yCoord < *MapVerticalBounds; yCoord++) {
 		for (uint32_t xCoord = yCoord & 1; xCoord < *MapHorizontalBounds; xCoord += 2) {
 			uint32_t bit2 = bit2_at(xCoord, yCoord);
-			if ((bit2 & (0x80000000 | LM_NEXUS)) == LM_NEXUS && !(bit2 & 0xFF000000)) {
+			if ((bit2 & (LM_UNK_80000000 | LM_NEXUS)) == LM_NEXUS && !(bit2 & 0xFF000000)) {
 				if (whose_territory(factionID, xCoord, yCoord, NULL, false) == factionID) {
 					if (map_loc(xCoord, yCoord)->visibility & (1 << factionID)) { // tile visible
 						return true;

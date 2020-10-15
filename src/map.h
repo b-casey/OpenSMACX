@@ -104,6 +104,8 @@ enum terrain_landmark_bit2 {
 	LM_NEXUS = 0x2000,
 	LM_UNITY = 0x4000,
 	LM_FOSSIL = 0x8000,
+	//
+	LM_UNK_80000000 = 0x80000000,
 };
 
 enum resource_type {

@@ -1450,7 +1450,7 @@ BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID, int queue
 			|| has_project(SP_CLOUDBASE_ACADEMY, factionID)
 			|| has_project(SP_SPACE_ELEVATOR, factionID);
 	case FAC_SUBSPACE_GENERATOR: // Progenitor factions only
-		return *ExpansionEnabled && (Players[factionID].ruleFlags & RFLAG_ALIEN);
+		return is_alien_faction(factionID);
 	default:
 		break;
 	}

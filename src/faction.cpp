@@ -46,7 +46,17 @@ uint32_t *DiploFrictionFactionIDWith = (uint32_t *)0x0093FABC;
 uint32_t *DiploFrictionFactionID = (uint32_t *)0x0093FAC0;
 
 /*
-Purpose: Check whether specified faction is a human player or computer controlled AI.
+Purpose: Determine if the specified faction is a Progenitor alien faction (Caretakers / Usurpers).
+Original Offset: n/a
+Return Value: Is faction a Progenitor? true/false
+Status: Complete
+*/
+BOOL __cdecl is_alien_faction(uint32_t factionID) {
+	return *ExpansionEnabled && (Players[factionID].ruleFlags & RFLAG_ALIEN);
+}
+
+/*
+Purpose: Determine if the specified faction is a human player or computer controlled AI.
 Original Offset: n/a
 Return Value: Is faction a human? true/false
 Status: Complete
@@ -56,7 +66,7 @@ BOOL __cdecl is_human(uint32_t factionID) {
 }
 
 /*
-Purpose: Check whether specified faction is alive or whether they've been eliminated.
+Purpose: Determine if the specified faction is alive or whether they've been eliminated.
 Original Offset: n/a
 Return Value: Is faction alive? true/false
 Status: Complete
@@ -231,7 +241,7 @@ BOOL __cdecl climactic_battle() {
 Purpose: Determine if the specified faction (AI only) is at game climax based on certain conditions.
 Original Offset: 00539EF0
 Return Value: Is faction at climax? true/false
-Status: Complete - testing
+Status: Complete
 */
 BOOL __cdecl at_climax(uint32_t factionID) {
 	if (is_human(factionID) || *GameState & STATE_UNK_1 || *DiffLevelCurrent == DLVL_CITIZEN
@@ -242,34 +252,34 @@ BOOL __cdecl at_climax(uint32_t factionID) {
 		return true;
 	}
 	for (uint32_t i = 1; i < MaxPlayerNum; i++) {
-		if (i != factionID && PlayersData[factionID].cornerMarketTurn > *TurnCurrentNum) {
-			if (has_treaty(factionID, i, DTREATY_PACT) || *GameRules & RULES_VICTORY_COOPERATIVE) {
-				return true;
-			}
+		if (i != factionID && PlayersData[factionID].cornerMarketTurn > *TurnCurrentNum
+			&& (!has_treaty(factionID, i, DTREATY_PACT)
+				|| !(*GameRules & RULES_VICTORY_COOPERATIVE))) {
+			return true;
 		}
 	}
 	int transMostMinThem = 0, transMostMinUs = 0;
 	for (int i = 0; i < *BaseCurrentCount; i++) {
 		if (Base[i].queueProductionID[0] == -FAC_ASCENT_TO_TRANSCENDENCE) {
 			int minAccum = Base[i].mineralsAccumulated;
-			if (Base[i].factionIDCurrent != factionID) {
-				if (transMostMinThem <= minAccum) {
-					transMostMinThem = minAccum;
+			if (Base[i].factionIDCurrent == factionID) {
+				if (transMostMinUs <= minAccum) {
+					transMostMinUs = minAccum;
 				}
 			}
-			else if (transMostMinUs <= minAccum) {
-				transMostMinUs = minAccum;
+			else if (transMostMinThem <= minAccum) {
+				transMostMinThem = minAccum;
 			}
 		}
 	}
-	for (uint32_t i = 0; i < MaxPlayerNum; i++) {
+	for (uint32_t i = 1; i < MaxPlayerNum; i++) {
 		if (i != factionID) {
 			if (ascending(i) && !ascending(factionID)) { // both return same so irrelevant check
 				return true;
 			}
 		}
 	}
-	return transMostMinUs && transMostMinUs > transMostMinThem;
+	return transMostMinThem && transMostMinThem > transMostMinUs;
 }
 
 /*
@@ -682,37 +692,47 @@ void __cdecl compute_faction_modifiers(uint32_t factionID) {
 Purpose: Calculate the social engineering effect modifiers for the specified faction.
 Original Offset: 005B4210
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl social_calc(social_category *category, social_effect *effect, uint32_t factionID, 
-	BOOL UNUSED(tgl1), BOOL isQuickCalc) {
+	BOOL UNUSED(toggle), BOOL isQuickCalc) {
 	ZeroMemory(effect, sizeof(social_effect));
-	BOOL hasCloningVatSP = has_project(SP_CLONING_VATS, factionID);
-	BOOL hasNetBackboneSP = has_project(SP_NETWORK_BACKBONE, factionID);
-	for (int i = 0; i < MaxSocialCatNum; i++) {
-		uint32_t modelVal = *(&category->politics + i);
-		for (int j = 0; j < MaxSocialEffectNum; j++) {
-			int effectVal = *(&SocialCategory[i].modelEffect[modelVal].economy + j);
+	for (int cat = 0; cat < MaxSocialCatNum; cat++) {
+		uint32_t model = *(&category->politics + cat);
+		for (int eff = 0; eff < MaxSocialEffectNum; eff++) {
+			int effectVal = *(&SocialCategory[cat].modelEffect[model].economy + eff);
 			if (effectVal < 0) {
-				if ((i == 3 && j == 1 && hasNetBackboneSP) ||
-					(((i == 3 && j == 3) || (i == 2 && j == 1)) && hasCloningVatSP)) {
+				if (cat == SOCIAL_CAT_FUTURE) {
+					if (model == SE_CYBERNETIC) {
+						if (has_project(SP_NETWORK_BACKBONE, factionID)) {
+							effectVal = 0;
+						}
+					}
+					else if (model == SE_THOUGHT_CONTROL) {
+						if (has_project(SP_CLONING_VATS, factionID)) {
+							effectVal = 0;
+						}
+					}
+				}
+				else if (cat == SOCIAL_CAT_VALUES && model == SE_POWER 
+					&& has_project(SP_CLONING_VATS, factionID)) {
 					effectVal = 0;
 				}
-				else {
-					for (int k = 0; k < Players[factionID].factionBonusCount; k++) {
-						if (Players[factionID].factionBonusVal1[k] == i
-							&& Players[factionID].factionBonusVal2[k] == j) {
+				if (effectVal < 0) {
+					for (int i = 0; i < Players[factionID].factionBonusCount; i++) {
+						if (Players[factionID].factionBonusVal1[i] == cat
+							&& Players[factionID].factionBonusVal2[i] == (int)model) {
 							if (Players[factionID].factionBonusID[i] == RULE_IMPUNITY) {
-								*(&effect->economy + j) -= effectVal;
+								*(&effect->economy + eff) -= effectVal; // negates neg effects
 							}
 							else if (Players[factionID].factionBonusID[i] == RULE_PENALTY) {
-								*(&effect->economy + j) += effectVal;
+								*(&effect->economy + eff) += effectVal; // doubles neg effects
 							}
 						}
 					}
 				}
 			}
-			*(&effect->economy + j) += effectVal;
+			*(&effect->economy + eff) += effectVal;
 		}
 	}
 	if (!isQuickCalc) {
@@ -724,28 +744,23 @@ void __cdecl social_calc(social_category *category, social_effect *effect, uint3
 		}
 		if (has_temple(factionID)) {
 			effect->planet++;
-			if (Players[factionID].ruleFlags & RFLAG_ALIEN) {
+			if (is_alien_faction(factionID)) {
 				effect->research++; // bonus documented in conceptsx.txt but not manual
 			}
 		}
-		int count = 11;
 		social_effect *effectCalc = effect, *effectBase = &PlayersData[factionID].socEffectBase;
-		do {
-			effectCalc->economy += effectBase->economy;
-			effectCalc++;
-			effectBase++;
-			--count;
-		} while (count);
-
+		for (int eff = 0; eff < MaxSocialEffectNum; eff++) {
+			*(&effectCalc->economy + eff) += *(&effectBase->economy + eff);
+		}
 		for (int i = 0; i < Players[factionID].factionBonusCount; i++) {
-			if (Players[factionID].factionBonusID[i] == RULE_IMMUNITY) {
-				*(&effect->economy + Players[factionID].factionBonusVal1[i]) 
-					= range(*(&effect->economy + Players[factionID].factionBonusVal1[i]), 0, 999);
+			if (Players[factionID].factionBonusID[i] == RULE_IMMUNITY) { // cancels neg effects
+				int *effFactionMod = (&effect->economy + Players[factionID].factionBonusVal1[i]);
+				*effFactionMod = range(*effFactionMod, 0, 999);
 			}
-			else if (Players[factionID].factionBonusID[i] == RULE_ROBUST) {
-				int effectVal = *(&effect->economy + Players[factionID].factionBonusVal1[i]);
-				if (effectVal < 0) {
-					*(&effect->economy + Players[factionID].factionBonusVal1[i]) = effectVal / 2;
+			else if (Players[factionID].factionBonusID[i] == RULE_ROBUST) { // halves neg effects
+				int *effFactionMod = (&effect->economy + Players[factionID].factionBonusVal1[i]);
+				if (*effFactionMod < 0) {
+					*effFactionMod /= 2;
 				}
 			}
 		}
@@ -756,19 +771,17 @@ void __cdecl social_calc(social_category *category, social_effect *effect, uint3
 Purpose: Handle the social engineering turn upkeep for the specified faction.
 Original Offset: 005B44D0
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl social_upkeep(uint32_t factionID) {
 	for (int i = 0; i < MaxSocialCatNum; i++) {
 		*(&PlayersData[factionID].socCategoryActive.politics + i) =
 			*(&PlayersData[factionID].socCategoryPending.politics + i);
 	}
-	social_calc(&PlayersData[factionID].socCategoryPending, 
-		&PlayersData[factionID].socEffectPending, factionID, false, false);
-	social_calc(&PlayersData[factionID].socCategoryPending,
-		&PlayersData[factionID].socEffectActive, factionID, false, false);
-	social_calc(&PlayersData[factionID].socCategoryPending,
-		&PlayersData[factionID].socEffectTemp, factionID, true, false);
+	social_category *socCatPending = &PlayersData[factionID].socCategoryPending;
+	social_calc(socCatPending, &PlayersData[factionID].socEffectPending, factionID, false, false);
+	social_calc(socCatPending, &PlayersData[factionID].socEffectActive, factionID, false, false);
+	social_calc(socCatPending, &PlayersData[factionID].socEffectTemp, factionID, true, false);
 	PlayersData[factionID].socUpheavalCostPaid = 0;
 }
 
@@ -792,7 +805,7 @@ uint32_t __cdecl social_upheaval(uint32_t factionID, social_category *categoryNe
 	changeCount++;
 	uint32_t diffLvl = is_human(factionID) ? PlayersData[factionID].diffLevel : DLVL_LIBRARIAN;
 	uint32_t cost = changeCount * changeCount * changeCount * diffLvl;
-	if (Players[factionID].ruleFlags & RFLAG_ALIEN) {
+	if (is_alien_faction(factionID)) {
 		cost += cost / 2;
 	}
 	return cost;

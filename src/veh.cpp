@@ -2340,7 +2340,7 @@ BOOL __cdecl has_abil(int protoID, int abilityID) {
 	if (!factionID) {
 		return false; // skip basic prototypes from #UNITS
 	}
-	if (Players[factionID].ruleFlags & RFLAG_ALIEN && abilityID == ABL_DEEP_RADAR) {
+	if (is_alien_faction(factionID) && abilityID == ABL_DEEP_RADAR) {
 		return true; // Caretakers + Usurpers > "Deep Radar" ability for all units
 	}
 	for (int i = 0; i < Players[factionID].factionBonusCount; i++) {

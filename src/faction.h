@@ -148,20 +148,6 @@ enum player_flags_extended_bitfield {
 	PFLAGEXT_STRAT_LOTS_ARTILLERY = 0x40,
 };
 
-enum social_effect_id {
-	SE_ECONOMY = 0,
-	SE_EFFIC = 1,
-	SE_SUPPORT = 2,
-	SE_TALENT = 3,
-	SE_MORALE = 4,
-	SE_POLICE = 5,
-	SE_GROWTH = 6,
-	SE_PLANET = 7,
-	SE_PROBE = 8,
-	SE_INDUSTRY = 9,
-	SE_RESEARCH = 10,
-};
-
 enum ai_goal_types {
 	AI_GOAL_UNUSED = -1,
 	AI_GOAL_ATTACK = 0, // 'a', red
@@ -179,6 +165,41 @@ enum ai_goal_types {
 	AI_GOAL_CONDENSER = 73,                                       // 0100 1001
 	AI_GOAL_THERMAL_BOREHOLE = 105,                               // 0110 1001
 	AI_GOAL_SENSOR_ARRAY = 121,                                   // 0111 1001
+};
+
+enum social_categories {
+	SOCIAL_CAT_POLITICS = 0,
+	SOCIAL_CAT_ECONOMICS = 1,
+	SOCIAL_CAT_VALUES = 2,
+	SOCIAL_CAT_FUTURE = 3,
+};
+
+enum social_engineering_politics {
+	SE_FRONTIER = 0,
+	SE_POLICE_STATE = 1,
+	SE_DEMOCRATIC = 2,
+	SE_FUNDAMENTALIST = 3,
+};
+
+enum social_engineering_economics {
+	SE_SIMPLE = 0,
+	SE_FREE_MARKET = 1,
+	SE_PLANNED = 2,
+	SE_GREEN = 3,
+};
+
+enum social_engineering_values {
+	SE_SURVIVAL = 0,
+	SE_POWER = 1,
+	SE_KNOWLEDGE = 2,
+	SE_WEALTH = 3,
+};
+
+enum social_engineering_future {
+	SE_NONE = 0,
+	SE_CYBERNETIC = 1,
+	SE_EUDAIMONIC = 2,
+	SE_THOUGHT_CONTROL = 3,
 };
 
 struct social_category {
@@ -511,6 +532,7 @@ extern int *DiploFriction;
 extern uint32_t *DiploFrictionFactionIDWith;
 extern uint32_t *DiploFrictionFactionID;
 
+OPENSMACX_API BOOL __cdecl is_alien_faction(uint32_t factionID);
 OPENSMACX_API BOOL __cdecl is_human(uint32_t factionID);
 OPENSMACX_API BOOL __cdecl is_alive(uint32_t factionID);
 OPENSMACX_API uint32_t __cdecl has_treaty(uint32_t factionID, uint32_t factionIDWith, 
@@ -547,7 +569,7 @@ OPENSMACX_API uint32_t __cdecl corner_market(uint32_t factionID);
 OPENSMACX_API void __cdecl see_map_check();
 OPENSMACX_API void __cdecl compute_faction_modifiers(uint32_t factionID);
 OPENSMACX_API void __cdecl social_calc(social_category *category, social_effect *effect,
-	uint32_t factionID, BOOL tgl1, BOOL isQuickCalc);
+	uint32_t factionID, BOOL toggle, BOOL isQuickCalc);
 OPENSMACX_API void __cdecl social_upkeep(uint32_t factionID);
 OPENSMACX_API uint32_t __cdecl social_upheaval(uint32_t factionID, social_category *categoryNew);
 OPENSMACX_API BOOL __cdecl society_avail(int socCategory, int socModel, int factionID);

@@ -93,11 +93,6 @@ extern func8 *parse_string_OG;
 typedef void func12(int);
 extern func12 *enemy_capabilities_OG;
 ///
-typedef void funct1(social_category *, social_effect *, uint32_t, BOOL, BOOL);
-extern funct1 *social_calc_OG;
-//
-typedef BOOL funct2(uint32_t);
-extern funct2 *at_climax_OG;
 typedef void funct3(uint32_t);
 extern funct3 *base_queue_OG;
 //
