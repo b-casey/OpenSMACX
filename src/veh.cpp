@@ -344,11 +344,6 @@ int __cdecl get_basic_offense(uint32_t vehIDAtk, int vehIDDef, uint32_t psiComba
 				moraleSEActive++;
 			}
 			morale -= moraleSEActive;
-			if (has_fac_built(FAC_BROOD_PIT, baseIDAtk) && protoIDAtk < MaxVehProtoFactionNum
-				&& (Weapon[VehPrototype[protoIDAtk].weaponID].offenseRating < 0
-					|| protoIDAtk == BSC_SPORE_LAUNCHER)) {
-				morale++;
-			}
 		}
 		else if (has_fac_built(FAC_BROOD_PIT, baseIDAtk) && protoIDAtk < MaxVehProtoFactionNum
 			&& (Weapon[VehPrototype[protoIDAtk].weaponID].offenseRating < 0
@@ -413,11 +408,6 @@ int __cdecl get_basic_defense(uint32_t vehIDDef, int vehIDAtk, uint32_t psiComba
 				moraleSEActive++;
 			}
 			morale -= moraleSEActive;
-			if (has_fac_built(FAC_BROOD_PIT, baseIDDef) && protoIDDef < MaxVehProtoFactionNum
-				&& (Weapon[VehPrototype[protoIDDef].weaponID].offenseRating < 0
-					|| protoIDDef == BSC_SPORE_LAUNCHER)) {
-				morale++;
-			}
 		}
 		else if (has_fac_built(FAC_BROOD_PIT, baseIDDef) &&  protoIDDef < MaxVehProtoFactionNum
 			&& (Weapon[VehPrototype[protoIDDef].weaponID].offenseRating < 0
@@ -428,6 +418,9 @@ int __cdecl get_basic_defense(uint32_t vehIDDef, int vehIDAtk, uint32_t psiComba
 				moraleSEActive++;
 			}
 			morale -= moraleSEActive;
+		}
+		if (has_fac_built(FAC_HEADQUARTERS, baseIDDef)) { // bug fix: per manual
+			morale++; // "Units in a headquarters base automatically gain +1 Morale when defending."
 		}
 		int moraleSEPending = PlayersData[factionIDDef].socEffectPending.morale;
 		if (moraleSEPending >= 2 && moraleSEPending <= 3) {
