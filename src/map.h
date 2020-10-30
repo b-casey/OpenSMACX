@@ -47,9 +47,14 @@ enum terrain_rainfall_bit { // land modifiers only
 };
 
 enum terrain_rock_bit { // land modifiers only
-	TERRAIN_FLAT = 0x0,
-	TERRAIN_ROLLING = 0x40, // can only have one value set, otherwise game will crash
-	TERRAIN_ROCKY = 0x80, // " "
+	TERRAIN_BIT_ROLLING = 0x40, // can only have one value set, otherwise game will crash
+	TERRAIN_BIT_ROCKY = 0x80, // " "
+};
+
+enum terrain_rockiness { // land modifiers only
+	ROCKINESS_FLAT = 0,
+	ROCKINESS_ROLLING = 1, // can only have one value set, otherwise game will crash
+	ROCKINESS_ROCKY = 2, // " "
 };
 
 enum terrain_bit : uint32_t {
@@ -61,7 +66,7 @@ enum terrain_bit : uint32_t {
 	BIT_FUNGUS = 0x20,
 	BIT_SOLAR_TIDAL = 0x40,
 	BIT_RIVER = 0x80,
-	BIT_RIVER_SRC = 0x100, // River begins here for visual effect
+	BIT_RIVERBED = 0x100, // River source for world river creation and visual effect
 	BIT_RIVER_LAKE = 0x200, // Shows more water for visual effect
 	BIT_RSC_BONUS = 0x400, // Mineral, Nutrient, Energy
 	BIT_BUNKER = 0x800,
@@ -78,9 +83,9 @@ enum terrain_bit : uint32_t {
 	BIT_CONDENSER = 0x400000,
 	BIT_ECH_MIRROR = 0x800000,
 	BIT_THERMAL_BORE = 0x1000000,
-	BIT_UNK_2000000 = 0x2000000, // ?
-	BIT_UNK_4000000 = 0x4000000, // ?
-	BIT_UNK_8000000 = 0x8000000, // ?
+	BIT_UNK_2000000 = 0x2000000, // related to monoliths
+	BIT_UNK_4000000 = 0x4000000, // related to pods
+	BIT_UNK_8000000 = 0x8000000, // related to pods
 	BIT_SUPPLY_POD = 0x10000000,
 	BIT_NUTRIENT_RSC = 0x20000000,
 	BIT_UNK_40000000 = 0x40000000, // ?
@@ -88,24 +93,43 @@ enum terrain_bit : uint32_t {
 };
 
 enum terrain_landmark_bit2 {
-	LM_CRATER = 0x1,
-	LM_VOLCANO = 0x2,
-	LM_JUNGLE = 0x4,
-	LM_URANIUM = 0x8,
-	LM_SARGASSO = 0x10,
-	LM_RUINS = 0x20,
-	LM_DUNES = 0x40,
-	LM_FRESH = 0x80,
-	LM_MESA = 0x100,
-	LM_CANYON = 0x200,
-	LM_GEOTHERMAL = 0x400,
-	LM_RIDGE = 0x800,
-	LM_BOREHOLE = 0x1000,
-	LM_NEXUS = 0x2000,
-	LM_UNITY = 0x4000,
-	LM_FOSSIL = 0x8000,
+	BIT2_CRATER = 0x1,
+	BIT2_VOLCANO = 0x2,
+	BIT2_JUNGLE = 0x4,
+	BIT2_URANIUM = 0x8,
+	BIT2_SARGASSO = 0x10,
+	BIT2_RUINS = 0x20,
+	BIT2_DUNES = 0x40,
+	BIT2_FRESH = 0x80,
+	BIT2_MESA = 0x100,
+	BIT2_CANYON = 0x200,
+	BIT2_GEOTHERMAL = 0x400,
+	BIT2_RIDGE = 0x800,
+	BIT2_BOREHOLE = 0x1000,
+	BIT2_NEXUS = 0x2000,
+	BIT2_UNITY = 0x4000,
+	BIT2_FOSSIL = 0x8000,
 	//
-	LM_UNK_80000000 = 0x80000000,
+	BIT2_UNK_80000000 = 0x80000000,
+};
+
+enum terrain_landmark_id {
+	LM_CRATER = 0,
+	LM_VOLCANO = 1,
+	LM_JUNGLE = 2,
+	LM_URANIUM = 3,
+	LM_SARGASSO = 4,
+	LM_RUINS = 5,
+	LM_DUNES = 6,
+	LM_FRESH = 7,
+	LM_MESA = 8,
+	LM_CANYON = 9,
+	LM_GEOTHERMAL = 10,
+	LM_RIDGE = 11,
+	LM_BOREHOLE = 12,
+	LM_NEXUS = 13,
+	LM_UNITY = 14,
+	LM_FOSSIL = 15,
 };
 
 enum resource_type {
@@ -206,8 +230,8 @@ const int yRadiusOffset[] = {
 	-7,  -8,  -9, -10, -11, -12, -13, -14, -15, };
 const uint32_t ElevDetail[] = { 0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200 };
 
-extern uint32_t *MapHorizontalBounds; // x
-extern uint32_t *MapVerticalBounds; // y
+extern uint32_t *MapLongitudeBounds; // x
+extern uint32_t *MapLatitudeBounds; // y
 extern uint32_t *MapRandSeed;
 extern int *MapSeaLevel;
 extern int *MapSeaLevelCouncil; // Solar Shade (-3); Melt Polar Caps (+3)
@@ -216,8 +240,8 @@ extern uint32_t *MapAreaSqRoot;
 extern BOOL *MapIsFlat;
 extern uint32_t *MapLandmarkCount;
 extern landmark *MapLandmark;
-extern uint32_t *MapAbstractHorizBounds;
-extern uint32_t *MapAbstractVertBounds;
+extern uint32_t *MapAbstractLongBounds; // abstract x
+extern uint32_t *MapAbstractLatBounds; // abstract y
 extern uint32_t *MapAbstractArea;
 extern uint32_t *MapSizePlanet;
 extern uint32_t *MapOceanCoverage;
@@ -229,6 +253,11 @@ extern uint32_t *MapNativeLifeForms;
 extern LPSTR *MapFilePath;
 extern map **Map;
 extern uint8_t **MapAbstract;
+extern uint32_t *MapBaseSubmergedCount;
+extern int *MapBaseIDClosestSubmergedVeh;
+extern uint32_t *BrushVal1; // TODO: more descriptive variable name
+extern uint32_t *BrushVal2; // TODO: more descriptive variable name
+extern uint32_t *WorldBuildVal1; // TODO: more descriptive variable name
 
 extern continent *Continents;
 extern rules_natural *Natural;
@@ -259,9 +288,11 @@ OPENSMACX_API BOOL __cdecl coast_or_border(int xCoordPtA, int yCoordPtA,
 OPENSMACX_API map *__cdecl map_loc(int xCoord, int yCoord);
 OPENSMACX_API uint32_t __cdecl temp_at(int xCoord, int yCoord);
 OPENSMACX_API void __cdecl temp_set(int xCoord, int yCoord, uint8_t temperature);
+OPENSMACX_API uint32_t __cdecl climate_at(int xCoord, int yCoord);
 OPENSMACX_API void __cdecl climate_set(int xCoord, int yCoord, uint8_t climate);
 OPENSMACX_API int __cdecl elev_at(int xCoord, int yCoord);
 OPENSMACX_API uint32_t __cdecl alt_natural(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl alt_set_both(int xCoord, int yCoord, uint32_t altitude);
 OPENSMACX_API uint32_t __cdecl alt_at(int xCoord, int yCoord);
 OPENSMACX_API uint32_t __cdecl altitude_at(int xCoord, int yCoord);
 OPENSMACX_API uint32_t __cdecl alt_detail_at(int xCoord, int yCoord);
@@ -291,6 +322,10 @@ OPENSMACX_API uint32_t __cdecl minerals_at(int xCoord, int yCoord);
 OPENSMACX_API uint32_t __cdecl bonus_at(int xCoord, int yCoord, int unkVal);
 OPENSMACX_API uint32_t __cdecl goody_at(int xCoord, int yCoord);
 OPENSMACX_API void __cdecl site_radius(int xCoord, int yCoord, int valUnk);
+OPENSMACX_API int __cdecl find_landmark(int xCoord, int yCoord, uint32_t radiusRangeOffset);
+OPENSMACX_API int __cdecl new_landmark(int xCoord, int yCoord, LPSTR name);
+OPENSMACX_API BOOL __cdecl valid_landmark(int xCoord, int yCoord, int factionID);
+OPENSMACX_API void __cdecl kill_landmark(int xCoord, int yCoord);
 OPENSMACX_API BOOL __cdecl is_coast(int xCoord, int yCoord, BOOL isBaseRadius);
 OPENSMACX_API BOOL __cdecl is_ocean(int xCoord, int yCoord);
 OPENSMACX_API int __cdecl veh_who(int xCoord, int yCoord);
@@ -315,6 +350,38 @@ OPENSMACX_API  int __cdecl radius_move(int xCoordSrc, int yCoordSrc, int xCoordD
 OPENSMACX_API int __cdecl compass_move(int xCoordSrc, int yCoordSrc, int xCoordDst, int yCoordDst);
 OPENSMACX_API int __cdecl is_sensor(int xCoord, int yCoord);
 OPENSMACX_API BOOL __cdecl has_temple(int factionID);
+OPENSMACX_API void __cdecl world_alt_set(int xCoord, int yCoord, uint32_t altitude, BOOL isSetBoth);
+OPENSMACX_API void __cdecl world_raise_alt(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl world_lower_alt(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl brush(int xCoord, int yCoord, uint32_t altitude);
+OPENSMACX_API void __cdecl paint_land(int xCoord, int yCoord, uint32_t altitude, uint32_t radius);
+OPENSMACX_API void __cdecl build_continent(uint32_t size);
+OPENSMACX_API void __cdecl build_hills(uint32_t altitude);
+OPENSMACX_API void __cdecl world_riverbeds();
+OPENSMACX_API BOOL __cdecl world_validate();
+OPENSMACX_API void __cdecl world_temperature();
+OPENSMACX_API void __cdecl world_analysis();
+OPENSMACX_API void __cdecl world_alt_put_detail(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl world_polar_caps();
+OPENSMACX_API void __cdecl world_linearize_contours();
+OPENSMACX_API BOOL __cdecl near_landmark(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl world_crater(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl world_monsoon(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl world_sargasso(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl world_ruin(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl world_dune(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl world_diamond(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl world_fresh(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl world_volcano(int xCoord, int yCoord, BOOL isNotLandmark);
+OPENSMACX_API void __cdecl world_borehole(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl world_temple(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl world_unity(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl world_fossil(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl world_canyon(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl world_mesa(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl world_ridge(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl world_geothermal(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl world_landmarks();
 OPENSMACX_API uint32_t __cdecl zoc_any(int xCoord, int yCoord, uint32_t factionID);
 OPENSMACX_API uint32_t __cdecl zoc_veh(int xCoord, int yCoord, uint32_t factionID);
 OPENSMACX_API uint32_t __cdecl zoc_sea(int xCoord, int yCoord, uint32_t factionID);

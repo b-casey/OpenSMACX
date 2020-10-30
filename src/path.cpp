@@ -177,8 +177,8 @@ int Path::move(int vehID, int factionID) {
  Status: Complete
 */
 void Path::make_abstract() {
-	for (uint32_t y = 0; y < *MapAbstractVertBounds; y++) {
-		for (uint32_t x = y & 1; x < *MapAbstractHorizBounds; x += 2) {
+	for (uint32_t y = 0; y < *MapAbstractLatBounds; y++) {
+		for (uint32_t x = y & 1; x < *MapAbstractLongBounds; x += 2) {
 			uint8_t region = 0;
 			for (uint32_t i = 0; i < 9; i++) {
 				int xRadius = xrange(x * 5 + xRadiusOffset[i]), yRadius = y * 5 + yRadiusOffset[i];
@@ -228,7 +228,7 @@ void Path::territory(int xCoord, int yCoord, int UNUSED(region), int factionID) 
 			int xRadius = xrange(xCoordIt + xRadiusBase[i]);
 			int yRadius = yCoordIt + yRadiusBase[i];
 			map *tile;
-			if (on_map(xRadius, yRadius) && yCoordIt && yCoordIt != ((int)*MapVerticalBounds - 1)
+			if (on_map(xRadius, yRadius) && yCoordIt && yCoordIt != ((int)*MapLatitudeBounds - 1)
 				&& !is_ocean(xRadius, yRadius) && (tile = map_loc(xRadius, yRadius),
 					!tile->unk_1 && tile->territory == factionID)) {
 				tile->unk_1 = 1;
@@ -261,10 +261,10 @@ void Path::continent(int xCoord, int yCoord, uint32_t region) {
 			int xRadius = xrange(xCoordIt + xRadiusBase[i]);
 			int yRadius = yCoordIt + yRadiusBase[i];
 			BOOL isOceanRad;
-			if (on_map(xRadius, yRadius) && yCoordIt && yCoordIt != ((int)*MapVerticalBounds - 1)
+			if (on_map(xRadius, yRadius) && yCoordIt && yCoordIt != ((int)*MapLatitudeBounds - 1)
 				&& (isOceanRad = is_ocean(xRadius, yRadius), isOceanRad == isOcean 
 					&& !region_at(xRadius, yRadius))) {
-				if (isOcean && bit2_at(xRadius, yRadius) & LM_FRESH && isOceanRad) {
+				if (isOcean && bit2_at(xRadius, yRadius) & BIT2_FRESH && isOceanRad) {
 					freshWaterCount++;
 				}
 				region_set(xRadius, yRadius, (uint8_t)region);
@@ -275,10 +275,10 @@ void Path::continent(int xCoord, int yCoord, uint32_t region) {
 	} while (index2 && index1 != index2);
 	if (freshWaterCount) {
 		BOOL isFreshWater = freshWaterCount >= ((Continents[region].tiles * 3) / 4); // land locked?
-		for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
-			for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
+		for (uint32_t y = 0; y < *MapLatitudeBounds; y++) {
+			for (uint32_t x = y & 1; x < *MapLongitudeBounds; x += 2) {
 				if (region_at(x, y) == region) {
-					bit2_set(x, y, LM_FRESH, isFreshWater);
+					bit2_set(x, y, BIT2_FRESH, isFreshWater);
 				}
 			}
 		}
@@ -296,11 +296,11 @@ void Path::continents() {
 	for (uint32_t i = 0; i < *MapArea; i++) {
 		(*Map)[i].region = 0;
 	}
-	uint32_t yCoordSouthPole = *MapVerticalBounds - 1;
+	uint32_t yCoordSouthPole = *MapLatitudeBounds - 1;
 	uint32_t oceanRegion = 64;
 	uint32_t landRegion = 0;
 	for (uint32_t y = 1; y < yCoordSouthPole; y++) {
-		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
+		for (uint32_t x = y & 1; x < *MapLongitudeBounds; x += 2) {
 			if (!region_at(x, y)) {
 				uint32_t regionCurrent, regionMin, regionMax;
 				if (is_ocean(x, y)) {
@@ -336,12 +336,12 @@ void Path::continents() {
 			}
 		}
 	}
-	for (uint32_t x = 0; x < *MapHorizontalBounds; x += 2) { // north pole
+	for (uint32_t x = 0; x < *MapLongitudeBounds; x += 2) { // north pole
 		uint8_t poleRegion = is_ocean(x, 0) ? 127 : 63;
 		region_set(x, 0, poleRegion);
 		Continents[poleRegion].tiles++;
 	}
-	for (uint32_t x = yCoordSouthPole & 1; x < *MapHorizontalBounds; x += 2) { // south pole
+	for (uint32_t x = yCoordSouthPole & 1; x < *MapLongitudeBounds; x += 2) { // south pole
 		uint8_t poleRegion = is_ocean(x, yCoordSouthPole) ? 127 : 63;
 		region_set(x, yCoordSouthPole, poleRegion);
 		Continents[poleRegion].tiles++;
@@ -359,8 +359,8 @@ void Path::continents() {
 	for (uint32_t i = 0; i < MaxRegionLandNum; i++) {
 		ZeroMemory(Continents[i].seaCoasts, 8);
 	}
-	for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
-		for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
+	for (uint32_t y = 0; y < *MapLatitudeBounds; y++) {
+		for (uint32_t x = y & 1; x < *MapLongitudeBounds; x += 2) {
 			uint32_t region = region_at(x, y);
 			if (region < MaxRegionLandNum) {
 				for (uint32_t i = 0; i < 8; i++) {
@@ -396,8 +396,8 @@ BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
 	int xCoord = *xCoordPtr, yCoord = *yCoordPtr;
 	int search = 9999;
 	uint32_t region = region_at(xCoord, yCoord);
-	for (uint32_t y = 1; y < *MapAbstractVertBounds - 1; y++) {
-		for (uint32_t x = y & 1; x < *MapAbstractHorizBounds; x += 2) {
+	for (uint32_t y = 1; y < *MapAbstractLatBounds - 1; y++) {
+		for (uint32_t x = y & 1; x < *MapAbstractLongBounds; x += 2) {
 			int factionIDVeh;
 			if (region_at(x, y) == region
 				&& whose_territory(factionID, x, y, NULL, false) == factionID
@@ -411,8 +411,8 @@ BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
 					|| has_treaty(factionID, factionIDZoc, DTREATY_PACT))
 					&& bit & (BIT_MINE | BIT_SOLAR_TIDAL)
 					&& bit & (BIT_MONOLITH | BIT_CONDENSER | BIT_THERMAL_BORE)
-					&& !bonus_at(x, y, 0) && ((tile->val3 & 0xC0u) > TERRAIN_ROLLING
-						|| !(tile->climate & (RAINFALL_RAINY | RAINFALL_MOIST))
+					&& !bonus_at(x, y, 0) && ((tile->val3 & 0xC0u) > TERRAIN_BIT_ROLLING
+						|| climate_at(x, y) == RAINFALL_ARID
 						|| !(bit & BIT_FUNGUS) || !is_ocean(x, y)) 
 					&& (!(bit & BIT_FUNGUS) || (!is_ocean(x, y) 
 						&& has_tech(Rules->TechImproveFungusSqr, factionID)))) {

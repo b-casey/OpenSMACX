@@ -56,7 +56,7 @@ BOOL __cdecl is_alien_faction(uint32_t factionID) {
 }
 
 /*
-Purpose: Determine if the specified faction is a human player or computer controlled AI.
+Purpose: Determine if the specified faction is controlled by a human player or computer AI.
 Original Offset: n/a
 Return Value: Is faction a human? true/false
 Status: Complete
@@ -884,7 +884,7 @@ void __cdecl social_ai(uint32_t factionID, int growthVal, int techVal, int wealt
 	uint32_t unkCount1 = 0;
 	uint32_t unkCount2 = 0;
 	uint32_t unkSum2 = 0;
-	for (int region = 1; region < MaxRegionLandNum; region++) {
+	for (uint32_t region = 1; region < MaxRegionLandNum; region++) {
 		if (!bad_reg(region)) {
 			uint8_t baseCount = PlayersData[factionID].regionTotalBases[region];
 			if (baseCount) {
@@ -930,7 +930,7 @@ void __cdecl social_ai(uint32_t factionID, int growthVal, int techVal, int wealt
 			unkVal3++;
 		}
 	}
-	// search / calc
+	// search / calculate
 	int unkVal4 = -9999; // search val?
 	int socCatBits = -1;
 	// unkSum2 = 0 > used as iterator, optimization re-use, var unused
@@ -1457,7 +1457,7 @@ void __cdecl enemy_capabilities_t(uint32_t factionID) {
 	// * PSI could potentially be best weapon?
 	// * PSI should always be last Weapon
 	// * faction order will affect initial run through
-	// > potential fix would be to calc all factions at once before enemy best compares
+	// > potential fix would be to calculate all factions at once before enemy best compares
 
 	//BOOL hasWorms = veh_avail(BSC_MIND_WORMS, factionID, -1);
 	//PlayersData[factionID].bestPsiAtkVal = hasWorms ? weap_strat(WPN_PSI_ATTACK, factionID) : 0;

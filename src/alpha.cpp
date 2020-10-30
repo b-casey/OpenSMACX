@@ -1283,14 +1283,14 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 				StringTable->get((int)Terraforming[i].name)); // 17-31
 		}
 	}
-	// Jungle
-	MainInterfaceVar->flatButton[32].set_bubble_text(StringTable->get((int)Natural[2].nameShort));
-	// Dunes
-	MainInterfaceVar->flatButton[33].set_bubble_text(StringTable->get((int)Natural[6].nameShort));
-	// Uranium
-	MainInterfaceVar->flatButton[34].set_bubble_text(StringTable->get((int)Natural[3].nameShort));
-	// Geothermal
-	MainInterfaceVar->flatButton[35].set_bubble_text(StringTable->get((int)Natural[10].nameShort));
+	MainInterfaceVar->flatButton[32].set_bubble_text(
+		StringTable->get((int)Natural[LM_JUNGLE].nameShort));
+	MainInterfaceVar->flatButton[33].set_bubble_text(
+		StringTable->get((int)Natural[LM_DUNES].nameShort));
+	MainInterfaceVar->flatButton[34].set_bubble_text(
+		StringTable->get((int)Natural[LM_URANIUM].nameShort));
+	MainInterfaceVar->flatButton[35].set_bubble_text(
+		StringTable->get((int)Natural[LM_GEOTHERMAL].nameShort));
 	return false;
 }
 

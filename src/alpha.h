@@ -524,94 +524,94 @@ struct rules_worldbuilder {
 	// Alpha(x).txt #WORLDBUILDER: Seeded land size of a standard world
 	// Original bounds: 50 to 4000
 	// Default value: 384
-	int LandBase;
+	uint32_t LandBase;
 
 	// Alpha(x).txt #WORLDBUILDER: Additional land from LAND selection: x0, x1, x2
 	// Original bounds: 0 to 2000
 	// Default value: 256
-	int LandMod;
+	uint32_t LandMod;
 
 	// Alpha(x).txt #WORLDBUILDER: Base size of a land mass seed
 	// Original bounds: 5 to 1000
 	// Default value: 12
-	int ContinentBase;
+	uint32_t ContinentBase;
 
 	// Alpha(x).txt #WORLDBUILDER: Increased size from LAND selection: x0, x1, x2
 	// Original bounds: 5 to 1000
 	// Default value: 24
-	int ContinentMod;
+	uint32_t ContinentMod;
 
 	// Alpha(x).txt #WORLDBUILDER: Base # of extra hills
 	// Original bounds: 0 to 100
 	// Default value: 1
-	int HillsBase;
+	uint32_t HillsBase;
 
 	// Alpha(x).txt #WORLDBUILDER: Additional hills from TIDAL selection: x0, x1, x2
 	// Original bounds: 0 to 100
 	// Default value: 2
-	int HillsMod;
+	uint32_t HillsMod;
 
 	// Alpha(x).txt #WORLDBUILDER: Basic plateau size
 	// Original bounds: 0 to 500
 	// Default value: 4
-	int PlateauBase;
+	uint32_t PlateauBase;
 
 	// Alpha(x).txt #WORLDBUILDER: Plateau modifier based on LAND selection: x0, x1, x2
 	// Original bounds: 0 to 500
 	// Default value: 8
-	int PlateauMod;
+	uint32_t PlateauMod;
 
 	// Alpha(x).txt #WORLDBUILDER: Basic # of rivers
 	// Original bounds: 0 to 100
 	// Default value: 8
-	int RiversBase;
+	uint32_t RiversBase;
 
 	// Alpha(x).txt #WORLDBUILDER: Additional rivers based on RAIN selection
 	// Original bounds: 0 to 100
 	// Default value: 12
-	int RiversRainMod;
+	uint32_t RiversRainMod;
 
 	// Alpha(x).txt #WORLDBUILDER: Latitude DIVISOR for temperature based on HEAT;
 	// Smaller # increases effect of HEAT selection
 	// Original bounds: 1 to 64
 	// Default value: 14
-	int SolarEnergy;
+	uint32_t SolarEnergy;
 
 	// Alpha(x).txt #WORLDBUILDER: Latitude DIVISOR for thermal banding; Smaller # widens hot bands
 	// Original bounds: 1 to 64
 	// Default value: 14
-	int ThermalBand;
+	uint32_t ThermalBand;
 
 	// Alpha(x).txt #WORLDBUILDER: Latitude DIVISOR for thermal deviance; Smaller # increases randomness
 	// Original bounds: 1 to 64
 	// Default value: 8
-	int ThermalDeviance;
+	uint32_t ThermalDeviance;
 
 	// Alpha(x).txt #WORLDBUILDER: Latitude DIVISOR for global warming;
 	// Smaller # increases effect of warming
 	// Original bounds: 1 to 64
 	// Default value: 8
-	int GlobalWarming;
+	uint32_t GlobalWarming;
 
 	// Alpha(x).txt #WORLDBUILDER: Magnitude of sea level changes from ice cap melting/freezing
 	// Original bounds: 1 to 100
 	// Default value: 5
-	int SeaLevelRises;
+	uint32_t SeaLevelRises;
 
 	// Alpha(x).txt #WORLDBUILDER: Size of cloud mass trapped by peaks
 	// Original bounds: 0 to 20
 	// Default value: 5
-	int CloudmassPeaks;
+	uint32_t CloudmassPeaks;
 
 	// Alpha(x).txt #WORLDBUILDER: Size of cloud mass trapped by hills
 	// Original bounds: 0 to 20
 	// Default value: 3
-	int CloudmassHills;
+	uint32_t CloudmassHills;
 
 	// Alpha(x).txt #WORLDBUILDER: Multiplier for rainfall belts
 	// Original bounds: 0 to 8
 	// Default value: 1
-	int RainfallCoeff;
+	uint32_t RainfallCoeff;
 
 	// Alpha(x).txt #WORLDBUILDER: Encourages fractal to grow deep water
 	// Original bounds: -100 to 100
@@ -636,7 +636,7 @@ struct rules_worldbuilder {
 	// Alpha(x).txt #WORLDBUILDER: Encourages hills x TIDAL selection
 	// Original bounds: 0 to 100
 	// Default value: 10
-	int Hills;
+	uint32_t Hills;
 
 	// Alpha(x).txt #WORLDBUILDER: Encourages peaks
 	// Original bounds: -100 to 100
@@ -646,37 +646,37 @@ struct rules_worldbuilder {
 	// Alpha(x).txt #WORLDBUILDER: Fungus coefficient based on LIFE selection
 	// Original bounds: 0 to 5
 	// Default value: 1
-	int Fungus;
+	uint32_t Fungus;
 
 	// Alpha(x).txt #WORLDBUILDER: Continent size ratios #1
 	// Original bounds: n/a
 	// Default value: 3
-	int ContSizeRatio1;
+	uint32_t ContSizeRatio1;
 
 	// Alpha(x).txt #WORLDBUILDER: Continent size ratios #2
 	// Original bounds: n/a
 	// Default value: 6
-	int ContSizeRatio2;
+	uint32_t ContSizeRatio2;
 
 	// Alpha(x).txt #WORLDBUILDER: Continent size ratios #3
 	// Original bounds: n/a
 	// Default value: 12
-	int ContSizeRatio3;
+	uint32_t ContSizeRatio3;
 
 	// Alpha(x).txt #WORLDBUILDER: Continent size ratios #4
 	// Original bounds: n/a
 	// Default value: 18
-	int ContSizeRatio4;
+	uint32_t ContSizeRatio4;
 
 	// Alpha(x).txt #WORLDBUILDER: Continent size ratios #5
 	// Original bounds: n/a
 	// Default value: 24
-	int ContSizeRatio5;
+	uint32_t ContSizeRatio5;
 
 	// Alpha(x).txt #WORLDBUILDER: Higher # increases island count
 	// Original bounds: 1 to 500
 	// Default value: 36
-	int Islands;
+	uint32_t Islands;
 };
 
 struct alpha_ini {

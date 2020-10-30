@@ -38,7 +38,7 @@ enum game_state_bitfield { // used by GameState
 	STATE_DISPLAYED_COUNCIL_AVAIL_MSG = 0x4000, // set when #COUNCILOPEN is displayed to show once
 	STATE_SCN_VICT_TERRITORY_COUNT_OBJ = 0x8000,
 	STATE_COUNCIL_HAS_CONVENED = 0x10000, // set 1st time Planetary Council is convened
-	STATE_UNK_20000 = 0x20000,
+	STATE_VOLCANO_ERUPTED = 0x20000, // #VOLCANO, tied to Planet ecology; can only be triggered once
 	STATE_SCN_VICT_ALL_ARTIFACTS_OBJ_UNIT = 0x40000,
 	STATE_SCN_VICT_HIGHEST_AC_SCORE_WINS = 0x80000,
 	STATE_PERIHELION_ACTIVE = 0x100000,

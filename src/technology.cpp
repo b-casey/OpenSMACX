@@ -552,7 +552,7 @@ int __cdecl tech_ai(int factionID) {
 				techValue = preq ? (techValue << 8) / preq : 0;
 			}
 			compare = isHuman ? random(0, techValue + 1) // not sure why humans get random()
-				: (techValue > 0) ? rand() % (techValue + 1) : 0; // vs AI rand()
+				: rnd(techValue + 1, NULL); // vs AI rnd()
 			if (compare > search) {
 				search = compare;
 				techID = i;

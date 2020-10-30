@@ -171,10 +171,7 @@ uint32_t __cdecl drop_range(int factionID) {
 		&& !has_project(SP_SPACE_ELEVATOR, factionID)) {
 		return Rules->MaxAirdropSansOrbInsert;
 	}
-	if (*MapHorizontalBounds > *MapVerticalBounds) {
-		return *MapHorizontalBounds;
-	}
-	return *MapVerticalBounds;
+	return (*MapLongitudeBounds <= * MapLatitudeBounds) ? *MapLatitudeBounds : *MapLongitudeBounds;
 }
 
 /*
@@ -215,7 +212,7 @@ uint32_t __cdecl defense_value(uint32_t factionID, uint32_t xCoord, uint32_t yCo
 				&& Veh[vehIDAtk].protoID < MaxVehProtoFactionNum))) {
 				return 2;
 	}
-	uint32_t isRocky = rocky_at(xCoord, yCoord) > TERRAIN_ROLLING;
+	uint32_t isRocky = rocky_at(xCoord, yCoord) > TERRAIN_BIT_ROLLING;
 	VehBattleDisplayTerrain = label_get(91); // "Rocky"
 	uint32_t defense = isRocky;
 	if (bit & BIT_FUNGUS && altitude_at(xCoord, yCoord) >= ALT_BIT_OCEAN_SHELF && !defense
@@ -493,8 +490,8 @@ Status: Complete - testing
 */
 void __cdecl battle_compute(int vehIDAtk, int vehIDDef, int *offenseOutput, int *defenseOutput,
 	int combatType) {
-	int offense = 8, defense = 8, protoIDAtk, protoIDDef;
-	uint32_t factionIDAtk, factionIDDef;
+	int offense = 8, defense = 8, protoIDAtk = -1, protoIDDef = -1;
+	uint32_t factionIDAtk = 0, factionIDDef = 0;
 	if (vehIDAtk >= 0) {
 		protoIDAtk = Veh[vehIDAtk].protoID;
 		factionIDAtk = Veh[vehIDAtk].factionID;
@@ -571,17 +568,20 @@ void __cdecl battle_compute(int vehIDAtk, int vehIDDef, int *offenseOutput, int 
 				if (Veh[vehIDAtk].state & VSTATE_MADE_AIRDROP && has_abil(protoIDAtk, ABL_DROP_POD)
 					&& Rules->CombatPenPctAtkAirdrop) {
 					offense = (100 - Rules->CombatPctEmpSongAtkVsPsi) * offense / 100;
+					/*
 					uint32_t dropRange;
 					if (has_tech(Rules->TechOrbInsertSansSpcElev, factionIDAtk)
 						|| has_project(SP_SPACE_ELEVATOR, factionIDAtk)) {
-						dropRange = (*MapHorizontalBounds <= *MapVerticalBounds)
-							? *MapVerticalBounds : *MapHorizontalBounds;
+						dropRange = (*MapHorizontalBounds <= *MapLatitudeBounds)
+							? *MapLatitudeBounds : *MapHorizontalBounds;
 					}
 					else {
 						dropRange = Rules->MaxAirdropSansOrbInsert;
 					}
+					*/
 					add_bat(0, Rules->CombatPenPctAtkAirdrop,
-						dropRange <= Rules->MaxAirdropSansOrbInsert ? label_get(437) // "Air Drop"
+						drop_range(factionIDAtk) <= Rules->MaxAirdropSansOrbInsert 
+						? label_get(437) // "Air Drop"
 						: label_get(438)); // "Orbital Insertion"
 				}
 				if (Players[factionIDAtk].ruleFlags & RFLAG_FANATIC
@@ -644,7 +644,8 @@ void __cdecl battle_compute(int vehIDAtk, int vehIDDef, int *offenseOutput, int 
 							add_bat(0, Rules->CombatPctArtBonusLvlAlt, label_get(576)); //"Altitude"
 						}
 						if (Rules->CombatPctMobileOpenGround && !combatType && baseIDDef < 0
-							&& terrainDef == 2 && rocky_at(xCoordDef, yCoordDef < TERRAIN_ROCKY)) {
+							&& terrainDef == 2 
+							&& rocky_at(xCoordDef, yCoordDef) < TERRAIN_BIT_ROCKY) {
 							uint32_t speedAtk = speed_proto(protoIDAtk);
 							if (speedAtk > Rules->MoveRateRoads 
 								&& speed_proto(protoIDDef) < speedAtk) {
@@ -654,7 +655,7 @@ void __cdecl battle_compute(int vehIDAtk, int vehIDDef, int *offenseOutput, int 
 							}
 						}
 						if (Rules->CombatPctDefVsMobileRough && !combatType && (terrainDef > 2
-							|| baseIDDef >= 0) && rocky_at(xCoordDef, yCoordDef < TERRAIN_ROCKY)
+							|| baseIDDef >= 0) && rocky_at(xCoordDef, yCoordDef) < TERRAIN_BIT_ROCKY
 							&& speed_proto(protoIDAtk) > Rules->MoveRateRoads) {
 							defense = defense * (Rules->CombatPctDefVsMobileRough + 100) / 100;
 							// "Rough vs. Mobile" : "Mobile vs. Base"
@@ -756,7 +757,7 @@ void __cdecl battle_compute(int vehIDAtk, int vehIDDef, int *offenseOutput, int 
 							}
 							uint32_t bitDef;
 							if (isArtillery && defMulti <= 2 && baseIDDef < 0
-								&& rocky_at(xCoordDef, yCoordDef) < TERRAIN_ROCKY
+								&& rocky_at(xCoordDef, yCoordDef) < TERRAIN_BIT_ROCKY
 								&& (bitDef = bit_at(xCoordDef, yCoordDef),
 									!(bitDef & BIT_FOREST)) && (bitDef & BIT_FUNGUS
 										|| altitude_at(xCoordDef, yCoordDef) 
@@ -1533,7 +1534,7 @@ int __cdecl hex_cost(int protoID, int factionID, int xCoordSrc, int yCoordSrc, i
 		return Rules->MoveRateRoads;
 	}
 	uint32_t cost = Rules->MoveRateRoads;
-	if (rocky_at(xCoordDst, yCoordDst) > TERRAIN_ROLLING && !toggle) {
+	if (rocky_at(xCoordDst, yCoordDst) > TERRAIN_BIT_ROLLING && !toggle) {
 		cost += Rules->MoveRateRoads;
 	}
 	if (bitDst & BIT_FOREST && !toggle) {

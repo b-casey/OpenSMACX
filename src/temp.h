@@ -64,6 +64,7 @@ extern func7 *popp;
 typedef void *func9(void);
 extern func9 *fixup_landmarks;
 extern func9 *mapwin_terrain_fixup;
+extern func9 *world_rainfall;
 typedef BOOL func11(int, int, int);
 extern func11 *wants_to_attack;
 typedef int func14(int, int);
@@ -79,6 +80,8 @@ typedef int func20(LPCSTR, int, int, LPCSTR, Sprite *);
 extern func20 *popb;
 typedef void func21(int, int, int, int);
 extern func21 *draw_radius;
+typedef void func22(int, int, uint32_t);
+extern func22 *alt_set;
 
 // Time
 typedef void func30(int);
