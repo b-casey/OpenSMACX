@@ -261,7 +261,7 @@ extern uint32_t *WorldBuildVal1; // TODO: more descriptive variable name
 
 extern continent *Continents;
 extern rules_natural *Natural;
-extern uint32_t *MapHorizontal;
+extern uint32_t *MapLongitude; // halve of MapLongitudeBounds
 extern uint32_t *AltNatural; // Default: { 0, 15, 32, 45, 60,  75,  80, 100, 100, 100, 100 };
 
 OPENSMACX_API BOOL __cdecl on_map(int xCoord, int yCoord);

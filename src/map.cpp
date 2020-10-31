@@ -58,7 +58,7 @@ uint32_t *WorldBuildVal1 = (uint32_t *)0x009B22B4;
 
 continent *Continents = (continent *)0x009AA730; // [128]
 rules_natural *Natural = (rules_natural *)0x0094ADE0;
-uint32_t *MapHorizontal = (uint32_t *)0x0068FAF0;
+uint32_t *MapLongitude = (uint32_t *)0x0068FAF0; // default set to 1
 uint32_t *AltNatural = (uint32_t *)0x0068FB4C;
 LPCSTR MapExtension = "MP";
 
@@ -455,7 +455,7 @@ Return Value: Pointer to map tile
 Status: Complete
 */
 map *__cdecl map_loc(int xCoord, int yCoord) {
-	return &((*Map)[(xCoord >> 1) + yCoord * *MapHorizontal]);
+	return &((*Map)[(xCoord >> 1) + yCoord * *MapLongitude]);
 }
 
 /*
@@ -1134,7 +1134,7 @@ Status: Complete
 */
 int __cdecl x_dist(int xCoordA, int xCoordB) {
 	int dist = abs(xCoordA - xCoordB);
-	if (!*MapIsFlat && dist > (int)*MapHorizontal) {
+	if (!*MapIsFlat && dist > (int)*MapLongitude) {
 		dist = *MapLongitudeBounds - dist;
 	}
 	return dist;
@@ -1210,8 +1210,8 @@ Status: Complete
 */
 BOOL __cdecl map_init() {
 	sprintf_s((LPSTR)MapFilePath, 80, "maps\\%s.%s", label_get(676), MapExtension);
-	*MapHorizontal = *MapLongitudeBounds / 2;
-	*MapArea = *MapHorizontal * *MapLatitudeBounds;
+	*MapLongitude = *MapLongitudeBounds / 2;
+	*MapArea = *MapLongitude * *MapLatitudeBounds;
 	*MapAreaSqRoot = quick_root(*MapArea);
 	*Map = 0;
 	*Map = (map *)mem_get(*MapArea * sizeof(map));
@@ -1363,10 +1363,10 @@ Status: Complete
 */
 int __cdecl radius_move(int xCoordSrc, int yCoordSrc, int xCoordDst, int yCoordDst, int range) {
 	int xRadiusOff = xCoordDst - xCoordSrc;
-	if (xRadiusOff < ((int)*MapLongitudeBounds / -2)) {
+	if (xRadiusOff < (-(int)*MapLongitude)) {
 		xRadiusOff += *MapLongitudeBounds;
 	}
-	if (xRadiusOff > ((int)*MapLongitudeBounds / 2)) {
+	if (xRadiusOff > ((int)*MapLongitude)) {
 		xRadiusOff -= *MapLongitudeBounds;
 	}
 	return radius_move(xRadiusOff, yCoordDst - yCoordSrc, range);
@@ -1380,10 +1380,10 @@ Status: Complete
 */
 int __cdecl compass_move(int xCoordSrc, int yCoordSrc, int xCoordDst, int yCoordDst) {
 	int xRadiusOff = xCoordDst - xCoordSrc;
-	if (xRadiusOff < ((int)*MapLongitudeBounds / -2)) {
+	if (xRadiusOff < (-(int)*MapLongitude)) {
 		xRadiusOff += *MapLongitudeBounds;
 	}
-	if (xRadiusOff > ((int)*MapLongitudeBounds / 2)) {
+	if (xRadiusOff > ((int)*MapLongitude)) {
 		xRadiusOff -= *MapLongitudeBounds;
 	}
 	int yRadiusOff = yCoordDst - yCoordSrc;
@@ -1938,10 +1938,10 @@ void __cdecl world_polar_caps() {
 	}
 	uint32_t bounds = *MapLongitudeBounds / 16;
 	for (uint32_t i = 0; i < bounds; i++) {
-		world_alt_put_detail(rnd(*MapLongitudeBounds / 2, NULL) * 2, 0);
-		world_alt_put_detail(rnd(*MapLongitudeBounds / 2, NULL) * 2 + 1, 1);
-		world_alt_put_detail(rnd(*MapLongitudeBounds / 2, NULL) * 2 + 1, *MapLatitudeBounds - 1);
-		world_alt_put_detail(rnd(*MapLongitudeBounds / 2, NULL) * 2, *MapLatitudeBounds - 2);
+		world_alt_put_detail(rnd(*MapLongitude, NULL) * 2, 0);
+		world_alt_put_detail(rnd(*MapLongitude, NULL) * 2 + 1, 1);
+		world_alt_put_detail(rnd(*MapLongitude, NULL) * 2 + 1, *MapLatitudeBounds - 1);
+		world_alt_put_detail(rnd(*MapLongitude, NULL) * 2, *MapLatitudeBounds - 2);
 	}
 }
 

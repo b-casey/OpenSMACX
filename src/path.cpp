@@ -68,7 +68,7 @@ void Path::shutdown() {
  Status: Complete
 */
 int Path::get(int xCoord, int yCoord) {
-	return mapTable[(xCoord >> 1) + yCoord * *MapHorizontal];
+	return mapTable[(xCoord >> 1) + yCoord * *MapLongitude];
 }
 
 /*
@@ -78,7 +78,7 @@ int Path::get(int xCoord, int yCoord) {
  Status: Complete
 */
 void Path::set(int xCoord, int yCoord, int val) {
-	mapTable[(xCoord >> 1) + yCoord * *MapHorizontal] = val;
+	mapTable[(xCoord >> 1) + yCoord * *MapLongitude] = val;
 }
 
 /*
