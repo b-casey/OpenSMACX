@@ -1978,7 +1978,7 @@ void __cdecl stack_put(int vehID, int xCoord, int yCoord) {
 	if (nextVehID >= 0) {
 		do {
 			vehIDLoop = Veh[nextVehID].nextVehIDStack;
-			veh_drop(veh_lift(nextVehID), xCoord, yCoord);
+			veh_put(nextVehID, xCoord, yCoord);
 			nextVehID = vehIDLoop;
 		} while (vehIDLoop >= 0);
 	}
@@ -1998,7 +1998,7 @@ void __cdecl stack_sort(int vehID) {
 			vehIDLoop = Veh[nextVehID].nextVehIDStack; // removed redundant < 0 check
 			if (veh_cargo(nextVehID) || has_abil(Veh[nextVehID].protoID, ABL_CARRIER)) {
 				vehIDPut = nextVehID;
-				veh_drop(veh_lift(nextVehID), -3, -3);
+				veh_put(nextVehID, -3, -3);
 			}
 			nextVehID = vehIDLoop;
 		} while (vehIDLoop >= 0);
@@ -2020,7 +2020,7 @@ void __cdecl stack_sort_2(int vehID) {
 			vehIDLoop = Veh[nextVehID].nextVehIDStack; // removed redundant < 0 check
 			if (VehPrototype[Veh[nextVehID].protoID].plan == PLAN_COLONIZATION) { // Colony Pods
 				vehIDPut = nextVehID;
-				veh_drop(veh_lift(nextVehID), -3, -3);
+				veh_put(nextVehID, -3, -3);
 			}
 			nextVehID = vehIDLoop;
 		} while (vehIDLoop >= 0);
@@ -2031,7 +2031,7 @@ void __cdecl stack_sort_2(int vehID) {
 			vehIDLoop = Veh[nextVehID].nextVehIDStack; // removed redundant < 0 check
 			if (VehPrototype[Veh[nextVehID].protoID].plan <= PLAN_COMBAT) {
 				vehIDPut = nextVehID;
-				veh_drop(veh_lift(nextVehID), -3, -3);
+				veh_put(nextVehID, -3, -3);
 			}
 			nextVehID = vehIDLoop;
 		} while (vehIDLoop >= 0);
@@ -2466,8 +2466,7 @@ Status: Complete
 void __cdecl veh_promote(int vehID) {
 	int vehIDTop = veh_top(vehID);
 	if (vehIDTop >= 0 && vehIDTop != vehID) {
-		veh_lift(vehID);
-		veh_drop(vehID, Veh[vehIDTop].xCoord, Veh[vehIDTop].yCoord);
+		veh_put(vehID, Veh[vehIDTop].xCoord, Veh[vehIDTop].yCoord);
 	}
 }
 
