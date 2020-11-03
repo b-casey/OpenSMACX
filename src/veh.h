@@ -512,11 +512,12 @@ OPENSMACX_API void __cdecl battle_init();
 OPENSMACX_API void __cdecl add_bat(uint32_t type, int modifier, LPCSTR displayStr);
 OPENSMACX_API void __cdecl battle_compute(int vehIDAtk, int vehIDDef, int *offenseOutput,
 	int *defenseOutput, int combatType);
+OPENSMACX_API uint32_t __cdecl best_defender(uint32_t vehIDDef, int vehIDAtk, BOOL checkArtillery);
 OPENSMACX_API void __cdecl invasions(uint32_t baseID);
 OPENSMACX_API void __cdecl go_to(int vehID, char type, int xCoord, int yCoord);
 OPENSMACX_API int __cdecl veh_top(int vehID);
-OPENSMACX_API uint32_t __cdecl veh_moves(int vehID);
-OPENSMACX_API uint32_t __cdecl proto_power(int vehID);
+OPENSMACX_API uint32_t __cdecl veh_moves(uint32_t vehID);
+OPENSMACX_API uint32_t __cdecl proto_power(uint32_t vehID);
 OPENSMACX_API BOOL __cdecl want_monolith(uint32_t vehID);
 OPENSMACX_API int __cdecl arm_strat(int armorID, int factionID);
 OPENSMACX_API int __cdecl weap_strat(int weaponID, int factionID);

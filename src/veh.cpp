@@ -951,6 +951,90 @@ void __cdecl battle_compute(int vehIDAtk, int vehIDDef, int *offenseOutput, int 
 }
 
 /*
+Purpose: Determine the best defender.
+Original Offset: 005044D0
+Return Value: vehID of best defender
+Status: Complete - testing
+*/
+uint32_t __cdecl best_defender(uint32_t vehIDDef, int vehIDAtk, BOOL checkArtillery) {
+	int offense = vehIDAtk >= 0 ? get_basic_offense(vehIDAtk, vehIDDef, false, false, false) : 8;
+	int xCoordDef = Veh[vehIDDef].xCoord, yCoordDef = Veh[vehIDDef].yCoord;
+	BOOL isOceanDef = is_ocean(xCoordDef, yCoordDef);
+	int baseIDDef = base_at(xCoordDef, yCoordDef);
+	//
+	int defenderSearch = -999;
+	uint32_t bestDefVehID = vehIDDef;
+	for (int i = veh_top(vehIDDef); i >= 0; i = Veh[i].nextVehIDStack) {
+		uint32_t protoIDDef = Veh[i].protoID;
+		if ((get_proto_triad(protoIDDef) != TRIAD_LAND || !isOceanDef && baseIDDef >= 0)
+			// added vehIDAtk bounds check
+			&& (vehIDAtk < 0 || VehPrototype[Veh[vehIDAtk].protoID].plan != PLAN_INFO_WARFARE
+				|| VehPrototype[protoIDDef].plan == PLAN_INFO_WARFARE)) {
+			uint32_t combatType = (can_arty(protoIDDef, true)
+				&& (vehIDAtk || can_arty(Veh[vehIDAtk].protoID, true))) ? 2 : 0; // added bounds
+			if (vehIDAtk >= 0 && get_triad(vehIDAtk) != TRIAD_AIR
+				&& has_abil(protoIDDef, ABL_AIR_SUPERIORITY)
+				&& !Chassis[VehPrototype[protoIDDef].chassisID].missile
+				&& !Chassis[VehPrototype[Veh[vehIDAtk].protoID].chassisID].missile
+				&& Weapon[VehPrototype[Veh[vehIDAtk].protoID].weaponID].offenseRating > 0
+				&& Armor[VehPrototype[Veh[vehIDAtk].protoID].armorID].defenseRating > 0
+				&& Weapon[VehPrototype[protoIDDef].weaponID].offenseRating > 0) {
+				combatType |= 0xA; // air combat
+				if (get_proto_triad(protoIDDef) == TRIAD_AIR) {
+					combatType |= 0x10;
+				}
+			}
+			int offenseOutput, defenseOutput;
+			battle_compute(vehIDAtk, i, &offenseOutput, &defenseOutput, combatType);
+			if (!offenseOutput) {
+				break;
+			}
+			uint32_t protoPwrDef = proto_power(i);
+			int defModifier = (((((range(protoPwrDef - Veh[i].dmgIncurred, 0, 9999) * defenseOutput)
+				/ protoPwrDef) * offense) / offenseOutput) / 8)
+				- Weapon[VehPrototype[protoIDDef].weaponID].offenseRating;
+			uint32_t planDef = VehPrototype[protoIDDef].plan;
+			if (planDef < PLAN_COLONIZATION || planDef == PLAN_TERRAFORMING) {
+				defModifier *= 16;
+			}
+			if (vehIDAtk >= 0 && get_triad(vehIDAtk) == TRIAD_AIR 
+				&& has_abil(protoIDDef, ABL_AIR_SUPERIORITY) 
+				&& get_proto_triad(protoIDDef) == TRIAD_AIR 
+				&& !Chassis[VehPrototype[protoIDDef].chassisID].missile
+				&& !Chassis[VehPrototype[Veh[vehIDAtk].protoID].chassisID].missile) {
+				defModifier += 0x80000;
+			}
+			else if (vehIDAtk >= 0 && get_triad(vehIDAtk) == TRIAD_AIR
+				&& has_abil(Veh[vehIDAtk].protoID, ABL_AIR_SUPERIORITY)
+				&& get_proto_triad(protoIDDef) == TRIAD_AIR && baseIDDef < 0
+				&& !(bit_at(xCoordDef, yCoordDef) & BIT_AIRBASE)
+				&& !stack_check(vehIDDef, 6, ABL_CARRIER, -1, -1)
+				&& !Chassis[VehPrototype[protoIDDef].chassisID].missile
+				&& !Chassis[VehPrototype[Veh[vehIDAtk].protoID].chassisID].missile) {
+				defModifier += 0x80000;
+			}
+			else if (checkArtillery) {
+				if (can_arty(protoIDDef, true)) {
+					defModifier += 0x80000;
+				}
+			}
+			else if ((!stack_check(vehIDDef, 3, TRIAD_AIR, -1, -1) || baseIDDef >= 0 
+				|| bit_at(xCoordDef, yCoordDef) & BIT_AIRBASE 
+				|| stack_check(vehIDDef, 6, ABL_CARRIER, -1, -1)) 
+				&& Veh[i].state & VSTATE_DESIGNATE_DEFENDER) {
+				defModifier += 0x80000;
+			}
+			int defense = i + (defModifier << 11);
+			if (defense > defenderSearch) {
+				defenderSearch = defense;
+				bestDefVehID = i;
+			}
+		}
+	}
+	return bestDefVehID;
+}
+
+/*
 Purpose: Determine whether any enemy naval transports are carrying land units within range to 
 		 attack the specified base. If so, set the units to move towards the base.
 Original Offset: 00506490
@@ -1017,7 +1101,7 @@ Original Offset: 00579960
 Return Value: Moves left
 Status: Complete
 */
-uint32_t __cdecl veh_moves(int vehID) {
+uint32_t __cdecl veh_moves(uint32_t vehID) {
 	return range(speed(vehID, false) - Veh[vehID].movesExpended, 0, 999);
 }
 
@@ -1027,7 +1111,7 @@ Original Offset: 005799A0
 Return Value: power
 Status: Complete
 */
-uint32_t __cdecl proto_power(int vehID) {
+uint32_t __cdecl proto_power(uint32_t vehID) {
 	int protoID = Veh[vehID].protoID;
 	if (VehPrototype[protoID].plan == PLAN_ALIEN_ARTIFACT) {
 		return 1;

@@ -51,7 +51,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
 	bin_app = mmap.mmap(f.fileno(), 0)
-	# next: 447
+	# next: 448
 	#
 	
 	# ALPHA
@@ -370,7 +370,10 @@ with open(exe_path, "r+b") as f:
 	bin_app.write(struct.pack("<L", addr+4*445))
 	bin_app.seek(0x001B44D0) # ?social_upkeep@@YAXI@Z
 	patch_call_bytes(bin_app)
-	bin_app.write(struct.pack("<L", addr+4*446))	
+	bin_app.write(struct.pack("<L", addr+4*446))
+	bin_app.seek(0x001B4550) # ?social_upheaval@@YAIIPAUsocial_category@@@Z
+	patch_call_bytes(bin_app)
+	bin_app.write(struct.pack("<L", addr+4*447))	
 	# FILEMAP
 	bin_app.seek(0x00228380) # ??0Filemap@@QAE@XZ
 	patch_call_bytes(bin_app)
@@ -1217,10 +1220,10 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x00179920) # ?veh_top@@YAHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*202))
-	bin_app.seek(0x00179960) # ?veh_moves@@YAIH@Z
+	bin_app.seek(0x00179960) # ?veh_moves@@YAII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*203))
-	bin_app.seek(0x001799A0) # ?proto_power@@YAIH@Z
+	bin_app.seek(0x001799A0) # ?proto_power@@YAII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*204))
 	bin_app.seek(0x0017D270) # ?arm_strat@@YAHHH@Z
