@@ -246,7 +246,7 @@ void Time::TimerProc(HWND UNUSED(hwnd), uint32_t UNUSED(msg), UINT_PTR idTimer,
 	DWORD UNUSED(elapsed)) {
 	if (idTimer && (!TimeModal || idTimer == (UINT_PTR)TimeModal)
 		&& !reinterpret_cast<Time *>(idTimer)->unk_1) {
-		PostMessageA(*HandleMain, WM_USER | WM_CREATE, idTimer, 0);
+		PostMessageA(*HandleMain, WM_USER+1, idTimer, 0);
 		reinterpret_cast<Time *>(idTimer)->unk_1 = 1;
 	}
 }
@@ -261,7 +261,7 @@ void Time::MultimediaProc(uint32_t UNUSED(timerID), uint32_t UNUSED(msg), DWORD_
 	DWORD_PTR UNUSED(dw1), DWORD_PTR UNUSED(dw2)) {
 	if (dwUser && (!TimeModal || dwUser == (DWORD_PTR)TimeModal)
 		&& !reinterpret_cast<Time *>(dwUser)->unk_1) {
-		PostMessageA(*HandleMain, WM_USER | WM_CREATE, dwUser, 0);
+		PostMessageA(*HandleMain, WM_USER+1, dwUser, 0);
 		reinterpret_cast<Time *>(dwUser)->unk_1 = 1;
 	}
 }
@@ -309,11 +309,9 @@ Status: Complete
 void __cdecl flush_timer() {
 	*MsgStatus |= 0x3F;
 	MSG uMsg;
-	if (PeekMessage(&uMsg, NULL, WM_USER | WM_CREATE, WM_USER | WM_CREATE, PM_REMOVE)) {
-		do {
-			TranslateMessage(&uMsg);
-			DispatchMessage(&uMsg);
-		} while (PeekMessage(&uMsg, NULL, WM_USER | WM_CREATE, WM_USER | WM_CREATE, PM_REMOVE));
+	while (PeekMessage(&uMsg, NULL, WM_USER+1, WM_USER+1, PM_REMOVE)) {
+		TranslateMessage(&uMsg);
+		DispatchMessage(&uMsg);
 	}
 	*MsgStatus = 0;
 }
