@@ -50,7 +50,7 @@ func7 *popp = (func7 *)0x0048C0A0;
 func9 *fixup_landmarks = (func9 *)0x00592940;
 func9 *mapwin_terrain_fixup = (func9 *)0x00471240;
 func9 *world_rainfall = (func9 *)0x005C4470;
-func11 *wants_to_attack = (func11 *)0x0055BC80;
+func11 *wants_to_attack_ = (func11 *)0x0055BC80;
 func14 *base_at = (func14 *)0x004E3A50;
 func15 *save_daemon = (func15 *)0x005A94F0;
 func16 *load_daemon = (func16 *)0x005A9760;
@@ -71,6 +71,7 @@ func8 *parse_string_OG = (func8 *)0x00625880;
 func12 *enemy_capabilities_OG = (func12 *)0x00560DD0;
 //
 funct3 *base_queue_OG = (funct3 *)0x004F06E0;
+funct4 *best_defender_OG = (funct4 *)0x005044D0;
 ///
 char1032 *stringTemp = (char1032 *)0x009B86A0;
 char256 *ParseStrBuffer = (char256 *)0x009BB5E8;
@@ -90,6 +91,16 @@ MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
 int __cdecl tester() {
 	log_set_state(true);
 	log_say("Start test", 0, 0, 0);
+
+	for (int i = 0; i < *VehCurrentCount; i++) { // test -1
+		for (int j = 0; j < *VehCurrentCount; j++) {
+			for (int k = 0; k < 2; k++) {
+				if (best_defender_OG(j, i, k) != best_defender(j, i, k)) {
+					log_say("error: ", j, i, k);
+				}
+			}
+		}
+	}
 
 	/*
 	base_queue_OG(1);

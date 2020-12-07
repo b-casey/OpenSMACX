@@ -554,6 +554,10 @@ OPENSMACX_API void __cdecl set_treaty(uint32_t factionID, uint32_t factionIDWith
 	BOOL set);
 OPENSMACX_API void __cdecl set_agenda(uint32_t factionID, uint32_t factionIDWith, uint32_t agenda,
 	BOOL set);
+OPENSMACX_API uint32_t __cdecl has_agenda(uint32_t factionID, uint32_t factionIDWith, 
+	uint32_t agenda);
+OPENSMACX_API BOOL __cdecl wants_to_attack(uint32_t factionID, uint32_t factionIDTarget,
+	int factionIDUnk);
 OPENSMACX_API uint32_t __cdecl guard_check(uint32_t factionID, uint32_t region);
 OPENSMACX_API void __cdecl add_goal(uint32_t factionID, int type, int priority, int xCoord,
 	int yCoord, int baseID);

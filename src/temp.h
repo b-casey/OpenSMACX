@@ -66,7 +66,7 @@ extern func9 *fixup_landmarks;
 extern func9 *mapwin_terrain_fixup;
 extern func9 *world_rainfall;
 typedef BOOL func11(int, int, int);
-extern func11 *wants_to_attack;
+extern func11 *wants_to_attack_;
 typedef int func14(int, int);
 extern func14 *base_at;
 typedef uint32_t func15(LPCSTR);
@@ -98,6 +98,8 @@ extern func12 *enemy_capabilities_OG;
 ///
 typedef void funct3(uint32_t);
 extern funct3 *base_queue_OG;
+typedef uint32_t funct4(uint32_t, int, BOOL);
+extern funct4 *best_defender_OG;
 //
 extern char1032 *stringTemp;
 extern char256 *ParseStrBuffer;

@@ -403,6 +403,203 @@ void __cdecl set_agenda(uint32_t factionID, uint32_t factionIDWith, uint32_t age
 }
 
 /*
+Purpose: Check whether the primary faction has at least one of the specified agendas (bitfield)
+		 with the secondary faction.
+Original Offset: 005591E0
+Return Value: Agenda status between the two factions, generally treated as a boolean
+Status: Complete - testing
+*/
+uint32_t __cdecl has_agenda(uint32_t factionID, uint32_t factionIDWith, uint32_t agenda) {
+	return PlayersData[factionID].diploAgenda[factionIDWith] & agenda;
+}
+
+/*
+Purpose: Determine if the specified factions want to attack.
+Original Offset: 0055BC80
+Return Value: Does factionID want to attack factionID2? true/false
+Status: Complete - testing
+*/
+BOOL __cdecl wants_to_attack(uint32_t factionID, uint32_t factionIDTarget, int factionIDUnk) {
+	uint32_t peaceFactionID = 0;
+	BOOL unkTgl = false;
+	if (Players[factionID].ruleFlags & RFLAG_ALIEN
+		&& Players[factionIDTarget].ruleFlags & RFLAG_ALIEN) {
+		return true;
+	}
+	if (has_treaty(factionID, factionIDTarget,
+		DTREATY_WANT_REVENGE | DTREATY_UNK_40 | DTREATY_ATROCITY_VICTIM)) {
+		return true;
+	}
+	if (PlayersData[factionIDTarget].majorAtrocities && PlayersData[factionID].majorAtrocities) {
+		return true;
+	}
+	if (has_treaty(factionID, factionIDTarget, DTREATY_UNK_4000000)) {
+		return false;
+	}
+	if (PlayersData[factionID].currentNumBases <= 1) {
+		return false;
+	}
+	if (!is_human(factionIDTarget) && PlayersData[factionID].playerFlags & PFLAG_TEAM_UP_VS_HUMAN) {
+		return false;
+	}
+	uint32_t wantsToAttack = 0;
+	for (uint32_t i = 1; i < MaxPlayerNum; i++) {
+		if (i != factionID && i != factionIDTarget) {
+			if (has_treaty(factionID, i, DTREATY_HAVE_SURRENDERED | DTREATY_PACT)) {
+				peaceFactionID = i;
+			}
+			if (has_treaty(factionID, i, DTREATY_VENDETTA)
+				&& !has_treaty(factionIDTarget, i, DTREATY_PACT)) {
+				wantsToAttack++;
+				if (PlayersData[i].milStrength_1
+					> ((PlayersData[factionIDTarget].milStrength_1 * 3) / 2)) {
+					wantsToAttack++;
+				}
+			}
+			if (great_beelzebub(i, false)
+				&& (*TurnCurrentNum >= 100 || *GameRules & RULES_INTENSE_RIVALRY)) {
+				if (has_treaty(factionIDTarget, i, DTREATY_VENDETTA)) {
+					wantsToAttack++;
+				}
+				if (has_treaty(factionIDTarget, i, DTREATY_COMMLINK) 
+					&& has_treaty(factionID, i, DTREATY_COMMLINK)) {
+					wantsToAttack++;
+				}
+			}
+			if (has_treaty(factionID, i, DTREATY_PACT) && is_human(i)) {
+				if (has_treaty(factionIDTarget, i, DTREATY_PACT)) {
+					wantsToAttack += 2;
+				}
+				BOOL hasSurrender = has_treaty(factionID, i, DTREATY_HAVE_SURRENDERED);
+				if (hasSurrender && has_treaty(i, factionIDTarget, DTREATY_PACT | DTREATY_TREATY)) {
+					return false;
+				}
+				if (has_treaty(factionIDTarget, i, DTREATY_VENDETTA)) {
+					unkTgl = true;
+					wantsToAttack -= (hasSurrender ? 4 : 2);
+				}
+			}
+		}
+	}
+	if (peaceFactionID) {
+		if (has_treaty(factionIDTarget, peaceFactionID, DTREATY_VENDETTA)) {
+			return true;
+		}
+		if (has_treaty(factionIDTarget, peaceFactionID, DTREATY_PACT | DTREATY_TREATY)) {
+			return false;
+		}
+	}
+	if (PlayersData[factionID].AI_Fight < 0 && !unkTgl && FactionRankings[7] != factionIDTarget) {
+		return false;
+	}
+	uint32_t regionTopBaseCount[8] = { 0 }; // bug fix: initialize to zero, original doesn't and
+	for (int region = 1; region < MaxRegionLandNum; region++) { // compares arbitrary data on stack
+		for (uint32_t f = 1; f < MaxPlayerNum; f++) {
+			uint32_t totalBases = PlayersData[f].regionTotalBases[region];
+			if (totalBases > regionTopBaseCount[f]) {
+				regionTopBaseCount[f] = totalBases;
+			}
+		}
+	}
+	for (uint32_t f = 1; f < MaxPlayerNum; f++) {
+		regionTopBaseCount[f] -= (regionTopBaseCount[f] / 4);
+	}
+	int regionTargetHQ = -1, regionHQ = -1;
+	for (int i = 0; i < *BaseCurrentCount; i++) {
+		if (has_fac_built(FAC_HEADQUARTERS, i)) {
+			uint32_t baseFaction = Base[i].factionIDCurrent;
+			if (baseFaction == factionID) {
+				regionHQ = region_at(Base[i].xCoord, Base[i].yCoord);
+			}
+			else if (baseFaction == factionIDTarget) {
+				regionTargetHQ = region_at(Base[i].xCoord, Base[i].yCoord);
+			}
+		}
+	}
+	uint32_t factorForceRating = 0;
+	uint32_t factorCount = 0;
+	uint32_t factorUnk = 1;
+	for (int region = 1; region < MaxRegionLandNum; region++) {
+		if (!bad_reg(region)) {
+			uint32_t forceRating = PlayersData[factionID].regionForceRating[region];
+			if (forceRating) {
+				uint32_t totalCmbtVehs = PlayersData[factionIDTarget].regionTotalCombatVehs[region];
+				uint32_t totalBasesTarget = PlayersData[factionIDTarget].regionTotalBases[region];
+				if (totalCmbtVehs || totalBasesTarget) {
+					if (PlayersData[factionID].regionTotalBases[region] 
+						>= ((regionTopBaseCount[factionID] / 4) * 3) || region == regionHQ) {
+						uint32_t compare = forceRating +
+							PlayersData[factionID].regionTotalCombatVehs[region] +
+							(factionIDUnk > 0 ? PlayersData[factionIDUnk].regionForceRating[region]
+								/ 4 : 0);
+						if (PlayersData[factionIDTarget].regionForceRating[region] > compare) {
+							return false;
+						}
+					}
+					if (totalBasesTarget) {
+						factorForceRating += forceRating + (factionIDUnk > 0
+							? PlayersData[factionIDUnk].regionForceRating[region] / 2 : 0);
+					}
+					if ((totalBasesTarget >= ((regionTopBaseCount[factionIDTarget] / 4) * 3)
+						|| region == regionTargetHQ) && forceRating > totalCmbtVehs) {
+						factorForceRating += forceRating + (factionIDUnk > 0
+							? PlayersData[factionIDUnk].regionForceRating[region] / 2 : 0);
+					}
+					factorUnk += totalCmbtVehs + PlayersData[factionID].regionTotalBases[region]
+						? PlayersData[factionIDTarget].regionForceRating[region] / 2 : 0;
+					if (PlayersData[factionID].regionTotalBases[region]) {
+						factorCount++;
+					}
+				}
+			}
+		}
+	}
+	wantsToAttack -= PlayersData[factionID].AI_Fight * 2;
+	int techCommBonus = PlayersData[factionID].techCommerceBonus;
+	int techCommBonusTarget = PlayersData[factionIDTarget].techCommerceBonus;
+	if (techCommBonus > ((techCommBonusTarget * 3) / 2)) {
+		wantsToAttack++;
+	}
+	if (techCommBonus < ((techCommBonusTarget * 2) / 3)) {
+		wantsToAttack--;
+	}
+	int bestArmorTarget = PlayersData[factionIDTarget].bestArmorValue;
+	int bestWeapon = PlayersData[factionIDTarget].bestWeaponValue;
+	if (bestWeapon > (bestArmorTarget * 2)) {
+		wantsToAttack--;
+	}
+	if (bestWeapon <= bestArmorTarget) {
+		wantsToAttack++;
+	}
+	if (!has_treaty(factionID, factionIDTarget, DTREATY_VENDETTA)) {
+		wantsToAttack++;
+	}
+	if (!has_treaty(factionID, factionIDTarget, DTREATY_PACT)) {
+		wantsToAttack++;
+	}
+	if (factionIDUnk > 0 && !great_satan(factionIDUnk, false)) {
+		wantsToAttack--;
+	}
+	if (has_agenda(factionID, factionIDTarget, DAGENDA_UNK_200) 
+		&& *GameRules & RULES_INTENSE_RIVALRY) {
+		wantsToAttack--;
+	}
+	wantsToAttack -= range((PlayersData[factionIDTarget].integrityBlemishes 
+		- PlayersData[factionID].integrityBlemishes + 2) / 3, 0, 2);
+	int moraleFactor = range(PlayersData[factionID].socEffectPending.morale, -4, 4) 
+		+ Players[factionID].ruleMorale + 16;
+	int moraleFactorTarget = range(PlayersData[factionIDTarget].socEffectPending.morale, -4, 4)
+		+ Players[factionIDTarget].ruleMorale + 16;
+	if ((factorCount || wantsToAttack > 0
+		|| has_treaty(factionID, factionIDTarget, DTREATY_UNK_20000000)) &&
+		((moraleFactor * factorForceRating * 6) / (moraleFactorTarget * factorUnk)) 
+		< (wantsToAttack + 6)) {
+		return false;
+	}
+	return true;
+}
+
+/*
 Purpose: Determine ideal unit count to protect faction's bases in the specified land region.
 Original Offset: 00560D50
 Return Value: Amount of non-offensive units needed to guard region
