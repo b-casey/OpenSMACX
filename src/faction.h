@@ -202,6 +202,18 @@ enum social_engineering_future {
 	SE_THOUGHT_CONTROL = 3,
 };
 
+enum  player_mood {
+	MOOD_MAGNANIMOUS = 0, // also Submissive, a special case where faction is hopelessly overmatched
+	MOOD_SOLICITOUS = 1,
+	MOOD_COOPERATIVE = 2,
+	MOOD_NONCOMMITTAL = 3,
+	MOOD_AMBIVALENT = 4,
+	MOOD_OBSTINATE = 5,
+	MOOD_QUARRELSOME = 6,
+	MOOD_BELLIGERENT = 7,
+	MOOD_SEETHING = 8,
+};
+
 struct social_category {
 	uint32_t politics;
 	uint32_t economics;

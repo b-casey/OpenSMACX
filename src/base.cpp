@@ -1176,6 +1176,140 @@ int __cdecl base_project(uint32_t projectID) {
 }
 
 /*
+Purpose: From the specified base and faction, determine a base to attack.
+Original Offset: 0054AFA0
+Return Value: baseID or 0
+Status: Complete - testing
+*/
+uint32_t __cdecl attack_from(uint32_t baseID, uint32_t factionID) {
+	uint32_t regionSrc = region_at(Base[baseID].xCoord, Base[baseID].yCoord);
+	uint32_t baseIDAtkFrom = 0, search = 9999;
+	for (int i = 0; i < *BaseCurrentCount; i++) {
+		if (Base[i].factionIDCurrent == factionID) {
+			int xCoord = Base[i].xCoord, yCoord = Base[i].yCoord;
+			uint32_t compare = (xCoord == PlayersData[factionID].xCoordTarget
+				&& yCoord == PlayersData[factionID].yCoordTarget) ? 0
+				: vector_dist(xCoord, yCoord, Base[baseID].xCoord, Base[baseID].yCoord);
+			if (regionSrc != region_at(xCoord, yCoord)) {
+				compare += 1000;
+			}
+			if (compare <= search) {
+				search = compare;
+				baseIDAtkFrom = i;
+			}
+		}
+	}
+	return baseIDAtkFrom;
+}
+
+/*
+Purpose: Determine the value of the specified base between the requester and the respondent faction. 
+         This valuation could be triggered either from a gift, a threat or a base swap.
+Original Offset: 0054CB50
+Return Value: Value of base or -1 for invalid requests
+Status: Complete - testing
+*/
+int __cdecl value_of_base(int baseID, uint32_t factionIDReq, uint32_t factionIDRes, 
+	uint32_t overmatchDegree, BOOL tgl) {
+	if (baseID < 0) {
+		return -1;
+	}
+	int xCoord = Base[baseID].xCoord, yCoord = Base[baseID].yCoord;
+	int distFactor = vulnerable(factionIDReq, xCoord, yCoord);
+	if (distFactor <= 0) {
+		return -1;
+	}
+	uint32_t regionBase = region_at(xCoord, yCoord);
+	for (uint32_t i = 1; i < RadiusRange[6]; i++) {
+		int xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
+		if (on_map(xRadius, yRadius)) {
+			int baseIDFound = base_at(xRadius, yRadius);
+			if (baseIDFound >= 0) {
+				uint32_t factionIDBase = Base[baseIDFound].factionIDCurrent;
+				uint32_t regionFound = region_at(xRadius, yRadius);
+				if (factionIDBase == factionIDReq) {
+					if (regionBase == regionFound) {
+						distFactor--;
+					}
+					break;
+				}
+				if (regionBase == regionFound) {
+					if (factionIDBase != factionIDRes) {
+						break;
+					}
+					distFactor++;
+				}
+			}
+		}
+	}
+	int vehID = stack_fix(veh_at(xCoord, yCoord)); // reason to define here rather than below?
+	int mostReserves = PlayersData[factionIDRes].energyReserves;
+	if (PlayersData[factionIDReq].energyReserves > mostReserves) {
+		mostReserves = PlayersData[factionIDReq].energyReserves;
+	}
+	uint32_t basePopFactor = Base[baseID].populationSize;
+	if (basePopFactor < 3) {
+		basePopFactor = 3;
+	}
+	// bug fix: treat value as unsigned, original uses signed which could cause incorrect valuation
+	uint32_t value = ((mostReserves + 1000) / (distFactor + 4)) * basePopFactor;
+	if (value < 100) {
+		value = 100;
+	}
+	if (veh_who(xCoord, yCoord) < 0) {
+		value /= 2;
+	}
+	uint32_t gifteeBaseCountRegion = PlayersData[factionIDRes].regionTotalBases[regionBase];
+	if (!gifteeBaseCountRegion) {
+		value *= 2;
+	}
+	uint32_t gifterBaseCountRegion = PlayersData[factionIDReq].regionTotalBases[regionBase];
+	if (gifterBaseCountRegion == 1) {
+		if (!gifteeBaseCountRegion) {
+			value *= 2;
+		}
+		if (gifteeBaseCountRegion == 1) {
+			value *= 2;
+		}
+	}
+	if (tgl) {
+		value *= 4;
+	}
+	if (gifteeBaseCountRegion && gifterBaseCountRegion) {
+		if (gifteeBaseCountRegion >= gifterBaseCountRegion * 5) {
+			value /= 2;
+		}
+		if (overmatchDegree) {
+			value /= 2;
+		}
+	}
+	uint32_t facilCount = 0;
+	for (uint32_t fac = 1; fac < FacilitySPStart; fac++) {
+		if (fac < FacilityRepStart && has_fac_built(fac, baseID)) {
+			facilCount++;
+			value += (Facility[fac].cost * facilCount);
+		}
+	}
+	for (uint32_t proj = 0; proj < MaxSecretProjectNum; proj++) {
+		if (base_project(proj) == (int)baseID) {
+			value += (Facility[FacilitySPStart + proj].cost * 25);
+		}
+	}
+	for (int i = veh_top(vehID); i >= 0; i = Veh[i].nextVehIDStack) {
+		if (Veh[i].factionID == factionIDReq) {
+			value += (VehPrototype[Veh[i].protoID].cost * 2);
+		}
+	}
+	if (!_stricmp(Players[factionIDReq].filename, "BELIEVE")) {
+		value *= 2;
+	}
+	if (is_objective(baseID)) {
+		value *= 4;
+	}
+	return value;
+}
+
+/*
 Purpose: Determine ideal non-offense (defense, combat, recon) unit count for the specified base.
 Original Offset: 00560B30
 Return Value: Amount of non-offensive units needed (1-10)

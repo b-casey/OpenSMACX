@@ -547,6 +547,9 @@ OPENSMACX_API BOOL __cdecl has_project(uint32_t projectID, uint32_t factionID);
 OPENSMACX_API BOOL __cdecl has_fac_built(uint32_t facilityID);
 OPENSMACX_API BOOL __cdecl has_fac_built(uint32_t facilityID, uint32_t baseID);
 OPENSMACX_API int __cdecl base_project(uint32_t projectID);
+OPENSMACX_API uint32_t __cdecl attack_from(uint32_t baseID, uint32_t factionID);
+OPENSMACX_API int __cdecl value_of_base(int baseID, uint32_t factionIDReq, uint32_t factionIDRes,
+	uint32_t overmatchDegree, BOOL tgl);
 OPENSMACX_API uint32_t __cdecl garrison_check(uint32_t baseID);
 OPENSMACX_API uint32_t __cdecl defensive_check(uint32_t baseID);
 OPENSMACX_API BOOL __cdecl is_port(int baseID, BOOL isBaseRadius);

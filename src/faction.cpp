@@ -304,27 +304,27 @@ Status: Complete
 */
 uint32_t __cdecl get_mood(int friction) {
 	if (friction <= 0) {
-		return 0;
+		return MOOD_MAGNANIMOUS;
 	}
 	if (friction <= 2) {
-		return 1;
+		return MOOD_SOLICITOUS;
 	}
 	if (friction <= 4) {
-		return 2;
+		return MOOD_COOPERATIVE;
 	}
 	if (friction <= 8) {
-		return 3;
+		return MOOD_NONCOMMITTAL;
 	}
 	if (friction <= 12) {
-		return 4;
+		return MOOD_AMBIVALENT;
 	}
 	if (friction <= 15) {
-		return 5;
+		return MOOD_OBSTINATE;
 	}
 	if (friction <= 17) {
-		return 6;
+		return MOOD_QUARRELSOME;
 	}
-	return (friction > 19) + 7;
+	return (friction > 19) + MOOD_BELLIGERENT; // or MOOD_SEETHING if condition is true
 }
 
 /*
