@@ -1187,13 +1187,13 @@ BOOL __cdecl has_fac_built(uint32_t facilityID, uint32_t baseID) {
 }
 
 /*
-Purpose: Get current status of project.
+Purpose: Get the current status of the specified project.
 Original Offset: 005002E0
-Return Value: baseID or -1/-2 if not built or destroyed
+Return Value: Base id, if not built (-1) or destroyed (-2)
 Status: Complete
 */
-int __cdecl base_project(uint32_t projectID) {
-	return *(&SecretProject->HumanGenomeProject + projectID);
+int __cdecl base_project(uint32_t project_id) {
+	return *(&SecretProject->HumanGenomeProject + project_id);
 }
 
 /*
@@ -1202,25 +1202,27 @@ Original Offset: 0054AFA0
 Return Value: baseID or 0
 Status: Complete - testing
 */
-uint32_t __cdecl attack_from(uint32_t baseID, uint32_t factionID) {
-	uint32_t regionSrc = region_at(Base[baseID].xCoord, Base[baseID].yCoord);
-	uint32_t baseIDAtkFrom = 0, search = 9999;
+uint32_t __cdecl attack_from(uint32_t base_id, uint32_t faction_id) {
+	uint32_t region_src = region_at(Base[base_id].xCoord, Base[base_id].yCoord);
+	uint32_t base_id_atk_from = 0;
+	uint32_t search = 9999;
 	for (int i = 0; i < *BaseCurrentCount; i++) {
-		if (Base[i].factionIDCurrent == factionID) {
-			int xCoord = Base[i].xCoord, yCoord = Base[i].yCoord;
-			uint32_t compare = (xCoord == PlayersData[factionID].xCoordTarget
-				&& yCoord == PlayersData[factionID].yCoordTarget) ? 0
-				: vector_dist(xCoord, yCoord, Base[baseID].xCoord, Base[baseID].yCoord);
-			if (regionSrc != region_at(xCoord, yCoord)) {
+		if (Base[i].factionIDCurrent == faction_id) {
+			int x = Base[i].xCoord;
+			int y = Base[i].yCoord;
+			uint32_t compare = (x == PlayersData[faction_id].xCoordTarget
+				&& y == PlayersData[faction_id].yCoordTarget) 
+				? 0 : vector_dist(x, y, Base[base_id].xCoord, Base[base_id].yCoord);
+			if (region_src != region_at(x, y)) {
 				compare += 1000;
 			}
 			if (compare <= search) {
 				search = compare;
-				baseIDAtkFrom = i;
+				base_id_atk_from = i;
 			}
 		}
 	}
-	return baseIDAtkFrom;
+	return base_id_atk_from;
 }
 
 /*
