@@ -536,6 +536,7 @@ OPENSMACX_API void __cdecl base_minerals();
 OPENSMACX_API uint32_t __cdecl black_market(int energy);
 OPENSMACX_API void __cdecl psych_check(uint32_t factionID, uint32_t *drones, uint32_t *talents);
 OPENSMACX_API void __cdecl base_psych();
+OPENSMACX_API int __cdecl base_rank(uint32_t faction_id, uint32_t to_rank);
 OPENSMACX_API uint32_t __cdecl pop_goal_fac(uint32_t baseID);
 OPENSMACX_API uint32_t __cdecl pop_goal(uint32_t baseID);
 OPENSMACX_API BOOL __cdecl base_queue(uint32_t baseID);

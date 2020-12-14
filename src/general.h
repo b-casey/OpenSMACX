@@ -76,6 +76,7 @@ OPENSMACX_API void __cdecl wipe_undo();
 OPENSMACX_API void __cdecl auto_undo();
 OPENSMACX_API void __cdecl header_check(LPSTR header, FILE *file);
 OPENSMACX_API void __cdecl header_write(LPCSTR header, FILE *file);
+OPENSMACX_API void __cdecl sort(uint32_t count, int *id, int *value);
 
 // WIP
 int __cdecl filefind_init(LPCSTR path, BOOL isComplete);

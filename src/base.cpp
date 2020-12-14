@@ -893,14 +893,12 @@ void __cdecl base_psych() {
 	for (int i = 8; i >= 0; i--) {
 		int val;
 		if (!i) {
-			//j = 9;
 			val = PlayersData[factionID].socEffectPending.talent;
 		}
 		else if(*BaseUpkeepStage != 1) {
 			break;
 		}
 		else {
-			//j = 9;
 			val = i - 4;
 		}
 		for (int j = 9; j >= 0; j--) {
@@ -933,6 +931,29 @@ void __cdecl base_psych() {
 			}
 		}
 	}
+}
+
+/*
+Purpose: Determine the base with the most energy output.
+Original Offset: 004EB490
+Return Value: Base id with the most energy output or -1 for invalid requests
+Status: Complete - testing
+*/
+int __cdecl base_rank(uint32_t faction_id, uint32_t rank_position) {
+	int base_id[MaxBaseNum];
+	int base_energy[MaxBaseNum];
+	uint32_t bases_found = 0;
+	for (int i = 0; i < *BaseCurrentCount; i++) {
+		if (Base[i].factionIDCurrent == faction_id) {
+			base_id[bases_found] = i;
+			base_energy[bases_found++] = (Base[i].energyIntake1 * 512) + i;
+		}
+	}
+	if (rank_position >= bases_found) {
+		return -1;
+	}
+	sort(bases_found, base_id, base_energy);
+	return base_id[rank_position];
 }
 
 /*

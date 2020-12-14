@@ -1134,3 +1134,24 @@ void __cdecl header_write(LPCSTR header, FILE *file) {
 	} while (headerChr);
 	_fputc(0x1A, file);
 }
+
+/*
+Purpose: For the count, sort both id and value arrays by the greatest to least value.
+Original Offset: 005B5690
+Return Value: n/a
+Status: Complete - testing
+*/
+void __cdecl sort(uint32_t count, int *id, int *value) {
+	int bounds = count - 1;
+	BOOL has_swapped;
+	do {
+		has_swapped = false;
+		for (int i = 0; i < bounds; i++) {
+			if (value[i] < value[i + 1]) {
+				has_swapped = true;
+				swap(&value[i], &value[i + 1]);
+				swap(&id[i], &id[i + 1]);
+			}
+		}
+	} while (has_swapped);
+}
