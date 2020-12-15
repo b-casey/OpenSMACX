@@ -25,7 +25,7 @@
 #include "technology.h"
 #include "veh.h"
 
-rules_terraforming *Terraforming = (rules_terraforming *)0x00691878;
+RulesTerraforming *Terraforming = (RulesTerraforming *)0x00691878;
 
 /*
 Purpose: Calculate the credit cost to lower or raise the tile's terrain for the specified faction.
@@ -33,12 +33,12 @@ Original Offset: 004C9420
 Return Value: Credit cost
 Status: Complete
 */
-uint32_t __cdecl terraform_cost(int xCoord, int yCoord, uint32_t factionID) {
-	uint32_t alt = alt_at(xCoord, yCoord);
+uint32_t __cdecl terraform_cost(int x, int y, uint32_t faction_id) {
+	uint32_t alt = alt_at(x, y);
 	int cost = abs((int)alt - 3);
 	cost += 2;
 	cost *= cost;
-	if (bit_at(xCoord, yCoord) & BIT_FUNGUS && altitude_at(xCoord, yCoord) >= ALT_BIT_OCEAN_SHELF) {
+	if (bit_at(x, y) & BIT_FUNGUS && altitude_at(x, y) >= ALT_BIT_OCEAN_SHELF) {
 		cost *= 3;
 	}
 	cost *= 2;
@@ -48,21 +48,22 @@ uint32_t __cdecl terraform_cost(int xCoord, int yCoord, uint32_t factionID) {
 			cost *= 2;
 		}
 	}
-	int baseID = base_find(xCoord, yCoord, factionID);
-	if (baseID >= 0) {
-		int cursorDist = cursor_dist(xCoord, yCoord, Base[baseID].xCoord, Base[baseID].yCoord);
-		cost *= range(cursorDist, 1, 100);
-		int baseID2 = base_find(xCoord, yCoord, -1, -1, factionID, -1);
-		if (baseID2 >= 0 && !has_treaty(factionID, Base[baseID2].factionIDCurrent, DTREATY_PACT)) {
-			int numProx = (cursorDist * (Base[baseID2].populationSize + 2)) / 3;
-			int denomProx = (cursor_dist(xCoord, yCoord, Base[baseID2].xCoord, Base[baseID2].yCoord)
-				* (Base[baseID].populationSize + 2)) / 3;
-			if (denomProx && numProx && denomProx < numProx) {
-				cost = (cost * numProx) / denomProx; // increase cost based on proximity ratio
+	int base_id = base_find(x, y, faction_id);
+	if (base_id >= 0) {
+		int cursor_distance = cursor_dist(x, y, Base[base_id].xCoord, Base[base_id].yCoord);
+		cost *= range(cursor_distance, 1, 100);
+		int base_id_prox = base_find(x, y, -1, -1, faction_id, -1);
+		if (base_id_prox >= 0 
+			&& !has_treaty(faction_id, Base[base_id_prox].factionIDCurrent, DTREATY_PACT)) {
+			int num_prox = (cursor_distance * (Base[base_id_prox].populationSize + 2)) / 3;
+			int denom_prox = (cursor_dist(x, y, Base[base_id_prox].xCoord, Base[base_id_prox].yCoord)
+				* (Base[base_id].populationSize + 2)) / 3;
+			if (denom_prox && num_prox && denom_prox < num_prox) {
+				cost = (cost * num_prox) / denom_prox; // increase cost based on proximity ratio
 			}
 		}
 	}
-	if (Players[factionID].ruleFlags & RFLAG_TERRAFORM) {
+	if (Players[faction_id].ruleFlags & RFLAG_TERRAFORM) {
 		cost /= 2;
 	}
 	cost /= 2;
@@ -70,39 +71,38 @@ uint32_t __cdecl terraform_cost(int xCoord, int yCoord, uint32_t factionID) {
 }
 
 /*
-Purpose: Calculate Former rate to perform terrain enhancements.
+Purpose: Calculate the Former rate to perform terrain enhancements.
 Original Offset: 004C9A50
 Return Value: Terraforming speed
 Status: Complete
 */
-uint32_t __cdecl contribution(int vehID, uint32_t terraformID) {
-	uint32_t rate = has_abil(Veh[vehID].protoID, ABL_SUPER_TERRAFORMER) ? 4 : 2;
-	if (terraformID == (ORDER_REMOVE_FUNGUS - 4) || terraformID == (ORDER_PLANT_FUNGUS - 4)) {
-		if (has_project(SP_XENOEMPATYH_DOME, Veh[vehID].factionID)) {
+uint32_t __cdecl contribution(uint32_t veh_id, uint32_t terraform_id) {
+	uint32_t rate = has_abil(Veh[veh_id].protoID, ABL_SUPER_TERRAFORMER) ? 4 : 2;
+	if (terraform_id == (ORDER_REMOVE_FUNGUS - 4) || terraform_id == (ORDER_PLANT_FUNGUS - 4)) {
+		if (has_project(SP_XENOEMPATYH_DOME, Veh[veh_id].factionID)) {
 			rate *= 2; // Doubled
 		}
-	}
-	else if (has_project(SP_WEATHER_PARADIGM, Veh[vehID].factionID)) {
+	} else if (has_project(SP_WEATHER_PARADIGM, Veh[veh_id].factionID)) {
 		rate = (rate * 3) / 2; // +50%
 	}
 	return rate;
 }
 
 /*
-Purpose: Check to see whether provided faction can construct specific terrain enhancement.
+Purpose: Check to see whether the specified faction can construct a specific terrain enhancement.
 Original Offset: 005BAB40
 Return Value: Is terrain enhancement available to faction? true/false
 Status: Complete
 */
-BOOL __cdecl terrain_avail(int terraformID, BOOL isSea, int factionID) {
-	int preqTech = *(&Terraforming[terraformID].preqTech + isSea);
-	if (preqTech < TechNone || ((terraformID == TERRA_RAISE_LAND || terraformID == TERRA_LOWER_LAND)
-		&& *GameRules & RULES_SCN_NO_TERRAFORMING)) {
+BOOL __cdecl terrain_avail(uint32_t terraform_id, BOOL is_sea, int faction_id) {
+	int preq_tech = *(&Terraforming[terraform_id].preq_tech + is_sea);
+	if (preq_tech < TechNone || ((terraform_id == TERRA_RAISE_LAND
+		|| terraform_id == TERRA_LOWER_LAND) && *GameRules & RULES_SCN_NO_TERRAFORMING)) {
 		return false;
 	}
-	if (terraformID >= TERRA_CONDENSER && terraformID <= TERRA_LEVEL_TERRAIN
-		&& has_project(SP_WEATHER_PARADIGM, factionID)) {
+	if (terraform_id >= TERRA_CONDENSER && terraform_id <= TERRA_LEVEL_TERRAIN
+		&& has_project(SP_WEATHER_PARADIGM, faction_id)) {
 		return true;
 	}
-	return has_tech(preqTech, factionID);
+	return has_tech(preq_tech, faction_id);
 }

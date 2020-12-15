@@ -21,7 +21,7 @@
  /*
   * Terraforming related objects, variables and functions.
   */
-enum terraform {
+enum TerraformingAction {
 	TERRA_FARM = 0, // Farm + Kelp Farm
 	TERRA_SOIL_ENR = 1, // Soil Enricher
 	TERRA_MINE = 2, // Mine + Mining Platform
@@ -44,18 +44,18 @@ enum terraform {
 	TERRA_MONOLITH = 19,
 };
 
-struct rules_terraforming {
+struct RulesTerraforming {
 	LPSTR name;
-	LPSTR nameSea;
-	int preqTech;
-	int preqTechSea;
+	LPSTR name_sea;
+	int preq_tech;
+	int preq_tech_sea;
 	uint32_t bit;
-	uint32_t bitIncompatible;
+	uint32_t bit_incompatible;
 	int rate;
 	LPSTR shortcuts;
 };
 
-const uint32_t terraformingBits[20][2] = { // terrain enhancement, incompatible enhancements on same tile
+const uint32_t TerraformingBits[20][2] = { // terrain enhancement, incompatible on same tile
 	BIT_FARM,          BIT_FOREST, // farm
 	BIT_SOIL_ENRICHER, BIT_FOREST, // soil enricher
 	BIT_MINE,          BIT_MINE | BIT_SOLAR_TIDAL | BIT_FOREST | BIT_CONDENSER | BIT_ECH_MIRROR
@@ -88,8 +88,8 @@ const uint32_t terraformingBits[20][2] = { // terrain enhancement, incompatible 
 
 constexpr int MaxTerrainNum = 20;
 
-extern rules_terraforming *Terraforming;
+extern RulesTerraforming *Terraforming;
 
-OPENSMACX_API uint32_t __cdecl terraform_cost(int xCoord, int yCoord, uint32_t factionID);
-OPENSMACX_API uint32_t __cdecl contribution(int vehID, uint32_t terraformID);
-OPENSMACX_API BOOL __cdecl terrain_avail(int terraformID, BOOL isSea, int factionID);
+OPENSMACX_API uint32_t __cdecl terraform_cost(int x, int y, uint32_t faction_id);
+OPENSMACX_API uint32_t __cdecl contribution(uint32_t veh_id, uint32_t terraform_id);
+OPENSMACX_API BOOL __cdecl terrain_avail(uint32_t terraform_id, BOOL is_sea, int faction_id);

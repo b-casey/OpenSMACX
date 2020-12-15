@@ -33,11 +33,11 @@ Original Offset: 0050C4B0
 Return Value: Energy
 Status: Complete
 */
-int __cdecl steal_energy(uint32_t baseID) {
-	uint32_t factionID = Base[baseID].factionIDCurrent;
-	int energy = PlayersData[factionID].energyReserves;
-	return (energy <= 0) ? 0 :
-		((energy * Base[baseID].populationSize) / (PlayersData[factionID].popTotal + 1));
+int __cdecl steal_energy(uint32_t base_id) {
+	uint32_t faction_id = Base[base_id].factionIDCurrent;
+	int energy = PlayersData[faction_id].energyReserves;
+	return (energy <= 0) ? 0 
+		: ((energy * Base[base_id].populationSize) / (PlayersData[faction_id].popTotal + 1));
 }
 
 /*
@@ -47,72 +47,71 @@ Original Offset: 0059EA80
 Return Value: Mind control cost
 Status: Complete
 */
-int __cdecl mind_control(uint32_t baseID, uint32_t factionID, BOOL isCornerMarket) {
-	uint32_t targetFactionID = Base[baseID].factionIDCurrent;
-	int target_xCoord = Base[baseID].xCoord, target_yCoord = Base[baseID].yCoord;
-	int cost = vulnerable(targetFactionID, target_xCoord, target_yCoord);
+int __cdecl mind_control(uint32_t base_id, uint32_t faction_id, BOOL is_corner_market) {
+	uint32_t target_faction_id = Base[base_id].factionIDCurrent;
+	int target_x = Base[base_id].xCoord;
+	int target_y = Base[base_id].yCoord;
+	int cost = vulnerable(target_faction_id, target_x, target_y);
 	if (cost <= 0) {
-		if (!isCornerMarket) {
+		if (!is_corner_market) {
 			return -1;
 		}
 		cost = 1;
 	}
-	if (has_fac_built(FAC_GENEJACK_FACTORY, baseID)) {
+	if (has_fac_built(FAC_GENEJACK_FACTORY, base_id)) {
 		cost *= 2;
 	}
-	if (has_fac_built(FAC_CHILDREN_CRECHE, baseID)) {
+	if (has_fac_built(FAC_CHILDREN_CRECHE, base_id)) {
 		cost /= 2; // Reduces base's vulnerability to enemy mind control
 	}
-	if (has_fac_built(FAC_PUNISHMENT_SPHERE, baseID)) {
+	if (has_fac_built(FAC_PUNISHMENT_SPHERE, base_id)) {
 		cost /= 2;
 	}
-	if (Base[baseID].nerveStapleTurnsLeft) {
+	if (Base[base_id].nerveStapleTurnsLeft) {
 		cost /= 2;
 	}
-	int vehID = stack_fix(veh_at(target_xCoord, target_yCoord));
-	cost = ((stack_check(vehID, 2, PLAN_COMBAT, -1, -1)
-		+ stack_check(vehID, 2, PLAN_OFFENSIVE, -1, -1))
-		* (stack_check(vehID, 6, ABL_POLY_ENCRYPTION, -1, -1) + 1)
-		+ PlayersData[factionID].mindControlTotal / 4 + Base[baseID].populationSize)
-		* ((PlayersData[targetFactionID].cornerMarketActive
-			+ PlayersData[targetFactionID].energyReserves + 1200) / (cost + 4));
-	if (!is_human(factionID) && is_human(targetFactionID)) {
-		int diff = PlayersData[targetFactionID].diffLevel;
+	int veh_id = stack_fix(veh_at(target_x, target_y));
+	cost = ((stack_check(veh_id, 2, PLAN_COMBAT, -1, -1)
+		+ stack_check(veh_id, 2, PLAN_OFFENSIVE, -1, -1))
+		* (stack_check(veh_id, 6, ABL_POLY_ENCRYPTION, -1, -1) + 1)
+		+ PlayersData[faction_id].mindControlTotal / 4 + Base[base_id].populationSize)
+		* ((PlayersData[target_faction_id].cornerMarketActive
+			+ PlayersData[target_faction_id].energyReserves + 1200) / (cost + 4));
+	if (!is_human(faction_id) && is_human(target_faction_id)) {
+		int diff = PlayersData[target_faction_id].diffLevel;
 		if (diff > DLVL_LIBRARIAN) {
 			cost = (cost * 3) / diff;
 		}
 	}
-	BOOL hasPact = has_treaty(factionID, targetFactionID, DTREATY_PACT);
-	if (isCornerMarket) {
-		if (hasPact) {
+	BOOL has_pact = has_treaty(faction_id, target_faction_id, DTREATY_PACT);
+	if (is_corner_market) {
+		if (has_pact) {
 			cost /= 2;
 		}
-		if (has_treaty(factionID, targetFactionID, DTREATY_TREATY)) {
+		if (has_treaty(faction_id, target_faction_id, DTREATY_TREATY)) {
 			cost /= 2;
 		}
-		int techCommTarget = PlayersData[targetFactionID].techCommerceBonus;
-		int techCommProbe = PlayersData[factionID].techCommerceBonus;
-		cost = (cost * (techCommTarget * techCommTarget + 1)) / (techCommProbe * techCommProbe + 1);
-	}
-	else {
-		if (hasPact) {
-			cost *= 2;
-		}
-	}
-	if (Base[baseID].factionIDFormer == factionID) {
-		cost /= 2;
-	}
-	uint32_t baseState = Base[baseID].state;
-	if (baseState & BSTATE_DRONE_RIOTS_ACTIVE) {
-		cost /= 2;
-	}
-	if (baseState & BSTATE_GOLDEN_AGE_ACTIVE) {
+		int tech_comm_target = PlayersData[target_faction_id].techCommerceBonus;
+		tech_comm_target *= tech_comm_target;
+		int tech_comm_probe = PlayersData[faction_id].techCommerceBonus;
+		tech_comm_probe *= tech_comm_probe;
+		cost = (cost * (tech_comm_target + 1)) / (tech_comm_probe + 1);
+	} else if (has_pact) {
 		cost *= 2;
 	}
-	if (has_treaty(targetFactionID, factionID, DTREATY_ATROCITY_VICTIM)) {
+	if (Base[base_id].factionIDFormer == faction_id) {
+		cost /= 2;
+	}
+	uint32_t base_state = Base[base_id].state;
+	if (base_state & BSTATE_DRONE_RIOTS_ACTIVE) {
+		cost /= 2;
+	}
+	if (base_state & BSTATE_GOLDEN_AGE_ACTIVE) {
 		cost *= 2;
 	}
-	else if (has_treaty(targetFactionID, factionID, DTREATY_WANT_REVENGE)) {
+	if (has_treaty(target_faction_id, faction_id, DTREATY_ATROCITY_VICTIM)) {
+		cost *= 2;
+	} else if (has_treaty(target_faction_id, faction_id, DTREATY_WANT_REVENGE)) {
 		cost += cost / 2;
 	}
 	return cost;
@@ -126,40 +125,39 @@ Original Offset: 0059EEE0
 Return Value: Success rate of probe
 Status: Complete
 */
-int __cdecl success_rates(uint32_t id, uint32_t morale, int diffModifier, int baseID) {
-	char probeChances[25];
-	int successRate;
-	if (diffModifier < 0) {
-		strcpy_s(probeChances, 25, "100%");
-		successRate = diffModifier;
-	}
-	else {
+int __cdecl success_rates(uint32_t id, uint32_t morale, int diff_modifier, int base_id) {
+	char probe_chances[25];
+	int success_rate;
+	if (diff_modifier < 0) {
+		strcpy_s(probe_chances, 25, "100%");
+		success_rate = diff_modifier;
+	} else {
 		if (morale < 1) {
 			morale = 1;
 		}
-		int probeDefRating = (baseID != -1 && has_fac_built(FAC_COVERT_OPS_CENTER, baseID)) ? 2 : 0;
-		probeDefRating = range(PlayersData[*ProbeTargetFactionID].socEffectActive.probe 
-			+ probeDefRating, -2, 0);
-		uint32_t failureRate = (diffModifier * 100) / ((morale / 2) - probeDefRating + 1);
+		int prb_defense = (base_id != -1 && has_fac_built(FAC_COVERT_OPS_CENTER, base_id)) ? 2 : 0;
+		prb_defense = range(PlayersData[*ProbeTargetFactionID].socEffectActive.probe + prb_defense, 
+			-2, 0);
+		uint32_t failure_rate = (diff_modifier * 100) / ((morale / 2) - prb_defense + 1);
 		if (*ProbeHasAlgoEnhancement && !*ProbeTargetHasHSA) {
-			failureRate /= 2; // Algo Ench: failure cut in half when acting against normal targets
+			failure_rate /= 2; // Algo Ench: failure cut in half when acting against normal targets
 		}
-		successRate = 100 - failureRate;
+		success_rate = 100 - failure_rate;
 		if (*ProbeTargetHasHSA) {
-			successRate /= 2; // Chance of success is half what the chance would have been w/o HSA
+			success_rate /= 2; // Chance of success is half what the chance would have been w/o HSA
 		}
-		uint32_t lossRate = ((diffModifier + 1) * 100) / (morale - probeDefRating);
+		uint32_t loss_rate = ((diff_modifier + 1) * 100) / (morale - prb_defense);
 		if (*ProbeHasAlgoEnhancement && !*ProbeTargetHasHSA) {
-			lossRate /= 2;
+			loss_rate /= 2;
 		}
-		int survivalRate = 100 - lossRate;
+		int survival_rate = 100 - loss_rate;
 		if (*ProbeTargetHasHSA) {
-			survivalRate /= 2; // bug fix: original had an erroneous 2nd hit to successRate
+			survival_rate /= 2; // bug fix: original had an erroneous 2nd hit to successRate
 		}
 		// this check was removed in my unofficial patch, leaving it as is
-		(survivalRate == successRate) ? sprintf_s(probeChances, 25, "%d%%", successRate) :
-			sprintf_s(probeChances, 25, "%d%%, %d%%", successRate, survivalRate);
+		(survival_rate == success_rate) ? sprintf_s(probe_chances, 25, "%d%%", success_rate)
+			: sprintf_s(probe_chances, 25, "%d%%, %d%%", success_rate, survival_rate);
 	}
-	parse_says(id, probeChances, -1, -1);
-	return successRate;
+	parse_says(id, probe_chances, -1, -1);
+	return success_rate;
 }

@@ -21,7 +21,7 @@
 #include "base.h"
 #include "game.h"
 
-rules_proposal *Proposal = (rules_proposal *)0x009A6828;
+RulesProposal *Proposal = (RulesProposal *)0x009A6828;
 
 /*
 Purpose: Calculate faction's vote count. Used for Planetary Governor and Supreme Leader.
@@ -29,28 +29,28 @@ Original Offset: 0052AD30
 Return Value: Faction vote count
 Status: Complete
 */
-uint32_t __cdecl council_votes(uint32_t factionID) {
-	if (is_alien_faction(factionID)) {
+uint32_t __cdecl council_votes(uint32_t faction_id) {
+	if (is_alien_faction(faction_id)) {
 		return 0;
 	}
 	uint32_t votes = 0;
 	for (int i = 0; i < *BaseCurrentCount; i++) {
-		if (factionID == Base[i].factionIDCurrent) {
+		if (faction_id == Base[i].factionIDCurrent) {
 			votes += Base[i].populationSize;
 		}
 	}
-	if (has_project(SP_EMPATH_GUILD, factionID)) {
+	if (has_project(SP_EMPATH_GUILD, faction_id)) {
 		votes += votes / 2; // +50% votes
 	}
-	if (has_project(SP_CLINICAL_IMMORTALITY, factionID)) {
+	if (has_project(SP_CLINICAL_IMMORTALITY, faction_id)) {
 		votes *= 2; // Doubles votes
 	}
-	int bonusCount = Players[factionID].factionBonusCount;
-	for (int i = 0; i < bonusCount; i++) {
-		if (Players[factionID].factionBonusID[i] == RULE_VOTES) {
-			int votesBonus = Players[factionID].factionBonusVal1[i];
-			if (votesBonus >= 0) {
-				votes *= votesBonus; // Peacekeeper bonus
+	int bonus_count = Players[faction_id].factionBonusCount;
+	for (int i = 0; i < bonus_count; i++) {
+		if (Players[faction_id].factionBonusID[i] == RULE_VOTES) {
+			int votes_bonus = Players[faction_id].factionBonusVal1[i];
+			if (votes_bonus >= 0) {
+				votes *= votes_bonus; // Peacekeeper bonus
 			}
 		}
 	}
@@ -63,16 +63,16 @@ Original Offset: 0052AE20
 Return Value: Is the leader eligible (top two vote totals)? true/false
 Status: Complete
 */
-BOOL __cdecl eligible(uint32_t factionID) {
-	if (is_alien_faction(factionID)) {
-		return 0;
+BOOL __cdecl eligible(uint32_t faction_id) {
+	if (is_alien_faction(faction_id)) {
+		return false;
 	}
-	uint32_t votes = council_votes(factionID);
-	uint32_t factionCount = 0;
+	uint32_t votes = council_votes(faction_id);
+	uint32_t faction_count = 0;
 	for (uint32_t i = 1; i < MaxPlayerNum; i++) {
-		if (factionID != i && is_alive(i) && council_votes(i) > votes) {
-			factionCount++;
+		if (faction_id != i && is_alive(i) && council_votes(i) > votes) {
+			faction_count++;
 		}
 	}
-	return factionCount < 2;
+	return faction_count < 2;
 }

@@ -20,7 +20,7 @@
  /*
   * Council related objects, variables and functions.
   */
-enum council_proposals {
+enum CouncilProposals {
 	PROP_ELECT_PLANETARY_GOVERNOR = 0,
 	PROP_UNITE_SUPREME_LEADER = 1,
 	PROP_SALVAGE_UNITY_CORE = 2,
@@ -33,15 +33,15 @@ enum council_proposals {
 	PROP_REINSTATE_UN_CHARTER = 9,
 };
 
-struct rules_proposal {
+struct RulesProposal {
 	LPSTR name;
 	LPSTR description;
-	int preqTech;
+	int preq_tech;
 };
 
 constexpr int MaxProposalNum = 11;
 
-extern rules_proposal *Proposal;
+extern RulesProposal *Proposal;
 
-OPENSMACX_API uint32_t __cdecl council_votes(uint32_t factionID);
-OPENSMACX_API BOOL __cdecl eligible(uint32_t factionID);
+OPENSMACX_API uint32_t __cdecl council_votes(uint32_t faction_id);
+OPENSMACX_API BOOL __cdecl eligible(uint32_t faction_id);

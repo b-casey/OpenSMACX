@@ -887,9 +887,9 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		// land + sea terraforming
 		for (int j = 0; j < 2; j++) {
 			*(&Terraforming[i].name + j) = text_item_string();
-			*(&Terraforming[i].preqTech + j) = tech_name(text_item());
+			*(&Terraforming[i].preq_tech + j) = tech_name(text_item());
 			// add in bits & incompatible bits vs hard coded const struct
-			*(&Terraforming[i].bit + j) = terraformingBits[i][j];
+			*(&Terraforming[i].bit + j) = TerraformingBits[i][j];
 		}
 		Terraforming[i].rate = text_item_number();
 		// land + sea orders
@@ -1262,7 +1262,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	for (int i = 0; i < MaxProposalNum; i++) {
 		text_get();
 		Proposal[i].name = text_item_string();
-		Proposal[i].preqTech = tech_name(text_item());
+		Proposal[i].preq_tech = tech_name(text_item());
 		Proposal[i].description = text_item_string();
 	}
 	// Natural

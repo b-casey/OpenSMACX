@@ -20,7 +20,7 @@
  /*
   * Game related objects, variables and functions.
   */
-enum game_state_bitfield { // used by GameState
+enum GameStateBitfield { // used by GameState
 	STATE_UNK_1 = 0x1,
 	STATE_UNK_2 = 0x2,
 	STATE_UNK_4 = 0x4,
@@ -55,7 +55,7 @@ enum game_state_bitfield { // used by GameState
 	STATE_SCN_VICT_CREDITS_COUNT_OBJ = 0x80000000,
 };
 
-enum game_rules_bitfield { // used by GameRules
+enum GameRulesBitfield { // used by GameRules
 	RULES_DO_OR_DIE = 0x1,
 	RULES_VICTORY_CONQUEST = 0x2,// allow 'Total War'
 	RULES_VICTORY_ECONOMIC = 0x4, // allow 'Mine, All Mine'
@@ -90,7 +90,7 @@ enum game_rules_bitfield { // used by GameRules
 	RULES_SCN_NO_BUILDING_SP = 0x80000000,
 };
 
-enum game_difficulty_level {
+enum GameDifficultyLevel {
 	DLVL_CITIZEN = 0,
 	DLVL_SPECIALIST = 1,
 	DLVL_TALENT = 2,
@@ -122,7 +122,7 @@ extern int *DustCloudDuration;
 extern BOOL *IsMultiplayerNet;
 extern BOOL *IsMultiplayerPBEM;
 
-OPENSMACX_API void __cdecl planetfall(uint32_t factionID);
+OPENSMACX_API void __cdecl planetfall(uint32_t faction_id);
 OPENSMACX_API void __cdecl clear_scenario();
 OPENSMACX_API uint32_t __cdecl game_year(int turn);
 OPENSMACX_API void __cdecl say_year(LPSTR output);

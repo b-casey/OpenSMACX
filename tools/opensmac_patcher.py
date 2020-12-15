@@ -1024,10 +1024,10 @@ with open(exe_path, "r+b") as f:
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*362))	
 	# TERRAFORMING
-	bin_app.seek(0x000C9A50) # ?contribution@@YAIHI@Z
+	bin_app.seek(0x000C9A50) # ?contribution@@YAIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*198))	
-	bin_app.seek(0x001BAB40) # ?terrain_avail@@YAHHHH@Z
+	bin_app.seek(0x001BAB40) # ?terrain_avail@@YAHIHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*266))
 	bin_app.seek(0x000C9420) # ?terraform_cost@@YAIHHI@Z

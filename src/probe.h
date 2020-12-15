@@ -20,7 +20,7 @@
  /*
   * Probe related objects, variables and functions.
   */
-enum probe_primary_action {
+enum ProbePrimaryAction {
 	PRB_INFILTRATE_DATALINKS = 0,
 	PRB_PROCURE_RESEARCH_DATA = 1,
 	PRB_ACTIVATE_SABOTAGE_VIRUS = 2,
@@ -37,6 +37,6 @@ extern BOOL *ProbeHasAlgoEnhancement;
 extern uint32_t *ProbeTargetFactionID;
 extern BOOL *ProbeTargetHasHSA;
 
-OPENSMACX_API int __cdecl steal_energy(uint32_t baseID);
-OPENSMACX_API int __cdecl mind_control(uint32_t baseID, uint32_t factionID, BOOL isCornerMarket);
-OPENSMACX_API int __cdecl success_rates(uint32_t id, uint32_t morale, int diffModifier, int baseID);
+OPENSMACX_API int __cdecl steal_energy(uint32_t base_id);
+OPENSMACX_API int __cdecl mind_control(uint32_t base_id, uint32_t faction_id, BOOL is_corner_market);
+OPENSMACX_API int __cdecl success_rates(uint32_t id, uint32_t morale, int diff_modifier, int base_id);

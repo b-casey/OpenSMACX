@@ -51,33 +51,30 @@ Original Offset: 00589180
 Return Value: n/a
 Status: Complete
 */
-void __cdecl planetfall(uint32_t factionID) {
-	parse_set(Players[factionID].isLeaderFemale, false);
-	parse_says(0, Players[factionID].adjNameFaction, -1, -1);
-	parse_says(2, Players[factionID].titleLeader, -1, -1);
-	parse_says(3, Players[factionID].nameLeader, -1, -1);
-	parse_set(Players[factionID].nounGender, Players[factionID].isNounPlural);
-	parse_says(1, Players[factionID].nounFaction, -1, -1); // unused in script, leaving in for now
-	char scriptID[13];
+void __cdecl planetfall(uint32_t faction_id) {
+	parse_set(Players[faction_id].isLeaderFemale, false);
+	parse_says(0, Players[faction_id].adjNameFaction, -1, -1);
+	parse_says(2, Players[faction_id].titleLeader, -1, -1);
+	parse_says(3, Players[faction_id].nameLeader, -1, -1);
+	parse_set(Players[faction_id].nounGender, Players[faction_id].isNounPlural);
+	parse_says(1, Players[faction_id].nounFaction, -1, -1); // unused in script, leaving in for now
+	char script_id[13];
 	if (*TurnCurrentNum) { // shifted logic to top to fix nonexistent accelerated script ids
 		parse_num(0, *TurnCurrentNum);
 		for (uint32_t i = 0; i < MaxSecretProjectNum; i++) {
-			if (has_project(i, factionID)) { // script assumes at least one SP is built per faction?
+			if (has_project(i, faction_id)) { // script assumes at least one SP is built per faction
 				parse_says(4, Facility[FAC_HUMAN_GENOME_PROJ + i].name, -1, -1);
 			}
 		}
-		strcpy_s(scriptID, 13, "PLANETFALL2"); // bug fix: changed to fixed id rather than concat 2
+		strcpy_s(script_id, 13, "PLANETFALL2"); // bug fix: changed to fixed id rather than concat 2
+	} else if (is_alien_faction(faction_id) && !_stricmp(Players[faction_id].filename, "USURPER")) {
+		strcpy_s(script_id, 13, "PLANETFALLX");
+	} else if (!_stricmp(Players[faction_id].filename, "FUNGBOY")) {
+		strcpy_s(script_id, 13, "PLANETFALLF");
+	} else {
+		strcpy_s(script_id, 13, "PLANETFALL");
 	}
-	else if (is_alien_faction(factionID) && !_stricmp(Players[factionID].filename, "USURPER")) {
-		strcpy_s(scriptID, 13, "PLANETFALLX");
-	}
-	else if (!_stricmp(Players[factionID].filename, "FUNGBOY")) {
-		strcpy_s(scriptID, 13, "PLANETFALLF");
-	}
-	else {
-		strcpy_s(scriptID, 13, "PLANETFALL");
-	}
-	X_pop(scriptID, NULL);
+	X_pop(script_id, NULL);
 }
 
 /*
