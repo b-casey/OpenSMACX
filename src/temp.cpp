@@ -112,10 +112,10 @@ int __cdecl tester() {
 	
 	/*
 	for (int i = 0; i < *BaseCurrentCount; i++) {
-		log_say(Base[i].nameString, Base[i].xCoord, Base[i].yCoord, 0);
-		log_say("economyTotal: ", Base[i].economyTotal, 0, 0);
-		log_say("psychTotal: ", Base[i].psychTotal, 0, 0);
-		log_say("labsTotal: ",  Base[i].labsTotal, 0, 0);
+		log_say(Base[i].name_string, Base[i].xCoord, Base[i].yCoord, 0);
+		log_say("economy_total: ", Base[i].economy_total, 0, 0);
+		log_say("psych_total: ", Base[i].psych_total, 0, 0);
+		log_say("labs_total: ",  Base[i].labs_total, 0, 0);
 		log_say("unk_10: ", Base[i].unk_10, 0, 0);
 	}
 
@@ -187,12 +187,12 @@ int __cdecl tester() {
 				int mc1 = mind_control(j, i, k);
 				int mc2 = mind_control_OG(j, i, k);
 				if (mc1 != mc2) {
-					log_say("MC error", Base[j].nameString, i, j, k);
+					log_say("MC error", Base[j].name_string, i, j, k);
 				}
 				else {
 					char szTemp[200];
 					sprintf_s(szTemp, 200, "base: %s - xCoord: %d, yCoord: %d, MC cost for %s : %d",
-						Base[j].nameString, Base[j].xCoord, Base[j].yCoord, Players[i].formalNameFaction, mc1);
+						Base[j].name_string, Base[j].xCoord, Base[j].yCoord, Players[i].formalNameFaction, mc1);
 					log_say(szTemp, 0, 0, 0);
 				}
 			}
@@ -474,20 +474,20 @@ int __cdecl tester() {
 					char szTemp[512];
 					szTemp[0] = 0;
 					strcat_s(szTemp, " - ");
-					strcat_s(szTemp, Players[Base[i].factionIDCurrent].nounFaction);
+					strcat_s(szTemp, Players[Base[i].faction_id_current].nounFaction);
 					strcat_s(szTemp, " > unk3 > ");
-					log_say(Base[i].nameString, szTemp, Base[i].unk3, 0, 0);
+					log_say(Base[i].name_string, szTemp, Base[i].unk3, 0, 0);
 					/*
 					szTemp[0] = 0;
 					strcat_s(szTemp, " - ");
-					strcat_s(szTemp, Players[Base[i].factionIDCurrent].nounFaction);
+					strcat_s(szTemp, Players[Base[i].faction_id_current].nounFaction);
 					strcat_s(szTemp, " - unk4 - ");
-					log_say(Base[i].nameString, szTemp, Base[i].unk4, 0, 0);
+					log_say(Base[i].name_string, szTemp, Base[i].unk4, 0, 0);
 					szTemp[0] = 0;
 					strcat_s(szTemp, " - ");
-					strcat_s(szTemp, Players[Base[i].factionIDCurrent].nounFaction);
+					strcat_s(szTemp, Players[Base[i].faction_id_current].nounFaction);
 					strcat_s(szTemp, " - unk5 - ");
-					log_say(Base[i].nameString, szTemp, Base[i].unk5, 0, 0);
+					log_say(Base[i].name_string, szTemp, Base[i].unk5, 0, 0);
 					*/
 					//}
 

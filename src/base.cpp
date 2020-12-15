@@ -27,14 +27,14 @@
 #include "technology.h"
 #include "veh.h"
 
-rules_facility *Facility = (rules_facility *)0x009A4B68;
-rules_citizen *Citizen = (rules_citizen *)0x00946020;
-base *Base = (base *)0x0097D040; // [512]
-base_secret_project *SecretProject = (base_secret_project *)0x009A6514; // [64]
+RulesFacility *Facility = (RulesFacility *)0x009A4B68;
+RulesCitizen *Citizen = (RulesCitizen *)0x00946020;
+Base *Bases = (Base *)0x0097D040; // [512]
+BaseSecretProject *SecretProject = (BaseSecretProject *)0x009A6514; // [64]
 int *BaseIDCurrentSelected = (int *)0x00689370;
 int *BaseCurrentCount = (int *)0x009A64CC;
 int *BaseFindDist = (int *)0x0090EA04;
-base **BaseCurrent = (base **)0x0090EA30;
+Base **BaseCurrent = (Base **)0x0090EA30;
 uint32_t *ScnVictFacilityObj = (uint32_t *)0x009A6814;
 uint32_t *BaseUpkeepStage = (uint32_t *)0x0090EA34;
 uint32_t *BaseCurrentConvoyFrom = (uint32_t *)0x0090E904; // [4]
@@ -62,7 +62,7 @@ BOOL __cdecl has_fac(int facilityID, int baseID, int queueCount) {
 		return false;
 	}
 	for (int i = 0; i < queueCount; i++) {
-		if (Base[baseID].queueProductionID[i] == -facilityID) {
+		if (Bases[baseID].queue_production_id[i] == -facilityID) {
 			return true;
 		}
 	}
@@ -77,7 +77,7 @@ Status: Complete
 */
 void __cdecl set_base(int baseID) {
 	*BaseIDCurrentSelected = baseID;
-	*BaseCurrent = &Base[baseID];
+	*BaseCurrent = &Bases[baseID];
 }
 
 /*
@@ -87,7 +87,7 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl say_base(LPSTR strBase, int baseID) {
-	std::string output = (baseID >= 0) ? Base[baseID].nameString : label_get(25); // 'NONE'
+	std::string output = (baseID >= 0) ? Bases[baseID].name_string : label_get(25); // 'NONE'
 	// assumes 1032 char buffer via stringTemp, eventually remove
 	strcat_s(strBase, 1032, output.c_str());
 }
@@ -105,7 +105,7 @@ int __cdecl base_find(int xCoord, int yCoord) {
 	int proximity = 9999, baseID = -1;
 	for (int i = 0; i < *BaseCurrentCount; i++) {
 		// removed redundant abs() around yCoord difference
-		int dist = vector_dist(xCoord, yCoord, Base[i].xCoord, Base[i].yCoord);
+		int dist = vector_dist(xCoord, yCoord, Bases[i].x, Bases[i].y);
 		if (dist <= proximity) {
 			proximity = dist;
 			baseID = i;
@@ -129,9 +129,9 @@ int __cdecl base_find(int xCoord, int yCoord, uint32_t factionID) {
 	}
 	int proximity = 9999, baseID = -1;
 	for (int i = 0; i < *BaseCurrentCount; i++) {
-		if (Base[i].factionIDCurrent == factionID) {
+		if (Bases[i].faction_id_current == factionID) {
 			// removed redundant abs() around yCoord difference
-			int dist = vector_dist(xCoord, yCoord, Base[i].xCoord, Base[i].yCoord);
+			int dist = vector_dist(xCoord, yCoord, Bases[i].x, Bases[i].y);
 			if (dist <= proximity) {
 				proximity = dist;
 				baseID = i;
@@ -158,14 +158,14 @@ int __cdecl base_find(int xCoord, int yCoord, int factionID, int region, int fac
 		return -1;
 	}
 	for (int i = 0; i < *BaseCurrentCount; i++) {
-		if (region < 0 || region_at(Base[i].xCoord, Base[i].yCoord) == (uint32_t)region) {
-			if (factionID < 0 ? (factionID2 < 0 || Base[i].factionIDCurrent != factionID2)
-				: (factionID == Base[i].factionIDCurrent || (factionID2 == -2
-					? has_treaty(factionID, Base[i].factionIDCurrent, DTREATY_PACT)
-					: (factionID2 >= 0 && factionID2 == Base[i].factionIDCurrent)))) {
-				if (factionID3 < 0 || Base[i].factionIDCurrent == factionID3
-					|| ((1 << factionID3) & Base[i].visibility)) {
-					int dist = vector_dist(xCoord, yCoord, Base[i].xCoord, Base[i].yCoord);
+		if (region < 0 || region_at(Bases[i].x, Bases[i].y) == (uint32_t)region) {
+			if (factionID < 0 ? (factionID2 < 0 || Bases[i].faction_id_current != factionID2)
+				: (factionID == Bases[i].faction_id_current || (factionID2 == -2
+					? has_treaty(factionID, Bases[i].faction_id_current, DTREATY_PACT)
+					: (factionID2 >= 0 && factionID2 == Bases[i].faction_id_current)))) {
+				if (factionID3 < 0 || Bases[i].faction_id_current == factionID3
+					|| ((1 << factionID3) & Bases[i].visibility)) {
+					int dist = vector_dist(xCoord, yCoord, Bases[i].x, Bases[i].y);
 					if (dist <= proximity) {
 						proximity = dist;
 						baseID = i;
@@ -190,10 +190,10 @@ uint32_t  __cdecl best_specialist() {
 	int currentBonus = -999;
 	uint32_t citizenID = 0;
 	for (int i = 0; i < MaxSpecialistNum; i++) {
-		if (has_tech(Citizen[i].preqTech, (*BaseCurrent)->factionIDCurrent)) {
-			uint32_t bonus = Citizen[i].psychBonus * 3;
-			if ((*BaseCurrent)->populationSize >= (int)Rules->MinBaseSizeSpecialists) {
-				bonus += Citizen[i].opsBonus + Citizen[i].researchBonus;
+		if (has_tech(Citizen[i].preq_tech, (*BaseCurrent)->faction_id_current)) {
+			uint32_t bonus = Citizen[i].psych_bonus * 3;
+			if ((*BaseCurrent)->population_size >= (int)Rules->MinBaseSizeSpecialists) {
+				bonus += Citizen[i].ops_bonus + Citizen[i].research_bonus;
 			}
 			if ((int)bonus > currentBonus) {
 				currentBonus = bonus;
@@ -316,8 +316,8 @@ Return Value: n/a
 Status: Complete - testing
 */
 void __cdecl base_mark(uint32_t baseID) {
-	int xCoord = Base[baseID].xCoord, yCoord = Base[baseID].yCoord, xRadius, yRadius;
-	uint32_t factionID = Base[baseID].factionIDCurrent;
+	int xCoord = Bases[baseID].x, yCoord = Bases[baseID].y, xRadius, yRadius;
+	uint32_t factionID = Bases[baseID].faction_id_current;
 	for (uint32_t i = 0; i < 49; i++) {
 		xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
 		if (on_map(xRadius, yRadius)) {
@@ -397,7 +397,7 @@ int __cdecl cost_factor(uint32_t factionID, uint32_t rscType, int baseID) {
 			if (has_fac_built(FAC_CHILDREN_CRECHE, baseID)) {
 				growthFactor += 2; // +2 on growth scale
 			}
-			if (Base[baseID].state & BSTATE_GOLDEN_AGE_ACTIVE) {
+			if (Bases[baseID].state & BSTATE_GOLDEN_AGE_ACTIVE) {
 				growthFactor += 2;
 			}
 		}
@@ -416,13 +416,13 @@ int __cdecl base_making(int productionID, int baseID) {
 	uint32_t retool = Rules->RetoolStrictness;
 	int sknOff = facility_offset("Skunkworks");
 	if ((has_fac_built(FAC_SKUNKWORKS, baseID) // has Skunkworks
-		|| (Players[Base[baseID].factionIDCurrent].ruleFlags & RFLAG_FREEPROTO // bug fix
-			&& sknOff >= 0 && has_tech(Facility[sknOff].preqTech, Base[baseID].factionIDCurrent)))
+		|| (Players[Bases[baseID].faction_id_current].ruleFlags & RFLAG_FREEPROTO // bug fix
+			&& sknOff >= 0 && has_tech(Facility[sknOff].preq_tech, Bases[baseID].faction_id_current)))
 		&& retool >= 1) { // don't override if retool strictness is already set to always free (0)
 		retool = 1; // Skunkworks or FREEPROTO + prerequisite tech > 'Free in Category'
 	}
 	if (productionID < 0) { // facility or SP to build
-		int queueID = Base[baseID].queueProductionID[0]; // current production item
+		int queueID = Bases[baseID].queue_production_id[0]; // current production item
 		if (queueID < 0) { // non-Veh
 			queueID = -queueID;
 			if (queueID < FAC_SKY_HYDRO_LAB && has_fac_built(queueID, baseID)) {
@@ -456,10 +456,10 @@ Status: Complete
 */
 int __cdecl base_lose_minerals(int baseID, int UNUSED(productionID)) {
 	int minAccum;
-	if (Rules->RetoolPctPenProdChg && is_human(Base[baseID].factionIDCurrent)
-		&& base_making(Base[baseID].productionIDLast, baseID)
-		!= base_making(Base[baseID].queueProductionID[0], baseID)
-		&& (minAccum = Base[baseID].mineralsAccumulated2, minAccum > (int)Rules->RetoolExemption)) {
+	if (Rules->RetoolPctPenProdChg && is_human(Bases[baseID].faction_id_current)
+		&& base_making(Bases[baseID].production_id_last, baseID)
+		!= base_making(Bases[baseID].queue_production_id[0], baseID)
+		&& (minAccum = Bases[baseID].minerals_accumulated_2, minAccum > (int)Rules->RetoolExemption)) {
 		return minAccum - (100 - Rules->RetoolPctPenProdChg)
 			* (minAccum - Rules->RetoolExemption) / 100 - Rules->RetoolExemption;
 	}
@@ -476,10 +476,10 @@ void __cdecl set_fac(int facilityID, int baseID, BOOL set) {
 	uint32_t offset, mask;
 	bitmask(facilityID, &offset, &mask);
 	if (set) {
-		Base[baseID].facilitiesBuilt[offset] |= mask;
+		Bases[baseID].facilities_built[offset] |= mask;
 	}
 	else {
-		Base[baseID].facilitiesBuilt[offset] &= ~mask;
+		Bases[baseID].facilities_built[offset] &= ~mask;
 	}
 }
 
@@ -524,7 +524,7 @@ Status: Complete
 void __cdecl base_first(uint32_t baseID) {
 	int priority = -1;
 	uint32_t protoID = BSC_SCOUT_PATROL;
-	uint32_t factionID = Base[baseID].factionIDCurrent;
+	uint32_t factionID = Bases[baseID].faction_id_current;
 	for (int i = 0; i < MaxVehProtoNum; i++) {
 		if (veh_avail(i, factionID, baseID)) {
 			if (i < MaxVehProtoFactionNum || VehPrototype[i].flags & PROTO_TYPED_COMPLETE) {
@@ -550,7 +550,7 @@ void __cdecl base_first(uint32_t baseID) {
 			}
 		}
 	}
-	Base[baseID].queueProductionID[0] = protoID;
+	Bases[baseID].queue_production_id[0] = protoID;
 }
 
 /*
@@ -645,7 +645,7 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl base_nutrient() {
-	uint32_t factionID = (*BaseCurrent)->factionIDCurrent;
+	uint32_t factionID = (*BaseCurrent)->faction_id_current;
 	*BaseCurrentGrowthRate = PlayersData[factionID].socEffectPending.growth;
 	if (has_fac_built(FAC_CHILDREN_CRECHE, *BaseIDCurrentSelected)) {
 		*BaseCurrentGrowthRate += 2; // +2 on growth scale
@@ -653,22 +653,22 @@ void __cdecl base_nutrient() {
 	if ((*BaseCurrent)->state & BSTATE_GOLDEN_AGE_ACTIVE) {
 		*BaseCurrentGrowthRate += 2;
 	}
-	(*BaseCurrent)->nutrientIntake2 += BaseCurrentConvoyTo[RSC_NUTRIENTS];
-	(*BaseCurrent)->nutrientConsumption = BaseCurrentConvoyFrom[RSC_NUTRIENTS]
-		+ (*BaseCurrent)->populationSize * Rules->NutrientReqCitizen;
-	(*BaseCurrent)->nutrientSurplus = (*BaseCurrent)->nutrientIntake2
-		- (*BaseCurrent)->nutrientConsumption;
-	if ((*BaseCurrent)->nutrientSurplus >= 0) {
-		if ((*BaseCurrent)->nutrientsAccumulated < 0) {
-			(*BaseCurrent)->nutrientsAccumulated = 0;
+	(*BaseCurrent)->nutrient_intake_2 += BaseCurrentConvoyTo[RSC_NUTRIENTS];
+	(*BaseCurrent)->nutrient_consumption = BaseCurrentConvoyFrom[RSC_NUTRIENTS]
+		+ (*BaseCurrent)->population_size * Rules->NutrientReqCitizen;
+	(*BaseCurrent)->nutrient_surplus = (*BaseCurrent)->nutrient_intake_2
+		- (*BaseCurrent)->nutrient_consumption;
+	if ((*BaseCurrent)->nutrient_surplus >= 0) {
+		if ((*BaseCurrent)->nutrients_accumulated < 0) {
+			(*BaseCurrent)->nutrients_accumulated = 0;
 		}
 	}
-	else if (!((*BaseCurrent)->nutrientsAccumulated)) {
-		(*BaseCurrent)->nutrientsAccumulated = -1;
+	else if (!((*BaseCurrent)->nutrients_accumulated)) {
+		(*BaseCurrent)->nutrients_accumulated = -1;
 	}
 	if (*BaseUpkeepStage == 1) {
 		PlayersData[factionID].nutrientSurplusTotal
-			+= range((*BaseCurrent)->nutrientSurplus, 0, 99);
+			+= range((*BaseCurrent)->nutrient_surplus, 0, 99);
 	}
 }
 
@@ -679,8 +679,8 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl base_minerals() {
-	uint32_t factionID = (*BaseCurrent)->factionIDCurrent;
-	(*BaseCurrent)->mineralIntake2 += BaseCurrentConvoyTo[RSC_MINERALS];
+	uint32_t factionID = (*BaseCurrent)->faction_id_current;
+	(*BaseCurrent)->mineral_intake_2 += BaseCurrentConvoyTo[RSC_MINERALS];
 	uint32_t mineralBonus = (has_fac_built(FAC_QUANTUM_CONVERTER, *BaseIDCurrentSelected)
 		|| has_project(SP_SINGULARITY_INDUCTOR, factionID)) ? 1 : 0;
 	if (has_fac_built(FAC_ROBOTIC_ASSEMBLY_PLANT, *BaseIDCurrentSelected)) {
@@ -695,23 +695,23 @@ void __cdecl base_minerals() {
 	if (has_project(SP_BULK_MATTER_TRANSMITTER, factionID)) {
 		mineralBonus++;
 	}
-	(*BaseCurrent)->mineralIntake2 = ((*BaseCurrent)->mineralIntake2 * (mineralBonus + 2)) / 2;
-	(*BaseCurrent)->mineralConsumption = *BaseCurrentForcesMaintCost
+	(*BaseCurrent)->mineral_intake_2 = ((*BaseCurrent)->mineral_intake_2 * (mineralBonus + 2)) / 2;
+	(*BaseCurrent)->mineral_consumption = *BaseCurrentForcesMaintCost
 		+ BaseCurrentConvoyFrom[RSC_MINERALS];
-	(*BaseCurrent)->mineralSurplus = (*BaseCurrent)->mineralIntake2
-		- (*BaseCurrent)->mineralConsumption;
-	(*BaseCurrent)->mineralInefficiency = 0; // ?
-	(*BaseCurrent)->mineralSurplus -= (*BaseCurrent)->mineralInefficiency; // ?
-	(*BaseCurrent)->mineralSurplusFinal = (*BaseCurrent)->mineralSurplus;
-	(*BaseCurrent)->ecoDamage /= 8;
+	(*BaseCurrent)->mineral_surplus = (*BaseCurrent)->mineral_intake_2
+		- (*BaseCurrent)->mineral_consumption;
+	(*BaseCurrent)->mineral_inefficiency = 0; // ?
+	(*BaseCurrent)->mineral_surplus -= (*BaseCurrent)->mineral_inefficiency; // ?
+	(*BaseCurrent)->mineral_surplus_final = (*BaseCurrent)->mineral_surplus;
+	(*BaseCurrent)->eco_damage /= 8;
 	int planetEcoFactor = PlayersData[factionID].planetEcology + 16;
-	if ((*BaseCurrent)->ecoDamage > 0) {
-		int planetModifier = (*BaseCurrent)->ecoDamage;
-		if ((*BaseCurrent)->ecoDamage >= planetEcoFactor) {
+	if ((*BaseCurrent)->eco_damage > 0) {
+		int planetModifier = (*BaseCurrent)->eco_damage;
+		if ((*BaseCurrent)->eco_damage >= planetEcoFactor) {
 			planetModifier = planetEcoFactor;
 		}
 		planetEcoFactor -= planetModifier;
-		(*BaseCurrent)->ecoDamage -= planetModifier;
+		(*BaseCurrent)->eco_damage -= planetModifier;
 	}
 	int ecoDmgReduction = (has_fac_built(FAC_NANOREPLICATOR, *BaseIDCurrentSelected)
 		|| has_project(SP_SINGULARITY_INDUCTOR, factionID)) ? 2 : 1;
@@ -724,22 +724,22 @@ void __cdecl base_minerals() {
 	if (has_project(SP_PHOLUS_MUTAGEN, factionID)) {
 		ecoDmgReduction++;
 	}
-	(*BaseCurrent)->ecoDamage += ((*BaseCurrent)->mineralIntake2 - planetEcoFactor
-		- range(PlayersData[factionID].satellitesMineral, 0, (*BaseCurrent)->populationSize))
+	(*BaseCurrent)->eco_damage += ((*BaseCurrent)->mineral_intake_2 - planetEcoFactor
+		- range(PlayersData[factionID].satellitesMineral, 0, (*BaseCurrent)->population_size))
 		/ ecoDmgReduction;
 	if (is_human(factionID)) {
-		(*BaseCurrent)->ecoDamage += ((PlayersData[factionID].majorAtrocities
+		(*BaseCurrent)->eco_damage += ((PlayersData[factionID].majorAtrocities
 			+ TectonicDetonationCount[factionID]) * 5) / (range(*MapSeaLevel, 0, 100)
 				/ range(WorldBuilder->SeaLevelRises, 1, 100) + ecoDmgReduction);
 	}
-	if ((*BaseCurrent)->ecoDamage < 0) {
-		(*BaseCurrent)->ecoDamage = 0;
+	if ((*BaseCurrent)->eco_damage < 0) {
+		(*BaseCurrent)->eco_damage = 0;
 	}
 	if (ascending(factionID) && *GameRules & RULES_VICTORY_TRANSCENDENCE) {
-		(*BaseCurrent)->ecoDamage *= 2;
+		(*BaseCurrent)->eco_damage *= 2;
 	}
 	if (*GameState & STATE_PERIHELION_ACTIVE) {
-		(*BaseCurrent)->ecoDamage *= 2;
+		(*BaseCurrent)->eco_damage *= 2;
 	}
 	uint32_t diffFactor;
 	if (is_human(factionID)) {
@@ -750,19 +750,19 @@ void __cdecl base_minerals() {
 	else {
 		diffFactor = range(6 - *DiffLevelCurrent, DLVL_SPECIALIST, DLVL_LIBRARIAN);
 	}
-	(*BaseCurrent)->ecoDamage = ((PlayersData[factionID].techRanking
+	(*BaseCurrent)->eco_damage = ((PlayersData[factionID].techRanking
 		- PlayersData[factionID].theoryOfEverything)
 		* (3 - range(PlayersData[factionID].socEffectPending.planet, -3, 2))
-		* (*MapNativeLifeForms + 1) * (*BaseCurrent)->ecoDamage * diffFactor) / 6;
-	(*BaseCurrent)->ecoDamage = ((*BaseCurrent)->ecoDamage + 50) / 100;
+		* (*MapNativeLifeForms + 1) * (*BaseCurrent)->eco_damage * diffFactor) / 6;
+	(*BaseCurrent)->eco_damage = ((*BaseCurrent)->eco_damage + 50) / 100;
 	int queueID;
 	if (has_project(SP_SPACE_ELEVATOR, factionID) // orbital facilities double mineral prod rate
-		&& (queueID = (*BaseCurrent)->queueProductionID[0], queueID == -FAC_SKY_HYDRO_LAB
+		&& (queueID = (*BaseCurrent)->queue_production_id[0], queueID == -FAC_SKY_HYDRO_LAB
 			|| queueID == -FAC_NESSUS_MINING_STATION || queueID == -FAC_ORBITAL_POWER_TRANS
 			|| queueID == -FAC_ORBITAL_DEFENSE_POD)) {
-		(*BaseCurrent)->mineralIntake2 *= 2;
-		(*BaseCurrent)->mineralSurplus = // doesn't update mineralSurplusFinal?
-			(*BaseCurrent)->mineralIntake2 - (*BaseCurrent)->mineralConsumption;
+		(*BaseCurrent)->mineral_intake_2 *= 2;
+		(*BaseCurrent)->mineral_surplus = // doesn't update mineral_surplus_final?
+			(*BaseCurrent)->mineral_intake_2 - (*BaseCurrent)->mineral_consumption;
 	}
 }
 
@@ -776,12 +776,12 @@ uint32_t __cdecl black_market(int energy) {
 	if (energy <= 0) {
 		return 0;
 	}
-	uint32_t factionID = (*BaseCurrent)->factionIDCurrent;
-	int xCoord = (*BaseCurrent)->xCoord, yCoord = (*BaseCurrent)->yCoord;
+	uint32_t factionID = (*BaseCurrent)->faction_id_current;
+	int xCoord = (*BaseCurrent)->x, yCoord = (*BaseCurrent)->y;
 	int distHQ = 999;
 	for (int i = 0; i < *BaseCurrentCount; i++) { // modified version of vulnerable()
-		if (Base[i].factionIDCurrent == factionID && has_fac_built(FAC_HEADQUARTERS, i)) {
-			int dist = vector_dist(Base[i].xCoord, Base[i].yCoord, xCoord, yCoord);
+		if (Bases[i].faction_id_current == factionID && has_fac_built(FAC_HEADQUARTERS, i)) {
+			int dist = vector_dist(Bases[i].x, Bases[i].y, xCoord, yCoord);
 			if (dist < distHQ) {
 				distHQ = dist;
 			}
@@ -842,8 +842,8 @@ Return Value: n/a
 Status: WIP
 */
 void __cdecl base_psych() {
-	uint32_t factionID = (*BaseCurrent)->factionIDCurrent;
-	int popSize = (*BaseCurrent)->populationSize;
+	uint32_t factionID = (*BaseCurrent)->faction_id_current;
+	int popSize = (*BaseCurrent)->population_size;
 	uint32_t dronesBase, talentsBase;
 	int diffLvl = is_human(factionID) ? PlayersData[factionID].diffLevel : DLVL_LIBRARIAN;
 	psych_check(factionID, &dronesBase, &talentsBase);
@@ -852,7 +852,7 @@ void __cdecl base_psych() {
 			+ PlayersData[factionID].currentNumBases - talentsBase) / talentsBase, 0, popSize);
 	}
 	int psychVal = range(popSize - dronesBase, 0, popSize);
-	psychVal += range(((*BaseCurrent)->assimilationTurnsLeft + 9) / 10, 
+	psychVal += range(((*BaseCurrent)->assimilation_turns_left + 9) / 10, 
 		0, (popSize + diffLvl - 2) / 4);
 	if (Players[factionID].ruleDrone) {
 		psychVal += popSize / Players[factionID].ruleDrone;
@@ -921,13 +921,13 @@ void __cdecl base_psych() {
 			if (val2 > 1) {
 				val2--;
 			}
-			(*BaseCurrent)->droneTotal = dronesBase;
-			(*BaseCurrent)->talentTotal = talentsBase;
+			(*BaseCurrent)->drone_total = dronesBase;
+			(*BaseCurrent)->talent_total = talentsBase;
 			if (val2 >= 0) {
-				(*BaseCurrent)->talentTotal += val2;
+				(*BaseCurrent)->talent_total += val2;
 			}
 			else {
-				(*BaseCurrent)->droneTotal -= val2;
+				(*BaseCurrent)->drone_total -= val2;
 			}
 		}
 	}
@@ -944,9 +944,9 @@ int __cdecl base_rank(uint32_t faction_id, uint32_t rank_position) {
 	int base_energy[MaxBaseNum];
 	uint32_t bases_found = 0;
 	for (int i = 0; i < *BaseCurrentCount; i++) {
-		if (Base[i].factionIDCurrent == faction_id) {
+		if (Bases[i].faction_id_current == faction_id) {
 			base_id[bases_found] = i;
-			base_energy[bases_found++] = (Base[i].energyIntake1 * 512) + i;
+			base_energy[bases_found++] = (Bases[i].energy_intake_1 * 512) + i;
 		}
 	}
 	if (rank_position >= bases_found) {
@@ -964,9 +964,9 @@ Return Value: Facility id needed for pop growth or zero if base already has Hab 
 Status: Complete
 */
 uint32_t __cdecl pop_goal_fac(uint32_t baseID) {
-	uint32_t factionID = Base[baseID].factionIDCurrent;
+	uint32_t factionID = Bases[baseID].faction_id_current;
 	uint32_t limitMod = has_project(SP_ASCETIC_VIRTUES, factionID) ? 2 : 0;
-	int pop = Base[baseID].populationSize - limitMod + Players[factionID].rulePopulation;
+	int pop = Bases[baseID].population_size - limitMod + Players[factionID].rulePopulation;
 	if (pop >= (int)Rules->PopLimitSansHabComplex && !has_fac_built(FAC_HAB_COMPLEX, baseID)) {
 		return FAC_HAB_COMPLEX;
 	}
@@ -983,9 +983,9 @@ Return Value: Goal population
 Status: Complete
 */
 uint32_t __cdecl pop_goal(uint32_t baseID) {
-	uint32_t factionID = Base[baseID].factionIDCurrent;
+	uint32_t factionID = Bases[baseID].faction_id_current;
 	uint32_t limitMod = has_project(SP_ASCETIC_VIRTUES, factionID) ? 2 : 0;
-	int goal = (36 - Base[baseID].populationSize) / 6 + Base[baseID].populationSize;
+	int goal = (36 - Bases[baseID].population_size) / 6 + Bases[baseID].population_size;
 	if (goal <= 6) {
 		goal = 6;
 	}
@@ -1011,23 +1011,23 @@ Return Value: Is there a valid item in queue to be built? true/false
 Status: Complete - testing
 */
 BOOL __cdecl base_queue(uint32_t baseID) {
-	uint32_t factionID = Base[baseID].factionIDCurrent;
-	while (Base[baseID].queueSize) {
-		int queueProdID = Base[baseID].queueProductionID[0];
+	uint32_t factionID = Bases[baseID].faction_id_current;
+	while (Bases[baseID].queue_size) {
+		int queueProdID = Bases[baseID].queue_production_id[0];
 		if (queueProdID >= 0) {
 			PlayersData[factionID].protoIDQueue[queueProdID]--;
 		}
-		for (uint32_t i = 0; i < Base[baseID].queueSize; i++) {
-			Base[baseID].queueProductionID[i] = Base[baseID].queueProductionID[i + 1];
+		for (uint32_t i = 0; i < Bases[baseID].queue_size; i++) {
+			Bases[baseID].queue_production_id[i] = Bases[baseID].queue_production_id[i + 1];
 		}
-		Base[baseID].queueSize--;
-		queueProdID = Base[baseID].queueProductionID[0];
+		Bases[baseID].queue_size--;
+		queueProdID = Bases[baseID].queue_production_id[0];
 		if ((queueProdID >= 0 && veh_avail(queueProdID, factionID, baseID))
 			|| facility_avail(-queueProdID, factionID, baseID, 0)) {
 			if (queueProdID <= -FAC_HUMAN_GENOME_PROJ) {
 				wave_it(36); // CPU project initiated
 			}
-			draw_radius(Base[baseID].xCoord, Base[baseID].yCoord, 2, 2);
+			draw_radius(Bases[baseID].x, Bases[baseID].y, 2, 2);
 			return true;
 		}
 	}
@@ -1042,10 +1042,10 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl base_energy_costs() {
-	if ((*BaseCurrent)->energySurplus >= 0 || *VehCurrentCount <= 0) {
+	if ((*BaseCurrent)->energy_surplus >= 0 || *VehCurrentCount <= 0) {
 		return;
 	}
-	uint32_t factionID = (*BaseCurrent)->factionIDCurrent;
+	uint32_t factionID = (*BaseCurrent)->faction_id_current;
 	for (int i = 0; i < *VehCurrentCount; i++) {
 		if (Veh[i].factionID == factionID && VehPrototype[Veh[i].protoID].plan == PLAN_SUPPLY_CONVOY
 			&& Veh[i].orders == ORDER_CONVOY && Veh[i].orderAutoType == RSC_ENERGY
@@ -1074,7 +1074,7 @@ uint32_t __cdecl fac_maint(uint32_t facilityID, uint32_t factionID) {
 	for (int i = 0; i < bonusCount; i++) {
 		int bonusID = Players[factionID].factionBonusID[i];
 		if ((bonusID == RULE_FACILITY || (bonusID == RULE_FREEFAC
-			&& has_tech(Facility[Players[factionID].factionBonusVal1[i]].preqTech, factionID)))
+			&& has_tech(Facility[Players[factionID].factionBonusVal1[i]].preq_tech, factionID)))
 			&& Players[factionID].factionBonusVal1[i] == (int)facilityID) {
 			return 0;
 		}
@@ -1089,7 +1089,7 @@ Return Value: Base maintenance cost
 Status: Complete - testing
 */
 void __cdecl base_maint() {
-	uint32_t factionID = (*BaseCurrent)->factionIDCurrent;
+	uint32_t factionID = (*BaseCurrent)->faction_id_current;
 	for (int fac = 1; fac < FacilitySPStart; fac++) {
 		if (fac < FacilityRepStart && has_fac_built(fac)) {
 			uint32_t maint = fac_maint(fac, factionID);
@@ -1107,7 +1107,7 @@ void __cdecl base_maint() {
 			PlayersData[factionID].maintCostTotal += maint;
 			if (PlayersData[factionID].energyReserves < 0) {
 				if (PlayersData[factionID].diffLevel <= DLVL_SPECIALIST 
-					|| (*BaseCurrent)->queueProductionID[0] == -fac) {
+					|| (*BaseCurrent)->queue_production_id[0] == -fac) {
 					maint = 0;
 				}
 				else {
@@ -1130,18 +1130,18 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl make_base_unique(uint32_t baseID) {
-	purge_spaces(Base[baseID].nameString); // added to remove extraneous whitespace
+	purge_spaces(Bases[baseID].name_string); // added to remove extraneous whitespace
 	uint32_t found = 0;
 	std::string coreUniqueName;
 	for (int i = 0; i < *BaseCurrentCount; i++) {
-		if (baseID != (uint32_t)i && !strcmp(Base[i].nameString, Base[baseID].nameString)) {
+		if (baseID != (uint32_t)i && !strcmp(Bases[i].name_string, Bases[baseID].name_string)) {
 			if (!found) { // only create core part of base name on first collision
-				Base[baseID].nameString[21] = 0;
-				coreUniqueName = Base[baseID].nameString;
+				Bases[baseID].name_string[21] = 0;
+				coreUniqueName = Bases[baseID].name_string;
 			}
 			std::string uniqueName = coreUniqueName;
 			uniqueName += "-" + std::to_string(++found + 1); // start with appending "-2"
-			strcpy_s(Base[baseID].nameString, 25, uniqueName.c_str());
+			strcpy_s(Bases[baseID].name_string, 25, uniqueName.c_str());
 			i = 0; // reset loop to verify base name is still unique
 		}
 	}
@@ -1156,7 +1156,7 @@ Status: Complete
 BOOL __cdecl has_project(uint32_t projectID, uint32_t factionID) {
 	int baseID = base_project(projectID);
 	if (baseID >= 0) {
-		return (Base[baseID].factionIDCurrent == factionID);
+		return (Bases[baseID].faction_id_current == factionID);
 	}
 	return false; // Not built or destroyed
 }
@@ -1183,7 +1183,7 @@ Status: Complete
 BOOL __cdecl has_fac_built(uint32_t facilityID, uint32_t baseID) {
 	uint32_t offset, mask;
 	bitmask(facilityID, &offset, &mask);
-	return (Base[baseID].facilitiesBuilt[offset] & mask) != 0;
+	return (Bases[baseID].facilities_built[offset] & mask) != 0;
 }
 
 /*
@@ -1193,7 +1193,7 @@ Return Value: Base id, if not built (-1) or destroyed (-2)
 Status: Complete
 */
 int __cdecl base_project(uint32_t project_id) {
-	return *(&SecretProject->HumanGenomeProject + project_id);
+	return *(&SecretProject->human_genome_project + project_id);
 }
 
 /*
@@ -1203,16 +1203,16 @@ Return Value: baseID or 0
 Status: Complete - testing
 */
 uint32_t __cdecl attack_from(uint32_t base_id, uint32_t faction_id) {
-	uint32_t region_src = region_at(Base[base_id].xCoord, Base[base_id].yCoord);
+	uint32_t region_src = region_at(Bases[base_id].x, Bases[base_id].y);
 	uint32_t base_id_atk_from = 0;
 	uint32_t search = 9999;
 	for (int i = 0; i < *BaseCurrentCount; i++) {
-		if (Base[i].factionIDCurrent == faction_id) {
-			int x = Base[i].xCoord;
-			int y = Base[i].yCoord;
+		if (Bases[i].faction_id_current == faction_id) {
+			int x = Bases[i].x;
+			int y = Bases[i].y;
 			uint32_t compare = (x == PlayersData[faction_id].xCoordTarget
 				&& y == PlayersData[faction_id].yCoordTarget) 
-				? 0 : vector_dist(x, y, Base[base_id].xCoord, Base[base_id].yCoord);
+				? 0 : vector_dist(x, y, Bases[base_id].x, Bases[base_id].y);
 			if (region_src != region_at(x, y)) {
 				compare += 1000;
 			}
@@ -1237,7 +1237,7 @@ int __cdecl value_of_base(int baseID, uint32_t factionIDReq, uint32_t factionIDR
 	if (baseID < 0) {
 		return -1;
 	}
-	int xCoord = Base[baseID].xCoord, yCoord = Base[baseID].yCoord;
+	int xCoord = Bases[baseID].x, yCoord = Bases[baseID].y;
 	int distFactor = vulnerable(factionIDReq, xCoord, yCoord);
 	if (distFactor <= 0) {
 		return -1;
@@ -1248,7 +1248,7 @@ int __cdecl value_of_base(int baseID, uint32_t factionIDReq, uint32_t factionIDR
 		if (on_map(xRadius, yRadius)) {
 			int baseIDFound = base_at(xRadius, yRadius);
 			if (baseIDFound >= 0) {
-				uint32_t factionIDBase = Base[baseIDFound].factionIDCurrent;
+				uint32_t factionIDBase = Bases[baseIDFound].faction_id_current;
 				uint32_t regionFound = region_at(xRadius, yRadius);
 				if (factionIDBase == factionIDReq) {
 					if (regionBase == regionFound) {
@@ -1270,7 +1270,7 @@ int __cdecl value_of_base(int baseID, uint32_t factionIDReq, uint32_t factionIDR
 	if (PlayersData[factionIDReq].energyReserves > mostReserves) {
 		mostReserves = PlayersData[factionIDReq].energyReserves;
 	}
-	uint32_t basePopFactor = Base[baseID].populationSize;
+	uint32_t basePopFactor = Bases[baseID].population_size;
 	if (basePopFactor < 3) {
 		basePopFactor = 3;
 	}
@@ -1339,15 +1339,15 @@ Return Value: Amount of non-offensive units needed (1-10)
 Status: Complete
 */
 uint32_t __cdecl garrison_check(uint32_t baseID) {
-	int xCoord = Base[baseID].xCoord, yCoord = Base[baseID].yCoord;
-	uint32_t factionID = Base[baseID].factionIDCurrent;
+	int xCoord = Bases[baseID].x, yCoord = Bases[baseID].y;
+	uint32_t factionID = Bases[baseID].faction_id_current;
 	uint32_t spCount = 0;
 	for (uint32_t i = 0; i < MaxSecretProjectNum; i++) {
 		if (base_project(i) == (int)baseID) {
 			spCount++;
 		}
 	}
-	int garrison = (spCount + 2) / 3 + (Base[baseID].populationSize + 1) / 4 + 1;
+	int garrison = (spCount + 2) / 3 + (Bases[baseID].population_size + 1) / 4 + 1;
 	BOOL isObj = is_objective(baseID);
 	if (has_fac_built(FAC_HEADQUARTERS, baseID) || bit_at(xCoord, yCoord) & BIT_UNK_40000000
 		|| isObj) {
@@ -1400,7 +1400,7 @@ Return Value: Is base port? true/false
 Status: Complete
 */
 BOOL __cdecl is_port(int baseID, BOOL isBaseRadius) {
-	return is_coast(Base[baseID].xCoord, Base[baseID].yCoord, isBaseRadius);
+	return is_coast(Bases[baseID].x, Bases[baseID].y, isBaseRadius);
 }
 
 /*
@@ -1413,8 +1413,8 @@ Status: Complete
 int __cdecl vulnerable(uint32_t factionID, int xCoord, int yCoord) {
 	int dist = 12; // default value for no bases or no HQ
 	for (int i = 0; i < *BaseCurrentCount; i++) {
-		if (Base[i].factionIDCurrent == factionID && has_fac_built(FAC_HEADQUARTERS, i)) {
-			dist = vector_dist(xCoord, yCoord, Base[i].xCoord, Base[i].yCoord);
+		if (Bases[i].faction_id_current == factionID && has_fac_built(FAC_HEADQUARTERS, i)) {
+			dist = vector_dist(xCoord, yCoord, Bases[i].x, Bases[i].y);
 			break;
 		}
 	}
@@ -1428,7 +1428,7 @@ Return Value: Is base an objective? true/false
 Status: Complete
 */
 BOOL __cdecl is_objective(int baseID) {
-	if (*GameRules & RULES_SCN_VICT_ALL_BASE_COUNT_OBJ || Base[baseID].event & BEVENT_OBJECTIVE) {
+	if (*GameRules & RULES_SCN_VICT_ALL_BASE_COUNT_OBJ || Bases[baseID].event & BEVENT_OBJECTIVE) {
 		return true;
 	}
 	if (*GameRules & RULES_SCN_VICT_SP_COUNT_OBJ) {
@@ -1457,8 +1457,8 @@ BOOL __cdecl transcending(int factionID) {
 		return false;
 	}
 	for (int i = 0; i < *BaseCurrentCount; i++) {
-		if (Base[i].factionIDCurrent == factionID
-			&& Base[i].queueProductionID[0] == -FAC_ASCENT_TO_TRANSCENDENCE) {
+		if (Bases[i].faction_id_current == factionID
+			&& Bases[i].queue_production_id[0] == -FAC_ASCENT_TO_TRANSCENDENCE) {
 			return true;
 		}
 	}
@@ -1530,7 +1530,7 @@ BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID, int queue
 		return ascending(factionID) && *GameRules & RULES_VICTORY_TRANSCENDENCE
 			&& _stricmp(Players[factionID].filename, "CARETAKE"); // bug fix for Caretakers
 	}
-	if (!has_tech(Facility[facilityID].preqTech, factionID)) { // Check tech for facility + SP
+	if (!has_tech(Facility[facilityID].preq_tech, factionID)) { // Check tech for facility + SP
 		return false;
 	}
 	// Secret Project availability
@@ -1586,11 +1586,11 @@ BOOL __cdecl facility_avail(int facilityID, int factionID, int baseID, int queue
 	case FAC_QUANTUM_CONVERTER:
 		return has_fac(FAC_ROBOTIC_ASSEMBLY_PLANT, baseID, queueCount); // Cumulative
 	case FAC_NAVAL_YARD:
-		return is_coast(Base[baseID].xCoord, Base[baseID].yCoord, false); // needs ocean
+		return is_coast(Bases[baseID].x, Bases[baseID].y, false); // needs ocean
 	case FAC_AQUAFARM:
 	case FAC_SUBSEA_TRUNKLINE:
 	case FAC_THERMOCLINE_TRANSDUCER:
-		return *ExpansionEnabled && is_coast(Base[baseID].xCoord, Base[baseID].yCoord, false);
+		return *ExpansionEnabled && is_coast(Bases[baseID].x, Bases[baseID].y, false);
 	case FAC_COVERT_OPS_CENTER:
 	case FAC_BROOD_PIT:
 	case FAC_FLECHETTE_DEFENSE_SYS:

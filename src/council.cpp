@@ -35,8 +35,8 @@ uint32_t __cdecl council_votes(uint32_t faction_id) {
 	}
 	uint32_t votes = 0;
 	for (int i = 0; i < *BaseCurrentCount; i++) {
-		if (faction_id == Base[i].factionIDCurrent) {
-			votes += Base[i].populationSize;
+		if (faction_id == Bases[i].faction_id_current) {
+			votes += Bases[i].population_size;
 		}
 	}
 	if (has_project(SP_EMPATH_GUILD, faction_id)) {

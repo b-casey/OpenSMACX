@@ -1068,7 +1068,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		Facility[i].name = text_item_string();
 		Facility[i].cost = text_item_number();
 		Facility[i].maint = text_item_number();
-		Facility[i].preqTech = tech_name(text_item());
+		Facility[i].preq_tech = tech_name(text_item());
 		/*
 		Enhancement: The original code explicitly sets this value to disabled (-2) overriding
 		alpha/x.txt.  It states in #FACILITIES alpha/x.txt: "Free  = No longer supported". The
@@ -1085,14 +1085,14 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		Energy Bank, 8, 1, IndEcon, QuanMac,      > free with "Quantum Machinery"
 		Network Node, 8, 1, InfNet, HAL9000,      > free with "Self - Aware Machines"
 		*/
-		Facility[i].freeTech = tech_name(text_item());
+		Facility[i].free_tech = tech_name(text_item());
 		Facility[i].effect = text_item_string();
 		if (i >= FacilitySPStart) {
-			Facility[i].SP_AI_Fight = text_item_number();
-			Facility[i].SP_AI_Power = text_item_number();
-			Facility[i].SP_AI_Tech = text_item_number();
-			Facility[i].SP_AI_Wealth = text_item_number();
-			Facility[i].SP_AI_Growth = text_item_number();
+			Facility[i].sp_ai_fight = text_item_number();
+			Facility[i].sp_ai_power = text_item_number();
+			Facility[i].sp_ai_tech = text_item_number();
+			Facility[i].sp_ai_wealth = text_item_number();
+			Facility[i].sp_ai_growth = text_item_number();
 		}
 	}
 	// Orders (basic)
@@ -1158,14 +1158,14 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	}
 	for (int i = 0; i < MaxCitizenNum; i++) {
 		text_get();
-		Citizen[i].singularName = text_item_string();
-		Citizen[i].pluralName = text_item_string();
+		Citizen[i].singular_name = text_item_string();
+		Citizen[i].plural_name = text_item_string();
 		if (i < 7) {
-			Citizen[i].preqTech = tech_name(text_item());
-			Citizen[i].obsolTech = tech_name(text_item());
-			Citizen[i].opsBonus = text_item_number();
-			Citizen[i].psychBonus = text_item_number();
-			Citizen[i].researchBonus = text_item_number();
+			Citizen[i].preq_tech = tech_name(text_item());
+			Citizen[i].obsol_tech = tech_name(text_item());
+			Citizen[i].ops_bonus = text_item_number();
+			Citizen[i].psych_bonus = text_item_number();
+			Citizen[i].research_bonus = text_item_number();
 		}
 	}
 	// Socio

@@ -50,14 +50,14 @@ uint32_t __cdecl terraform_cost(int x, int y, uint32_t faction_id) {
 	}
 	int base_id = base_find(x, y, faction_id);
 	if (base_id >= 0) {
-		int cursor_distance = cursor_dist(x, y, Base[base_id].xCoord, Base[base_id].yCoord);
+		int cursor_distance = cursor_dist(x, y, Bases[base_id].x, Bases[base_id].y);
 		cost *= range(cursor_distance, 1, 100);
 		int base_id_prox = base_find(x, y, -1, -1, faction_id, -1);
 		if (base_id_prox >= 0 
-			&& !has_treaty(faction_id, Base[base_id_prox].factionIDCurrent, DTREATY_PACT)) {
-			int num_prox = (cursor_distance * (Base[base_id_prox].populationSize + 2)) / 3;
-			int denom_prox = (cursor_dist(x, y, Base[base_id_prox].xCoord, Base[base_id_prox].yCoord)
-				* (Base[base_id].populationSize + 2)) / 3;
+			&& !has_treaty(faction_id, Bases[base_id_prox].faction_id_current, DTREATY_PACT)) {
+			int num_prox = (cursor_distance * (Bases[base_id_prox].population_size + 2)) / 3;
+			int denom_prox = (cursor_dist(x, y, Bases[base_id_prox].x, Bases[base_id_prox].y)
+				* (Bases[base_id].population_size + 2)) / 3;
 			if (denom_prox && num_prox && denom_prox < num_prox) {
 				cost = (cost * num_prox) / denom_prox; // increase cost based on proximity ratio
 			}

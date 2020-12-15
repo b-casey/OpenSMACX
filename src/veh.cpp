@@ -74,7 +74,7 @@ void __cdecl say_morale(LPSTR moraleOutput, uint32_t vehID, int factionIDvsNativ
 	if (VehPrototype[protoID].plan < PLAN_COLONIZATION) {
 		uint32_t moralePenalty = 0;
 		int homeBaseID = Veh[vehID].homeBaseID;
-		if (homeBaseID >= 0 && Base[homeBaseID].state & BSTATE_DRONE_RIOTS_ACTIVE && morale > 0
+		if (homeBaseID >= 0 && Bases[homeBaseID].state & BSTATE_DRONE_RIOTS_ACTIVE && morale > 0
 			&& !(Players[factionID].ruleFlags & RFLAG_MORALE)) {
 			output += " (-)";
 			moralePenalty = 1;
@@ -781,7 +781,7 @@ void __cdecl battle_compute(int vehIDAtk, int vehIDDef, int *offenseOutput, int 
 						if (on_map(xRadius, yRadius)) {
 							int baseIDRadius = base_at(xRadius, yRadius);
 							if (baseIDRadius >= 0
-								&& Base[baseIDRadius].factionIDCurrent == factionIDDef
+								&& Bases[baseIDRadius].faction_id_current == factionIDDef
 								&& has_fac_built(FAC_FLECHETTE_DEFENSE_SYS, baseIDRadius)) {
 								defense = 3 * defense / 2;
 								add_bat(1, 50, label_get(1113)); // "Flechette"
@@ -810,7 +810,7 @@ void __cdecl battle_compute(int vehIDAtk, int vehIDDef, int *offenseOutput, int 
 								else {
 									int baseIDFind = base_find(xRadius, yRadius);
 									// assumes will find a base?
-									if (Base[baseIDFind].factionIDCurrent == factionIDDef) {
+									if (Bases[baseIDFind].faction_id_current == factionIDDef) {
 										hasSensor = true;
 									}
 								}
@@ -1042,8 +1042,8 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl invasions(uint32_t baseID) {
-	uint32_t factionIDBase = Base[baseID].factionIDCurrent;
-	int16_t xCoordBase = Base[baseID].xCoord, yCoordBase = Base[baseID].yCoord;
+	uint32_t factionIDBase = Bases[baseID].faction_id_current;
+	int16_t xCoordBase = Bases[baseID].x, yCoordBase = Bases[baseID].y;
 	for (int i = 0; i < *VehCurrentCount; i++) {
 		uint32_t factionIDVeh = Veh[i].factionID;
 		if (factionIDVeh && !is_human(factionIDVeh) && factionIDVeh != factionIDBase
@@ -1799,7 +1799,7 @@ uint32_t __cdecl base_cost(uint32_t protoID) {
 }
 
 /*
-Purpose: Create a new prototype. Sets initial values for everything except vehName and preqTech.
+Purpose: Create a new prototype. Sets initial values for everything except vehName and preq_tech.
 Original Offset: 005A5D40
 Return Value: n/a
 Status: Complete
@@ -2671,7 +2671,7 @@ uint32_t __cdecl morale_veh(uint32_t vehID, BOOL checkDroneRiot, int factionIDvs
 	if (moraleFlag && moraleModifier < 0) {
 		moraleModifier = 0;
 	}
-	if (checkDroneRiot && homeBaseID >= 0 && Base[homeBaseID].state & BSTATE_DRONE_RIOTS_ACTIVE
+	if (checkDroneRiot && homeBaseID >= 0 && Bases[homeBaseID].state & BSTATE_DRONE_RIOTS_ACTIVE
 		&& !moraleFlag) {
 		// bug fix: removed premature range bounding negating negative morale effects
 		moraleModifier--;

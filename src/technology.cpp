@@ -150,7 +150,7 @@ BOOL __cdecl has_tech(int techID, int factionID) {
 		|| Technology[techID].preqTech1 == TechDisabled
 		|| (Technology[techID].preqTech2 == TechDisabled
 			&& Technology[techID].preqTech1 != TechNone)) {
-		// "none, disable" ; valid #TECH preqTech entry
+		// "none, disable" ; valid #TECH preq_tech entry
 		return false;
 	}
 	return ((1 << factionID) & GameTechAchieved[techID]) != 0;
@@ -386,7 +386,7 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 			return valueRet; // should this be moved further up?
 		}
 		if (climactic_battle()
-			&& tech_is_preq(techID, Facility[FAC_ASCENT_TO_TRANSCENDENCE].preqTech, 2)) {
+			&& tech_is_preq(techID, Facility[FAC_ASCENT_TO_TRANSCENDENCE].preq_tech, 2)) {
 			valueRet *= 4;
 		}
 		if (PlayersData[factionID].socEffectBase.planet > 0 && aiGrowth) {
@@ -401,7 +401,7 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 			}
 		}
 		if (PlayersData[factionID].socEffectBase.probe <= 0) {
-			if (tech_is_preq(techID, Facility[FAC_HUNTER_SEEKER_ALGO].preqTech, aiTech + 2)) {
+			if (tech_is_preq(techID, Facility[FAC_HUNTER_SEEKER_ALGO].preq_tech, aiTech + 2)) {
 				if (!aiPower) {
 					valueRet *= 2;
 				}
@@ -421,7 +421,7 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 			valueRet *= (aiPower + 1) * 2;
 		}
 		if (Players[factionID].rulePsi > 0) {
-			if (tech_is_preq(techID, Facility[FAC_DREAM_TWISTER].preqTech, 9999)) {
+			if (tech_is_preq(techID, Facility[FAC_DREAM_TWISTER].preq_tech, 9999)) {
 				valueRet *= 2;
 			}
 		}
@@ -441,17 +441,17 @@ int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc) {
 			}
 		}
 		int ecoDmgUnk = PlayersData[factionID].unk_49 / range(baseCount, 1, 9999);
-		if (ecoDmgUnk > aiPower && (tech_is_preq(techID, Facility[FAC_HYBRID_FOREST].preqTech, 9999)
-			|| tech_is_preq(techID, Facility[FAC_TREE_FARM].preqTech, 9999)
-			|| tech_is_preq(techID, Facility[FAC_CENTAURI_PRESERVE].preqTech, 9999)
-			|| tech_is_preq(techID, Facility[FAC_TEMPLE_OF_PLANET].preqTech, 9999))) {
+		if (ecoDmgUnk > aiPower && (tech_is_preq(techID, Facility[FAC_HYBRID_FOREST].preq_tech, 9999)
+			|| tech_is_preq(techID, Facility[FAC_TREE_FARM].preq_tech, 9999)
+			|| tech_is_preq(techID, Facility[FAC_CENTAURI_PRESERVE].preq_tech, 9999)
+			|| tech_is_preq(techID, Facility[FAC_TEMPLE_OF_PLANET].preq_tech, 9999))) {
 			valueRet += ecoDmgUnk;
 		}
 		if (Players[factionID].rulePopulation > 0) {
-			if (tech_is_preq(techID, Facility[FAC_HAB_COMPLEX].preqTech, 9999)) {
+			if (tech_is_preq(techID, Facility[FAC_HAB_COMPLEX].preq_tech, 9999)) {
 				valueRet *= 2;
 			}
-			else if (tech_is_preq(techID, Facility[FAC_HABITATION_DOME].preqTech, 9999)
+			else if (tech_is_preq(techID, Facility[FAC_HABITATION_DOME].preq_tech, 9999)
 				&& *TurnCurrentNum > 250) {
 				valueRet = (valueRet * 3) / 2;
 			}

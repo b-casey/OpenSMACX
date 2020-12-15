@@ -20,7 +20,7 @@
  /*
   * Base related objects, variables and functions.
   */
-enum facility {
+enum FacilityId {
 	FAC_HEADQUARTERS = 1,
 	FAC_CHILDREN_CRECHE = 2,
 	FAC_RECYCLING_TANKS = 3,
@@ -156,7 +156,7 @@ enum facility {
 	FAC_EMPTY_SP_64 = 133,
 };
 
-enum  secret_project {
+enum  SecretProjectId {
 	SP_HUMAN_GENOME_PROJ = 0,
 	SP_COMMAND_NEXUS = 1,
 	SP_WEATHER_PARADIGM = 2,
@@ -223,7 +223,7 @@ enum  secret_project {
 	SP_EMPTY_64 = 63,
 };
 
-enum base_state_bitfield {
+enum BaseStateBitfield {
 	BSTATE_UNK_1 = 0x1,
 	BSTATE_DRONE_RIOTS_ACTIVE = 0x2,
 	BSTATE_GOLDEN_AGE_ACTIVE = 0x4,
@@ -258,7 +258,7 @@ enum base_state_bitfield {
 	BSTATE_UNK_8000000000 = 0x80000000,
 };
 
-enum base_event_bitfield {
+enum BaseEventBitfield {
 	BEVENT_UNK_100 = 0x100,
 	BEVENT_BUMPER = 0x200,
 	BEVENT_FAMINE = 0x400,
@@ -269,7 +269,7 @@ enum base_event_bitfield {
 	BEVENT_OBJECTIVE = 0x8000,
 };
 
-enum governor_base_bitfield {
+enum GovernorBaseBitfield {
 	GOV_MANAGES_PRODUCTION = 0x1,
 	// 0x2
 	// 0x4
@@ -304,7 +304,7 @@ enum governor_base_bitfield {
 	GOV_ACTIVE = 0x80000000,
 };
 
-enum citizen_specialists {
+enum CitizenSpecialists {
 	CITIZEN_TECHNICIAN = 0,
 	CITIZEN_DOCTOR = 1,
 	CITIZEN_LIBRARIAN = 2,
@@ -314,174 +314,173 @@ enum citizen_specialists {
 	CITIZEN_TRANSCEND = 6,
 };
 
-struct base {
-	int16_t xCoord;
-	int16_t yCoord;
-	uint8_t factionIDCurrent;
-	uint8_t factionIDFormer;
-	int8_t populationSize;
-	uint8_t assimilationTurnsLeft;
-	uint8_t nerveStapleTurnsLeft;
+struct Base {
+	int16_t x;
+	int16_t y;
+	uint8_t faction_id_current;
+	uint8_t faction_id_former;
+	int8_t population_size;
+	uint8_t assimilation_turns_left;
+	uint8_t nerve_staple_turns_left;
 	uint8_t unk_1; // AI plan state?
 	uint8_t visibility; // faction bitfield of those who can see base (mapped: dim/bright)
-	uint8_t factionPopSizeIntel[8]; // last know population size for each faction
-	char nameString[25];
-	int16_t unkX; // terraforming related
-	int16_t unkY; // terraforming related
+	uint8_t faction_pop_size_intel[8]; // last know population size for each faction
+	char name_string[25];
+	int16_t unk_x; // terraforming related
+	int16_t unk_y; // terraforming related
 	uint32_t state; // see base_state_bitfield
 	uint32_t event; // see base_event_bitfield
 	uint32_t governor; // see governor_base_bitfield
-	int nutrientsAccumulated;
-	int mineralsAccumulated;
-	int productionIDLast;
-	int ecoDamage;
-	uint32_t queueSize;
-	int queueProductionID[10]; // items in the production queue
-	int resourceSqrRadius; // worked tiles
-	int specialistTotal;
+	int nutrients_accumulated;
+	int minerals_accumulated;
+	int production_id_last;
+	int eco_damage;
+	uint32_t queue_size;
+	int queue_production_id[10]; // items in the production queue
+	int resource_sqr_radius; // worked tiles
+	int specialist_total;
 	int specialist_unk_1; // related to Governor controlling specialists, non-psych spec count?
 	/*
 	* Specialist types for the first 16 (see citizen_specialists, 4 bits per specialist)
 	* Stored from left to right in base view, with left most represented by lower bits of spec
 	* Specialists after 16th in base are auto assigned based on best_specialist()
-	* Isn't correct when specialistTotal is 0, not reset? Or Governor actively controlling specs?
+	* Isn't correct when specialist_total is 0, not reset? Or Governor actively controlling specs?
 	*/
 	uint32_t spec[2]; // specialist types
-	uint8_t facilitiesBuilt[12];
-	int mineralSurplusFinal;
-	int mineralsAccumulated2; // original minerals before retooling?
+	uint8_t facilities_built[12];
+	int mineral_surplus_final;
+	int minerals_accumulated_2; // original minerals before retooling?
 	int unk_6; // unused?
 	int unk_7; // unused?
 	int unk_8; // unused?
 	int unk_9; // unused?
-	int nutrientIntake1;
-	int mineralIntake1;
-	int energyIntake1;
-	int unusedIntake1;
-	int nutrientIntake2;
-	int mineralIntake2;
-	int energyIntake2;
-	int unusedIntake2;
-	int nutrientSurplus;
-	int mineralSurplus;
-	int energySurplus;
-	int unusedSurplus;
-	int nutrientInefficiency;
-	int mineralInefficiency;
-	int energyInefficiency;
-	int unusedInefficiency;
-	int nutrientConsumption;
-	int mineralConsumption;
-	int energyConsumption;
-	int unusedConsumption;
-	int economyTotal;
-	int psychTotal;
-	int labsTotal;
+	int nutrient_intake_1;
+	int mineral_intake_1;
+	int energy_intake_1;
+	int unused_intake_1;
+	int nutrient_intake_2;
+	int mineral_intake_2;
+	int energy_intake_2;
+	int unused_intake_2;
+	int nutrient_surplus;
+	int mineral_surplus;
+	int energy_surplus;
+	int unused_surplus;
+	int nutrient_inefficiency;
+	int mineral_inefficiency;
+	int energy_inefficiency;
+	int unused_inefficiency;
+	int nutrient_consumption;
+	int mineral_consumption;
+	int energy_consumption;
+	int unused_consumption;
+	int economy_total;
+	int psych_total;
+	int labs_total;
 	int unk_10;
-	int16_t autoforwardLandBaseID;
-	int16_t autoforwardSeaBaseID;
-	int16_t autoforwardAirBaseID;
-	int16_t padding0;
-	int talentTotal;
-	int droneTotal;
-	int superdroneTotal;
-	int randomEventTurns;
-	int nerveStapleCount;
+	int16_t auto_forward_land_base_id;
+	int16_t auto_forward_sea_base_id;
+	int16_t auto_forward_air_base_id;
+	int16_t padding_0;
+	int talent_total;
+	int drone_total;
+	int super_drone_total;
+	int random_event_turns;
+	int nerve_staple_count;
 	int unk_11; // effectively unused, only set to 0 by base_init()
 	int unk_12; // effectively unused, only set to 0 by base_init()
 };
 
-struct rules_facility {
+struct RulesFacility {
 	LPSTR name;
 	LPSTR effect;
 	uint32_t pad;
 	int cost;
 	uint32_t maint;
-	int preqTech;
-	int freeTech;
-	int SP_AI_Fight;
-	int SP_AI_Growth;
-	int SP_AI_Tech;
-	int SP_AI_Wealth;
-	int SP_AI_Power;
+	int preq_tech;
+	int free_tech;
+	int sp_ai_fight;
+	int sp_ai_growth;
+	int sp_ai_tech;
+	int sp_ai_wealth;
+	int sp_ai_power;
 };
 
-struct rules_citizen {
-	LPSTR singularName;
-	LPSTR pluralName;
-	int preqTech;
-	int obsolTech;
-	int opsBonus;
-	int psychBonus;
-	int researchBonus;
+struct RulesCitizen {
+	LPSTR singular_name;
+	LPSTR plural_name;
+	int preq_tech;
+	int obsol_tech;
+	int ops_bonus;
+	int psych_bonus;
+	int research_bonus;
 };
 
-// Secret Projects > stores BaseID that built SP
-struct base_secret_project {
-	int HumanGenomeProject;
-	int CommandNexus;
-	int WeatherParadigm;
-	int MerchantExchange;
-	int EmpathGuild;
-	int CitizensDefenseForce;
-	int VirtualWorld;
-	int PlanetaryTransitSystem;
-	int XenoempathyDome;
-	int NeuralAmplifier;
-	int MaritimeControlCenter;
-	int PlanetaryDatalinks;
-	int Supercollider;
-	int AsceticVirtues;
-	int LongevityVaccine;
-	int HunterSeekerAlgorithm;
-	int PholusMutagen;
-	int CyborgFactory;
-	int TheoryOfEverything;
-	int DreamTwister;
-	int UniversalTranslator;
-	int NetworkBackbone;
-	int NanoFactory;
-	int LivingRefinery;
-	int CloningVats;
-	int SelfAwareColony;
-	int ClinicalImmortality;
-	int SpaceElevator;
-	int SingularityInductor;
-	int BulkMatterTransmitter;
-	int TelepathicMatrix;
-	int VoiceOfPlanet;
-	int AscentToTranscendence;
-	int ManifoldHarmonics; // SMACX Only
-	int NethackTerminus; // SMACX Only
-	int CloudbaseAcademy; // SMACX Only
-	int PlanetaryEnergyGrid; // SMACX Only
-	int UserDefined38; // no direct ref in code logic?
-	int UserDefined39;
-	int UserDefined40;
-	int UserDefined41;
-	int UserDefined42;
-	int UserDefined43;
-	int UserDefined44;
-	int UserDefined45;
-	int UserDefined46;
-	int UserDefined47;
-	int UserDefined48;
-	int UserDefined49;
-	int UserDefined50;
-	int UserDefined51;
-	int UserDefined52;
-	int UserDefined53;
-	int UserDefined54;
-	int UserDefined55;
-	int UserDefined56;
-	int UserDefined57;
-	int UserDefined58;
-	int UserDefined59;
-	int UserDefined60;
-	int UserDefined61;
-	int UserDefined62;
-	int UserDefined63;
-	int UserDefined64;
+struct BaseSecretProject {
+	int human_genome_project;
+	int command_nexus;
+	int weather_paradigm;
+	int merchant_exchange;
+	int empath_guild;
+	int citizens_defense_force;
+	int virtual_world;
+	int planetary_transit_system;
+	int xenoempathy_dome;
+	int neural_amplifier;
+	int maritime_control_center;
+	int planetary_datalinks;
+	int supercollider;
+	int ascetic_virtues;
+	int longevity_vaccine;
+	int hunter_seeker_algorithm;
+	int pholus_mutagen;
+	int cyborg_factory;
+	int theory_of_everything;
+	int dream_twister;
+	int universal_translator;
+	int network_backbone;
+	int nano_factory;
+	int living_refinery;
+	int cloning_vats;
+	int self_aware_colony;
+	int clinical_immortality;
+	int space_elevator;
+	int singularity_inductor;
+	int bulk_matter_transmitter;
+	int telepathic_matrix;
+	int voice_of_planet;
+	int ascent_to_transcendence;
+	int manifold_harmonics; // SMACX Only
+	int nethack_terminus; // SMACX Only
+	int cloudbase_academy; // SMACX Only
+	int planetary_energy_grid; // SMACX Only
+	int user_defined_38; // no direct ref in code logic?
+	int user_defined_39;
+	int user_defined_40;
+	int user_defined_41;
+	int user_defined_42;
+	int user_defined_43;
+	int user_defined_44;
+	int user_defined_45;
+	int user_defined_46;
+	int user_defined_47;
+	int user_defined_48;
+	int user_defined_49;
+	int user_defined_50;
+	int user_defined_51;
+	int user_defined_52;
+	int user_defined_53;
+	int user_defined_54;
+	int user_defined_55;
+	int user_defined_56;
+	int user_defined_57;
+	int user_defined_58;
+	int user_defined_59;
+	int user_defined_60;
+	int user_defined_61;
+	int user_defined_62;
+	int user_defined_63;
+	int user_defined_64;
 };
 
 constexpr int MaxBaseNum = 512;
@@ -494,14 +493,14 @@ constexpr int MaxSpecialistNum = 7;
 constexpr int SP_Unbuilt = -1;
 constexpr int SP_Destroyed = -2;
 
-extern rules_facility *Facility;
-extern rules_citizen *Citizen;
-extern base *Base;
-extern base_secret_project *SecretProject;
+extern RulesFacility *Facility;
+extern RulesCitizen *Citizen;
+extern Base *Bases;
+extern BaseSecretProject *SecretProject;
 extern int *BaseIDCurrentSelected;
 extern int *BaseCurrentCount;
 extern int *BaseFindDist;
-extern base **BaseCurrent;
+extern Base **BaseCurrent;
 extern uint32_t *ScnVictFacilityObj;
 extern uint32_t *BaseUpkeepStage;
 extern uint32_t *BaseCurrentConvoyFrom; // resources convoyed from base

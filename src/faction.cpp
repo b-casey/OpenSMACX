@@ -228,8 +228,8 @@ BOOL __cdecl climactic_battle() {
 	}
 	if (ascending(0)) {
 		for (uint32_t i = 1; i < MaxPlayerNum; i++) {
-			if (is_human(i) && (has_tech(Facility[FAC_PSI_GATE].preqTech, i)
-				|| has_tech(Facility[FAC_VOICE_OF_PLANET].preqTech, i))) {
+			if (is_human(i) && (has_tech(Facility[FAC_PSI_GATE].preq_tech, i)
+				|| has_tech(Facility[FAC_VOICE_OF_PLANET].preq_tech, i))) {
 				return true; // Human controlled player has tech to build PSI Gates or VoP
 			}
 		}
@@ -260,9 +260,9 @@ BOOL __cdecl at_climax(uint32_t factionID) {
 	}
 	int transMostMinThem = 0, transMostMinUs = 0;
 	for (int i = 0; i < *BaseCurrentCount; i++) {
-		if (Base[i].queueProductionID[0] == -FAC_ASCENT_TO_TRANSCENDENCE) {
-			int minAccum = Base[i].mineralsAccumulated;
-			if (Base[i].factionIDCurrent == factionID) {
+		if (Bases[i].queue_production_id[0] == -FAC_ASCENT_TO_TRANSCENDENCE) {
+			int minAccum = Bases[i].minerals_accumulated;
+			if (Bases[i].faction_id_current == factionID) {
 				if (transMostMinUs <= minAccum) {
 					transMostMinUs = minAccum;
 				}
@@ -507,12 +507,12 @@ BOOL __cdecl wants_to_attack(uint32_t factionID, uint32_t factionIDTarget, int f
 	int regionTargetHQ = -1, regionHQ = -1;
 	for (int i = 0; i < *BaseCurrentCount; i++) {
 		if (has_fac_built(FAC_HEADQUARTERS, i)) {
-			uint32_t baseFaction = Base[i].factionIDCurrent;
+			uint32_t baseFaction = Bases[i].faction_id_current;
 			if (baseFaction == factionID) {
-				regionHQ = region_at(Base[i].xCoord, Base[i].yCoord);
+				regionHQ = region_at(Bases[i].x, Bases[i].y);
 			}
 			else if (baseFaction == factionIDTarget) {
-				regionTargetHQ = region_at(Base[i].xCoord, Base[i].yCoord);
+				regionTargetHQ = region_at(Bases[i].x, Bases[i].y);
 			}
 		}
 	}
@@ -830,7 +830,7 @@ Status: Complete
 uint32_t __cdecl corner_market(uint32_t factionID) {
 	int cost = 0;
 	for (int i = 0; i < *BaseCurrentCount; i++) {
-		uint32_t targetFactionID = Base[i].factionIDCurrent;
+		uint32_t targetFactionID = Bases[i].faction_id_current;
 		if (targetFactionID != factionID) {
 			if (!has_treaty(targetFactionID, factionID, DTREATY_PACT)
 				|| !has_treaty(targetFactionID, factionID, DTREATY_HAVE_SURRENDERED)) {
@@ -1072,8 +1072,8 @@ void __cdecl social_ai(uint32_t factionID, int growthVal, int techVal, int wealt
 	// future pop growth
 	int popGoalGrowth = 0;
 	for (int i = 0; i < *BaseCurrentCount; i++) {
-		if (Base[i].factionIDCurrent == factionID) {
-			popGoalGrowth += pop_goal(i) - Base[i].populationSize;
+		if (Bases[i].faction_id_current == factionID) {
+			popGoalGrowth += pop_goal(i) - Bases[i].population_size;
 		}
 	}
 	// plan and enemy region metrics

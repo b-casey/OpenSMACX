@@ -34,10 +34,10 @@ Return Value: Energy
 Status: Complete
 */
 int __cdecl steal_energy(uint32_t base_id) {
-	uint32_t faction_id = Base[base_id].factionIDCurrent;
+	uint32_t faction_id = Bases[base_id].faction_id_current;
 	int energy = PlayersData[faction_id].energyReserves;
 	return (energy <= 0) ? 0 
-		: ((energy * Base[base_id].populationSize) / (PlayersData[faction_id].popTotal + 1));
+		: ((energy * Bases[base_id].population_size) / (PlayersData[faction_id].popTotal + 1));
 }
 
 /*
@@ -48,9 +48,9 @@ Return Value: Mind control cost
 Status: Complete
 */
 int __cdecl mind_control(uint32_t base_id, uint32_t faction_id, BOOL is_corner_market) {
-	uint32_t target_faction_id = Base[base_id].factionIDCurrent;
-	int target_x = Base[base_id].xCoord;
-	int target_y = Base[base_id].yCoord;
+	uint32_t target_faction_id = Bases[base_id].faction_id_current;
+	int target_x = Bases[base_id].x;
+	int target_y = Bases[base_id].y;
 	int cost = vulnerable(target_faction_id, target_x, target_y);
 	if (cost <= 0) {
 		if (!is_corner_market) {
@@ -67,14 +67,14 @@ int __cdecl mind_control(uint32_t base_id, uint32_t faction_id, BOOL is_corner_m
 	if (has_fac_built(FAC_PUNISHMENT_SPHERE, base_id)) {
 		cost /= 2;
 	}
-	if (Base[base_id].nerveStapleTurnsLeft) {
+	if (Bases[base_id].nerve_staple_turns_left) {
 		cost /= 2;
 	}
 	int veh_id = stack_fix(veh_at(target_x, target_y));
 	cost = ((stack_check(veh_id, 2, PLAN_COMBAT, -1, -1)
 		+ stack_check(veh_id, 2, PLAN_OFFENSIVE, -1, -1))
 		* (stack_check(veh_id, 6, ABL_POLY_ENCRYPTION, -1, -1) + 1)
-		+ PlayersData[faction_id].mindControlTotal / 4 + Base[base_id].populationSize)
+		+ PlayersData[faction_id].mindControlTotal / 4 + Bases[base_id].population_size)
 		* ((PlayersData[target_faction_id].cornerMarketActive
 			+ PlayersData[target_faction_id].energyReserves + 1200) / (cost + 4));
 	if (!is_human(faction_id) && is_human(target_faction_id)) {
@@ -99,10 +99,10 @@ int __cdecl mind_control(uint32_t base_id, uint32_t faction_id, BOOL is_corner_m
 	} else if (has_pact) {
 		cost *= 2;
 	}
-	if (Base[base_id].factionIDFormer == faction_id) {
+	if (Bases[base_id].faction_id_former == faction_id) {
 		cost /= 2;
 	}
-	uint32_t base_state = Base[base_id].state;
+	uint32_t base_state = Bases[base_id].state;
 	if (base_state & BSTATE_DRONE_RIOTS_ACTIVE) {
 		cost /= 2;
 	}

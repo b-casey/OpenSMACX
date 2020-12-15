@@ -231,7 +231,7 @@ BOOL __cdecl base_on_sea(uint32_t baseID, uint32_t regionSea) {
 	if (regionSea >= RegionBounds) { // change to equals since already bounded?
 		return false; // skips poles (land or ocean)
 	}
-	int xCoord = Base[baseID].xCoord, yCoord = Base[baseID].yCoord;
+	int xCoord = Bases[baseID].x, yCoord = Bases[baseID].y;
 	for (uint32_t i = 0; i < 8; i++) {
 		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
 		if (on_map(xRadius, yRadius) && is_ocean(xRadius, yRadius) 
@@ -258,7 +258,7 @@ Status: Complete
 int __cdecl base_coast(uint32_t baseID) {
 	int region = -1;
 	int val = 0;
-	int xCoord = Base[baseID].xCoord, yCoord = Base[baseID].yCoord;
+	int xCoord = Bases[baseID].x, yCoord = Bases[baseID].y;
 	for (uint32_t i = 0; i < 8; i++) { // is_coast()
 		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
 		if (on_map(xRadius, yRadius) && is_ocean(xRadius, yRadius)) {
@@ -280,7 +280,7 @@ Return Value: Is port and coastal region accessible by water to each other? true
 Status: Complete
 */
 BOOL __cdecl port_to_coast(uint32_t baseID, uint32_t region) {
-	int xCoord = Base[baseID].xCoord, yCoord = Base[baseID].yCoord;
+	int xCoord = Bases[baseID].x, yCoord = Bases[baseID].y;
 	if (region_at(xCoord, yCoord) == region) {
 		return true;
 	}
@@ -303,7 +303,7 @@ Return Value: Are both ports accessible by water to each other? true/false
 Status: Complete
 */
 BOOL __cdecl port_to_port(uint32_t baseIDSrc, uint32_t baseIDDst) {
-	int xCoord = Base[baseIDSrc].xCoord, yCoord = Base[baseIDSrc].yCoord, lastRegion = -1;
+	int xCoord = Bases[baseIDSrc].x, yCoord = Bases[baseIDSrc].y, lastRegion = -1;
 	for (uint32_t i = 0; i < 8; i++) { // is_coast()
 		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
 		if (on_map(xRadius, yRadius) && is_ocean(xRadius, yRadius)) {
@@ -331,7 +331,7 @@ BOOL __cdecl transport_base(uint32_t baseID) {
 	if (region < 0) {
 		return false; // landlocked
 	}
-	if (is_ocean(Base[baseID].xCoord, Base[baseID].yCoord)) {
+	if (is_ocean(Bases[baseID].x, Bases[baseID].y)) {
 		return true; // ocean base
 	}
 	return (sea_coasts(region) > 1);
@@ -347,9 +347,9 @@ BOOL __cdecl naval_base(uint32_t baseID) {
 	if (base_coast(baseID) < 0 || *BaseCurrentCount <= 0) {
 		return false; // landlocked base or no bases
 	}
-	uint32_t factionID = Base[baseID].factionIDCurrent;
+	uint32_t factionID = Bases[baseID].faction_id_current;
 	for (int i = 0; i < *BaseCurrentCount; i++) {
-		if (factionID != Base[i].factionIDCurrent) {
+		if (factionID != Bases[i].faction_id_current) {
 			if (port_to_port(baseID, i)) {
 				return true;
 			}
@@ -373,8 +373,8 @@ BOOL __cdecl convoy(uint32_t vehID, uint32_t baseID) {
 	if (triad == TRIAD_AIR) {
 		return true; // air
 	}
-	uint32_t regionBase = region_at(Base[baseID].xCoord, Base[baseID].yCoord);
-	if (region_at(Base[homeBaseID].xCoord, Base[homeBaseID].yCoord) == regionBase
+	uint32_t regionBase = region_at(Bases[baseID].x, Bases[baseID].y);
+	if (region_at(Bases[homeBaseID].x, Bases[homeBaseID].y) == regionBase
 		&& ((regionBase >= 64) == (triad == TRIAD_SEA))) {
 		return true; // same region, by land or sea
 	}
@@ -1016,7 +1016,7 @@ BOOL __cdecl valid_landmark(int xCoord, int yCoord, int factionID) {
 		return false;
 	}
 	int baseID = base_find(xCoord, yCoord);
-	return baseID >= 0 ? Base[baseID].factionIDCurrent == factionID : true;
+	return baseID >= 0 ? Bases[baseID].faction_id_current == factionID : true;
 }
 
 /*
@@ -1116,9 +1116,9 @@ void __cdecl rebuild_base_bits() {
 		for (uint32_t x = y & 1; x < *MapLongitudeBounds; x += 2) {
 			bit_set(x, y, BIT_BASE_IN_TILE, false);
 			for (int baseID = 0; baseID < *BaseCurrentCount; baseID++) {
-				if (Base[baseID].xCoord == (int)x && Base[baseID].yCoord == (int)y) {
+				if (Bases[baseID].x == (int)x && Bases[baseID].y == (int)y) {
 					bit_set(x, y, BIT_BASE_IN_TILE, true);
-					owner_set(x, y, Base[baseID].factionIDCurrent);
+					owner_set(x, y, Bases[baseID].faction_id_current);
 					break;
 				}
 			}
@@ -1410,9 +1410,9 @@ int __cdecl is_sensor(int xCoord, int yCoord) {
 	}
 	int baseID = base_find(xCoord, yCoord);
 	if (baseID != -1) {
-		int distX = x_dist(xCoord, Base[baseID].xCoord);
+		int distX = x_dist(xCoord, Bases[baseID].x);
 		if (!distX || distX == 2) { // removed unnecessary duplicate calculation of distX
-			int distY = abs(yCoord - Base[baseID].yCoord);
+			int distY = abs(yCoord - Bases[baseID].y);
 			if (!distY || distY == 2) {
 				if (has_fac_built(FAC_GEOSYNC_SURVEY_POD, baseID)) {
 					return 2; // Geosynchronous Survey Pod
