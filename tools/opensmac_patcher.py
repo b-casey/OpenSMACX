@@ -173,10 +173,10 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x000E3A00) # ?say_base@@YAXPADH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*257))
-	bin_app.seek(0x000E39D0) # ?set_base@@YAXH@Z
+	bin_app.seek(0x000E39D0) # ?set_base@@YAXI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*258))
-	bin_app.seek(0x00179A00) # ?is_port@@YAHHH@Z
+	bin_app.seek(0x00179A00) # ?is_port@@YAHIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*260))
 	bin_app.seek(0x000EF090) # ?pop_goal@@YAII@Z
@@ -185,28 +185,28 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x000EEF80) # ?pop_goal_fac@@YAII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*262))
-	bin_app.seek(0x001BA0E0) # ?facility_avail@@YAHHHHH@Z
+	bin_app.seek(0x001BA0E0) # ?facility_avail@@YAHIIHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*268))
-	bin_app.seek(0x000E48B0) # ?set_fac@@YAXHHH@Z
+	bin_app.seek(0x000E48B0) # ?set_fac@@YAXIIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*269))
-	bin_app.seek(0x00021670) # ?has_fac@@YAHHHH@Z
+	bin_app.seek(0x00021670) # ?has_fac@@YAHHIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*270))
-	bin_app.seek(0x001BA030) # ?redundant@@YAHHH@Z
+	bin_app.seek(0x001BA030) # ?redundant@@YAHHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*271))
-	bin_app.seek(0x000E4810) # ?base_lose_minerals@@YAHHH@Z
+	bin_app.seek(0x000E4810) # ?base_lose_minerals@@YAHIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*281))
-	bin_app.seek(0x000E4700) # ?base_making@@YAHHH@Z
+	bin_app.seek(0x000E4700) # ?base_making@@YAHHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*282))
 	bin_app.seek(0x000E4020) # ?best_specialist@@YAIXZ
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*286))
-	bin_app.seek(0x000E4090) # ?name_base@@YAXHPADHH@Z
+	bin_app.seek(0x000E4090) # ?name_base@@YAXIPADHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*305))
 	bin_app.seek(0x001AC680) # ?ascending@@YAHH@Z
@@ -215,16 +215,16 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001AC630) # ?transcending@@YAHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*331))
-	bin_app.seek(0x001AC060) # ?is_objective@@YAHH@Z
+	bin_app.seek(0x001AC060) # ?is_objective@@YAHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*334))
 	bin_app.seek(0x000F6510) # ?fac_maint@@YAIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*335))
-	bin_app.seek(0x000E4900) # ?has_fac_announced@@YAHHH@Z
+	bin_app.seek(0x000E4900) # ?has_fac_announced@@YAHII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*338))
-	bin_app.seek(0x000E4960) # ?set_fac_announced@@YAXHHH@Z
+	bin_app.seek(0x000E4960) # ?set_fac_announced@@YAXIIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*339))
 	bin_app.seek(0x00160B30) # ?garrison_check@@YAII@Z
