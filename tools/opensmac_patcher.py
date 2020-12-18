@@ -975,22 +975,22 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001B9F20) # ?has_tech@@YAHHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*174))
-	bin_app.seek(0x001BDD70) # ?tech_mil@@YAHH@Z
+	bin_app.seek(0x001BDD70) # ?tech_mil@@YAHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*175))
-	bin_app.seek(0x001BDD90) # ?tech_tech@@YAHH@Z
+	bin_app.seek(0x001BDD90) # ?tech_tech@@YAHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*176))
-	bin_app.seek(0x001BDDC0) # ?tech_infra@@YAHH@Z
+	bin_app.seek(0x001BDDC0) # ?tech_infra@@YAHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*177))
-	bin_app.seek(0x001BDDF0) # ?tech_colonize@@YAHH@Z
+	bin_app.seek(0x001BDDF0) # ?tech_colonize@@YAHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*178))
-	bin_app.seek(0x001BAC20) # ?tech_avail@@YAHHH@Z
+	bin_app.seek(0x001BAC20) # ?tech_avail@@YAHIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*265))
-	bin_app.seek(0x001B9FE0) # ?tech_category@@YAHH@Z
+	bin_app.seek(0x001B9FE0) # ?tech_category@@YAHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*292))
 	bin_app.seek(0x001B9F90) # ?tech_recurse@@YAHHH@Z
@@ -1008,16 +1008,16 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001BCB60) # ?tech_is_preq@@YAHHHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*327))
-	bin_app.seek(0x001BAE60) # ?tech_effects@@YAXH@Z
+	bin_app.seek(0x001BAE60) # ?tech_effects@@YAXI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*328))
-	bin_app.seek(0x001BDC10) # ?tech_ai@@YAHH@Z
+	bin_app.seek(0x001BDC10) # ?tech_ai@@YAHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*337))
-	bin_app.seek(0x001BCBE0) # ?tech_val@@YAHHHH@Z
+	bin_app.seek(0x001BCBE0) # ?tech_val@@YAHIHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*360))
-	bin_app.seek(0x0017CE50) # ?valid_tech_leap@@YAHIH@Z
+	bin_app.seek(0x0017CE50) # ?valid_tech_leap@@YAHII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*361))
 	bin_app.seek(0x001BE6B0) # ?tech_rate@@YAII@Z

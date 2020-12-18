@@ -330,15 +330,15 @@ BOOL __cdecl read_tech() {
 		text_get();
 		Technology[i].name = text_item_string();
 		text_item();
-		Technology[i].powerValue = text_item_number();
-		Technology[i].techValue = text_item_number();
-		Technology[i].wealthValue = text_item_number();
-		Technology[i].growthValue = text_item_number();
-		Technology[i].preqTech1 = tech_name(text_item());
-		Technology[i].preqTech2 = tech_name(text_item());
+		Technology[i].power_value = text_item_number();
+		Technology[i].tech_value = text_item_number();
+		Technology[i].wealth_value = text_item_number();
+		Technology[i].growth_value = text_item_number();
+		Technology[i].preq_tech_1 = tech_name(text_item());
+		Technology[i].preq_tech_2 = tech_name(text_item());
 		Technology[i].flags = text_item_binary();
-		if (Technology[i].preqTech1 != DisabledValue
-			&& Technology[i].preqTech2 != DisabledValue) {
+		if (Technology[i].preq_tech_1 != DisabledValue
+			&& Technology[i].preq_tech_2 != DisabledValue) {
 			*TechValidCount += 1;
 			if (Technology[i].flags & TFLAG_INC_COMMERCE) {
 				*TechCommerceCount += 1;
@@ -1228,7 +1228,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	for (int i = 0; i < MaxMandateNum; i++) {
 		text_get();
 		Mandate[i].name = text_item_string();
-		Mandate[i].nameCAPS = text_item_string();
+		Mandate[i].name_caps = text_item_string();
 	}
 	// Mood
 	if (text_open(AlphaxFileID, "MOOD")) {

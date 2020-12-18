@@ -20,7 +20,7 @@
  /*
   * Technology related objects, variables and functions.
   */
-enum technology_flag_bitfield {
+enum TechnologyFlagBitfield {
 	TFLAG_SECRETS = 0x1,
 	TFLAG_IMPROVED_PROBES = 0x2,
 	TFLAG_INC_COMMERCE = 0x4,
@@ -32,7 +32,7 @@ enum technology_flag_bitfield {
 	TFLAG_INC_NUTRIENT_FUNGUS = 0x100,
 };
 
-enum technology {
+enum TechnologyId {
 	TECH_BIOGEN = 0,
 	TECH_INDUST = 1,
 	TECH_INFNET = 2,
@@ -124,22 +124,22 @@ enum technology {
 	TECH_TRANT = 88,
 };
 
-struct rules_technology {
+struct RulesTechnology {
 	uint32_t flags;
 	LPSTR name;
 	char id[8]; // short name up to 7 characters in length
 	int padding; // unused
-	int growthValue;
-	int techValue;
-	int wealthValue;
-	int powerValue;
-	int preqTech1;
-	int preqTech2;
+	int growth_value;
+	int tech_value;
+	int wealth_value;
+	int power_value;
+	int preq_tech_1;
+	int preq_tech_2;
 };
 
-struct rules_mandate {
+struct RulesMandate {
 	LPSTR name;
-	LPSTR nameCAPS;
+	LPSTR name_caps;
 };
 
 constexpr int MaxTechnologyNum = 89;
@@ -147,27 +147,27 @@ constexpr int TechNone = -1;
 constexpr int TechDisabled = -2;
 constexpr int MaxMandateNum = 4;
 
-extern rules_technology *Technology; // [89]
+extern RulesTechnology *Technology; // [89]
 extern uint8_t *GameTechAchieved; // [89]
-extern rules_mandate *Mandate; // [4]
+extern RulesMandate *Mandate; // [4]
 extern int *TechValidCount;
 extern int *TechCommerceCount;
 extern char TechName[80];
 
-OPENSMACX_API void __cdecl say_tech(int techID, BOOL categoryLvl);
-OPENSMACX_API BOOL __cdecl valid_tech_leap(uint32_t techID, int factionID);
-OPENSMACX_API void __cdecl say_tech(LPSTR output, int techID, BOOL categoryLvl);
-OPENSMACX_API LPSTR __cdecl tech_name(int techID, BOOL categoryLvl);
-OPENSMACX_API BOOL __cdecl has_tech(int techID, int factionID);
-OPENSMACX_API int __cdecl tech_recurse(int techID, int baseLevel);
-OPENSMACX_API int __cdecl tech_category(int techID);
-OPENSMACX_API BOOL __cdecl tech_avail(int techID, int factionID);
-OPENSMACX_API void __cdecl tech_effects(int factionID);
-OPENSMACX_API BOOL __cdecl tech_is_preq(int preTechID, int techID, uint32_t range);
-OPENSMACX_API int __cdecl tech_val(int techID, int factionID, BOOL simpleCalc);
-OPENSMACX_API int __cdecl tech_ai(int factionID);
-OPENSMACX_API int __cdecl tech_mil(int techID);
-OPENSMACX_API int __cdecl tech_tech(int techID);
-OPENSMACX_API int __cdecl tech_infra(int techID);
-OPENSMACX_API int __cdecl tech_colonize(int techID);
-OPENSMACX_API uint32_t __cdecl tech_rate(uint32_t factionID);
+OPENSMACX_API void __cdecl say_tech(int tech_id, BOOL category_lvl);
+OPENSMACX_API BOOL __cdecl valid_tech_leap(uint32_t tech_id, uint32_t faction_id);
+OPENSMACX_API void __cdecl say_tech(LPSTR output, int tech_id, BOOL category_lvl);
+OPENSMACX_API LPSTR __cdecl tech_name(int tech_id, BOOL category_lvl);
+OPENSMACX_API BOOL __cdecl has_tech(int tech_id, int faction_id);
+OPENSMACX_API int __cdecl tech_recurse(int tech_id, int base_lvl);
+OPENSMACX_API int __cdecl tech_category(uint32_t tech_id);
+OPENSMACX_API BOOL __cdecl tech_avail(uint32_t tech_id, int faction_id);
+OPENSMACX_API void __cdecl tech_effects(uint32_t faction_id);
+OPENSMACX_API BOOL __cdecl tech_is_preq(int preq_tech_id, int parent_tech_id, uint32_t range);
+OPENSMACX_API int __cdecl tech_val(uint32_t tech_id, int faction_id, BOOL simple_calc);
+OPENSMACX_API int __cdecl tech_ai(uint32_t faction_id);
+OPENSMACX_API int __cdecl tech_mil(uint32_t tech_id);
+OPENSMACX_API int __cdecl tech_tech(uint32_t tech_id);
+OPENSMACX_API int __cdecl tech_infra(uint32_t tech_id);
+OPENSMACX_API int __cdecl tech_colonize(uint32_t tech_id);
+OPENSMACX_API uint32_t __cdecl tech_rate(uint32_t faction_id);

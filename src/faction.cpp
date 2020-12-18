@@ -200,8 +200,8 @@ uint32_t __cdecl aah_ooga(int factionID, int pactFactionID) {
 				|| !(*GameRules & RULES_VICTORY_COOPERATIVE))) {
 			int proposalPreq = Proposal[PROP_UNITE_SUPREME_LEADER].preq_tech;
 			if ((has_tech(proposalPreq, factionID)
-				|| (proposalPreq >= 0 && (has_tech(Technology[proposalPreq].preqTech1, factionID)
-					|| has_tech(Technology[proposalPreq].preqTech2, factionID))))
+				|| (proposalPreq >= 0 && (has_tech(Technology[proposalPreq].preq_tech_1, factionID)
+					|| has_tech(Technology[proposalPreq].preq_tech_2, factionID))))
 				&& council_votes(i) * 2 >= votesTotal && (!factionIDRet || i == factionID)) {
 				factionIDRet = i;
 			}
