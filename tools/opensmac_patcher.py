@@ -167,7 +167,7 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x0010BA00) # ?bitmask@@YAXIPAI0@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*173))
-	bin_app.seek(0x001BF010) # ?is_sensor@@YAHHH@Z
+	bin_app.seek(0x001BF010) # ?is_sensor@@YAHII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*253))
 	bin_app.seek(0x000E3A00) # ?say_base@@YAXPADH@Z
@@ -639,70 +639,70 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x00179790) # ?x_dist@@YAHHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*145))
-	bin_app.seek(0x00191AD0) # ?temp_set@@YAXHHE@Z
+	bin_app.seek(0x00191AD0) # ?temp_set@@YAXIIE@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*146))
-	bin_app.seek(0x00191A80) # ?climate_set@@YAXHHE@Z
+	bin_app.seek(0x00191A80) # ?climate_set@@YAXIIE@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*147))
-	bin_app.seek(0x00100150) # ?alt_at@@YAIHH@Z
+	bin_app.seek(0x00100150) # ?alt_at@@YAIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*148))
-	bin_app.seek(0x00100180) # ?alt_detail_at@@YAIHH@Z
+	bin_app.seek(0x00100180) # ?alt_detail_at@@YAIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*149))
-	bin_app.seek(0x00191260) # ?alt_put_detail@@YAXHHE@Z
+	bin_app.seek(0x00191260) # ?alt_put_detail@@YAXIIE@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*150))
-	bin_app.seek(0x00191B10) # ?owner_set@@YAXHHH@Z
+	bin_app.seek(0x00191B10) # ?owner_set@@YAXIIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*151))
-	bin_app.seek(0x00191B50) # ?site_set@@YAXHHH@Z
+	bin_app.seek(0x00191B50) # ?site_set@@YAXIIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*152))
-	bin_app.seek(0x00100220) # ?region_at@@YAIHH@Z
+	bin_app.seek(0x00100220) # ?region_at@@YAIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*153))
-	bin_app.seek(0x00191B90) # ?region_set@@YAXHHE@Z
+	bin_app.seek(0x00191B90) # ?region_set@@YAXIIE@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*154))
-	bin_app.seek(0x00191C10) # ?using_set@@YAXHHH@Z
+	bin_app.seek(0x00191C10) # ?using_set@@YAXIIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*155))
-	bin_app.seek(0x00191C50) # ?lock_set@@YAXHHI@Z
+	bin_app.seek(0x00191C50) # ?lock_set@@YAXIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*156))
-	bin_app.seek(0x00191C90) # ?lock_map@@YAHHHI@Z
+	bin_app.seek(0x00191C90) # ?lock_map@@YAHIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*157))
-	bin_app.seek(0x00191CF0) # ?unlock_map@@YAXHHI@Z
+	bin_app.seek(0x00191CF0) # ?unlock_map@@YAXIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*158))
-	bin_app.seek(0x00191BC0) # ?rocky_set@@YAXHHE@Z
+	bin_app.seek(0x00191BC0) # ?rocky_set@@YAXIIE@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*159))
-	bin_app.seek(0x001001B0) # ?bit_at@@YAIHH@Z
+	bin_app.seek(0x001001B0) # ?bit_at@@YAIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*160))
-	bin_app.seek(0x00191D30) # ?bit_put@@YAXHHI@Z
+	bin_app.seek(0x00191D30) # ?bit_put@@YAXIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*161))
-	bin_app.seek(0x00191D60) # ?bit_set@@YAXHHIH@Z
+	bin_app.seek(0x00191D60) # ?bit_set@@YAXIIIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*162))
-	bin_app.seek(0x00191DB0) # ?bit2_set@@YAXHHIH@Z
+	bin_app.seek(0x00191DB0) # ?bit2_set@@YAXIIIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*163))
-	bin_app.seek(0x00191E00) # ?code_set@@YAXHHI@Z
+	bin_app.seek(0x00191E00) # ?code_set@@YAXIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*164))
-	bin_app.seek(0x00191E50) # ?synch_bit@@YAXHHH@Z
+	bin_app.seek(0x00191E50) # ?synch_bit@@YAXIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*165))
-	bin_app.seek(0x001001E0) # ?is_ocean@@YAHHH@Z
+	bin_app.seek(0x001001E0) # ?is_ocean@@YAHII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*166))
-	bin_app.seek(0x00100250) # ?veh_who@@YAHHH@Z
+	bin_app.seek(0x00100250) # ?veh_who@@YAHII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*167))
 	bin_app.seek(0x00132A90) # ?rebuild_vehicle_bits@@YAXXZ
@@ -732,25 +732,25 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001C8BA0) # ?zoc_sea@@YAIHHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*299))
-	bin_app.seek(0x001C8D40) # ?zoc_move@@YAIHHI@Z
+	bin_app.seek(0x001C8D40) # ?zoc_move@@YAIIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*300))
-	bin_app.seek(0x000E3EF0) # ?whose_territory@@YAHHHHPAHH@Z
+	bin_app.seek(0x000E3EF0) # ?whose_territory@@YAHIIIPAHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*309))
-	bin_app.seek(0x000E3FA0) # ?base_territory@@YAHHHH@Z
+	bin_app.seek(0x000E3FA0) # ?base_territory@@YAHIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*310))
 	bin_app.seek(0x001BF130) # ?has_temple@@YAHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*311))
-	bin_app.seek(0x00191F00) # ?minerals_at@@YAIHH@Z
+	bin_app.seek(0x00191F00) # ?minerals_at@@YAIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*312))
-	bin_app.seek(0x00192030) # ?bonus_at@@YAIHHH@Z
+	bin_app.seek(0x00192030) # ?bonus_at@@YAIIIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*313))
-	bin_app.seek(0x00192140) # ?goody_at@@YAIHH@Z
+	bin_app.seek(0x00192140) # ?goody_at@@YAIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*314))
 	bin_app.seek(0x00190ED0) # ?map_init@@YAHXZ
@@ -768,19 +768,19 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001910B0) # ?map_write@@YAHPAU_iobuf@@@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*319))
-	bin_app.seek(0x00191210) # ?abstract_at@@YAEHH@Z
+	bin_app.seek(0x00191210) # ?abstract_at@@YAEII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*320))
-	bin_app.seek(0x00191230) # ?abstract_set@@YAXHHE@Z
+	bin_app.seek(0x00191230) # ?abstract_set@@YAXIIE@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*321))
 	bin_app.seek(0x001591C0) # ?bad_reg@@YAHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*329))
-	bin_app.seek(0x001919C0) # ?elev_at@@YAHHH@Z
+	bin_app.seek(0x001919C0) # ?elev_at@@YAHII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*344))
-	bin_app.seek(0x001918A0) # ?alt_natural@@YAIHH@Z
+	bin_app.seek(0x001918A0) # ?alt_natural@@YAIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*345))
 	bin_app.seek(0x00179840) # ?is_known@@YAHIII@Z
@@ -816,13 +816,13 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x0010E5C0) # ?convoy@@YAHII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*357))
-	bin_app.seek(0x0016B320) # ?get_there@@YAHIHH@Z
+	bin_app.seek(0x0016B320) # ?get_there@@YAHIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*358))	
-	bin_app.seek(0x0016B480) # ?coast_or_border@@YAHHHHHH@Z
+	bin_app.seek(0x0016B480) # ?coast_or_border@@YAHIIIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*359))
-	bin_app.seek(0x000ECB90) # ?crappy@@YAIHH@Z
+	bin_app.seek(0x000ECB90) # ?crappy@@YAIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*308))
 	bin_app.seek(0x001A5910) # ?vector_dist@@YAHHHHH@Z
@@ -831,7 +831,7 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x00192400) # ?site_radius@@YAXHHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*396))
-	bin_app.seek(0x00193830) # ?quick_zoc@@YAXHHHHHPAH0@Z
+	bin_app.seek(0x00193830) # ?quick_zoc@@YAXIIIHHPAH0@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*397))
 	bin_app.seek(0x001A65A0) # ?radius_move@@YAHHHH@Z

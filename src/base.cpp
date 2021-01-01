@@ -323,8 +323,8 @@ void __cdecl base_mark(uint32_t base_id) {
 	int y_radius = 0;
 	uint32_t faction_id = Bases[base_id].faction_id_current;
 	for (uint32_t i = 0; i < RadiusRange[3]; i++) {
-		x_radius = xrange(x + xRadiusOffset[i]);
-		y_radius = y + yRadiusOffset[i];
+		x_radius = xrange(x + RadiusOffsetX[i]);
+		y_radius = y + RadiusOffsetY[i];
 		if (on_map(x_radius, y_radius)) {
 			// optimize into one conditional check?
 			(i >= 21) ? site_set(x_radius, y_radius, 0)
@@ -1231,8 +1231,8 @@ int __cdecl value_of_base(int base_id, uint32_t faction_id_req, uint32_t faction
 	}
 	uint32_t region_base = region_at(x, y);
 	for (uint32_t i = 1; i < RadiusRange[6]; i++) {
-		int x_radius = xrange(x + xRadiusOffset[i]);
-		int y_radius = y + yRadiusOffset[i];
+		int x_radius = xrange(x + RadiusOffsetX[i]);
+		int y_radius = y + RadiusOffsetY[i];
 		if (on_map(x_radius, y_radius)) {
 			int base_id_found = base_at(x_radius, y_radius);
 			if (base_id_found >= 0) {

@@ -252,7 +252,7 @@ uint32_t __cdecl morale_alien(int vehID, int factionIDvsNative) {
 		int16_t xCoord = Veh[vehID].xCoord, yCoord = Veh[vehID].yCoord;
 		// similar to is_coast() > except with fungus check + Ocean Shelf included
 		for (uint32_t i = 1; i < 9; i++) {
-			int xRadius = xrange(xCoord + xRadiusOffset[i]), yRadius = yCoord + yRadiusOffset[i];
+			int xRadius = xrange(xCoord + RadiusOffsetX[i]), yRadius = yCoord + RadiusOffsetY[i];
 			if (on_map(xRadius, yRadius) && bit_at(xRadius, yRadius) & BIT_FUNGUS
 				&& altitude_at(xRadius, yRadius) >= ALT_BIT_OCEAN_SHELF) {
 				morale++;
@@ -776,8 +776,8 @@ void __cdecl battle_compute(int vehIDAtk, int vehIDDef, int *offenseOutput, int 
 				if (factionIDDef && vehIDAtk >= 0 
 					&& Chassis[VehPrototype[protoIDAtk].chassisID].missile) {
 					for (int i = 0; i < 25; i++) {
-						int xRadius = xrange(xCoordDef + xRadiusOffset[i]), 
-							yRadius = yCoordDef + yRadiusOffset[i];
+						int xRadius = xrange(xCoordDef + RadiusOffsetX[i]), 
+							yRadius = yCoordDef + RadiusOffsetY[i];
 						if (on_map(xRadius, yRadius)) {
 							int baseIDRadius = base_at(xRadius, yRadius);
 							if (baseIDRadius >= 0
@@ -793,8 +793,8 @@ void __cdecl battle_compute(int vehIDAtk, int vehIDDef, int *offenseOutput, int 
 					uint32_t sensorDef = 0;
 					if (factionIDDef) {
 						for (int i = 0; i < 25; i++) {
-							int xRadius = xrange(xCoordDef + xRadiusOffset[i]),
-								yRadius = yCoordDef + yRadiusOffset[i];
+							int xRadius = xrange(xCoordDef + RadiusOffsetX[i]),
+								yRadius = yCoordDef + RadiusOffsetY[i];
 							uint32_t sensorStatus;
 							if (on_map(xRadius, yRadius)
 								&& (sensorStatus = is_sensor(xRadius, yRadius), sensorStatus)) {

@@ -94,7 +94,7 @@ int Path::zoc_path(int xCoord, int yCoord, int factionID) {
 	}
 	BOOL isOcean = is_ocean(xCoord, yCoord);
 	for (uint32_t i = 0; i < 8; i++) {
-		int xRadius = xrange(xCoord + xRadiusBase[i]), yRadius = yCoord + yRadiusBase[i];
+		int xRadius = xrange(xCoord + RadiusBaseX[i]), yRadius = yCoord + RadiusBaseY[i];
 		if (on_map(xRadius, yRadius)) {
 			int owner = veh_who(xRadius, yRadius);
 			if (owner >= 0 && owner != factionID && is_ocean(xRadius, yRadius) == isOcean
@@ -181,7 +181,7 @@ void Path::make_abstract() {
 		for (uint32_t x = y & 1; x < *MapAbstractLongBounds; x += 2) {
 			uint8_t region = 0;
 			for (uint32_t i = 0; i < 9; i++) {
-				int xRadius = xrange(x * 5 + xRadiusOffset[i]), yRadius = y * 5 + yRadiusOffset[i];
+				int xRadius = xrange(x * 5 + RadiusOffsetX[i]), yRadius = y * 5 + RadiusOffsetY[i];
 				if (on_map(xRadius, yRadius) && !is_ocean(xRadius, yRadius)) {
 					region = (uint8_t)region_at(xRadius, yRadius);
 					break;
@@ -199,11 +199,11 @@ void Path::make_abstract() {
  Status: Complete
 */
 void Path::merge(uint32_t regionOld, uint32_t regionNew) {
-	Continents[regionNew].tiles += Continents[regionOld].tiles;
-	Continents[regionOld].tiles = 0;
+	Continents[regionNew].tile_count += Continents[regionOld].tile_count;
+	Continents[regionOld].tile_count = 0;
 	for (uint32_t i = 0; i < *MapArea; i++) {
-		if ((uint32_t)(*Map)[i].region == regionOld) {
-			(*Map)[i].region = (uint8_t)regionNew;
+		if ((uint32_t)(*MapTiles)[i].region == regionOld) {
+			(*MapTiles)[i].region = (uint8_t)regionNew;
 		}
 	}
 }
@@ -225,9 +225,9 @@ void Path::territory(int xCoord, int yCoord, int UNUSED(region), int factionID) 
 	do {
 		int16_t xCoordIt = xCoordTable[index2], yCoordIt = yCoordTable[index2++];
 		for (uint32_t i = 0; i < 8; i++) {
-			int xRadius = xrange(xCoordIt + xRadiusBase[i]);
-			int yRadius = yCoordIt + yRadiusBase[i];
-			map *tile;
+			int xRadius = xrange(xCoordIt + RadiusBaseX[i]);
+			int yRadius = yCoordIt + RadiusBaseY[i];
+			Map *tile;
 			if (on_map(xRadius, yRadius) && yCoordIt && yCoordIt != ((int)*MapLatitudeBounds - 1)
 				&& !is_ocean(xRadius, yRadius) && (tile = map_loc(xRadius, yRadius),
 					!tile->unk_1 && tile->territory == factionID)) {
@@ -247,7 +247,7 @@ void Path::territory(int xCoord, int yCoord, int UNUSED(region), int factionID) 
  Status: Complete
 */
 void Path::continent(int xCoord, int yCoord, uint32_t region) {
-	Continents[region].tiles = 0;
+	Continents[region].tile_count = 0;
 	index1 = 0; index2 = 0;
 	uint32_t freshWaterCount = 0;
 	xCoordTable[index1] = (int16_t)xCoord;
@@ -256,10 +256,10 @@ void Path::continent(int xCoord, int yCoord, uint32_t region) {
 	BOOL isOcean = is_ocean(xCoord, yCoord);
 	do {
 		int16_t xCoordIt = xCoordTable[index2], yCoordIt = yCoordTable[index2++];
-		Continents[region].tiles++;
+		Continents[region].tile_count++;
 		for (uint32_t i = 0; i < 8; i++) {
-			int xRadius = xrange(xCoordIt + xRadiusBase[i]);
-			int yRadius = yCoordIt + yRadiusBase[i];
+			int xRadius = xrange(xCoordIt + RadiusBaseX[i]);
+			int yRadius = yCoordIt + RadiusBaseY[i];
 			BOOL isOceanRad;
 			if (on_map(xRadius, yRadius) && yCoordIt && yCoordIt != ((int)*MapLatitudeBounds - 1)
 				&& (isOceanRad = is_ocean(xRadius, yRadius), isOceanRad == isOcean 
@@ -274,7 +274,7 @@ void Path::continent(int xCoord, int yCoord, uint32_t region) {
 		}
 	} while (index2 && index1 != index2);
 	if (freshWaterCount) {
-		BOOL isFreshWater = freshWaterCount >= ((Continents[region].tiles * 3) / 4); // land locked?
+		BOOL isFreshWater = freshWaterCount >= ((Continents[region].tile_count * 3) / 4); // land locked?
 		for (uint32_t y = 0; y < *MapLatitudeBounds; y++) {
 			for (uint32_t x = y & 1; x < *MapLongitudeBounds; x += 2) {
 				if (region_at(x, y) == region) {
@@ -294,7 +294,7 @@ void Path::continent(int xCoord, int yCoord, uint32_t region) {
 */
 void Path::continents() {
 	for (uint32_t i = 0; i < *MapArea; i++) {
-		(*Map)[i].region = 0;
+		(*MapTiles)[i].region = 0;
 	}
 	uint32_t yCoordSouthPole = *MapLatitudeBounds - 1;
 	uint32_t oceanRegion = 64;
@@ -317,11 +317,11 @@ void Path::continents() {
 				}
 				continent(x, y, regionCurrent);
 				if (regionCurrent == regionMax) {
-					uint32_t tiles = Continents[regionCurrent].tiles;
+					uint32_t tiles = Continents[regionCurrent].tile_count;
 					int searchRegion = -1;
 					for (uint32_t i = regionMin; i < regionMax; i++) {
-						if (Continents[i].tiles < tiles) {
-							tiles = Continents[i].tiles;
+						if (Continents[i].tile_count < tiles) {
+							tiles = Continents[i].tile_count;
 							searchRegion = i;
 						}
 					}
@@ -339,16 +339,16 @@ void Path::continents() {
 	for (uint32_t x = 0; x < *MapLongitudeBounds; x += 2) { // north pole
 		uint8_t poleRegion = is_ocean(x, 0) ? 127 : 63;
 		region_set(x, 0, poleRegion);
-		Continents[poleRegion].tiles++;
+		Continents[poleRegion].tile_count++;
 	}
 	for (uint32_t x = yCoordSouthPole & 1; x < *MapLongitudeBounds; x += 2) { // south pole
 		uint8_t poleRegion = is_ocean(x, yCoordSouthPole) ? 127 : 63;
 		region_set(x, yCoordSouthPole, poleRegion);
-		Continents[poleRegion].tiles++;
+		Continents[poleRegion].tile_count++;
 	}
 	uint32_t mostTiles = 0, totalTiles = 0;
 	for (uint32_t i = 1; i < 63; i++) {
-		uint32_t tiles = Continents[i].tiles;
+		uint32_t tiles = Continents[i].tile_count;
 		totalTiles += tiles;
 		if (tiles > mostTiles) {
 			mostTiles = tiles;
@@ -357,20 +357,20 @@ void Path::continents() {
 	*GameState = (mostTiles >= ((totalTiles * 4) / 5))
 		? *GameState | STATE_UNK_100 : *GameState & ~STATE_UNK_100;
 	for (uint32_t i = 0; i < MaxRegionLandNum; i++) {
-		ZeroMemory(Continents[i].seaCoasts, 8);
+		ZeroMemory(Continents[i].sea_coasts, 8);
 	}
 	for (uint32_t y = 0; y < *MapLatitudeBounds; y++) {
 		for (uint32_t x = y & 1; x < *MapLongitudeBounds; x += 2) {
 			uint32_t region = region_at(x, y);
 			if (region < MaxRegionLandNum) {
 				for (uint32_t i = 0; i < 8; i++) {
-					int xRadius = xrange(x + xRadiusBase[i]), yRadius = y + yRadiusBase[i];
+					int xRadius = xrange(x + RadiusBaseX[i]), yRadius = y + RadiusBaseY[i];
 					if (on_map(xRadius, yRadius)) {
 						uint32_t regionRad = region_at(xRadius, yRadius);
 						if (regionRad >= MaxRegionLandNum) {
 							uint32_t offset, mask;
 							bitmask(regionRad - MaxRegionLandNum, &offset, &mask);
-							Continents[region].seaCoasts[offset] |= mask;
+							Continents[region].sea_coasts[offset] |= mask;
 							i += 2 - (i & 1);
 						}
 					}
@@ -406,7 +406,7 @@ BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
 					|| has_treaty(factionID, factionIDVeh, DTREATY_PACT))) {
 				int factionIDZoc = zoc_veh(x, y, factionID);
 				uint32_t bit = bit_at(x, y);
-				map *tile = map_loc(x, y);
+				Map *tile = map_loc(x, y);
 				if (factionIDZoc != 1 && (!factionIDZoc
 					|| has_treaty(factionID, factionIDZoc, DTREATY_PACT))
 					&& bit & (BIT_MINE | BIT_SOLAR_TIDAL)
@@ -418,8 +418,8 @@ BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
 						&& has_tech(Rules->TechImproveFungusSqr, factionID)))) {
 					uint32_t flags = 0;
 					for (uint32_t i = 0; i < 25; i++) {
-						int xRadius = xrange(x + xRadiusOffset[i]);
-						int yRadius = y + yRadiusOffset[i];
+						int xRadius = xrange(x + RadiusOffsetX[i]);
+						int yRadius = y + RadiusOffsetY[i];
 						if (on_map(xRadius, yRadius) && !is_sensor(xRadius, yRadius)
 							&& (whose_territory(factionID, xRadius, yRadius, NULL, false)
 								== factionID || get(xRadius, yRadius))) {
@@ -432,16 +432,16 @@ BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
 					if (!(flags & 1)) {
 						int proxminity = vector_dist(xCoord, yCoord, x, y);
 						for (uint32_t i = 0; i < 25; i++) {
-							int xRadius = xrange(x + xRadiusOffset[i]), tileFactionID;
-							int yRadius = y + yRadiusOffset[i];
+							int xRadius = xrange(x + RadiusOffsetX[i]), tileFactionID;
+							int yRadius = y + RadiusOffsetY[i];
 							if (on_map(xRadius, yRadius)
 								&& (tileFactionID = base_who(xRadius, yRadius), 
 									tileFactionID == factionID)) {
 								flags |= 4;
 								BOOL check = true;
 								for (uint32_t j = 0; j < 25; j++) {
-									int xRadius2 = xrange(xRadius + xRadiusOffset[j]);
-									int yRadius2 = yRadius + yRadiusOffset[j];
+									int xRadius2 = xrange(xRadius + RadiusOffsetX[j]);
+									int yRadius2 = yRadius + RadiusOffsetY[j];
 									if (on_map(xRadius2, yRadius2) && !is_sensor(xRadius2, yRadius2) 
 										&& (whose_territory(factionID, xRadius2, yRadius2, NULL,
 											false) == factionID || get(xRadius2, yRadius2))) {

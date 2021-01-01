@@ -20,7 +20,7 @@
  /*
   * Map related objects, variables and functions.
   */
-enum terrain_altitude_bit {
+enum TerrainAltitudeBit {
 	ALT_BIT_OCEAN_TRENCH = 0x0,
 	ALT_BIT_OCEAN = 0x20,
 	ALT_BIT_OCEAN_SHELF = 0x40,
@@ -30,7 +30,7 @@ enum terrain_altitude_bit {
 	ALT_BIT_3_LEVELS_ABOVE_SEA = 0xC0,
 };
 
-enum terrain_altitude {
+enum TerrainAltitude {
 	ALT_OCEAN_TRENCH = 0,
 	ALT_OCEAN = 1,
 	ALT_OCEAN_SHELF = 2,
@@ -40,24 +40,24 @@ enum terrain_altitude {
 	ALT_3_LEVELS_ABOVE_SEA = 6,
 };
 
-enum terrain_rainfall_bit { // land modifiers only
+enum TerrainRainfallBit { // land modifiers only
 	RAINFALL_ARID = 0x0,
 	RAINFALL_MOIST = 0x8, // can only have one value set, otherwise tile glitches
 	RAINFALL_RAINY = 0x10, // " "
 };
 
-enum terrain_rock_bit { // land modifiers only
+enum TerrainRockBit { // land modifiers only
 	TERRAIN_BIT_ROLLING = 0x40, // can only have one value set, otherwise game will crash
 	TERRAIN_BIT_ROCKY = 0x80, // " "
 };
 
-enum terrain_rockiness { // land modifiers only
+enum TerrainRockiness { // land modifiers only
 	ROCKINESS_FLAT = 0,
 	ROCKINESS_ROLLING = 1, // can only have one value set, otherwise game will crash
 	ROCKINESS_ROCKY = 2, // " "
 };
 
-enum terrain_bit : uint32_t {
+enum TerrainBit : uint32_t {
 	BIT_BASE_IN_TILE = 0x1,
 	BIT_VEH_IN_TILE = 0x2,
 	BIT_ROAD = 0x4,
@@ -92,7 +92,7 @@ enum terrain_bit : uint32_t {
 	BIT_SENSOR_ARRAY = 0x80000000,
 };
 
-enum terrain_landmark_bit2 {
+enum TerrainLandmarkBit2 {
 	BIT2_CRATER = 0x1,
 	BIT2_VOLCANO = 0x2,
 	BIT2_JUNGLE = 0x4,
@@ -113,7 +113,7 @@ enum terrain_landmark_bit2 {
 	BIT2_UNK_80000000 = 0x80000000,
 };
 
-enum terrain_landmark_id {
+enum TerrainLandmarkId {
 	LM_CRATER = 0,
 	LM_VOLCANO = 1,
 	LM_JUNGLE = 2,
@@ -132,7 +132,7 @@ enum terrain_landmark_id {
 	LM_FOSSIL = 15,
 };
 
-enum resource_type {
+enum ResourceType {
 	RSC_NUTRIENTS = 0,
 	RSC_MINERALS = 1,
 	RSC_ENERGY = 2,
@@ -141,8 +141,8 @@ enum resource_type {
 
 /*
 * Region notes:
-* a tile's region is visible with debug mode in the bottom left of the main interface tile area
-* region id is used to index the [128] planning variable arrays in player_data struct
+* A tile's region is visible with debug mode in the bottom left of the main interface tile area
+* Region id is used to index the [128] planning variable arrays in player_data struct
 *
 * 0: bad region, n/a
 * 1...62: any offshoots from poles starting at 1,1 up to continents and islands
@@ -152,39 +152,39 @@ enum resource_type {
 * 127: bad region - both poles water
 * 128: bad region, n/a
 */
-struct map {
+struct Map {
 	uint8_t climate; // 000 00 000 | altitude (3 bit) ; rainfall (2 bit) ; temperature (3 bit)
 	uint8_t contour; // altitude details
 	uint8_t val2; // 0000 0000 | site (0xF0) ; owner (0x0F) - last immediate control occupying tile
 															// or 0x0F for unoccupied
 	uint8_t region; // grouping of disjoint water/land areas; see above notes for more details
 	uint8_t visibility; // faction bitfield of those who can see tile (mapped: dim/bright)
-	uint8_t val3; // 00 000 000 | rocky (2 bit); lock - factionID (3 bit); using - factionID (3 bit)
+	uint8_t val3; // 00 000 000 | rocky (2 bit); lock faction_id (3 bit); using faction_id (3 bit)
 	uint8_t unk_1; // flags? bitfield
 	int8_t territory; // physical owner factionID of geographic area or -1 for unclaimed
 	uint32_t bit; // see terrain_bit
 	uint32_t bit2; // bitwho[0]? FF FF FFFF | code (landmark tile sequence); unk flags; landmark id
-	uint32_t bitVisible[7]; // what each faction sees tile as (ex. pods another faction already got)
+	uint32_t bit_visible[7]; // how each faction sees tile (ex. pods another faction already got)
 };
 
-struct landmark {
-	int xCoord;
-	int yCoord;
+struct Landmark {
+	int x;
+	int y;
 	char name[32];
 };
 
-struct continent {
-	uint32_t tiles; // count of tiles in region
-	uint32_t openTerrain; // count of non-rocky, non-fungus tiles (only 1 movement point to travel)
+struct Continent {
+	uint32_t tile_count; // count of tiles in region
+	uint32_t open_terrain; // count of non-rocky, non-fungus tiles (only 1 movement point to travel)
 	uint32_t unk_3; // highest world_site value (0-15)
 	uint32_t pods; // current count of supply and unity pods in region
 	uint32_t unk_5; // padding?
-	uint8_t seaCoasts[8]; // sea specific regions, connections to land regions? bitmask
+	uint8_t sea_coasts[8]; // sea specific regions, connections to land regions? bitmask
 };
 
-struct rules_natural {
+struct RulesNatural {
 	LPSTR name;
-	LPSTR nameShort;
+	LPSTR name_short;
 };
 
 constexpr int MaxNaturalNum = 16;
@@ -194,9 +194,9 @@ constexpr int MaxContinentNum = 128;
 constexpr int MaxRegionLandNum = 64;
 
 const uint32_t RadiusRange[] = { 1, 9, 25, 49, 81, 121, 169, 225, 289 };
-const int xRadiusBase[] = {  1, 2, 1, 0, -1, -2, -1,  0, 0 };
-const int yRadiusBase[] = { -1, 0, 1, 2,  1,  0, -1, -2, 0 };
-const int xRadiusOffset[] = {
+const int RadiusBaseX[] = {  1, 2, 1, 0, -1, -2, -1,  0, 0 };
+const int RadiusBaseY[] = { -1, 0, 1, 2,  1,  0, -1, -2, 0 };
+const int RadiusOffsetX[] = {
 	 0,  1,  2,  1,  0, -1, -2,  -1,   0,   2,   2,  -2,  -2,   1,   3,   3,   1,  -1,  -3,  -3,
 	-1,  4, -4,  0,  0,  1,  2,   3,   4,   5,   5,   4,   3,   2,   1,  -1,  -2,  -3,  -4,  -5,
 	-5, -4, -3, -2, -1,  0,  6,   0,  -6,   0,   1,   2,   3,   4,   5,   6,   7,   8,   7,   6,
@@ -212,7 +212,7 @@ const int xRadiusOffset[] = {
 	15, 16, 15, 14, 13, 12, 11,  10,   9,   8,   7,   6,   5,   4,   3,   2,   1,   0,  -1,  -2,
 	-3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, -14, -15, -16, -15, -14, -13, -12, -11, -10,
 	-9, -8, -7, -6, -5, -4, -3,  -2,  -1, };
-const int yRadiusOffset[] = {
+const int RadiusOffsetY[] = {
 	 0,  -1,   0,   1,   2,   1,   0,  -1,  -2,  -2,   2,   2,  -2,  -3, -1,  1,  3,  3,  1, -1,
 	-3,   0,   0,   4,  -4,  -5,  -4,  -3,  -2,  -1,   1,   2,   3,   4,  5,  5,  4,  3,  2,  1,
 	-1,  -2,  -3,  -4,  -5,   6,   0,  -6,   0,  -8,  -7,  -6,  -5,  -4, -3, -2, -1,  0,  1,  2,
@@ -239,7 +239,7 @@ extern uint32_t *MapArea;
 extern uint32_t *MapAreaSqRoot;
 extern BOOL *MapIsFlat;
 extern uint32_t *MapLandmarkCount;
-extern landmark *MapLandmark;
+extern Landmark *MapLandmark;
 extern uint32_t *MapAbstractLongBounds; // abstract x
 extern uint32_t *MapAbstractLatBounds; // abstract y
 extern uint32_t *MapAbstractArea;
@@ -251,139 +251,139 @@ extern uint32_t *MapPlanetaryOrbit; // affects temp
 extern uint32_t *MapCloudCover; // affects rainfall, rivers
 extern uint32_t *MapNativeLifeForms;
 extern LPSTR *MapFilePath;
-extern map **Map;
+extern Map **MapTiles;
 extern uint8_t **MapAbstract;
 extern uint32_t *MapBaseSubmergedCount;
-extern int *MapBaseIDClosestSubmergedVeh;
+extern int *MapBaseIdClosestSubmergedVeh;
 extern uint32_t *BrushVal1; // TODO: more descriptive variable name
 extern uint32_t *BrushVal2; // TODO: more descriptive variable name
 extern uint32_t *WorldBuildVal1; // TODO: more descriptive variable name
 
-extern continent *Continents;
-extern rules_natural *Natural;
+extern Continent *Continents;
+extern RulesNatural *Natural;
 extern uint32_t *MapLongitude; // halve of MapLongitudeBounds
 extern uint32_t *AltNatural; // Default: { 0, 15, 32, 45, 60,  75,  80, 100, 100, 100, 100 };
 
-OPENSMACX_API BOOL __cdecl on_map(int xCoord, int yCoord);
-OPENSMACX_API int __cdecl xrange(int xCoord);
-OPENSMACX_API int __cdecl whose_territory(int factionID, int xCoord, int yCoord,
-	int *baseID, BOOL ignoreComm);
-OPENSMACX_API int __cdecl base_territory(int factionID, int xCoord, int yCoord);
-OPENSMACX_API uint32_t __cdecl crappy(int xCoord, int yCoord);
-OPENSMACX_API int __cdecl vector_dist(int xDistance, int yDistance);
-OPENSMACX_API int __cdecl vector_dist(int xCoordA, int yCoordA, int xCoordB, int yCoordB);
-OPENSMACX_API BOOL __cdecl sea_coast(uint32_t regionDst, uint32_t regionSrc);
-OPENSMACX_API uint32_t __cdecl sea_coasts(uint32_t regionSrc);
-OPENSMACX_API BOOL __cdecl base_on_sea(uint32_t baseID, uint32_t regionSea);
-OPENSMACX_API int __cdecl base_coast(uint32_t baseID);
-OPENSMACX_API BOOL __cdecl port_to_coast(uint32_t baseID, uint32_t region);
-OPENSMACX_API BOOL __cdecl port_to_port(uint32_t baseIDSrc, uint32_t baseIDDst);
-OPENSMACX_API BOOL __cdecl transport_base(uint32_t baseID);
-OPENSMACX_API BOOL __cdecl naval_base(uint32_t baseID);
-OPENSMACX_API BOOL __cdecl convoy(uint32_t vehID, uint32_t baseID);
+OPENSMACX_API BOOL __cdecl on_map(int x, int y);
+OPENSMACX_API int __cdecl xrange(int x);
+OPENSMACX_API int __cdecl whose_territory(uint32_t faction_id, uint32_t x, uint32_t y, int *base_id,
+                                          BOOL ignore_comm);
+OPENSMACX_API int __cdecl base_territory(uint32_t faction_id, uint32_t x, uint32_t y);
+OPENSMACX_API uint32_t __cdecl crappy(uint32_t x, uint32_t y);
+OPENSMACX_API int __cdecl vector_dist(int x_distance, int y_distance);
+OPENSMACX_API int __cdecl vector_dist(int x_point_a, int y_point_a, int x_point_b, int y_point_b);
+OPENSMACX_API BOOL __cdecl sea_coast(uint32_t region_dst, uint32_t region_src);
+OPENSMACX_API uint32_t __cdecl sea_coasts(uint32_t region_src);
+OPENSMACX_API BOOL __cdecl base_on_sea(uint32_t base_id, uint32_t region_sea);
+OPENSMACX_API int __cdecl base_coast(uint32_t base_id);
+OPENSMACX_API BOOL __cdecl port_to_coast(uint32_t base_id, uint32_t region);
+OPENSMACX_API BOOL __cdecl port_to_port(uint32_t base_id_src, uint32_t base_id_dst);
+OPENSMACX_API BOOL __cdecl transport_base(uint32_t base_id);
+OPENSMACX_API BOOL __cdecl naval_base(uint32_t base_id);
+OPENSMACX_API BOOL __cdecl convoy(uint32_t veh_id, uint32_t base_id);
 OPENSMACX_API BOOL __cdecl bad_reg(int region);
-OPENSMACX_API BOOL __cdecl get_there(uint32_t vehID, int xCoordDst, int yCoordDst);
-OPENSMACX_API BOOL __cdecl coast_or_border(int xCoordPtA, int yCoordPtA,
-	int xCoordPtB, int yCoordPtB, int factionID);
-OPENSMACX_API map *__cdecl map_loc(int xCoord, int yCoord);
-OPENSMACX_API uint32_t __cdecl temp_at(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl temp_set(int xCoord, int yCoord, uint8_t temperature);
-OPENSMACX_API uint32_t __cdecl climate_at(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl climate_set(int xCoord, int yCoord, uint8_t climate);
-OPENSMACX_API int __cdecl elev_at(int xCoord, int yCoord);
-OPENSMACX_API uint32_t __cdecl alt_natural(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl alt_set_both(int xCoord, int yCoord, uint32_t altitude);
-OPENSMACX_API uint32_t __cdecl alt_at(int xCoord, int yCoord);
-OPENSMACX_API uint32_t __cdecl altitude_at(int xCoord, int yCoord);
-OPENSMACX_API uint32_t __cdecl alt_detail_at(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl alt_put_detail(int xCoord, int yCoord, uint8_t detail);
-OPENSMACX_API uint32_t __cdecl owner_at(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl owner_set(int xCoord, int yCoord, int factionID);
-OPENSMACX_API void __cdecl site_set(int xCoord, int yCoord, int site);
-OPENSMACX_API uint32_t __cdecl region_at(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl region_set(int xCoord, int yCoord, uint8_t region);
-OPENSMACX_API uint32_t __cdecl using_at(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl using_set(int xCoord, int yCoord, int factionID);
-OPENSMACX_API uint32_t __cdecl lock_at(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl lock_set(int xCoord, int yCoord, uint32_t factionID);
-OPENSMACX_API BOOL __cdecl lock_map(int xCoord, int yCoord, uint32_t factionID);
-OPENSMACX_API void __cdecl unlock_map(int xCoord, int yCoord, uint32_t factionID);
-OPENSMACX_API uint32_t __cdecl rocky_at(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl rocky_set(int xCoord, int yCoord, uint8_t rocky);
-OPENSMACX_API uint32_t __cdecl bit_at(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl bit_put(int xCoord, int yCoord, uint32_t bit);
-OPENSMACX_API void __cdecl bit_set(int xCoord, int yCoord, uint32_t bit, BOOL set);
-OPENSMACX_API uint32_t __cdecl bit2_at(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl bit2_set(int xCoord, int yCoord, uint32_t bit2, BOOL set);
-OPENSMACX_API uint32_t __cdecl code_at(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl code_set(int xCoord, int yCoord, uint32_t code);
-OPENSMACX_API void __cdecl synch_bit(int xCoord, int yCoord, int factionID);
-OPENSMACX_API uint32_t __cdecl minerals_at(int xCoord, int yCoord);
-OPENSMACX_API uint32_t __cdecl bonus_at(int xCoord, int yCoord, int unkVal);
-OPENSMACX_API uint32_t __cdecl goody_at(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl site_radius(int xCoord, int yCoord, int valUnk);
-OPENSMACX_API int __cdecl find_landmark(int xCoord, int yCoord, uint32_t radiusRangeOffset);
-OPENSMACX_API int __cdecl new_landmark(int xCoord, int yCoord, LPSTR name);
-OPENSMACX_API BOOL __cdecl valid_landmark(int xCoord, int yCoord, int factionID);
-OPENSMACX_API void __cdecl kill_landmark(int xCoord, int yCoord);
-OPENSMACX_API BOOL __cdecl is_coast(int xCoord, int yCoord, BOOL isBaseRadius);
-OPENSMACX_API BOOL __cdecl is_ocean(int xCoord, int yCoord);
-OPENSMACX_API int __cdecl veh_who(int xCoord, int yCoord);
+OPENSMACX_API BOOL __cdecl get_there(uint32_t veh_id, uint32_t x_dst, uint32_t y_dst);
+OPENSMACX_API BOOL __cdecl coast_or_border(uint32_t x_point_a, uint32_t y_point_a, 
+                                           uint32_t x_point_b, uint32_t y_point_b, 
+                                           uint32_t faction_id);
+OPENSMACX_API Map *__cdecl map_loc(uint32_t x, uint32_t y);
+OPENSMACX_API uint32_t __cdecl temp_at(uint32_t x, uint32_t y);
+OPENSMACX_API void __cdecl temp_set(uint32_t x, uint32_t y, uint8_t temperature);
+OPENSMACX_API uint32_t __cdecl climate_at(uint32_t x, uint32_t y);
+OPENSMACX_API void __cdecl climate_set(uint32_t x, uint32_t y, uint8_t climate);
+OPENSMACX_API int __cdecl elev_at(uint32_t x, uint32_t y);
+OPENSMACX_API uint32_t __cdecl alt_natural(uint32_t x, uint32_t y);
+OPENSMACX_API void __cdecl alt_set_both(uint32_t x, uint32_t y, uint32_t altitude);
+OPENSMACX_API uint32_t __cdecl alt_at(uint32_t x, uint32_t y);
+OPENSMACX_API uint32_t __cdecl altitude_at(uint32_t x, uint32_t y);
+OPENSMACX_API uint32_t __cdecl alt_detail_at(uint32_t x, uint32_t y);
+OPENSMACX_API void __cdecl alt_put_detail(uint32_t x, uint32_t y, uint8_t detail);
+OPENSMACX_API uint32_t __cdecl owner_at(uint32_t x, uint32_t y);
+OPENSMACX_API void __cdecl owner_set(uint32_t x, uint32_t y, int faction_id);
+OPENSMACX_API void __cdecl site_set(uint32_t x, uint32_t y, int site);
+OPENSMACX_API uint32_t __cdecl region_at(uint32_t x, uint32_t y);
+OPENSMACX_API void __cdecl region_set(uint32_t x, uint32_t y, uint8_t region);
+OPENSMACX_API uint32_t __cdecl using_at(uint32_t x, uint32_t y);
+OPENSMACX_API void __cdecl using_set(uint32_t x, uint32_t y, int faction_id);
+OPENSMACX_API uint32_t __cdecl lock_at(uint32_t x, uint32_t y);
+OPENSMACX_API void __cdecl lock_set(uint32_t x, uint32_t y, uint32_t faction_id);
+OPENSMACX_API BOOL __cdecl lock_map(uint32_t x, uint32_t y, uint32_t faction_id);
+OPENSMACX_API void __cdecl unlock_map(uint32_t x, uint32_t y, uint32_t faction_id);
+OPENSMACX_API uint32_t __cdecl rocky_at(uint32_t x, uint32_t y);
+OPENSMACX_API void __cdecl rocky_set(uint32_t x, uint32_t y, uint8_t rocky);
+OPENSMACX_API uint32_t __cdecl bit_at(uint32_t x, uint32_t y);
+OPENSMACX_API void __cdecl bit_put(uint32_t x, uint32_t y, uint32_t bit);
+OPENSMACX_API void __cdecl bit_set(uint32_t x, uint32_t y, uint32_t bit, BOOL set);
+OPENSMACX_API uint32_t __cdecl bit2_at(uint32_t x, uint32_t y);
+OPENSMACX_API void __cdecl bit2_set(uint32_t x, uint32_t y, uint32_t bit2, BOOL set);
+OPENSMACX_API uint32_t __cdecl code_at(uint32_t x, uint32_t y);
+OPENSMACX_API void __cdecl code_set(uint32_t x, uint32_t y, uint32_t code);
+OPENSMACX_API void __cdecl synch_bit(uint32_t x, uint32_t y, uint32_t faction_id);
+OPENSMACX_API uint32_t __cdecl minerals_at(uint32_t x, uint32_t y);
+OPENSMACX_API uint32_t __cdecl bonus_at(uint32_t x, uint32_t y, int unk_val);
+OPENSMACX_API uint32_t __cdecl goody_at(uint32_t x, uint32_t y);
+OPENSMACX_API void __cdecl site_radius(int x, int y, int unk_val);
+OPENSMACX_API int __cdecl find_landmark(int x, int y, uint32_t radius_range_offset);
+OPENSMACX_API int __cdecl new_landmark(int x, int y, LPSTR name);
+OPENSMACX_API BOOL __cdecl valid_landmark(uint32_t x, uint32_t y, int faction_id);
+OPENSMACX_API void __cdecl kill_landmark(int x, int y);
+OPENSMACX_API BOOL __cdecl is_coast(int x, int y, BOOL is_base_radius);
+OPENSMACX_API BOOL __cdecl is_ocean(uint32_t x, uint32_t y);
+OPENSMACX_API int __cdecl veh_who(uint32_t x, uint32_t y);
 OPENSMACX_API void __cdecl rebuild_vehicle_bits();
 OPENSMACX_API void __cdecl rebuild_base_bits();
-OPENSMACX_API int __cdecl x_dist(int xCoordA, int xCoordB);
-OPENSMACX_API BOOL __cdecl is_known(uint32_t xCoord, uint32_t yCoord, uint32_t factionID);
-OPENSMACX_API int __cdecl base_who(uint32_t xCoord, uint32_t yCoord);
-OPENSMACX_API int __cdecl anything_at(uint32_t xCoord, uint32_t yCoord);
+OPENSMACX_API int __cdecl x_dist(int x_point_a, int x_point_b);
+OPENSMACX_API BOOL __cdecl is_known(uint32_t x, uint32_t y, uint32_t faction_id);
+OPENSMACX_API int __cdecl base_who(uint32_t x, uint32_t y);
+OPENSMACX_API int __cdecl anything_at(uint32_t x, uint32_t y);
 OPENSMACX_API void __cdecl map_shutdown();
 OPENSMACX_API BOOL __cdecl map_init();
 OPENSMACX_API void __cdecl map_wipe();
-OPENSMACX_API BOOL __cdecl map_write(FILE *mapFile);
-OPENSMACX_API BOOL __cdecl map_read(FILE *mapFile);
-OPENSMACX_API uint8_t __cdecl abstract_at(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl abstract_set(int xCoord, int yCoord, uint8_t region);
-OPENSMACX_API void __cdecl quick_zoc(int xCoordSrc, int yCoordSrc, int factionID, int xCoordDst,
-	int yCoordDst, int *xCoordZoc, int *yCoordZoc);
-OPENSMACX_API int __cdecl radius_move(int xRadiusOff, int yRadiusOff, int range);
-OPENSMACX_API  int __cdecl radius_move(int xCoordSrc, int yCoordSrc, int xCoordDst, int yCoordDst,
-	int range);
-OPENSMACX_API int __cdecl compass_move(int xCoordSrc, int yCoordSrc, int xCoordDst, int yCoordDst);
-OPENSMACX_API int __cdecl is_sensor(int xCoord, int yCoord);
-OPENSMACX_API BOOL __cdecl has_temple(int factionID);
-OPENSMACX_API void __cdecl world_alt_set(int xCoord, int yCoord, uint32_t altitude, BOOL isSetBoth);
-OPENSMACX_API void __cdecl world_raise_alt(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl world_lower_alt(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl brush(int xCoord, int yCoord, uint32_t altitude);
-OPENSMACX_API void __cdecl paint_land(int xCoord, int yCoord, uint32_t altitude, uint32_t radius);
+OPENSMACX_API BOOL __cdecl map_write(FILE *map_file);
+OPENSMACX_API BOOL __cdecl map_read(FILE *map_file);
+OPENSMACX_API uint8_t __cdecl abstract_at(uint32_t x, uint32_t y);
+OPENSMACX_API void __cdecl abstract_set(uint32_t x, uint32_t y, uint8_t region);
+OPENSMACX_API void __cdecl quick_zoc(uint32_t x_src, uint32_t y_src, uint32_t faction_id, int x_dst, 
+                                     int y_dst, int *x_zoc, int *y_zoc);
+OPENSMACX_API int __cdecl radius_move(int x_radius_off, int y_radius_off, int range);
+OPENSMACX_API  int __cdecl radius_move(int x_src, int y_src, int x_dst, int y_dst, int range);
+OPENSMACX_API int __cdecl compass_move(int x_src, int y_src, int x_dst, int y_dst);
+OPENSMACX_API int __cdecl is_sensor(uint32_t x, uint32_t y);
+OPENSMACX_API BOOL __cdecl has_temple(int faction_id);
+OPENSMACX_API void __cdecl world_alt_set(int x, int y, uint32_t altitude, BOOL is_set_both);
+OPENSMACX_API void __cdecl world_raise_alt(int x, int y);
+OPENSMACX_API void __cdecl world_lower_alt(int x, int y);
+OPENSMACX_API void __cdecl brush(int x, int y, uint32_t altitude);
+OPENSMACX_API void __cdecl paint_land(int x, int y, uint32_t altitude, uint32_t radius);
 OPENSMACX_API void __cdecl build_continent(uint32_t size);
 OPENSMACX_API void __cdecl build_hills(uint32_t altitude);
 OPENSMACX_API void __cdecl world_riverbeds();
 OPENSMACX_API BOOL __cdecl world_validate();
 OPENSMACX_API void __cdecl world_temperature();
 OPENSMACX_API void __cdecl world_analysis();
-OPENSMACX_API void __cdecl world_alt_put_detail(int xCoord, int yCoord);
+OPENSMACX_API void __cdecl world_alt_put_detail(uint32_t x, uint32_t y);
 OPENSMACX_API void __cdecl world_polar_caps();
 OPENSMACX_API void __cdecl world_linearize_contours();
-OPENSMACX_API BOOL __cdecl near_landmark(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl world_crater(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl world_monsoon(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl world_sargasso(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl world_ruin(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl world_dune(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl world_diamond(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl world_fresh(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl world_volcano(int xCoord, int yCoord, BOOL isNotLandmark);
-OPENSMACX_API void __cdecl world_borehole(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl world_temple(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl world_unity(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl world_fossil(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl world_canyon(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl world_mesa(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl world_ridge(int xCoord, int yCoord);
-OPENSMACX_API void __cdecl world_geothermal(int xCoord, int yCoord);
+OPENSMACX_API BOOL __cdecl near_landmark(int x, int y);
+OPENSMACX_API void __cdecl world_crater(int x, int y);
+OPENSMACX_API void __cdecl world_monsoon(int x, int y);
+OPENSMACX_API void __cdecl world_sargasso(int x, int y);
+OPENSMACX_API void __cdecl world_ruin(int x, int y);
+OPENSMACX_API void __cdecl world_dune(int x, int y);
+OPENSMACX_API void __cdecl world_diamond(int x, int y);
+OPENSMACX_API void __cdecl world_fresh(int x, int y);
+OPENSMACX_API void __cdecl world_volcano(int x, int y, BOOL is_not_landmark);
+OPENSMACX_API void __cdecl world_borehole(int x, int y);
+OPENSMACX_API void __cdecl world_temple(int x, int y);
+OPENSMACX_API void __cdecl world_unity(int x, int y);
+OPENSMACX_API void __cdecl world_fossil(int x, int y);
+OPENSMACX_API void __cdecl world_canyon(int x, int y);
+OPENSMACX_API void __cdecl world_mesa(int x, int y);
+OPENSMACX_API void __cdecl world_ridge(int x, int y);
+OPENSMACX_API void __cdecl world_geothermal(int x, int y);
 OPENSMACX_API void __cdecl world_landmarks();
-OPENSMACX_API uint32_t __cdecl zoc_any(int xCoord, int yCoord, uint32_t factionID);
-OPENSMACX_API uint32_t __cdecl zoc_veh(int xCoord, int yCoord, uint32_t factionID);
-OPENSMACX_API uint32_t __cdecl zoc_sea(int xCoord, int yCoord, uint32_t factionID);
-OPENSMACX_API uint32_t __cdecl zoc_move(int xCoord, int yCoord, uint32_t factionID);
-OPENSMACX_API int __cdecl cursor_dist(int xCoordA, int yCoordA, int xCoordB, int yCoordB);
+OPENSMACX_API uint32_t __cdecl zoc_any(int x, int y, uint32_t faction_id);
+OPENSMACX_API uint32_t __cdecl zoc_veh(int x, int y, uint32_t faction_id);
+OPENSMACX_API uint32_t __cdecl zoc_sea(int x, int y, uint32_t faction_id);
+OPENSMACX_API uint32_t __cdecl zoc_move(uint32_t x, uint32_t y, uint32_t faction_id);
+OPENSMACX_API int __cdecl cursor_dist(int x_point_a, int y_point_a, int x_point_b, int y_point_b);

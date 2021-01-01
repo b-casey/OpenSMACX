@@ -1272,7 +1272,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	for (int i = 0; i < MaxNaturalNum; i++) {
 		text_get();
 		Natural[i].name = text_item_string();
-		Natural[i].nameShort = text_item_string();
+		Natural[i].name_short = text_item_string();
 	}
 	// Revised original nested for loop code to be more efficient; Logic is still same.
 	// Buttons used by "Edit Map" menus.
@@ -1284,13 +1284,13 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		}
 	}
 	MainInterfaceVar->flatButton[32].set_bubble_text(
-		StringTable->get((int)Natural[LM_JUNGLE].nameShort));
+		StringTable->get((int)Natural[LM_JUNGLE].name_short));
 	MainInterfaceVar->flatButton[33].set_bubble_text(
-		StringTable->get((int)Natural[LM_DUNES].nameShort));
+		StringTable->get((int)Natural[LM_DUNES].name_short));
 	MainInterfaceVar->flatButton[34].set_bubble_text(
-		StringTable->get((int)Natural[LM_URANIUM].nameShort));
+		StringTable->get((int)Natural[LM_URANIUM].name_short));
 	MainInterfaceVar->flatButton[35].set_bubble_text(
-		StringTable->get((int)Natural[LM_GEOTHERMAL].nameShort));
+		StringTable->get((int)Natural[LM_GEOTHERMAL].name_short));
 	return false;
 }
 
