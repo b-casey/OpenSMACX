@@ -526,9 +526,9 @@ void __cdecl base_first(uint32_t base_id) {
 	uint32_t faction_id = Bases[base_id].faction_id_current;
 	for (int i = 0; i < MaxVehProtoNum; i++) {
 		if (veh_avail(i, faction_id, base_id)) {
-			if (i < MaxVehProtoFactionNum || VehPrototype[i].flags & PROTO_TYPED_COMPLETE) {
-				int compare = Armor[VehPrototype[i].armorID].defenseRating * 32;
-				uint32_t plan = VehPrototype[i].plan;
+			if (i < MaxVehProtoFactionNum || VehPrototypes[i].flags & PROTO_TYPED_COMPLETE) {
+				int compare = Armor[VehPrototypes[i].armor_id].defense_rating * 32;
+				uint32_t plan = VehPrototypes[i].plan;
 				if (plan == PLAN_DEFENSIVE) {
 					compare *= 4;
 				} else if (plan == PLAN_COMBAT) {
@@ -539,7 +539,7 @@ void __cdecl base_first(uint32_t base_id) {
 				if (get_proto_triad(i) != TRIAD_LAND) {
 					compare /= 4;
 				}
-				compare -= VehPrototype[i].cost;
+				compare -= VehPrototypes[i].cost;
 				if (compare >= priority) {
 					priority = compare;
 					proto_id = i;
@@ -1038,11 +1038,11 @@ void __cdecl base_energy_costs() {
 	}
 	uint32_t faction_id = (*BaseCurrent)->faction_id_current;
 	for (int i = 0; i < *VehCurrentCount; i++) {
-		if (Veh[i].factionID == faction_id 
-			&& VehPrototype[Veh[i].protoID].plan == PLAN_SUPPLY_CONVOY
-			&& Veh[i].orders == ORDER_CONVOY && Veh[i].orderAutoType == RSC_ENERGY
-			&& base_who(Veh[i].xCoord, Veh[i].yCoord) >= 0) {
-			Veh[i].orders = ORDER_NONE;
+		if (Vehs[i].faction_id == faction_id 
+			&& VehPrototypes[Vehs[i].proto_id].plan == PLAN_SUPPLY_CONVOY
+			&& Vehs[i].order == ORDER_CONVOY && Vehs[i].order_auto_type == RSC_ENERGY
+			&& base_who(Vehs[i].x, Vehs[i].y) >= 0) {
+			Vehs[i].order = ORDER_NONE;
 		}
 	}
 }
@@ -1306,9 +1306,9 @@ int __cdecl value_of_base(int base_id, uint32_t faction_id_req, uint32_t faction
 			value += (Facility[FacilitySPStart + proj].cost * 25);
 		}
 	}
-	for (int i = veh_top(veh_id); i >= 0; i = Veh[i].nextVehIDStack) {
-		if (Veh[i].factionID == faction_id_req) {
-			value += (VehPrototype[Veh[i].protoID].cost * 2);
+	for (int i = veh_top(veh_id); i >= 0; i = Vehs[i].next_veh_id_stack) {
+		if (Vehs[i].faction_id == faction_id_req) {
+			value += (VehPrototypes[Vehs[i].proto_id].cost * 2);
 		}
 	}
 	if (!_stricmp(Players[faction_id_req].filename, "BELIEVE")) {

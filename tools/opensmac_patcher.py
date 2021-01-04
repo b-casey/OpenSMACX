@@ -1205,10 +1205,10 @@ with open(exe_path, "r+b") as f:
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*307))	
 	# VEH
-	bin_app.seek(0x00100320) # ?drop_range@@YAIH@Z
+	bin_app.seek(0x00100320) # ?drop_range@@YAII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*199))
-	bin_app.seek(0x00101500) # ?psi_factor@@YAHHHHH@Z
+	bin_app.seek(0x00101500) # ?psi_factor@@YAHHIHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*200))
 	bin_app.seek(0x001004F0) # ?planet_buster2@@YAIH@Z
@@ -1226,40 +1226,40 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001799A0) # ?proto_power@@YAII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*204))
-	bin_app.seek(0x0017D270) # ?arm_strat@@YAHHH@Z
+	bin_app.seek(0x0017D270) # ?arm_strat@@YAHII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*205))
-	bin_app.seek(0x0017D2E0) # ?weap_strat@@YAHHH@Z
+	bin_app.seek(0x0017D2E0) # ?weap_strat@@YAHII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*206))
-	bin_app.seek(0x0017D360) # ?weap_val@@YAHHH@Z
+	bin_app.seek(0x0017D360) # ?weap_val@@YAHII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*207))
-	bin_app.seek(0x0017D3F0) # ?arm_val@@YAHHH@Z
+	bin_app.seek(0x0017D3F0) # ?arm_val@@YAHIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*208))
-	bin_app.seek(0x0017D480) # ?armor_val@@YAHHH@Z
+	bin_app.seek(0x0017D480) # ?armor_val@@YAHIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*209))
-	bin_app.seek(0x0017D510) # ?transport_val@@YAIIHI@Z
+	bin_app.seek(0x0017D510) # ?transport_val@@YAIIII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*210))
-	bin_app.seek(0x0017D560) # ?say_offense@@YA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@H@Z
+	bin_app.seek(0x0017D560) # ?say_offense@@YA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@I@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*211))
-	bin_app.seek(0x0017D6D0) # ?say_defense@@YA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@H@Z
+	bin_app.seek(0x0017D6D0) # ?say_defense@@YA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@I@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*212))
-	bin_app.seek(0x0017D7D0) # ?say_stats_3@@YAXPADH@Z
+	bin_app.seek(0x0017D7D0) # ?say_stats_3@@YAXPADI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*213))
-	bin_app.seek(0x0010B9A0) # ?say_stats_3@@YAXH@Z
+	bin_app.seek(0x0010B9A0) # ?say_stats_3@@YAXI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*214))
-	bin_app.seek(0x0017D8E0) # ?say_stats_2@@YAXPADH@Z
+	bin_app.seek(0x0017D8E0) # ?say_stats_2@@YAXPADI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*215))
-	bin_app.seek(0x0017DAA0) # ?say_stats@@YAXPADH0@Z
+	bin_app.seek(0x0017DAA0) # ?say_stats@@YAXPADI0@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*216))
 	bin_app.seek(0x0017EFA0) # ?best_reactor@@YAIH@Z
@@ -1277,10 +1277,10 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x00181170) # ?abil_index@@YAHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*254))
-	bin_app.seek(0x001A59B0) # ?veh_put@@YAXHHH@Z
+	bin_app.seek(0x001A59B0) # ?veh_put@@YAXIHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*217))
-	bin_app.seek(0x001A59E0) # ?veh_health@@YAIH@Z
+	bin_app.seek(0x001A59E0) # ?veh_health@@YAII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*218))
 	bin_app.seek(0x001A5A60) # ?proto_cost@@YAIIIIII@Z
@@ -1295,13 +1295,13 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001BFE90) # ?veh_at@@YAHHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*222))
-	bin_app.seek(0x001BF1F0) # ?has_abil@@YAHHH@Z
+	bin_app.seek(0x001BF1F0) # ?has_abil@@YAHII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*223))
-	bin_app.seek(0x001BFFA0) # ?veh_lift@@YAHH@Z
+	bin_app.seek(0x001BFFA0) # ?veh_lift@@YAHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*224))
-	bin_app.seek(0x001C0080) # ?veh_drop@@YAHHHH@Z
+	bin_app.seek(0x001C0080) # ?veh_drop@@YAHIHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*225))
 	bin_app.seek(0x001C01A0) # ?sleep@@YAXI@Z
@@ -1316,7 +1316,7 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001C02D0) # ?veh_clear@@YAXIHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*229))
-	bin_app.seek(0x001C0DB0) # ?can_arty@@YAHHH@Z
+	bin_app.seek(0x001C0DB0) # ?can_arty@@YAHIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*230))
 	bin_app.seek(0x001C0E40) # ?morale_veh@@YAIIHH@Z
@@ -1340,40 +1340,40 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x001C17D0) # ?prototype_factor@@YAII@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*237))
-	bin_app.seek(0x001C1C40) # ?veh_jail@@YAHH@Z
+	bin_app.seek(0x001C1C40) # ?veh_jail@@YAHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*238))
-	bin_app.seek(0x001C1D20) # ?veh_skip@@YAXH@Z
+	bin_app.seek(0x001C1D20) # ?veh_skip@@YAXI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*239))
-	bin_app.seek(0x001C1D50) # ?veh_fake@@YAHHH@Z
+	bin_app.seek(0x001C1D50) # ?veh_fake@@YAHHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*240))
-	bin_app.seek(0x001C1D70) # ?veh_wake@@YAHH@Z
+	bin_app.seek(0x001C1D70) # ?veh_wake@@YAHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*241))
-	bin_app.seek(0x001BA910) # ?veh_avail@@YAHHHH@Z
+	bin_app.seek(0x001BA910) # ?veh_avail@@YAHIIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*263))
 	bin_app.seek(0x00101350) # ?morale_alien@@YAIHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*267))
-	bin_app.seek(0x00193510) # ?hex_cost@@YAHHHHHHHH@Z
+	bin_app.seek(0x00193510) # ?hex_cost@@YAHHHIIIIH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*285))
 	bin_app.seek(0x001B8AF0) # ?stack_put@@YAXHHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*301))
-	bin_app.seek(0x001B8B60) # ?stack_sort@@YAXH@Z
+	bin_app.seek(0x001B8B60) # ?stack_sort@@YAXI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*302))
-	bin_app.seek(0x001B8C90) # ?stack_sort_2@@YAXH@Z
+	bin_app.seek(0x001B8C90) # ?stack_sort_2@@YAXI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*303))
 	bin_app.seek(0x001B8E10) # ?stack_fix@@YAHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*304))
-	bin_app.seek(0x00160AD0) # ?go_to@@YAXHDHH@Z
+	bin_app.seek(0x00160AD0) # ?go_to@@YAXIEHH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*336))
 	bin_app.seek(0x001BE100) # ?wants_prototype@@YAHII@Z

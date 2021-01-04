@@ -87,7 +87,7 @@ int __cdecl chas_name(LPSTR chasName) {
 		return DisabledValue;
 	}
 	for (int chasID = 0; chasID < MaxChassisNum; chasID++) {
-		if (!_stricmp(chasName, Chassis[chasID].offsv1Name)) {
+		if (!_stricmp(chasName, Chassis[chasID].offsv_1_name)) {
 			return chasID;
 		}
 	}
@@ -113,7 +113,7 @@ int __cdecl weap_name(LPSTR weapName) {
 		return DisabledValue;
 	}
 	for (int weapID = 0; weapID < MaxWeaponNum; weapID++) {
-		if (!_stricmp(weapName, Weapon[weapID].nameShort)) {
+		if (!_stricmp(weapName, Weapon[weapID].name_short)) {
 			return weapID;
 		}
 	}
@@ -139,7 +139,7 @@ int __cdecl arm_name(LPSTR armName) {
 		return DisabledValue;
 	}
 	for (int armID = 0; armID < MaxArmorNum; armID++) {
-		if (!_stricmp(armName, Armor[armID].nameShort)) {
+		if (!_stricmp(armName, Armor[armID].name_short)) {
 			return armID;
 		}
 	}
@@ -747,7 +747,7 @@ BOOL __cdecl read_factions() {
 	}
 	for (int i = 1; i < MaxPlayerNum; i++) {
 		if (!strcmp(Players[i].filename, "JENN282")) {
-			int factionID;
+			int faction_id;
 			do {
 				int randVal = random(0, factionCount); // replaced rand()
 				uint32_t factionSet = randVal / 7; // 0: SMAC; 1: SMACX; 2+: custom
@@ -755,8 +755,8 @@ BOOL __cdecl read_factions() {
 					? "NEWFACTIONS" : "CUSTOMFACTIONS")) {
 					return true;
 				}
-				factionID = randVal % 7;
-				for (int j = factionID; j >= 0; j--) {
+				faction_id = randVal % 7;
+				for (int j = faction_id; j >= 0; j--) {
 					text_get();
 				}
 				strcpy_s(Players[i].filename, 24, text_item());
@@ -764,16 +764,16 @@ BOOL __cdecl read_factions() {
 				for (int k = 1; k < MaxPlayerNum; k++) {
 					if (i != k) {
 						if (!strcmp(Players[i].filename, Players[k].filename)) {
-							factionID = -1;
+							faction_id = -1;
 							break;
 						}
 					}
 				}
-				if (factionID != -1) { // skip Players[0] like below check
+				if (faction_id != -1) { // skip Players[0] like below check
 					read_faction(&Players[i], 0);
 					load_faction_art(i);
 				}
-			} while (factionID == -1);
+			} while (faction_id == -1);
 		}
 		else {
 			// removed check (&Players[i] != &Players[0]) since Players[0] is already skipped
@@ -818,47 +818,47 @@ BOOL __cdecl read_units() {
 		return true;
 	}
 	int totalUnits = text_get_number(0, MaxVehProtoFactionNum);
-	for (int protoID = 0; protoID < totalUnits; protoID++) {
+	for (int proto_id = 0; proto_id < totalUnits; proto_id++) {
 		text_get();
 		LPSTR name = text_item();
-		strncpy_s(VehPrototype[protoID].vehName, 32, name, strlen(name));
+		strncpy_s(VehPrototypes[proto_id].veh_name, 32, name, strlen(name));
 		int chasID = chas_name(text_item());
 		int weapID = weap_name(text_item());
-		int armorID = arm_name(text_item());
+		int armor_id = arm_name(text_item());
 		int plan = text_item_number();
 		int cost = text_item_number();
 		int carry = text_item_number();
-		VehPrototype[protoID].preqTech = (int16_t)tech_name(text_item());
+		VehPrototypes[proto_id].preq_tech = (int16_t)tech_name(text_item());
 		int icon = text_item_number();
 		int ability = text_item_binary();
-		int reactorID = text_item_number(); // Add ability to read reactor for #UNITS
-		if (!reactorID) { // if not set or 0, default behavior
-			switch (protoID) {
+		int reactor_id = text_item_number(); // Add ability to read reactor for #UNITS
+		if (!reactor_id) { // if not set or 0, default behavior
+			switch (proto_id) {
 			// There was a pointless explicit check for BSC_BATTLE_OGRE_MK1 to set reactor to 1
 			// The parameters set by check are no different than default
 			case BSC_BATTLE_OGRE_MK2:
-				reactorID = RECT_FUSION;
+				reactor_id = RECT_FUSION;
 				break;
 			case BSC_BATTLE_OGRE_MK3:
-				reactorID = RECT_QUANTUM;
+				reactor_id = RECT_QUANTUM;
 				break;
 			default:
-				reactorID = RECT_FISSION;
+				reactor_id = RECT_FISSION;
 				break;
 			}
 		}
-		make_proto(protoID, chasID, weapID, armorID, ability, reactorID);
+		make_proto(proto_id, chasID, weapID, armor_id, ability, reactor_id);
 		// If set, override auto calculated values from make_proto()
 		if (plan != -1) { // plan auto calculate: -1
-			VehPrototype[protoID].plan = (uint8_t)plan;
+			VehPrototypes[proto_id].plan = (uint8_t)plan;
 		}
 		if (cost) { // cost auto calculate: 0
-			VehPrototype[protoID].cost = (uint8_t)cost;
+			VehPrototypes[proto_id].cost = (uint8_t)cost;
 		}
 		if (carry) { // carry auto calculate: 0
-			VehPrototype[protoID].carryCapacity = (uint8_t)carry;
+			VehPrototypes[proto_id].carry_capacity = (uint8_t)carry;
 		}
-		VehPrototype[protoID].iconOffset = (int8_t)icon;
+		VehPrototypes[proto_id].icon_offset = (int8_t)icon;
 	}
 	return false;
 }
@@ -937,30 +937,30 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	for (int i = 0; i < MaxChassisNum; i++) {
 		text_get();
 		// offsv1
-		Chassis[i].offsv1Name = text_item_string();
-		noun_item(&Chassis[i].offsv1Gender, &Chassis[i].offsv1IsPlural);
+		Chassis[i].offsv_1_name = text_item_string();
+		noun_item(&Chassis[i].offsv_1_gender, &Chassis[i].offsv_1_plural);
 		// offsv2
-		Chassis[i].offsv2Name = text_item_string();
-		noun_item(&Chassis[i].offsv2Gender, &Chassis[i].offsv2IsPlural);
+		Chassis[i].offsv_2_name = text_item_string();
+		noun_item(&Chassis[i].offsv_2_gender, &Chassis[i].offsv_2_plural);
 		// defsv1
-		Chassis[i].defsv1Name = text_item_string();
-		noun_item(&Chassis[i].defsv1Gender, &Chassis[i].defsv1IsPlural);
+		Chassis[i].defsv_1_name = text_item_string();
+		noun_item(&Chassis[i].defsv_1_gender, &Chassis[i].defsv_1_plural);
 		// defsv2
-		Chassis[i].defsv2Name = text_item_string();
-		noun_item(&Chassis[i].defsv2Gender, &Chassis[i].defsv2IsPlural);
+		Chassis[i].defsv_2_name = text_item_string();
+		noun_item(&Chassis[i].defsv_2_gender, &Chassis[i].defsv_2_plural);
 		Chassis[i].speed = (uint8_t)text_item_number();
 		Chassis[i].triad = (uint8_t)text_item_number();
 		Chassis[i].range = (uint8_t)text_item_number();
 		Chassis[i].missile = (uint8_t)text_item_number();
 		Chassis[i].cargo = (uint8_t)text_item_number();
 		Chassis[i].cost = (uint8_t)text_item_number();
-		Chassis[i].preqTech = (int16_t)tech_name(text_item());
+		Chassis[i].preq_tech = (int16_t)tech_name(text_item());
 		// offsv_lrg
-		Chassis[i].offsvNameLrg = text_item_string();
-		noun_item(&Chassis[i].offsvGenderLrg, &Chassis[i].offsvIsPluralLrg);
+		Chassis[i].offsv_lrg_name = text_item_string();
+		noun_item(&Chassis[i].offsv_lrg_gender, &Chassis[i].offsv_lrg_plural);
 		// defsv_lrg
-		Chassis[i].defsvNameLrg = text_item_string();
-		noun_item(&Chassis[i].defsvGenderLrg, &Chassis[i].defsvIsPluralLrg);
+		Chassis[i].defsv_lrg_name = text_item_string();
+		noun_item(&Chassis[i].defsv_lrg_gender, &Chassis[i].defsv_lrg_plural);
 	}
 	// Reactors
 	if (text_open(AlphaxFileID, "REACTORS")) {
@@ -969,12 +969,12 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	for (int i = 0; i < MaxReactorNum; i++) {
 		text_get();
 		Reactor[i].name = text_item_string();
-		Reactor[i].nameShort = text_item_string();
+		Reactor[i].name_short = text_item_string();
 		// Bug fix/Enhancement: original function skips this value and is left as zero, isn't
 		// referenced elsewhere in code. Likely because default power value is sequential.
 		// This will allow future modifications.
 		Reactor[i].power = (uint16_t)text_item_number();
-		Reactor[i].preqTech = (int16_t)tech_name(text_item());
+		Reactor[i].preq_tech = (int16_t)tech_name(text_item());
 	}
 	// Weapons
 	if (text_open(AlphaxFileID, "WEAPONS")) {
@@ -983,12 +983,12 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	for (int i = 0; i < MaxWeaponNum; i++) {
 		text_get();
 		Weapon[i].name = text_item_string();
-		Weapon[i].nameShort = text_item_string();
-		Weapon[i].offenseRating = (int8_t)text_item_number();
+		Weapon[i].name_short = text_item_string();
+		Weapon[i].offense_rating = (int8_t)text_item_number();
 		Weapon[i].mode = (uint8_t)text_item_number();
 		Weapon[i].cost = (uint8_t)text_item_number();
 		Weapon[i].icon = (int8_t)text_item_number();
-		Weapon[i].preqTech = (int16_t)tech_name(text_item());
+		Weapon[i].preq_tech = (int16_t)tech_name(text_item());
 	}
 	// Defenses / Armor
 	if (text_open(AlphaxFileID, "DEFENSES")) {
@@ -997,11 +997,11 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	for (int i = 0; i < MaxArmorNum; i++) {
 		text_get();
 		Armor[i].name = text_item_string();
-		Armor[i].nameShort = text_item_string();
-		Armor[i].defenseRating = (char)text_item_number();
+		Armor[i].name_short = text_item_string();
+		Armor[i].defense_rating = (char)text_item_number();
 		Armor[i].mode = (uint8_t)text_item_number();
 		Armor[i].cost = (uint8_t)text_item_number();
-		Armor[i].preqTech = (int16_t)tech_name(text_item());
+		Armor[i].preq_tech = (int16_t)tech_name(text_item());
 	}
 	// Abilities
 	if (text_open(AlphaxFileID, "ABILITIES")) {
@@ -1010,8 +1010,8 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	for (int i = 0; i < MaxAbilityNum; i++) {
 		text_get();
 		Ability[i].name = text_item_string();
-		Ability[i].costFactor = text_item_number();
-		Ability[i].preqTech = (int16_t)tech_name(text_item());
+		Ability[i].cost_factor = text_item_number();
+		Ability[i].preq_tech = (int16_t)tech_name(text_item());
 		Ability[i].abbreviation = text_item_string();
 		Ability[i].flags = text_item_binary();
 		Ability[i].description = text_item_string();
@@ -1023,7 +1023,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	for (int i = 0; i < MaxMoraleNum; i++) {
 		text_get();
 		Morale[i].name = text_item_string();
-		Morale[i].nameLifecycle = text_item_string();
+		Morale[i].name_lifecycle = text_item_string();
 	}
 	// Defense Modes
 	if (text_open(AlphaxFileID, "DEFENSEMODES")) {
@@ -1051,9 +1051,9 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	// Potential bug: Look into issues with VEH data persisting between loaded saved games?
 	if (tglAllRules) {
 		for (int i = 0; i < MaxVehProtoNum; i++) {
-			VehPrototype[i].vehName[0] = 0;
-			VehPrototype[i].unk_1 = 0;
-			VehPrototype[i].flags = 0;
+			VehPrototypes[i].veh_name[0] = 0;
+			VehPrototypes[i].unk_1 = 0;
+			VehPrototypes[i].flags = 0;
 		}
 		if (read_units()) {
 			return true;
@@ -1104,7 +1104,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 			text_get();
 			Order[i].order = text_item_string();
 			// Potential enhancement: Have separate string for sea
-			Order[i].orderSea = Order[i].order;
+			Order[i].order_sea = Order[i].order;
 			Order[i].letter = text_item_string();
 		}
 	}

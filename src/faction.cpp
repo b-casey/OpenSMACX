@@ -1581,9 +1581,9 @@ void __cdecl enemy_capabilities(uint32_t factionID) {
 	PlayersData[factionID].bestPsiOffense = hasWorms ? weap_strat(WPN_PSI_ATTACK, factionID) : 0;
 	PlayersData[factionID].bestWeaponValue = 1;
 	for (int i = 0; i < MaxWeaponNum; i++) {
-		if (has_tech(Weapon[i].preqTech, factionID) && Weapon[i].offenseRating < 99) {
+		if (has_tech(Weapon[i].preq_tech, factionID) && Weapon[i].offense_rating < 99) {
 			int weapVal = weap_strat(i, factionID);
-			if (Weapon[i].offenseRating < 0 && weapVal > PlayersData[factionID].bestPsiOffense) {
+			if (Weapon[i].offense_rating < 0 && weapVal > PlayersData[factionID].bestPsiOffense) {
 				PlayersData[factionID].bestPsiOffense = weapVal;
 			}
 			if (weapVal > PlayersData[factionID].bestWeaponValue) {
@@ -1594,9 +1594,9 @@ void __cdecl enemy_capabilities(uint32_t factionID) {
 	PlayersData[factionID].bestPsiDefense = hasWorms ? arm_strat(ARM_PSI_DEFENSE, factionID) : 0;
 	PlayersData[factionID].bestArmorValue = 1;
 	for (int i = 0; i < MaxArmorNum; i++) {
-		if (has_tech(Armor[i].preqTech, factionID)) {
+		if (has_tech(Armor[i].preq_tech, factionID)) {
 			int armVal = arm_strat(i, factionID);
-			if (Armor[i].defenseRating < 0 && armVal > PlayersData[factionID].bestPsiDefense) {
+			if (Armor[i].defense_rating < 0 && armVal > PlayersData[factionID].bestPsiDefense) {
 				PlayersData[factionID].bestPsiDefense = armVal;
 			}
 			if (armVal > PlayersData[factionID].bestArmorValue) {
@@ -1606,7 +1606,7 @@ void __cdecl enemy_capabilities(uint32_t factionID) {
 	}
 	PlayersData[factionID].bestLandSpeed = 1;
 	for (int i = 0; i < MaxChassisNum; i++) {
-		if (has_tech(Chassis[i].preqTech, factionID) && Chassis[i].triad == TRIAD_LAND) {
+		if (has_tech(Chassis[i].preq_tech, factionID) && Chassis[i].triad == TRIAD_LAND) {
 			if (Chassis[i].speed > PlayersData[factionID].bestLandSpeed) {
 				PlayersData[factionID].bestLandSpeed = Chassis[i].speed;
 			}
@@ -1660,12 +1660,12 @@ void __cdecl enemy_capabilities_t(uint32_t factionID) {
 	//PlayersData[factionID].bestPsiAtkVal = hasWorms ? weap_strat(WPN_PSI_ATTACK, factionID) : 0;
 	PlayersData[factionID].bestWeaponValue = 1;
 	for (int i = 0; i < MaxWeaponNum; i++) {
-		if (has_tech(Weapon[i].preqTech, factionID) && Weapon[i].offenseRating < 99) {
+		if (has_tech(Weapon[i].preq_tech, factionID) && Weapon[i].offense_rating < 99) {
 			int weapVal = weap_strat(i, factionID);
-			//if (Weapon[i].offenseRating < 0 && weapVal > PlayersData[factionID].bestPsiAtkVal) {
+			//if (Weapon[i].offense_rating < 0 && weapVal > PlayersData[factionID].bestPsiAtkVal) {
 			//	PlayersData[factionID].bestPsiAtkVal = weapVal;
 			//}
-			if (Weapon[i].offenseRating >= 0 && weapVal > PlayersData[factionID].bestWeaponValue) {
+			if (Weapon[i].offense_rating >= 0 && weapVal > PlayersData[factionID].bestWeaponValue) {
 				PlayersData[factionID].bestWeaponValue = weapVal;
 			}
 		}
@@ -1673,19 +1673,19 @@ void __cdecl enemy_capabilities_t(uint32_t factionID) {
 	//PlayersData[factionID].bestPsiDefVal = hasWorms ? arm_strat(ARM_PSI_DEFENSE, factionID) : 0;
 	PlayersData[factionID].bestArmorValue = 1;
 	for (int i = 0; i < MaxArmorNum; i++) {
-		if (has_tech(Armor[i].preqTech, factionID)) {
+		if (has_tech(Armor[i].preq_tech, factionID)) {
 			int armVal = arm_strat(i, factionID);
-			//if (Armor[i].defenseRating < 0 && armVal > PlayersData[factionID].bestPsiDefVal) {
+			//if (Armor[i].defense_rating < 0 && armVal > PlayersData[factionID].bestPsiDefVal) {
 			//	PlayersData[factionID].bestPsiDefVal = armVal;
 			//}
-			if (Armor[i].defenseRating >= 0 && armVal > PlayersData[factionID].bestArmorValue) {
+			if (Armor[i].defense_rating >= 0 && armVal > PlayersData[factionID].bestArmorValue) {
 				PlayersData[factionID].bestArmorValue = armVal;
 			}
 		}
 	}
 	PlayersData[factionID].bestLandSpeed = 1;
 	for (int i = 0; i < MaxChassisNum; i++) {
-		if (has_tech(Chassis[i].preqTech, factionID) && Chassis[i].triad == TRIAD_LAND) {
+		if (has_tech(Chassis[i].preq_tech, factionID) && Chassis[i].triad == TRIAD_LAND) {
 			if (Chassis[i].speed > PlayersData[factionID].bestLandSpeed) {
 				PlayersData[factionID].bestLandSpeed = Chassis[i].speed;
 			}
@@ -1732,18 +1732,18 @@ void __cdecl enemy_capabilities_t(uint32_t factionID) {
 	BOOL hasWorms = veh_avail(BSC_MIND_WORMS, factionID, -1);
 	PlayersData[factionID].bestPsiOffense = hasWorms ? weap_strat(WPN_PSI_ATTACK, factionID) : 0;
 	for (int i = 0; i < MaxWeaponNum; i++) {
-		if (has_tech(Weapon[i].preqTech, factionID) && Weapon[i].offenseRating < 99) {
+		if (has_tech(Weapon[i].preq_tech, factionID) && Weapon[i].offense_rating < 99) {
 			int weapVal = weap_strat(i, factionID);
-			if (Weapon[i].offenseRating < 0 && weapVal > PlayersData[factionID].bestPsiOffense) {
+			if (Weapon[i].offense_rating < 0 && weapVal > PlayersData[factionID].bestPsiOffense) {
 				PlayersData[factionID].bestPsiOffense = weapVal;
 			}
 		}
 	}
 	PlayersData[factionID].bestPsiDefense = hasWorms ? arm_strat(ARM_PSI_DEFENSE, factionID) : 0;
 	for (int i = 0; i < MaxArmorNum; i++) {
-		if (has_tech(Armor[i].preqTech, factionID)) {
+		if (has_tech(Armor[i].preq_tech, factionID)) {
 			int armVal = arm_strat(i, factionID);
-			if (Armor[i].defenseRating < 0 && armVal > PlayersData[factionID].bestPsiDefense) {
+			if (Armor[i].defense_rating < 0 && armVal > PlayersData[factionID].bestPsiDefense) {
 				PlayersData[factionID].bestPsiDefense = armVal;
 			}
 		}

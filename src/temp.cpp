@@ -623,7 +623,7 @@ void tech_calc_output() {
 					log_say(Players[i].formalNameFaction, Players[j - 89].formalNameFaction, techVal1, techVal2, 0);
 				}
 				else {
-					log_say(Players[i].formalNameFaction, VehPrototype[j - 97].vehName, techVal1, techVal2, 0);
+					log_say(Players[i].formalNameFaction, VehPrototypes[j - 97].veh_name, techVal1, techVal2, 0);
 				}
 			}
 			else {
@@ -631,7 +631,7 @@ void tech_calc_output() {
 					log_say(Players[i].formalNameFaction, Players[j - 89].formalNameFaction, techVal1, 0, 0);
 				}
 				else {
-					log_say(Players[i].formalNameFaction, VehPrototype[j - 97].vehName, techVal1, 0, 0);
+					log_say(Players[i].formalNameFaction, VehPrototypes[j - 97].veh_name, techVal1, 0, 0);
 				}
 			}
 		}

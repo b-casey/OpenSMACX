@@ -77,12 +77,12 @@ Return Value: Terraforming speed
 Status: Complete
 */
 uint32_t __cdecl contribution(uint32_t veh_id, uint32_t terraform_id) {
-	uint32_t rate = has_abil(Veh[veh_id].protoID, ABL_SUPER_TERRAFORMER) ? 4 : 2;
+	uint32_t rate = has_abil(Vehs[veh_id].proto_id, ABL_SUPER_TERRAFORMER) ? 4 : 2;
 	if (terraform_id == (ORDER_REMOVE_FUNGUS - 4) || terraform_id == (ORDER_PLANT_FUNGUS - 4)) {
-		if (has_project(SP_XENOEMPATYH_DOME, Veh[veh_id].factionID)) {
+		if (has_project(SP_XENOEMPATYH_DOME, Vehs[veh_id].faction_id)) {
 			rate *= 2; // Doubled
 		}
-	} else if (has_project(SP_WEATHER_PARADIGM, Veh[veh_id].factionID)) {
+	} else if (has_project(SP_WEATHER_PARADIGM, Vehs[veh_id].faction_id)) {
 		rate = (rate * 3) / 2; // +50%
 	}
 	return rate;

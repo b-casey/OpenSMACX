@@ -373,7 +373,7 @@ Return Value: Is a convoy route possible? true/false
 Status: Complete
 */
 BOOL __cdecl convoy(uint32_t veh_id, uint32_t base_id) {
-	int home_base_id = Veh[veh_id].homeBaseID;
+	int home_base_id = Vehs[veh_id].home_base_id;
 	if (home_base_id < 0 || base_id == (uint32_t)home_base_id) {
 		return false;
 	}
@@ -413,8 +413,8 @@ BOOL __cdecl get_there(uint32_t veh_id, uint32_t x_dst, uint32_t y_dst) {
 	if (triad == TRIAD_AIR) {
 		return true;
 	}
-    int x_src = Veh[veh_id].xCoord; 
-    int y_src = Veh[veh_id].yCoord;
+    int x_src = Vehs[veh_id].x; 
+    int y_src = Vehs[veh_id].y;
     uint32_t region_src = region_at(x_src, y_src);
 	uint32_t region_dst = region_at(x_dst, y_dst);
 	if (!triad) { // TRIAD_LAND
@@ -1105,10 +1105,10 @@ void __cdecl rebuild_vehicle_bits() {
 		for (uint32_t x = y & 1; x < *MapLongitudeBounds; x += 2) {
 			bit_set(x, y, BIT_VEH_IN_TILE, false);
 			for (int veh_id = 0; veh_id < *VehCurrentCount; veh_id++) {
-				if (Veh[veh_id].xCoord == (int)x && Veh[veh_id].yCoord == (int)y) {
+				if (Vehs[veh_id].x == (int)x && Vehs[veh_id].y == (int)y) {
 					bit_set(x, y, BIT_VEH_IN_TILE, true);
 					if (!(bit_at(x, y) & BIT_BASE_IN_TILE)) {
-						owner_set(x, y, Veh[veh_id].factionID);
+						owner_set(x, y, Vehs[veh_id].faction_id);
 					}
 					break;
 				}
@@ -2831,10 +2831,10 @@ uint32_t __cdecl zoc_sea(int x, int y, uint32_t faction_id) {
                 && is_ocean(x_radius, y_radius) == is_ocean_tile
 				&& !has_treaty(faction_id, owner, DTREATY_PACT)) {
 				for (int veh_id = veh_at(x_radius, y_radius); veh_id >= 0;
-                    veh_id = Veh[veh_id].nextVehIDStack) {
-					if (Veh[veh_id].factionID != faction_id
-						&& (Veh[veh_id].visibility & (1 << faction_id)
-							|| (!*IsMultiplayerNet && !(Veh[veh_id].flags & VFLAG_INVISIBLE)))) {
+                    veh_id = Vehs[veh_id].next_veh_id_stack) {
+					if (Vehs[veh_id].faction_id != faction_id
+						&& (Vehs[veh_id].visibility & (1 << faction_id)
+							|| (!*IsMultiplayerNet && !(Vehs[veh_id].flags & VFLAG_INVISIBLE)))) {
 						return owner + 1;
 					}
 				}

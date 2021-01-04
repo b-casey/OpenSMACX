@@ -66,16 +66,16 @@ BOOL __cdecl valid_tech_leap(uint32_t tech_id, uint32_t faction_id) {
 		return false; // disabled
 	}
 	for (uint32_t i = 0; i < MaxReactorNum; i++) {
-		if ((int)tech_id == Reactor[i].preqTech) {
+		if ((int)tech_id == Reactor[i].preq_tech) {
 			return false; // leap not possible for reactor tech
 		}
 	}
 	for (uint32_t i = 0; i < MaxWeaponNum; i++) {
-		if (Weapon[i].preqTech == (int)tech_id) { // may end early if two weapons have the same preq
+		if (Weapon[i].preq_tech == (int)tech_id) { // may end early if two weapons have the same preq
 			return (PlayersData[faction_id].ranking <= 2 // lowest two ranking factions
 				// this line is an odd comparison (offensive rating <= best weapon id + 2)
 				// however it might be to prevent leaps for later weapon tech
-				&& Weapon[i].offenseRating <= (weapon_budget(faction_id, 99, false) + 2));
+				&& Weapon[i].offense_rating <= (weapon_budget(faction_id, 99, false) + 2));
 		}
 	}
 	return true;
@@ -111,7 +111,7 @@ void __cdecl say_tech(LPSTR output, int tech_id, BOOL category_lvl) {
 				label_get(487)); // 'Comm Frequency'
 		}
 	} else {
-		sprintf_s(&output[strlen(output)], 80, "%s %s", VehPrototype[tech_id - 97].vehName,
+		sprintf_s(&output[strlen(output)], 80, "%s %s", VehPrototypes[tech_id - 97].veh_name,
 			label_get(185)); // 'Prototype'
 	}
 }
@@ -420,11 +420,11 @@ int __cdecl tech_val(uint32_t tech_id, int faction_id, BOOL simple_calc) {
 				value_ret *= 2;
 			}
 		} else {
-			int preq_tech_fusion = Reactor[RECT_FUSION - 1].preqTech;
+			int preq_tech_fusion = Reactor[RECT_FUSION - 1].preq_tech;
 			if ((int)tech_id == preq_tech_fusion) {
 				value_ret *= 2;
 			}
-			if ((int)tech_id == Reactor[RECT_QUANTUM - 1].preqTech) {
+			if ((int)tech_id == Reactor[RECT_QUANTUM - 1].preq_tech) {
 				value_ret *= 2;
 			}
 			if (tech_is_preq(tech_id, preq_tech_fusion, 9999)) {
@@ -453,8 +453,8 @@ int __cdecl tech_val(uint32_t tech_id, int faction_id, BOOL simple_calc) {
 		}
 		if (ai_power) {
 			for (int i = 0; i < MaxWeaponNum; i++) {
-				if (Weapon[i].offenseRating) {
-					int weap_preq_tech = Weapon[i].preqTech;
+				if (Weapon[i].offense_rating) {
+					int weap_preq_tech = Weapon[i].preq_tech;
 					if ((int)tech_id == weap_preq_tech) {
 						value_ret *= (is_human_player + 3);
 					} else if (tech_is_preq(tech_id, weap_preq_tech, 1)) {
@@ -471,15 +471,15 @@ int __cdecl tech_val(uint32_t tech_id, int faction_id, BOOL simple_calc) {
 				}
 			}
 		}
-		if (tech_is_preq(tech_id, VehPrototype[BSC_FORMERS].preqTech, 9999)
-			&& !has_tech(VehPrototype[BSC_FORMERS].preqTech, faction_id)) {
+		if (tech_is_preq(tech_id, VehPrototypes[BSC_FORMERS].preq_tech, 9999)
+			&& !has_tech(VehPrototypes[BSC_FORMERS].preq_tech, faction_id)) {
 			value_ret *= 2;
 			if (is_human_player) {
 				value_ret *= 2;
 			}
 		}
-		if (tech_is_preq(tech_id, Chassis[CHSI_FOIL].preqTech, 9999)
-			&& !has_tech(Chassis[CHSI_FOIL].preqTech, faction_id)) {
+		if (tech_is_preq(tech_id, Chassis[CHSI_FOIL].preq_tech, 9999)
+			&& !has_tech(Chassis[CHSI_FOIL].preq_tech, faction_id)) {
 			BOOL search = false;
 			for (int region = 1; region < MaxRegionLandNum; region++) {
 				if (PlayersData[faction_id].regionTotalBases[region]) {
@@ -515,10 +515,10 @@ int __cdecl tech_val(uint32_t tech_id, int faction_id, BOOL simple_calc) {
 		value_ret = factor * (factor / (PlayersData[faction_id].AI_Fight + 2));
 	} else {  // prototypes
 		uint32_t proto_id = tech_id - 97;
-		value_ret = range(Weapon[VehPrototype[proto_id].weaponID].offenseRating, 1, 2)
-			+ range(Armor[VehPrototype[proto_id].armorID].defenseRating, 1, 2)
-			+ range(Chassis[VehPrototype[proto_id].chassisID].speed, 1, 2)
-			+ VehPrototype[proto_id].reactorID - 2;
+		value_ret = range(Weapon[VehPrototypes[proto_id].weapon_id].offense_rating, 1, 2)
+			+ range(Armor[VehPrototypes[proto_id].armor_id].defense_rating, 1, 2)
+			+ range(Chassis[VehPrototypes[proto_id].chassis_id].speed, 1, 2)
+			+ VehPrototypes[proto_id].reactor_id - 2;
 	}
 	return value_ret;
 }
@@ -540,7 +540,7 @@ int __cdecl tech_ai(uint32_t faction_id) {
 			if (*GameRules & RULES_BLIND_RESEARCH) {
 				if (is_human_player && (PlayersData[faction_id].AI_Growth
 					|| PlayersData[faction_id].AI_Wealth)
-					&& i == VehPrototype[BSC_FORMERS].preqTech) {
+					&& i == VehPrototypes[BSC_FORMERS].preq_tech) {
 					return i; // Direct human player research toward gaining Formers
 				}
 				int preq = tech_recurse(i, 0);

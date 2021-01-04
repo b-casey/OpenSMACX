@@ -103,10 +103,10 @@ int Path::zoc_path(int xCoord, int yCoord, int factionID) {
 					return owner + 1;
 				}
 				for (int vehID = veh_at(xRadius, yRadius); vehID >= 0;
-					vehID = Veh[vehID].nextVehIDStack) {
-					if ((Veh[vehID].factionID == factionID && ((Veh[vehID].flags
+					vehID = Vehs[vehID].next_veh_id_stack) {
+					if ((Vehs[vehID].faction_id == factionID && ((Vehs[vehID].flags
 						& (VFLAG_INVISIBLE | VFLAG_LURKER)) != (VFLAG_INVISIBLE | VFLAG_LURKER)))
-						|| Veh[vehID].visibility & (1 << factionID)) {
+						|| Vehs[vehID].visibility & (1 << factionID)) {
 						return owner + 1;
 					}
 				}
@@ -134,26 +134,26 @@ int Path::find(int xCoordSrc, int yCoordSrc, int xCoordDstA, int yCoordDstA, int
  Status: WIP
 */
 int Path::move(int vehID, int factionID) {
-	int factionIDVeh = Veh[vehID].factionID;
+	int factionIDVeh = Vehs[vehID].faction_id;
 	uint32_t flags = 0xC0;
 	if (factionIDVeh != factionID1) {
 		xCoordDst = -1;
 		yCoordDst = -1;
 		factionID1 = factionIDVeh;
 	}
-	int xCoordVeh = Veh[vehID].xCoord, yCoordVeh = Veh[vehID].yCoord,
-		xCoordWayPt = Veh[vehID].waypoint_xCoord[0], yCoordWayPt = Veh[vehID].waypoint_yCoord[0];
+	int xCoordVeh = Vehs[vehID].x, yCoordVeh = Vehs[vehID].y,
+		xCoordWayPt = Vehs[vehID].waypoint_x[0], yCoordWayPt = Vehs[vehID].waypoint_y[0];
 
 	if (!on_map(xCoordWayPt, yCoordWayPt) || (xCoordVeh == xCoordWayPt 
 		&& yCoordVeh == yCoordWayPt)) {
 		return -1;
 	}
 	BOOL isHuman = is_human(factionIDVeh);
-	if (!isHuman && ((Veh[vehID].state & (VSTATE_UNK_40000 | VSTATE_UNK_20000))
+	if (!isHuman && ((Vehs[vehID].state & (VSTATE_UNK_40000 | VSTATE_UNK_20000))
 		== (VSTATE_UNK_40000 | VSTATE_UNK_20000))) {
 		flags = 0xE0;
 	}
-	if ((Veh[vehID].state & (VSTATE_UNK_1000000 | VSTATE_UNK_200))
+	if ((Vehs[vehID].state & (VSTATE_UNK_1000000 | VSTATE_UNK_200))
 		== (VSTATE_UNK_1000000 | VSTATE_UNK_200)) {
 		flags &= 0xBF;
 	}
@@ -161,7 +161,7 @@ int Path::move(int vehID, int factionID) {
 		uint32_t vehMoves = veh_moves(vehID);
 		if (vehMoves <= Rules->MoveRateRoads) {
 			flags |= 0x100;
-			if (vehMoves <= (uint32_t)((Veh[vehID].protoID != BSC_MIND_WORMS) + 1)) {
+			if (vehMoves <= (uint32_t)((Vehs[vehID].proto_id != BSC_MIND_WORMS) + 1)) {
 				flags |= 0x100;
 			}
 		}
