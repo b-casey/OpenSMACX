@@ -22,13 +22,13 @@
  /*
   * Faction related objects, variables and functions.
   */
-enum player_gender {
+enum PlayerGender {
 	GENDER_MALE = 0,
 	GENDER_FEMALE = 1,
 	GENDER_NEUTRAL = 2,
 };
 
-enum faction_special_rules {
+enum FactionSpecialRules {
 	RULE_TECH = 0,
 	RULE_UNIT = 1,
 	RULE_FACILITY = 2,
@@ -50,7 +50,7 @@ enum faction_special_rules {
 	RULE_OFFENSE = 18,
 };
 
-enum player_rule_flag_bitfield {
+enum PlayerRuleFlagBitfield {
 	RFLAG_TECHSTEAL = 0x10,
 	RFLAG_TECHSHARE = 0x20,
 	RFLAG_WORMPOLICE = 0x40,
@@ -65,7 +65,7 @@ enum player_rule_flag_bitfield {
 	RFLAG_MORALE = 0x8000,
 };
 
-enum diplomacy_treaty_bitfield {
+enum DiplomacyTreatyBitfield {
 	DTREATY_PACT = 0x1,
 	DTREATY_TREATY = 0x2,
 	DTREATY_TRUCE = 0x4,
@@ -100,7 +100,7 @@ enum diplomacy_treaty_bitfield {
 	DTREATY_UNK_80000000 = 0x80000000,
 };
 
-enum diplo_agenda {
+enum DiploAgenda {
 	DAGENDA_UNK_1 = 0x1,
 	DAGENDA_UNK_2 = 0x2,
 	DAGENDA_UNK_4 = 0x4,
@@ -119,7 +119,7 @@ enum diplo_agenda {
 	DAGENDA_UNK_8000 = 0x8000,
 };
 
-enum player_flags_bitfield {
+enum PlayerFlagsBitfield {
 	PFLAG_UNK_20 = 0x20,
 	PFLAG_MAP_REVEALED = 0x200,
 	PFLAG_GENETIC_PLAGUE_INTRO = 0x400, // +1 to defense against after 1st time faction experiences
@@ -138,7 +138,7 @@ enum player_flags_bitfield {
 	PFLAG_STRAT_ATK_OBJECTIVES = 0x80000000,
 };
 
-enum player_flags_extended_bitfield {
+enum PlayerFlagsExtendedBitfield {
 	PFLAGEXT_STRAT_LOTS_COLONY_PODS = 0x1,
 	PFLAGEXT_STRAT_LOTS_TERRAFORMERS = 0x2,
 	PFLAGEXT_STRAT_LOTS_SEA_BASES = 0x4,
@@ -148,7 +148,7 @@ enum player_flags_extended_bitfield {
 	PFLAGEXT_STRAT_LOTS_ARTILLERY = 0x40,
 };
 
-enum ai_goal_types {
+enum AiGoalTypes {
 	AI_GOAL_UNUSED = -1,
 	AI_GOAL_ATTACK = 0, // 'a', red
 	AI_GOAL_DEFEND = 2, // 'd', yellow                               0000 0010
@@ -167,42 +167,42 @@ enum ai_goal_types {
 	AI_GOAL_SENSOR_ARRAY = 121,                                   // 0111 1001
 };
 
-enum social_categories {
+enum SocialCategories {
 	SOCIAL_CAT_POLITICS = 0,
 	SOCIAL_CAT_ECONOMICS = 1,
 	SOCIAL_CAT_VALUES = 2,
 	SOCIAL_CAT_FUTURE = 3,
 };
 
-enum social_engineering_politics {
+enum SocialEngineeringPolitics {
 	SE_FRONTIER = 0,
 	SE_POLICE_STATE = 1,
 	SE_DEMOCRATIC = 2,
 	SE_FUNDAMENTALIST = 3,
 };
 
-enum social_engineering_economics {
+enum SocialEngineeringEconomics {
 	SE_SIMPLE = 0,
 	SE_FREE_MARKET = 1,
 	SE_PLANNED = 2,
 	SE_GREEN = 3,
 };
 
-enum social_engineering_values {
+enum SocialEngineeringValues {
 	SE_SURVIVAL = 0,
 	SE_POWER = 1,
 	SE_KNOWLEDGE = 2,
 	SE_WEALTH = 3,
 };
 
-enum social_engineering_future {
+enum SocialEngineeringFuture {
 	SE_NONE = 0,
 	SE_CYBERNETIC = 1,
 	SE_EUDAIMONIC = 2,
 	SE_THOUGHT_CONTROL = 3,
 };
 
-enum  player_mood {
+enum PlayerMood {
 	MOOD_MAGNANIMOUS = 0, // also Submissive, a special case where faction is hopelessly overmatched
 	MOOD_SOLICITOUS = 1,
 	MOOD_COOPERATIVE = 2,
@@ -214,14 +214,14 @@ enum  player_mood {
 	MOOD_SEETHING = 8,
 };
 
-struct social_category {
+struct SocialCategory {
 	uint32_t politics;
 	uint32_t economics;
 	uint32_t values;
 	uint32_t future;
 };
 
-struct social_effect {
+struct SocialEffect {
 	int economy;
 	int efficiency;
 	int support;
@@ -235,231 +235,231 @@ struct social_effect {
 	int research;
 };
 
-struct rules_social_effect {
+struct RulesSocialEffect {
 	char set1[24];
 	char set2[24];
 	char padding[56];
 };
 
-struct rules_social_category {
+struct RulesSocialCategory {
 	LPSTR type;
-	int preqTech[4];
+	int preq_tech[4];
 	LPSTR name[4];
-	social_effect modelEffect[4];
+    SocialEffect model_effect[4];
 };
 
-struct rules_might {
-	LPSTR adjStart;
+struct RulesMight {
+	LPSTR adj_start;
 	LPSTR adj;
 };
 
-struct rules_bonusname {
+struct RulesBonusName {
 	char key[24];
 };
 
 /*
-Goals overlay is visible with debug mode activated. Color is based on goal type.
+Goals overlay is visible with debug mode activated. Color is based on Goal type.
 Shortcut: Shift-%
 Format without omniscient view: <One letter type, see ai_goal_types><priority>
 Format with omniscient view: <1st letter of faction><One letter type, see ai_goal_types><priority>
 */
-struct goal {
+struct Goal {
 	int16_t type;
 	int16_t priority;
-	int xCoord;
-	int yCoord;
-	int baseID;
+	int x;
+	int y;
+	int base_id;
 };
 
-struct player {
-	BOOL isLeaderFemale;
+struct Player {
+	BOOL is_leader_female;
 	char filename[24];
-	char searchKey[24];
-	char nameLeader[24];
-	char titleLeader[24];
-	char adjLeader[128];
-	char adjInsultLeader[128];
-	char adjFaction[128];
-	char adjInsultFaction[128];
+	char search_key[24];
+	char name_leader[24];
+	char title_leader[24];
+	char adj_leader[128];
+	char adj_insult_leader[128];
+	char adj_faction[128];
+	char adj_insult_faction[128];
 	uint8_t padding1[128];
-	char nounFaction[24];
-	int nounGender;
-	BOOL isNounPlural;
-	char adjNameFaction[128]; // drops 2nd entry on line (abbreviation value?), non-English forms?
-	char formalNameFaction[40];
-	char insultLeader[24];
-	char descNameFaction[24];
-	char assistantName[24];
-	char scientistName[24];
-	char assistantCity[24];
+	char noun_faction[24];
+	int noun_gender;
+	BOOL is_noun_plural;
+	char adj_name_faction[128]; // drops 2nd entry on line (abbreviation value?), non-English forms?
+	char formal_name_faction[40];
+	char insult_leader[24];
+	char desc_name_faction[24];
+	char assistant_name[24];
+	char scientist_name[24];
+	char assistant_city[24];
 	uint8_t padding2[176];
-	int ruleTechSelected;
-	int ruleMorale;
-	int ruleResearch;
-	int ruleDrone;
-	int ruleTalent;
-	int ruleEnergy;
-	int ruleInterest;
-	int rulePopulation;
-	int ruleHurry;
-	int ruleTechcost;
-	int rulePsi;
-	int ruleSharetech;
-	int ruleCommerce;
-	int ruleFlags;
-	int factionBonusCount;
-	int factionBonusID[8];
-	int factionBonusVal1[8];
-	int factionBonusVal2[8];
-	int AI_Fight; // willingness to use force to achieve goals (-1, 0, 1)
-	BOOL AI_Growth; // interest in population growth
-	BOOL AI_Tech; // interest in knowledge
-	BOOL AI_Wealth; // interest in wealth
-	BOOL AI_Power; // interest in power
-	int socIdeologyCategory; // priority
-	int socAntiIdeologyCategory; // opposition
-	int socIdeologyModel; // priority
-	int socAntiIdeologyModel; // opposition
-	int socIdeologyEffect; // emphasis/priority
-	int socAntiIdeologyEffect; // opposition ; unused, never set in default factions
+	int rule_tech_selected;
+	int rule_morale;
+	int rule_research;
+	int rule_drone;
+	int rule_talent;
+	int rule_energy;
+	int rule_interest;
+	int rule_population;
+	int rule_hurry;
+	int rule_techcost;
+	int rule_psi;
+	int rule_sharetech;
+	int rule_commerce;
+	int rule_flags;
+	int faction_bonus_count;
+	int faction_bonus_id[8];
+	int faction_bonus_val1[8];
+	int faction_bonus_val2[8];
+	int ai_fight; // willingness to use force to achieve goals (-1, 0, 1)
+	BOOL ai_growth; // interest in population growth
+	BOOL ai_tech; // interest in knowledge
+	BOOL ai_wealth; // interest in wealth
+	BOOL ai_power; // interest in power
+	int soc_ideology_category; // priority
+	int soc_anti_ideology_category; // opposition
+	int soc_ideology_model; // priority
+	int soc_anti_ideology_model; // opposition
+	int soc_ideology_effect; // emphasis/priority
+	int soc_anti_ideology_effect; // opposition ; unused, never set in default factions
 };
 
-struct player_data {
-	uint32_t playerFlags; // see player_flags_bitfield
+struct PlayerData {
+	uint32_t flags; // see PlayerFlagsBitfield
 	uint32_t ranking; // 0 (lowest) to 7 (highest) rank ; used to determine #MIGHT
-	int diffLevel;
-	uint32_t baseNameOffset; // keep track which base names have been used
-	uint32_t baseSeaNameOffset; // keep track which sea base names have been used
-	int lastTurnNewBase; // turn for last built, captured or acquired (drone riot) base
-	uint32_t diploTreaties[8];
-	int diploAgenda[8];
-	uint32_t diploFriction[8]; // between 0-20
-	int diploSpoke[8]; // Turn for the last player-to-AI communication; -1 for never
-	int diploMerc[8]; // mercifulness? Possibly higher values indicate willingness for deal-making
-	char diploPatience[8]; // AI-to-player
-	int sanctionTurns; // Turns left for economic sanctions imposed by other factions for atrocities
-	int loanBalance[8]; // Loan balance remaining this faction owes another to be paid over term
-	int loanPayment[8]; // The per turn payment amount this faction owes another faction
+	int diff_level;
+	uint32_t base_name_offset; // keep track which base names have been used
+	uint32_t base_sea_name_offset; // keep track which sea base names have been used
+	int last_turn_new_base; // turn for last built, captured or acquired (drone riot) base
+	uint32_t diplo_treaties[8];
+	int diplo_agenda[8];
+	uint32_t diplo_friction[8]; // between 0-20
+	int diplo_spoke[8]; // Turn for the last player-to-AI communication; -1 for never
+	int diplo_merc[8]; // mercifulness? Possibly higher values indicate willingness for deal-making
+	char diplo_patience[8]; // AI-to-player
+	int sanction_turns; // Turns left for other faction imposed economic sanctions for atrocities
+	int loan_balance[8]; // Loan balance remaining this faction owes another to be paid over term
+	int loan_payment[8]; // The per turn payment amount this faction owes another faction
 	int unk_12[8];
-	int integrityBlemishes; // Blacken
-	int globalReputation; // ? integrity? related to signing treaties, freeing faction
-	int diploUnk_1[8]; // ? rights (vs wrongs below)? gift, bribe; Gifts and bribes we have received
-	int diploWrongs[8]; // number of times the player has double crossed (wronged) this faction
-	int diploBetrayed[8]; // number of times the player has been double crossed by this faction
-	int diploUnk_3[8]; // ? combat related
-	int diploUnk_4[8]; // ? combat related
-	int tradedMaps; // bitfield of other factions that have traded maps with faction
-	int baseGovernorAdv; // default advanced Governor settings; see governor_base_bitfield
+	int integrity_blemishes; // Blacken
+	int global_reputation; // ? integrity? related to signing treaties, freeing faction
+	int diplo_unk1[8]; // ? rights (vs wrongs below)? gift, bribe; Gifts and bribes we have received
+	int diplo_wrongs[8]; // number of times the player has double crossed (wronged) this faction
+	int diplo_betrayed[8]; // number of times the player has been double crossed by this faction
+	int diplo_unk3[8]; // ? combat related
+	int diplo_unk4[8]; // ? combat related
+	int traded_maps; // bitfield of other factions that have traded maps with faction
+	int base_governor_adv; // default advanced Governor settings; see governor_base_bitfield
 	int atrocities; // count committed by faction
-	int majorAtrocities; // count committed by faction
+	int major_atrocities; // count committed by faction
 	// mind control action value: mind/thought control base (+4) or successfully subvert unit (+1)
 	// TODO: possible issue with thought control still increasing variables on failure
-	uint32_t mindControlTotal; // running sum of mind control actions above against other factions
-	uint32_t diploMindControl[8]; // total action value against this player by each faction
-	uint32_t stolenDataCount[8]; // probe successfully procured research data (tech/map) per faction
-	int energyReserves; // current energy credits
-	uint32_t hurryCostTotal; // Net MP: Total paid energy to hurry production (current turn)
-	social_category socCategoryPending;
-	social_category socCategoryActive;
-	int socUpheavalCostPaid;
-	social_effect socEffectPending;
-	social_effect socEffectActive; // ?
-	social_effect socEffectTemp; // maybe previous turn?
-	social_effect socEffectBase; // from faction files?
+	uint32_t mind_control_total; // running sum of mind control actions above against other factions
+	uint32_t diplo_mind_control[8]; // total action value against this player by each faction
+	uint32_t stolen_data_count[8]; // probe procured research data (tech/map) per faction
+	int energy_reserves; // current energy credits
+	uint32_t hurry_cost_total; // Net MP: Total paid energy to hurry production (current turn)
+	SocialCategory soc_category_pending;
+	SocialCategory soc_category_active;
+	int soc_upheaval_cost_paid;
+    SocialEffect soc_effect_pending;
+    SocialEffect soc_effect_active; // ?
+    SocialEffect soc_effect_temp; // maybe previous turn?
+    SocialEffect soc_effect_base; // from faction files?
 	int unk_13;
-	uint32_t maintCostTotal; // Total maintenance costs for all bases (current turn)
-	int techCommerceBonus; // Increases commerce income
-	int turnCommerceIncome;
+	uint32_t maint_cost_total; // Total maintenance costs for all bases (current turn)
+	int tech_commerce_bonus; // Increases commerce income
+	int turn_commerce_income;
 	int unk_17;
 	int unk_18;
-	int techFungusNutrient; // Increases NUTRIENT production in fungus
-	int techFungusMineral; // Increases MINERALS production in fungus
-	int techFungusEnergy; // Increases ENERGY production in fungus
-	int techFungusUnk; // PSI? Dropped mechanic?
-	int SE_AllocPsych;
-	int SE_AllocLabs;
-	uint32_t techPactSharedGoals[12]; // Bitfield; Suggested techID goals from pacts (TEAMTECH)
-	int techRanking; // Twice the number of techs achieved
+	int tech_fungus_nutrient; // Increases NUTRIENT production in fungus
+	int tech_fungus_mineral; // Increases MINERALS production in fungus
+	int tech_fungus_energy; // Increases ENERGY production in fungus
+	int tech_fungus_unk; // PSI? Dropped mechanic?
+	int se_alloc_psych;
+	int se_alloc_labs;
+	uint32_t tech_pact_shared_goals[12]; // Bitfield; Suggested techID goals from pacts (TEAMTECH)
+	int tech_ranking; // Twice the number of techs achieved
 	int unk_26;
-	uint32_t satODPDeployed;
-	int theoryOfEverything;
-	char techTradeSource[92];
-	int techAccumulated; // Research
-	int techIDResearching; // Researching
-	int techCost;
-	int earnedTechsSaved;
-	int netRandomEvent;
-	int AI_Fight; // -1, 0, 1
-	BOOL AI_Growth;
-	BOOL AI_Tech;
-	BOOL AI_Wealth;
-	BOOL AI_Power;
-	int xCoordTarget;
-	int yCoordTarget;
+	uint32_t sat_odp_deployed;
+	int theory_of_everything;
+	char tech_trade_source[92];
+	int tech_accumulated; // Research
+	int tech_id_researching; // Researching
+	int tech_cost;
+	int earned_techs_saved;
+	int net_random_event;
+	int ai_fight; // -1, 0, 1
+	BOOL ai_growth;
+	BOOL ai_tech;
+	BOOL ai_wealth;
+	BOOL ai_power;
+	int x_target;
+	int y_target;
 	int unk_28;
-	int councilCallTurn;
+	int council_call_turn;
 	int unk_29[11]; // used by council code related to buying votes; vote id?
 	int unk_30[11]; // used by council code related to buying votes; factionID
-	uint8_t facilityAnnounced[4]; // bitfield - used to determine one time play of fac audio blurb
+	uint8_t facility_announced[4]; // bitfield - used to determine one time play of fac audio blurb
 	int unk_32;
 	char unk_33;
 	char unk_34;
 	char unk_35;
 	char unk_36;
-	int planetEcology;
-	int baseIDAtkTarget; // Battle planning of base to attack, -1 if not set
+	int planet_ecology;
+	int base_id_atk_target; // Battle planning of base to attack, -1 if not set
 	int unk_37;
-	char savedQueueName[8][24]; // queue template
-	int savedQueueSize[8]; // queue template
-	int savedQueueItems[8][10]; // queue template
+	char saved_queue_name[8][24]; // queue template
+	int saved_queue_size[8]; // queue template
+	int saved_queue_items[8][10]; // queue template
 	int unk_38[8];
 	int unk_39[8][9];
 	int unk_46[9];
 	int unk_47;
 	int unk_48;
 	int unk_49;
-	uint32_t nutrientSurplusTotal;
-	int labsTotal;
-	uint32_t satellitesNutrient; // +1 Nutrients per Sky Hydroponics Lab
-	uint32_t satellitesMineral; // +1 Minerals per Nessus Mining Station
-	uint32_t satellitesEnergy; // +1 Energy per Orbital Power Transmitter
-	uint32_t satellitesODPTotal; // Orbital Defense Pod count
-	int bestWeaponValue;
-	int bestPsiOffense;
-	int bestPsiDefense;
-	int bestArmorValue;
-	int bestLandSpeed;
-	int enemyBestWeaponValue; // Enemy refers here to any non-pact faction
-	int enemyBestArmorValue;
-	int enemyBestLandSpeed;
-	int enemyBestPsiOffense;
-	int enemyBestPsiDefense;
+	uint32_t nutrient_surplus_total;
+	int labs_total;
+	uint32_t satellites_nutrient; // +1 Nutrients per Sky Hydroponics Lab
+	uint32_t satellites_mineral; // +1 Minerals per Nessus Mining Station
+	uint32_t satellites_energy; // +1 Energy per Orbital Power Transmitter
+	uint32_t satellites_odp_total; // Orbital Defense Pod count
+	int best_weapon_value;
+	int best_psi_offense;
+	int best_psi_defense;
+	int best_armor_value;
+	int best_land_speed;
+	int enemy_best_weapon_value; // Enemy refers here to any non-pact faction
+	int enemy_best_armor_value;
+	int enemy_best_land_speed;
+	int enemy_best_psi_offense;
+	int enemy_best_psi_defense;
 	int unk_64;
 	int unk_65;
 	int unk_66;
 	int unk_67;
 	int unk_68;
 	char unk_69[4];
-	uint8_t protoIDActive[512];
-	uint8_t protoIDQueue[512];
-	int16_t protoIDLost[512];
-	int totalMilVeh; // total combat units
-	uint32_t currentNumBases;
-	int milStrength_1;
-	int milStrength_2;
-	int popTotal;
+	uint8_t proto_id_active[512];
+	uint8_t proto_id_queue[512];
+	int16_t proto_id_lost[512];
+	int total_mil_veh; // total combat units
+	uint32_t current_num_bases;
+	int mil_strength_1;
+	int mil_strength_2;
+	int pop_total;
 	int unk_70; // AI total TRIAD_SEA Veh?
-	int planetBusters;
+	int planet_busters;
 	int unk_71;
 	int unk_72;
 	/*
 	* AI planning variables that relate to faction units in specific disjoint land/water areas.
 	* All of these are indexed by the region value in Map struct (see for more details).
 	*/
-	uint16_t regionTotalCombatVehs[128];
-	uint8_t regionTotalBases[128];
-	uint8_t regionTotalOffensiveVehs[128];
-	uint16_t regionForceRating[128]; // Combined offensive/morale rating of all units in the area
+	uint16_t region_total_combat_vehs[128];
+	uint8_t region_total_bases[128];
+	uint8_t region_total_offensive_vehs[128];
+	uint16_t region_force_rating[128]; // Combined offensive/morale rating of all units in the area
 	uint16_t unk_77[128]; // Movement planning flags
 	uint16_t unk_78[128]; // controlled territory by region?
 	uint16_t unk_79[128]; // territory related to scenario obj or visible by region?
@@ -467,25 +467,25 @@ struct player_data {
 	uint16_t unk_81[128]; // something to do with territory / base radius by region?
 	uint8_t unk_82[128]; // world site territory by region?
 	uint8_t unk_83[128]; // related to goody_at()?
-	uint8_t regionBasePlan[128]; // visible in map UI with omni view + debug mode under base name
+	uint8_t region_base_plan[128]; // visible in map UI with omni view + debug mode under base name
 	/* End of block */
-	goal goals[75];
-	goal sites[25]; // same struct as goals, subset of general goals?
+	Goal goals[75];
+	Goal sites[25]; // same struct as goals, subset of general goals?
 	int unk_93;
 	int unk_94;
 	int unk_95;
 	int unk_96;
 	int unk_97;
-	uint32_t techAchieved; // count of technology faction has discovered/achieved
-	int timeBonusCount; // Net MP: Each is worth amount in seconds under Time Controls Extra
+	uint32_t tech_achieved; // count of technology faction has discovered/achieved
+	int time_bonus_count; // Net MP: Each is worth amount in seconds under Time Controls Extra
 	int unk_99; // unused?
-	uint32_t secretProjectIntel[8]; // Bitfield; News of SPs other factions are working on
-	int cornerMarketTurn;
-	int cornerMarketActive;
+	uint32_t secret_project_intel[8]; // Bitfield; News of SPs other factions are working on
+	int corner_market_turn;
+	int corner_market_active;
 	int unk_101;
 	int unk_102;
 	int unk_103;
-	uint32_t playerFlagsExt;
+	uint32_t flags_ext;
 	int unk_105;
 	int unk_106;
 	int unk_107;
@@ -502,17 +502,17 @@ struct player_data {
 	int unk_118;
 };
 
-struct faction_art {
+struct FactionArt {
 	Sprite base[6][4];
-	Sprite councilLogo[2];
-	Sprite councilSmall;
-	Sprite councilBig;
+	Sprite council_logo[2];
+	Sprite council_small;
+	Sprite council_big;
 	Sprite diplomacy;
-	Sprite diplomacyLogo;
-	Sprite diplomacyLandscape;
+	Sprite diplomacy_logo;
+	Sprite diplomacy_landscape;
 	Sprite datalink;
-	Sprite reportLogoSmall[3];
-	Sprite reportLogo[2];
+	Sprite report_logo_small[3];
+	Sprite report_logo[2];
 };
 
 constexpr int MaxSocialCatNum = 4;
@@ -526,15 +526,15 @@ constexpr int MaxPlayerNum = 8;
 constexpr int MaxGoalsNum = 75;
 constexpr int MaxSitesNum = 25;
 
-extern rules_social_category *SocialCategory;
-extern rules_social_effect *SocialEffect;
+extern RulesSocialCategory *SocialCategories;
+extern RulesSocialEffect *SocialEffects;
 extern LPSTR *Mood;
 extern LPSTR *Repute;
-extern rules_might *Might;
-extern rules_bonusname *BonusName;
-extern player *Players; // Players[0] is AI native life faction
-extern player_data *PlayersData;
-extern faction_art *FactionArt;
+extern RulesMight *Might;
+extern RulesBonusName *BonusName;
+extern Player *Players; // Players[0] is AI native life faction
+extern PlayerData *PlayersData;
+extern FactionArt *FactionsArt;
 extern uint8_t *FactionsStatus;
 extern uint32_t *FactionRankings;
 extern uint32_t *RankingFactionIDUnk1;
@@ -544,52 +544,51 @@ extern int *DiploFriction;
 extern uint32_t *DiploFrictionFactionIDWith;
 extern uint32_t *DiploFrictionFactionID;
 
-OPENSMACX_API BOOL __cdecl is_alien_faction(uint32_t factionID);
-OPENSMACX_API BOOL __cdecl is_human(uint32_t factionID);
-OPENSMACX_API BOOL __cdecl is_alive(uint32_t factionID);
-OPENSMACX_API uint32_t __cdecl has_treaty(uint32_t factionID, uint32_t factionIDWith, 
-	uint32_t treaties);
-OPENSMACX_API LPSTR __cdecl get_adjective(int factionID);
-OPENSMACX_API LPSTR __cdecl get_noun(int factionID);
+OPENSMACX_API BOOL __cdecl is_alien_faction(uint32_t faction_id);
+OPENSMACX_API BOOL __cdecl is_human(uint32_t faction_id);
+OPENSMACX_API BOOL __cdecl is_alive(uint32_t faction_id);
+OPENSMACX_API uint32_t __cdecl has_treaty(uint32_t faction_id, uint32_t faction_id_with, 
+                                          uint32_t treaties);
+OPENSMACX_API LPSTR __cdecl get_adjective(uint32_t faction_id);
+OPENSMACX_API LPSTR __cdecl get_noun(uint32_t faction_id);
 OPENSMACX_API BOOL __cdecl auto_contact();
-OPENSMACX_API BOOL __cdecl great_beelzebub(uint32_t factionID, BOOL isAggressive);
-OPENSMACX_API BOOL __cdecl great_satan(uint32_t factionID, BOOL isAggressive);
-OPENSMACX_API uint32_t __cdecl aah_ooga(int factionID, int pactFactionID);
+OPENSMACX_API BOOL __cdecl great_beelzebub(uint32_t faction_id, BOOL is_aggressive);
+OPENSMACX_API BOOL __cdecl great_satan(uint32_t faction_id, BOOL is_aggressive);
+OPENSMACX_API uint32_t __cdecl aah_ooga(int faction_id, int pact_faction_id);
 OPENSMACX_API BOOL __cdecl climactic_battle();
-OPENSMACX_API BOOL __cdecl at_climax(uint32_t factionID);
-OPENSMACX_API void __cdecl cause_friction(uint32_t factionID, uint32_t factionIDWith, int friction);
+OPENSMACX_API BOOL __cdecl at_climax(uint32_t faction_id);
+OPENSMACX_API void __cdecl cause_friction(uint32_t faction_id, uint32_t faction_id_with, 
+                                          int friction);
 OPENSMACX_API uint32_t __cdecl get_mood(int friction);
-OPENSMACX_API uint32_t __cdecl reputation(uint32_t factionID, uint32_t factionIDWith);
-OPENSMACX_API int __cdecl get_patience(uint32_t factionIDWith, uint32_t factionID);
-OPENSMACX_API uint32_t __cdecl energy_value(uint32_t loanPrincipal);
-OPENSMACX_API void __cdecl set_treaty(uint32_t factionID, uint32_t factionIDWith, uint32_t treaty,
-	BOOL set);
-OPENSMACX_API void __cdecl set_agenda(uint32_t factionID, uint32_t factionIDWith, uint32_t agenda,
-	BOOL set);
-OPENSMACX_API uint32_t __cdecl has_agenda(uint32_t factionID, uint32_t factionIDWith, 
-	uint32_t agenda);
-OPENSMACX_API BOOL __cdecl wants_to_attack(uint32_t factionID, uint32_t factionIDTarget,
-	int factionIDUnk);
-OPENSMACX_API uint32_t __cdecl guard_check(uint32_t factionID, uint32_t region);
-OPENSMACX_API void __cdecl add_goal(uint32_t factionID, int type, int priority, int xCoord,
-	int yCoord, int baseID);
-OPENSMACX_API void __cdecl add_site(uint32_t factionID, int type, int priority, int xCoord,
-	int yCoord);
-OPENSMACX_API BOOL __cdecl at_goal(uint32_t factionID, int type, int xCoord, int yCoord);
-OPENSMACX_API BOOL __cdecl at_site(uint32_t factionID, int type, int xCoord, int yCoord);
-OPENSMACX_API void __cdecl wipe_goals(uint32_t factionID);
-OPENSMACX_API void __cdecl init_goals(uint32_t factionID);
-OPENSMACX_API void __cdecl del_site(uint32_t factionID, int type, int xCoord, int yCoord,
-	int proximity);
-OPENSMACX_API uint32_t __cdecl corner_market(uint32_t factionID);
+OPENSMACX_API uint32_t __cdecl reputation(uint32_t faction_id, uint32_t faction_id_with);
+OPENSMACX_API int __cdecl get_patience(uint32_t faction_id_with, uint32_t faction_id);
+OPENSMACX_API uint32_t __cdecl energy_value(uint32_t loan_principal);
+OPENSMACX_API void __cdecl set_treaty(uint32_t faction_id, uint32_t faction_id_with, 
+                                      uint32_t treaty, BOOL set);
+OPENSMACX_API void __cdecl set_agenda(uint32_t faction_id, uint32_t faction_id_with, 
+                                      uint32_t agenda, BOOL set);
+OPENSMACX_API uint32_t __cdecl has_agenda(uint32_t faction_id, uint32_t faction_id_with,
+                                          uint32_t agenda);
+OPENSMACX_API BOOL __cdecl wants_to_attack(uint32_t faction_id, uint32_t faction_id_tgt,
+                                           int faction_id_unk);
+OPENSMACX_API uint32_t __cdecl guard_check(uint32_t faction_id, uint32_t region);
+OPENSMACX_API void __cdecl add_goal(uint32_t faction_id, int type, int priority, int x, int y, 
+                                    int base_id);
+OPENSMACX_API void __cdecl add_site(uint32_t faction_id, int type, int priority, int x, int y);
+OPENSMACX_API BOOL __cdecl at_goal(uint32_t faction_id, int type, int x, int y);
+OPENSMACX_API BOOL __cdecl at_site(uint32_t faction_id, int type, int x, int y);
+OPENSMACX_API void __cdecl wipe_goals(uint32_t faction_id);
+OPENSMACX_API void __cdecl init_goals(uint32_t faction_id);
+OPENSMACX_API void __cdecl del_site(uint32_t faction_id, int type, int x, int y, int proximity);
+OPENSMACX_API uint32_t __cdecl corner_market(uint32_t faction_id);
 OPENSMACX_API void __cdecl see_map_check();
-OPENSMACX_API void __cdecl compute_faction_modifiers(uint32_t factionID);
-OPENSMACX_API void __cdecl social_calc(social_category *category, social_effect *effect,
-	uint32_t factionID, BOOL toggle, BOOL isQuickCalc);
-OPENSMACX_API void __cdecl social_upkeep(uint32_t factionID);
-OPENSMACX_API uint32_t __cdecl social_upheaval(uint32_t factionID, social_category *categoryNew);
-OPENSMACX_API BOOL __cdecl society_avail(int socCategory, int socModel, int factionID);
-OPENSMACX_API void __cdecl social_ai(uint32_t factionID, int growthVal, int techVal, int wealthVal, 
-	int powerVal, social_category *output);
-OPENSMACX_API void __cdecl enemy_capabilities(uint32_t factionID);
-OPENSMACX_API void __cdecl enemy_capabilities_t(uint32_t factionID);
+OPENSMACX_API void __cdecl compute_faction_modifiers(uint32_t faction_id);
+OPENSMACX_API void __cdecl social_calc(SocialCategory *category, SocialEffect *effect, 
+                                       uint32_t faction_id, BOOL toggle, BOOL is_quick_calc);
+OPENSMACX_API void __cdecl social_upkeep(uint32_t faction_id);
+OPENSMACX_API uint32_t __cdecl social_upheaval(uint32_t faction_id, SocialCategory *category_new);
+OPENSMACX_API BOOL __cdecl society_avail(int soc_category, int soc_model, uint32_t faction_id);
+OPENSMACX_API void __cdecl social_ai(uint32_t faction_id, int growth_val, int tech_val, 
+                                     int wealth_val, int power_val, SocialCategory *output);
+OPENSMACX_API void __cdecl enemy_capabilities(uint32_t faction_id);
+OPENSMACX_API void __cdecl enemy_capabilities_t(uint32_t faction_id);

@@ -63,7 +63,7 @@ uint32_t __cdecl terraform_cost(int x, int y, uint32_t faction_id) {
 			}
 		}
 	}
-	if (Players[faction_id].ruleFlags & RFLAG_TERRAFORM) {
+	if (Players[faction_id].rule_flags & RFLAG_TERRAFORM) {
 		cost /= 2;
 	}
 	cost /= 2;

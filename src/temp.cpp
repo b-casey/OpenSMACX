@@ -192,7 +192,7 @@ int __cdecl tester() {
 				else {
 					char szTemp[200];
 					sprintf_s(szTemp, 200, "base: %s - xCoord: %d, yCoord: %d, MC cost for %s : %d",
-						Base[j].name_string, Base[j].xCoord, Base[j].yCoord, Players[i].formalNameFaction, mc1);
+						Base[j].name_string, Base[j].xCoord, Base[j].yCoord, Players[i].formal_name_faction, mc1);
 					log_say(szTemp, 0, 0, 0);
 				}
 			}
@@ -221,7 +221,7 @@ int __cdecl tester() {
 				*/
 				/*
 				for (int i = 0; i < MaxPlayerNum; i++) {
-					log_say(Players[i].nameFaction, "global rep", PlayersData[i].globalReputation, 0, 0);
+					log_say(Players[i].nameFaction, "global rep", PlayersData[i].global_reputation, 0, 0);
 				}
 				for (int i = 0; i < MaxPlayerNum; i++) {
 					log_say(Players[i].nameFaction, "energy cost", PlayersData[i].energyCost, 0, 0);
@@ -262,18 +262,18 @@ int __cdecl tester() {
 
 				/*
 				for (int i = 0; i < MaxPlayerNum; i++) {
-					log_say(Players[i].searchKey, "PSI Atk", weap_strat(WPN_PSI_ATTACK, i), 0, 0);
-					log_say(Players[i].searchKey, "PSI Def", arm_strat(ARM_PSI_DEFENSE, i), 0, 0);
+					log_say(Players[i].search_key, "PSI Atk", weap_strat(WPN_PSI_ATTACK, i), 0, 0);
+					log_say(Players[i].search_key, "PSI Def", arm_strat(ARM_PSI_DEFENSE, i), 0, 0);
 				}
 
 				for (int z = 0; z < 10; z++) {
 					for (int i = 1; i < MaxPlayerNum; i++) {
 						int t1 = PlayersData[i].enemyBestWeaponVal;
 						int t2 = PlayersData[i].enemyBestArmorVal;
-						int t3 = PlayersData[i].enemyBestLandSpeed;
+						int t3 = PlayersData[i].enemy_best_land_speed;
 						int t4 = PlayersData[i].enemyBestPsiAtkVal;
 						int t5 = PlayersData[i].enemyBestPsiDefVal;
-						int t6 = PlayersData[i].bestLandSpeed;
+						int t6 = PlayersData[i].best_land_speed;
 						int t7 = PlayersData[i].bestPsiDefVal;
 						int t8 = PlayersData[i].bestArmorVal;
 						int t9 = PlayersData[i].bestPsiAtkVal;
@@ -281,20 +281,20 @@ int __cdecl tester() {
 						enemy_capabilities_t(i);
 						int a1 = PlayersData[i].enemyBestWeaponVal;
 						int a2 = PlayersData[i].enemyBestArmorVal;
-						int a3 = PlayersData[i].enemyBestLandSpeed;
+						int a3 = PlayersData[i].enemy_best_land_speed;
 						int a4 = PlayersData[i].enemyBestPsiAtkVal;
 						int a5 = PlayersData[i].enemyBestPsiDefVal;
-						int a6 = PlayersData[i].bestLandSpeed;
+						int a6 = PlayersData[i].best_land_speed;
 						int a7 = PlayersData[i].bestPsiDefVal;
 						int a8 = PlayersData[i].bestArmorVal;
 						int a9 = PlayersData[i].bestPsiAtkVal;
 						int a0 = PlayersData[i].bestWeaponVal;
 						PlayersData[i].enemyBestWeaponVal = t1;
 						PlayersData[i].enemyBestArmorVal = t2;
-						PlayersData[i].enemyBestLandSpeed = t3;
+						PlayersData[i].enemy_best_land_speed = t3;
 						PlayersData[i].enemyBestPsiAtkVal = t4;
 						PlayersData[i].enemyBestPsiDefVal = t5;
-						PlayersData[i].bestLandSpeed = t6;
+						PlayersData[i].best_land_speed = t6;
 						PlayersData[i].bestPsiDefVal = t7;
 						PlayersData[i].bestArmorVal = t8;
 						PlayersData[i].bestPsiAtkVal = t9;
@@ -302,10 +302,10 @@ int __cdecl tester() {
 						enemy_capabilities_OG(i);
 						int b1 = PlayersData[i].enemyBestWeaponVal;
 						int b2 = PlayersData[i].enemyBestArmorVal;
-						int b3 = PlayersData[i].enemyBestLandSpeed;
+						int b3 = PlayersData[i].enemy_best_land_speed;
 						int b4 = PlayersData[i].enemyBestPsiAtkVal;
 						int b5 = PlayersData[i].enemyBestPsiDefVal;
-						int b6 = PlayersData[i].bestLandSpeed;
+						int b6 = PlayersData[i].best_land_speed;
 						int b7 = PlayersData[i].bestPsiDefVal;
 						int b8 = PlayersData[i].bestArmorVal;
 						int b9 = PlayersData[i].bestPsiAtkVal;
@@ -318,7 +318,7 @@ int __cdecl tester() {
 							log_say("enemyBestArmorVal error", a2, b2, i);
 						}
 						if (a3 != b3) {
-							log_say("enemyBestLandSpeed error", a3, b3, i);
+							log_say("enemy_best_land_speed error", a3, b3, i);
 						}
 						if (a4 != b4) {
 							log_say("enemyBestPsiAtkVal error", a4, b4, i);
@@ -327,7 +327,7 @@ int __cdecl tester() {
 							log_say("enemyBestPsiDefVal error", a5, b5, i);
 						}
 						if (a6 != b6) {
-							log_say("bestLandSpeed error", a6, b6, i);
+							log_say("best_land_speed error", a6, b6, i);
 						}
 						if (a7 != b7) {
 							log_say("bestPsiDefVal error", a7, b7, i);
@@ -354,10 +354,10 @@ int __cdecl tester() {
 					for (int i = 1; i < MaxPlayerNum; i++) {
 						int t1 = PlayersData[i].enemyBestWeaponVal;
 						int t2 = PlayersData[i].enemyBestArmorVal;
-						int t3 = PlayersData[i].enemyBestLandSpeed;
+						int t3 = PlayersData[i].enemy_best_land_speed;
 						int t4 = PlayersData[i].enemyBestPsiAtkVal;
 						int t5 = PlayersData[i].enemyBestPsiDefVal;
-						int t6 = PlayersData[i].bestLandSpeed;
+						int t6 = PlayersData[i].best_land_speed;
 						int t7 = PlayersData[i].bestPsiDefVal;
 						int t8 = PlayersData[i].bestArmorVal;
 						int t9 = PlayersData[i].bestPsiAtkVal;
@@ -365,20 +365,20 @@ int __cdecl tester() {
 						enemy_capabilities_OG(i);
 						int a1 = PlayersData[i].enemyBestWeaponVal;
 						int a2 = PlayersData[i].enemyBestArmorVal;
-						int a3 = PlayersData[i].enemyBestLandSpeed;
+						int a3 = PlayersData[i].enemy_best_land_speed;
 						int a4 = PlayersData[i].enemyBestPsiAtkVal;
 						int a5 = PlayersData[i].enemyBestPsiDefVal;
-						int a6 = PlayersData[i].bestLandSpeed;
+						int a6 = PlayersData[i].best_land_speed;
 						int a7 = PlayersData[i].bestPsiDefVal;
 						int a8 = PlayersData[i].bestArmorVal;
 						int a9 = PlayersData[i].bestPsiAtkVal;
 						int a0 = PlayersData[i].bestWeaponVal;
 						PlayersData[i].enemyBestWeaponVal = t1;
 						PlayersData[i].enemyBestArmorVal = t2;
-						PlayersData[i].enemyBestLandSpeed = t3;
+						PlayersData[i].enemy_best_land_speed = t3;
 						PlayersData[i].enemyBestPsiAtkVal = t4;
 						PlayersData[i].enemyBestPsiDefVal = t5;
-						PlayersData[i].bestLandSpeed = t6;
+						PlayersData[i].best_land_speed = t6;
 						PlayersData[i].bestPsiDefVal = t7;
 						PlayersData[i].bestArmorVal = t8;
 						PlayersData[i].bestPsiAtkVal = t9;
@@ -386,10 +386,10 @@ int __cdecl tester() {
 						enemy_capabilities_OG(i);
 						int b1 = PlayersData[i].enemyBestWeaponVal;
 						int b2 = PlayersData[i].enemyBestArmorVal;
-						int b3 = PlayersData[i].enemyBestLandSpeed;
+						int b3 = PlayersData[i].enemy_best_land_speed;
 						int b4 = PlayersData[i].enemyBestPsiAtkVal;
 						int b5 = PlayersData[i].enemyBestPsiDefVal;
-						int b6 = PlayersData[i].bestLandSpeed;
+						int b6 = PlayersData[i].best_land_speed;
 						int b7 = PlayersData[i].bestPsiDefVal;
 						int b8 = PlayersData[i].bestArmorVal;
 						int b9 = PlayersData[i].bestPsiAtkVal;
@@ -402,7 +402,7 @@ int __cdecl tester() {
 							log_say("enemyBestArmorVal error", a2, b2, i);
 						}
 						if (a3 != b3) {
-							log_say("enemyBestLandSpeed error", a3, b3, i);
+							log_say("enemy_best_land_speed error", a3, b3, i);
 						}
 						if (a4 != b4) {
 							log_say("enemyBestPsiAtkVal error", a4, b4, i);
@@ -411,7 +411,7 @@ int __cdecl tester() {
 							log_say("enemyBestPsiDefVal error", a5, b5, i);
 						}
 						if (a6 != b6) {
-							log_say("bestLandSpeed error", a6, b6, i);
+							log_say("best_land_speed error", a6, b6, i);
 						}
 						if (a7 != b7) {
 							log_say("bestPsiDefVal error", a7, b7, i);
@@ -438,7 +438,7 @@ int __cdecl tester() {
 				for (int i = 0; i < MaxPlayerNum; i++) {
 					for (int j = 0; j < 128; j++) {
 						if (PlayersData[i].baseCountByRegion[j]) {
-							log_say(Players[i].searchKey, " ? baseCountByRegion ? ", j, PlayersData[i].baseCountByRegion[j], 0);
+							log_say(Players[i].search_key, " ? baseCountByRegion ? ", j, PlayersData[i].baseCountByRegion[j], 0);
 						}
 					}
 				}
@@ -446,7 +446,7 @@ int __cdecl tester() {
 				for (int i = 0; i < MaxPlayerNum; i++) {
 					for (int j = 0; j < 128; j++) {
 						if (PlayersData[i].unk_81[j]) {
-							log_say(Players[i].searchKey, "? unk_81 ?", j, PlayersData[i].unk_81[j], 0);
+							log_say(Players[i].search_key, "? unk_81 ?", j, PlayersData[i].unk_81[j], 0);
 						}
 					}
 				}
@@ -454,19 +454,19 @@ int __cdecl tester() {
 				for (int i = 0; i < MaxPlayerNum; i++) {
 					for (int j = 0; j < 128; j++) {
 						if (PlayersData[i].unk_84[j]) {
-							//log_say(Players[i].searchKey, "? unk_84 ? ", j, PlayersData[i].unk_84[j], 0);
+							//log_say(Players[i].search_key, "? unk_84 ? ", j, PlayersData[i].unk_84[j], 0);
 						}
 					}
 				}
 
 				for (int i = 0; i < MaxPlayerNum; i++) {
-					//log_say(Players[i].searchKey, "unk_70 - sea?", PlayersData[i].unk_70, 0, 0);
-					//log_say(Players[i].searchKey, "unk_71", PlayersData[i].unk_72, 0, 0);
-					log_say(Players[i].searchKey, " ? unk_26 | earnedTechsSaved | techRanking ? ", PlayersData[i].unk_26, PlayersData[i].earnedTechsSaved, PlayersData[i].techRanking);
+					//log_say(Players[i].search_key, "unk_70 - sea?", PlayersData[i].unk_70, 0, 0);
+					//log_say(Players[i].search_key, "unk_71", PlayersData[i].unk_72, 0, 0);
+					log_say(Players[i].search_key, " ? unk_26 | earned_techs_saved | tech_ranking ? ", PlayersData[i].unk_26, PlayersData[i].earned_techs_saved, PlayersData[i].tech_ranking);
 
-					//log_say(Players[i].searchKey, "unk_48 - base support sum", PlayersData[i].unk_48, 0, 0);
-					//log_say(Players[i].searchKey, "? unk_49 - 4xecon dmg sum ? ", PlayersData[i].unk_49, 0, 0);
-					//log_say(Players[i].searchKey, "unk_48 - support", PlayersData[i].unk_48, 0, 0);
+					//log_say(Players[i].search_key, "unk_48 - base support sum", PlayersData[i].unk_48, 0, 0);
+					//log_say(Players[i].search_key, "? unk_49 - 4xecon dmg sum ? ", PlayersData[i].unk_49, 0, 0);
+					//log_say(Players[i].search_key, "unk_48 - support", PlayersData[i].unk_48, 0, 0);
 				}
 				*/
 				/*
@@ -474,18 +474,18 @@ int __cdecl tester() {
 					char szTemp[512];
 					szTemp[0] = 0;
 					strcat_s(szTemp, " - ");
-					strcat_s(szTemp, Players[Base[i].faction_id_current].nounFaction);
+					strcat_s(szTemp, Players[Base[i].faction_id_current].noun_faction);
 					strcat_s(szTemp, " > unk3 > ");
 					log_say(Base[i].name_string, szTemp, Base[i].unk3, 0, 0);
 					/*
 					szTemp[0] = 0;
 					strcat_s(szTemp, " - ");
-					strcat_s(szTemp, Players[Base[i].faction_id_current].nounFaction);
+					strcat_s(szTemp, Players[Base[i].faction_id_current].noun_faction);
 					strcat_s(szTemp, " - unk4 - ");
 					log_say(Base[i].name_string, szTemp, Base[i].unk4, 0, 0);
 					szTemp[0] = 0;
 					strcat_s(szTemp, " - ");
-					strcat_s(szTemp, Players[Base[i].faction_id_current].nounFaction);
+					strcat_s(szTemp, Players[Base[i].faction_id_current].noun_faction);
 					strcat_s(szTemp, " - unk5 - ");
 					log_say(Base[i].name_string, szTemp, Base[i].unk5, 0, 0);
 					*/
@@ -610,7 +610,7 @@ void tech_calc_output() {
 					log_say("bad: ", techVal1, 0, 0);
 				}
 				else {
-					log_say(Players[i].formalNameFaction, Technology[j].name, techVal1, k, 0);
+					log_say(Players[i].formal_name_faction, Technology[j].name, techVal1, k, 0);
 				}
 			}
 		}
@@ -620,18 +620,18 @@ void tech_calc_output() {
 			if (techVal1 != techVal2) {
 				log_say("tech_val error: ", j, i, 0);
 				if (j < 97) {
-					log_say(Players[i].formalNameFaction, Players[j - 89].formalNameFaction, techVal1, techVal2, 0);
+					log_say(Players[i].formal_name_faction, Players[j - 89].formal_name_faction, techVal1, techVal2, 0);
 				}
 				else {
-					log_say(Players[i].formalNameFaction, VehPrototypes[j - 97].veh_name, techVal1, techVal2, 0);
+					log_say(Players[i].formal_name_faction, VehPrototypes[j - 97].veh_name, techVal1, techVal2, 0);
 				}
 			}
 			else {
 				if (j < 97) {
-					log_say(Players[i].formalNameFaction, Players[j - 89].formalNameFaction, techVal1, 0, 0);
+					log_say(Players[i].formal_name_faction, Players[j - 89].formal_name_faction, techVal1, 0, 0);
 				}
 				else {
-					log_say(Players[i].formalNameFaction, VehPrototypes[j - 97].veh_name, techVal1, 0, 0);
+					log_say(Players[i].formal_name_faction, VehPrototypes[j - 97].veh_name, techVal1, 0, 0);
 				}
 			}
 		}

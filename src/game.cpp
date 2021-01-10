@@ -52,12 +52,12 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl planetfall(uint32_t faction_id) {
-	parse_set(Players[faction_id].isLeaderFemale, false);
-	parse_says(0, Players[faction_id].adjNameFaction, -1, -1);
-	parse_says(2, Players[faction_id].titleLeader, -1, -1);
-	parse_says(3, Players[faction_id].nameLeader, -1, -1);
-	parse_set(Players[faction_id].nounGender, Players[faction_id].isNounPlural);
-	parse_says(1, Players[faction_id].nounFaction, -1, -1); // unused in script, leaving in for now
+	parse_set(Players[faction_id].is_leader_female, false);
+	parse_says(0, Players[faction_id].adj_name_faction, -1, -1);
+	parse_says(2, Players[faction_id].title_leader, -1, -1);
+	parse_says(3, Players[faction_id].name_leader, -1, -1);
+	parse_set(Players[faction_id].noun_gender, Players[faction_id].is_noun_plural);
+	parse_says(1, Players[faction_id].noun_faction, -1, -1); // unused in script, leaving in for now
 	char script_id[13];
 	if (*TurnCurrentNum) { // shifted logic to top to fix nonexistent accelerated script ids
 		parse_num(0, *TurnCurrentNum);

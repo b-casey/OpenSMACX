@@ -1159,7 +1159,7 @@ Return Value: Is tile visible/known to faction? true/false
 Status: Complete
 */
 BOOL __cdecl is_known(uint32_t x, uint32_t y, uint32_t faction_id) {
-    return (PlayersData[faction_id].playerFlags & PFLAG_MAP_REVEALED
+    return (PlayersData[faction_id].flags & PFLAG_MAP_REVEALED
         || map_loc(x, y)->visibility & (1 << faction_id));
 }
 

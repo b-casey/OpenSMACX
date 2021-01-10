@@ -281,13 +281,13 @@ with open(exe_path, "r+b") as f:
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*326))	
 	# FACTION
-	bin_app.seek(0x001B4730) # ?society_avail@@YAHHHH@Z
+	bin_app.seek(0x001B4730) # ?society_avail@@YAHHHI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*264))
-	bin_app.seek(0x0010B910) # ?get_adjective@@YAPADH@Z
+	bin_app.seek(0x0010B910) # ?get_adjective@@YAPADI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*289))
-	bin_app.seek(0x0010B930) # ?get_noun@@YAPADH@Z
+	bin_app.seek(0x0010B930) # ?get_noun@@YAPADI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*290))
 	bin_app.seek(0x00139E40) # ?climactic_battle@@YAHXZ

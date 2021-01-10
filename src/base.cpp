@@ -214,7 +214,7 @@ Status: Complete
 */
 void __cdecl name_base(uint32_t faction_id, LPSTR name_out, BOOL is_final, BOOL is_sea_base) {
 	if (is_sea_base && !text_open(Players[faction_id].filename, "WATERBASES")) {
-		uint32_t offset_sea = PlayersData[faction_id].baseSeaNameOffset + 1;
+		uint32_t offset_sea = PlayersData[faction_id].base_sea_name_offset + 1;
 		if (offset_sea > 1) {
 			uint32_t total;
 			for (total = 0; ; total++) {
@@ -248,7 +248,7 @@ void __cdecl name_base(uint32_t faction_id, LPSTR name_out, BOOL is_final, BOOL 
 				strncpy_s(name_out, 25, text_item(), 24);
 				name_out[23] = 0;
 				if (is_final) {
-					PlayersData[faction_id].baseSeaNameOffset++;
+					PlayersData[faction_id].base_sea_name_offset++;
 				}
 				text_close();
 				return;
@@ -257,10 +257,10 @@ void __cdecl name_base(uint32_t faction_id, LPSTR name_out, BOOL is_final, BOOL 
 		text_close();
 	}
 	// Land base names or generic
-	uint32_t offset = PlayersData[faction_id].baseNameOffset + 1;
+	uint32_t offset = PlayersData[faction_id].base_name_offset + 1;
 	sprintf_s(name_out, 25, "%s %d", get_noun(faction_id), offset); // default if names exhausted
 	if (is_final) {
-		PlayersData[faction_id].baseNameOffset++;
+		PlayersData[faction_id].base_name_offset++;
 	}
 	if (!text_open(Players[faction_id].filename, "BASES")) {
 		if (offset > 1) {
@@ -361,7 +361,7 @@ int __cdecl cost_factor(uint32_t faction_id, uint32_t rsc_type, int base_id) {
     }
     if (rsc_type) {
         if (rsc_type == RSC_MINERALS) {
-            switch (PlayersData[faction_id].socEffectPending.industry) {
+            switch (PlayersData[faction_id].soc_effect_pending.industry) {
               case -7:
               case -6:
               case -5:
@@ -389,7 +389,7 @@ int __cdecl cost_factor(uint32_t faction_id, uint32_t rsc_type, int base_id) {
             return factor; // Energy/PSI? Legacy code logic in case cost used these?
         }
     } else { // nutrient
-        int growth_factor = PlayersData[faction_id].socEffectPending.growth;
+        int growth_factor = PlayersData[faction_id].soc_effect_pending.growth;
         if (base_id >= 0) {
             if (has_fac_built(FAC_CHILDREN_CRECHE, base_id)) {
                 growth_factor += 2; // +2 on growth scale
@@ -413,7 +413,7 @@ int __cdecl base_making(int production_id, uint32_t base_id) {
     uint32_t retool = Rules->RetoolStrictness;
     int skn_off = facility_offset("Skunkworks");
     if ((has_fac_built(FAC_SKUNKWORKS, base_id) // has Skunkworks
-        || (Players[Bases[base_id].faction_id_current].ruleFlags & RFLAG_FREEPROTO // bug fix
+        || (Players[Bases[base_id].faction_id_current].rule_flags & RFLAG_FREEPROTO // bug fix
             && skn_off >= 0 
             && has_tech(Facility[skn_off].preq_tech, Bases[base_id].faction_id_current)))
         && retool >= 1) { // don't override if retool strictness is already set to always free (0)
@@ -494,7 +494,7 @@ BOOL __cdecl has_fac_announced(uint32_t faction_id, uint32_t facility_id) {
 	}
 	uint32_t offset, mask;
 	bitmask(facility_id, &offset, &mask);
-	return (PlayersData[faction_id].facilityAnnounced[offset] & mask) != 0;
+	return (PlayersData[faction_id].facility_announced[offset] & mask) != 0;
 }
 
 /*
@@ -508,9 +508,9 @@ void __cdecl set_fac_announced(uint32_t faction_id, uint32_t facility_id, BOOL s
 	uint32_t mask;
 	bitmask(facility_id, &offset, &mask);
 	if (set) {
-		PlayersData[faction_id].facilityAnnounced[offset] |= mask;
+		PlayersData[faction_id].facility_announced[offset] |= mask;
 	} else {
-		PlayersData[faction_id].facilityAnnounced[offset] &= ~mask;
+		PlayersData[faction_id].facility_announced[offset] &= ~mask;
 	}
 }
 
@@ -578,7 +578,7 @@ uint32_t __cdecl morale_mod(uint32_t base_id, uint32_t faction_id, uint32_t tria
 		|| has_project(SP_CYBORG_FACTORY, faction_id)) {
 		morale_modifier += 2;
 	}
-	if (PlayersData[faction_id].socEffectPending.morale < -1) {
+	if (PlayersData[faction_id].soc_effect_pending.morale < -1) {
 		morale_modifier /= 2;
 	}
 	return morale_modifier;
@@ -622,7 +622,7 @@ Status: Complete
 */
 uint32_t __cdecl worm_mod(uint32_t base_id, uint32_t faction_id) {
 	uint32_t worm_modifier_count = breed_mod(base_id, faction_id);
-	if (Players[faction_id].rulePsi) {
+	if (Players[faction_id].rule_psi) {
 		worm_modifier_count++;
 	}
 	if (has_project(SP_DREAM_TWISTER, faction_id)) {
@@ -642,7 +642,7 @@ Status: Complete
 */
 void __cdecl base_nutrient() {
 	uint32_t faction_id = (*BaseCurrent)->faction_id_current;
-	*BaseCurrentGrowthRate = PlayersData[faction_id].socEffectPending.growth;
+	*BaseCurrentGrowthRate = PlayersData[faction_id].soc_effect_pending.growth;
 	if (has_fac_built(FAC_CHILDREN_CRECHE, *BaseIDCurrentSelected)) {
 		*BaseCurrentGrowthRate += 2; // +2 on growth scale
 	}
@@ -662,7 +662,7 @@ void __cdecl base_nutrient() {
 		(*BaseCurrent)->nutrients_accumulated = -1;
 	}
 	if (*BaseUpkeepStage == 1) {
-		PlayersData[faction_id].nutrientSurplusTotal
+		PlayersData[faction_id].nutrient_surplus_total
 			+= range((*BaseCurrent)->nutrient_surplus, 0, 99);
 	}
 }
@@ -699,7 +699,7 @@ void __cdecl base_minerals() {
 	(*BaseCurrent)->mineral_surplus -= (*BaseCurrent)->mineral_inefficiency; // ?
 	(*BaseCurrent)->mineral_surplus_final = (*BaseCurrent)->mineral_surplus;
 	(*BaseCurrent)->eco_damage /= 8;
-	int planet_eco_factor = PlayersData[faction_id].planetEcology + 16;
+	int planet_eco_factor = PlayersData[faction_id].planet_ecology + 16;
 	if ((*BaseCurrent)->eco_damage > 0) {
 		int planet_modifier = (*BaseCurrent)->eco_damage;
 		if ((*BaseCurrent)->eco_damage >= planet_eco_factor) {
@@ -720,10 +720,10 @@ void __cdecl base_minerals() {
 		eco_dmg_reduction++;
 	}
 	(*BaseCurrent)->eco_damage += ((*BaseCurrent)->mineral_intake_2 - planet_eco_factor
-		- range(PlayersData[faction_id].satellitesMineral, 0, (*BaseCurrent)->population_size))
+		- range(PlayersData[faction_id].satellites_mineral, 0, (*BaseCurrent)->population_size))
 		/ eco_dmg_reduction;
 	if (is_human(faction_id)) {
-		(*BaseCurrent)->eco_damage += ((PlayersData[faction_id].majorAtrocities
+		(*BaseCurrent)->eco_damage += ((PlayersData[faction_id].major_atrocities
 			+ TectonicDetonationCount[faction_id]) * 5) / (range(*MapSeaLevel, 0, 100)
 				/ range(WorldBuilder->SeaLevelRises, 1, 100) + eco_dmg_reduction);
 	}
@@ -738,15 +738,15 @@ void __cdecl base_minerals() {
 	}
 	uint32_t diff_factor;
 	if (is_human(faction_id)) {
-		int diff_lvl = PlayersData[faction_id].diffLevel;
+		int diff_lvl = PlayersData[faction_id].diff_level;
 		diff_factor = !diff_lvl ? DLVL_TALENT
 			: ((diff_lvl <= DLVL_LIBRARIAN) ? DLVL_LIBRARIAN : DLVL_TRANSCEND);
 	} else {
 		diff_factor = range(6 - *DiffLevelCurrent, DLVL_SPECIALIST, DLVL_LIBRARIAN);
 	}
-	(*BaseCurrent)->eco_damage = ((PlayersData[faction_id].techRanking
-		- PlayersData[faction_id].theoryOfEverything)
-		* (3 - range(PlayersData[faction_id].socEffectPending.planet, -3, 2))
+	(*BaseCurrent)->eco_damage = ((PlayersData[faction_id].tech_ranking
+		- PlayersData[faction_id].theory_of_everything)
+		* (3 - range(PlayersData[faction_id].soc_effect_pending.planet, -3, 2))
 		* (*MapNativeLifeForms + 1) * (*BaseCurrent)->eco_damage * diff_factor) / 6;
 	(*BaseCurrent)->eco_damage = ((*BaseCurrent)->eco_damage + 50) / 100;
 	int queue_id;
@@ -806,7 +806,7 @@ uint32_t __cdecl black_market(int energy) {
 			}
 		}
 	}
-	int ineffciency = 4 - PlayersData[faction_id].socEffectPending.efficiency;
+	int ineffciency = 4 - PlayersData[faction_id].soc_effect_pending.efficiency;
 	if (has_creche) {
 		ineffciency -= 2; // +2 on efficiency scale
 	}
@@ -823,9 +823,9 @@ Return Value: n/a
 Status: Complete - testing
 */
 void __cdecl psych_check(uint32_t faction_id, uint32_t *drones, uint32_t *talents) {
-	*drones = 6 - (is_human(faction_id) ? PlayersData[faction_id].diffLevel : DLVL_LIBRARIAN);
-	*talents = (((*drones + 2) * (PlayersData[faction_id].socEffectPending.efficiency < 0 ? 4
-		: PlayersData[faction_id].socEffectPending.efficiency + 4) * *MapAreaSqRoot) / 56) / 2;
+	*drones = 6 - (is_human(faction_id) ? PlayersData[faction_id].diff_level : DLVL_LIBRARIAN);
+	*talents = (((*drones + 2) * (PlayersData[faction_id].soc_effect_pending.efficiency < 0 ? 4
+		: PlayersData[faction_id].soc_effect_pending.efficiency + 4) * *MapAreaSqRoot) / 56) / 2;
 }
 
 /*
@@ -839,26 +839,26 @@ void __cdecl base_psych() {
 	int pop_size = (*BaseCurrent)->population_size;
 	uint32_t drones_base;
 	uint32_t talents_base;
-	int diff_lvl = is_human(faction_id) ? PlayersData[faction_id].diffLevel : DLVL_LIBRARIAN;
+	int diff_lvl = is_human(faction_id) ? PlayersData[faction_id].diff_level : DLVL_LIBRARIAN;
 	psych_check(faction_id, &drones_base, &talents_base);
 	if (talents_base) {
 		talents_base = range((*BaseIDCurrentSelected % talents_base
-			+ PlayersData[faction_id].currentNumBases - talents_base) / talents_base, 0, pop_size);
+			+ PlayersData[faction_id].current_num_bases - talents_base) / talents_base, 0, pop_size);
 	}
 	int psych_val = range(pop_size - drones_base, 0, pop_size);
 	psych_val += range(((*BaseCurrent)->assimilation_turns_left + 9) / 10,
 		0, (pop_size + diff_lvl - 2) / 4);
-	if (Players[faction_id].ruleDrone) {
-		psych_val += pop_size / Players[faction_id].ruleDrone;
+	if (Players[faction_id].rule_drone) {
+		psych_val += pop_size / Players[faction_id].rule_drone;
 	}
 	int psych_val_2 = 0;
-	if (Players[faction_id].ruleTalent) {
-		psych_val_2 += (Players[faction_id].ruleTalent + pop_size - 1) 
-			/ Players[faction_id].ruleTalent;
+	if (Players[faction_id].rule_talent) {
+		psych_val_2 += (Players[faction_id].rule_talent + pop_size - 1) 
+			/ Players[faction_id].rule_talent;
 	}
-	for (int i = 0; i < Players[faction_id].factionBonusCount; i++) {
-		if (Players[faction_id].factionBonusID[i] == RULE_NODRONE) {
-			psych_val -= Players[faction_id].factionBonusVal1[i];
+	for (int i = 0; i < Players[faction_id].faction_bonus_count; i++) {
+		if (Players[faction_id].faction_bonus_id[i] == RULE_NODRONE) {
+			psych_val -= Players[faction_id].faction_bonus_val1[i];
 			break;
 		}
 	}
@@ -888,7 +888,7 @@ void __cdecl base_psych() {
 	for (int i = 8; i >= 0; i--) {
 		int val;
 		if (!i) {
-			val = PlayersData[faction_id].socEffectPending.talent;
+			val = PlayersData[faction_id].soc_effect_pending.talent;
 		} else if(*BaseUpkeepStage != 1) {
 			break;
 		} else {
@@ -897,7 +897,7 @@ void __cdecl base_psych() {
 		for (int j = 9; j >= 0; j--) {
 			int val_2;// , k;
 			if (!j) {
-				val_2 = PlayersData[faction_id].socEffectPending.police
+				val_2 = PlayersData[faction_id].soc_effect_pending.police
 					+ has_fac_built(FAC_BROOD_PIT) * 2;
 				if (i) {
 					break;
@@ -956,7 +956,7 @@ Status: Complete
 uint32_t __cdecl pop_goal_fac(uint32_t base_id) {
 	uint32_t faction_id = Bases[base_id].faction_id_current;
 	uint32_t limit_mod = has_project(SP_ASCETIC_VIRTUES, faction_id) ? 2 : 0;
-	int pop = Bases[base_id].population_size - limit_mod + Players[faction_id].rulePopulation;
+	int pop = Bases[base_id].population_size - limit_mod + Players[faction_id].rule_population;
 	if (pop >= (int)Rules->PopLimitSansHabComplex && !has_fac_built(FAC_HAB_COMPLEX, base_id)) {
 		return FAC_HAB_COMPLEX;
 	}
@@ -980,14 +980,14 @@ uint32_t __cdecl pop_goal(uint32_t base_id) {
 		goal = 6;
 	}
 	if (!has_fac_built(FAC_HAB_COMPLEX, base_id)) {
-		int compare = Rules->PopLimitSansHabComplex - Players[faction_id].rulePopulation 
+		int compare = Rules->PopLimitSansHabComplex - Players[faction_id].rule_population 
 			+ limit_mod;
 		if (goal >= compare) {
 			goal = compare;
 		}
 	}
 	if (!has_fac_built(FAC_HABITATION_DOME, base_id)) {
-		int compare = Rules->PopLimitSansHabDome - Players[faction_id].rulePopulation + limit_mod;
+		int compare = Rules->PopLimitSansHabDome - Players[faction_id].rule_population + limit_mod;
 		if (goal >= compare) {
 			goal = compare;
 		}
@@ -1006,7 +1006,7 @@ BOOL __cdecl base_queue(uint32_t base_id) {
 	while (Bases[base_id].queue_size) {
 		int queue_prod_id = Bases[base_id].queue_production_id[0];
 		if (queue_prod_id >= 0) {
-			PlayersData[faction_id].protoIDQueue[queue_prod_id]--;
+			PlayersData[faction_id].proto_id_queue[queue_prod_id]--;
 		}
 		for (uint32_t i = 0; i < Bases[base_id].queue_size; i++) {
 			Bases[base_id].queue_production_id[i] = Bases[base_id].queue_production_id[i + 1];
@@ -1056,18 +1056,18 @@ Status: Complete
 uint32_t __cdecl fac_maint(uint32_t facility_id, uint32_t faction_id) {
 	if (facility_id == FAC_COMMAND_CENTER) {
 		int reactor = best_reactor(faction_id);
-		int diff_factor = (PlayersData[faction_id].diffLevel + 1) / 2;
+		int diff_factor = (PlayersData[faction_id].diff_level + 1) / 2;
 		if (reactor < 0 || diff_factor < 0) {
 			return 0;
 		}
 		return (reactor > diff_factor) ? diff_factor : reactor;
 	}
-	int bonus_count = Players[faction_id].factionBonusCount;
+	int bonus_count = Players[faction_id].faction_bonus_count;
 	for (int i = 0; i < bonus_count; i++) {
-		int bonus_id = Players[faction_id].factionBonusID[i];
+		int bonus_id = Players[faction_id].faction_bonus_id[i];
 		if ((bonus_id == RULE_FACILITY || (bonus_id == RULE_FREEFAC
-			&& has_tech(Facility[Players[faction_id].factionBonusVal1[i]].preq_tech, faction_id)))
-			&& Players[faction_id].factionBonusVal1[i] == (int)facility_id) {
+			&& has_tech(Facility[Players[faction_id].faction_bonus_val1[i]].preq_tech, faction_id)))
+			&& Players[faction_id].faction_bonus_val1[i] == (int)facility_id) {
 			return 0;
 		}
 	}
@@ -1086,23 +1086,23 @@ void __cdecl base_maint() {
 		if (fac < FacilityRepStart && has_fac_built(fac)) {
 			uint32_t maint = fac_maint(fac, faction_id);
 			if (has_project(SP_SELF_AWARE_COLONY, faction_id)) {
-				maint += (PlayersData[faction_id].playerFlags & PFLAG_UNK_20) & 1;
+				maint += (PlayersData[faction_id].flags & PFLAG_UNK_20) & 1;
 				if (maint & 1) {
-					PlayersData[faction_id].playerFlags |= PFLAG_UNK_20;
+					PlayersData[faction_id].flags |= PFLAG_UNK_20;
 				} else {
-					PlayersData[faction_id].playerFlags &= ~PFLAG_UNK_20;
+					PlayersData[faction_id].flags &= ~PFLAG_UNK_20;
 				}
 				maint /= 2;
 			}
-			PlayersData[faction_id].energyReserves -= maint;
-			PlayersData[faction_id].maintCostTotal += maint;
-			if (PlayersData[faction_id].energyReserves < 0) {
-				if (PlayersData[faction_id].diffLevel <= DLVL_SPECIALIST
+			PlayersData[faction_id].energy_reserves -= maint;
+			PlayersData[faction_id].maint_cost_total += maint;
+			if (PlayersData[faction_id].energy_reserves < 0) {
+				if (PlayersData[faction_id].diff_level <= DLVL_SPECIALIST
 					|| (*BaseCurrent)->queue_production_id[0] == -fac) {
 					maint = 0;
 				} else {
 					set_fac(fac, *BaseIDCurrentSelected, false);
-					PlayersData[faction_id].energyReserves
+					PlayersData[faction_id].energy_reserves
 						+= cost_factor(faction_id, RSC_MINERALS, -1) * Facility[fac].cost;
 					parse_say(1, (int)*(Facility[fac].name), -1, -1);
 					popb("POWERSHORT", 0x10000, 14, "genwarning_sm.pcx", NULL);
@@ -1196,8 +1196,8 @@ uint32_t __cdecl attack_from(uint32_t base_id, uint32_t faction_id) {
 		if (Bases[i].faction_id_current == faction_id) {
 			int x = Bases[i].x;
 			int y = Bases[i].y;
-			uint32_t compare = (x == PlayersData[faction_id].xCoordTarget
-				&& y == PlayersData[faction_id].yCoordTarget) 
+			uint32_t compare = (x == PlayersData[faction_id].x_target
+				&& y == PlayersData[faction_id].y_target) 
 				? 0 : vector_dist(x, y, Bases[base_id].x, Bases[base_id].y);
 			if (region_src != region_at(x, y)) {
 				compare += 1000;
@@ -1254,9 +1254,9 @@ int __cdecl value_of_base(int base_id, uint32_t faction_id_req, uint32_t faction
 		}
 	}
 	int veh_id = stack_fix(veh_at(x, y)); // reason to define here rather than below?
-	int most_reserves = PlayersData[faction_id_res].energyReserves;
-	if (PlayersData[faction_id_req].energyReserves > most_reserves) {
-		most_reserves = PlayersData[faction_id_req].energyReserves;
+	int most_reserves = PlayersData[faction_id_res].energy_reserves;
+	if (PlayersData[faction_id_req].energy_reserves > most_reserves) {
+		most_reserves = PlayersData[faction_id_req].energy_reserves;
 	}
 	uint32_t base_pop_factor = Bases[base_id].population_size;
 	if (base_pop_factor < 3) {
@@ -1270,11 +1270,11 @@ int __cdecl value_of_base(int base_id, uint32_t faction_id_req, uint32_t faction
 	if (veh_who(x, y) < 0) {
 		value /= 2;
 	}
-	uint32_t res_base_count_region = PlayersData[faction_id_res].regionTotalBases[region_base];
+	uint32_t res_base_count_region = PlayersData[faction_id_res].region_total_bases[region_base];
 	if (!res_base_count_region) {
 		value *= 2;
 	}
-	uint32_t req_base_count_region = PlayersData[faction_id_req].regionTotalBases[region_base];
+	uint32_t req_base_count_region = PlayersData[faction_id_req].region_total_bases[region_base];
 	if (req_base_count_region == 1) {
 		if (!res_base_count_region) {
 			value *= 2;
@@ -1341,20 +1341,20 @@ uint32_t __cdecl garrison_check(uint32_t base_id) {
 	if (has_fac_built(FAC_HEADQUARTERS, base_id) || bit_at(x, y) & BIT_UNK_40000000 || is_obj) {
 		garrison++;
 	}
-	if (is_obj && PlayersData[faction_id].playerFlags & PFLAG_STRAT_DEF_OBJECTIVES) {
+	if (is_obj && PlayersData[faction_id].flags & PFLAG_STRAT_DEF_OBJECTIVES) {
 		garrison++;
 	}
-	if (PlayersData[faction_id].regionBasePlan[region_at(x, y)] == PLAN_COLONIZATION) {
+	if (PlayersData[faction_id].region_base_plan[region_at(x, y)] == PLAN_COLONIZATION) {
 		garrison--;
 	}
 	int faction_id_sea = zoc_sea(x, y, faction_id) - 1;
 	if (faction_id_sea > 0
 		&& (has_treaty(faction_id, faction_id_sea, DTREATY_VENDETTA | DTREATY_WANT_REVENGE)
 		|| has_treaty(faction_id_sea, faction_id, DTREATY_WANT_REVENGE)
-		|| PlayersData[faction_id_sea].integrityBlemishes >= 4)) {
+		|| PlayersData[faction_id_sea].integrity_blemishes >= 4)) {
 		garrison++;
 	}
-	int support = PlayersData[faction_id].socEffectPending.support;
+	int support = PlayersData[faction_id].soc_effect_pending.support;
 	if (support <= -4) {
 		garrison--;
 	}
@@ -1550,7 +1550,7 @@ BOOL __cdecl facility_avail(uint32_t facility_id, uint32_t faction_id, int base_
         return has_fac(FAC_PERIMETER_DEFENSE, base_id, queue_count)
             || has_project(SP_CITIZENS_DEFENSE_FORCE, faction_id); // Cumulative
       case FAC_SKUNKWORKS:
-        return !(Players[faction_id].ruleFlags & RFLAG_FREEPROTO); // no prototype costs? skip
+        return !(Players[faction_id].rule_flags & RFLAG_FREEPROTO); // no prototype costs? skip
       case FAC_HOLOGRAM_THEATRE:
         return has_fac(FAC_RECREATION_COMMONS, base_id, queue_count) // not documented in manual
             && !has_project(SP_VIRTUAL_WORLD, faction_id); // Network Nodes replaces Theater

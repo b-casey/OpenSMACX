@@ -35,9 +35,9 @@ Status: Complete
 */
 int __cdecl steal_energy(uint32_t base_id) {
 	uint32_t faction_id = Bases[base_id].faction_id_current;
-	int energy = PlayersData[faction_id].energyReserves;
+	int energy = PlayersData[faction_id].energy_reserves;
 	return (energy <= 0) ? 0 
-		: ((energy * Bases[base_id].population_size) / (PlayersData[faction_id].popTotal + 1));
+		: ((energy * Bases[base_id].population_size) / (PlayersData[faction_id].pop_total + 1));
 }
 
 /*
@@ -74,11 +74,11 @@ int __cdecl mind_control(uint32_t base_id, uint32_t faction_id, BOOL is_corner_m
 	cost = ((stack_check(veh_id, 2, PLAN_COMBAT, -1, -1)
 		+ stack_check(veh_id, 2, PLAN_OFFENSIVE, -1, -1))
 		* (stack_check(veh_id, 6, ABL_POLY_ENCRYPTION, -1, -1) + 1)
-		+ PlayersData[faction_id].mindControlTotal / 4 + Bases[base_id].population_size)
-		* ((PlayersData[target_faction_id].cornerMarketActive
-			+ PlayersData[target_faction_id].energyReserves + 1200) / (cost + 4));
+		+ PlayersData[faction_id].mind_control_total / 4 + Bases[base_id].population_size)
+		* ((PlayersData[target_faction_id].corner_market_active
+			+ PlayersData[target_faction_id].energy_reserves + 1200) / (cost + 4));
 	if (!is_human(faction_id) && is_human(target_faction_id)) {
-		int diff = PlayersData[target_faction_id].diffLevel;
+		int diff = PlayersData[target_faction_id].diff_level;
 		if (diff > DLVL_LIBRARIAN) {
 			cost = (cost * 3) / diff;
 		}
@@ -91,9 +91,9 @@ int __cdecl mind_control(uint32_t base_id, uint32_t faction_id, BOOL is_corner_m
 		if (has_treaty(faction_id, target_faction_id, DTREATY_TREATY)) {
 			cost /= 2;
 		}
-		int tech_comm_target = PlayersData[target_faction_id].techCommerceBonus;
+		int tech_comm_target = PlayersData[target_faction_id].tech_commerce_bonus;
 		tech_comm_target *= tech_comm_target;
-		int tech_comm_probe = PlayersData[faction_id].techCommerceBonus;
+		int tech_comm_probe = PlayersData[faction_id].tech_commerce_bonus;
 		tech_comm_probe *= tech_comm_probe;
 		cost = (cost * (tech_comm_target + 1)) / (tech_comm_probe + 1);
 	} else if (has_pact) {
@@ -136,7 +136,7 @@ int __cdecl success_rates(uint32_t id, uint32_t morale, int diff_modifier, int b
 			morale = 1;
 		}
 		int prb_defense = (base_id != -1 && has_fac_built(FAC_COVERT_OPS_CENTER, base_id)) ? 2 : 0;
-		prb_defense = range(PlayersData[*ProbeTargetFactionID].socEffectActive.probe + prb_defense, 
+		prb_defense = range(PlayersData[*ProbeTargetFactionID].soc_effect_active.probe + prb_defense, 
 			-2, 0);
 		uint32_t failure_rate = (diff_modifier * 100) / ((morale / 2) - prb_defense + 1);
 		if (*ProbeHasAlgoEnhancement && !*ProbeTargetHasHSA) {

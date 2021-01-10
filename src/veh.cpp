@@ -78,7 +78,7 @@ void __cdecl say_morale(LPSTR morale_output, uint32_t veh_id, int faction_id_vs_
 		uint32_t morale_penalty = 0;
 		int home_base_id = Vehs[veh_id].home_base_id;
 		if (home_base_id >= 0 && Bases[home_base_id].state & BSTATE_DRONE_RIOTS_ACTIVE && morale > 0
-			&& !(Players[faction_id].ruleFlags & RFLAG_MORALE)) {
+			&& !(Players[faction_id].rule_flags & RFLAG_MORALE)) {
 			output += " (-)";
 			morale_penalty = 1;
 		}
@@ -87,7 +87,7 @@ void __cdecl say_morale(LPSTR morale_output, uint32_t veh_id, int faction_id_vs_
 		if (base_id >= 0 && morale < 6) {
 			if (has_fac_built(FAC_CHILDREN_CRECHE, base_id)) {
 				VehMoraleModifierCount++;
-				int morale_active = range(PlayersData[faction_id].socEffectActive.morale, -4, 4);
+				int morale_active = range(PlayersData[faction_id].soc_effect_active.morale, -4, 4);
 				if (morale_active <= -2) {
 					morale_active++;
 				}
@@ -112,7 +112,7 @@ void __cdecl say_morale(LPSTR morale_output, uint32_t veh_id, int faction_id_vs_
 				&& (Weapon[VehPrototypes[proto_id].weapon_id].offense_rating < 0
 					|| proto_id == BSC_SPORE_LAUNCHER)) {
 				VehMoraleModifierCount++;
-				int morale_active = range(PlayersData[faction_id].socEffectActive.morale, -4, 4);
+				int morale_active = range(PlayersData[faction_id].soc_effect_active.morale, -4, 4);
 				if (morale_active <= -2) {
 					morale_active++;
 				}
@@ -129,7 +129,7 @@ void __cdecl say_morale(LPSTR morale_output, uint32_t veh_id, int faction_id_vs_
 				}
 			}
 		}
-		int morale_pending = PlayersData[faction_id].socEffectPending.morale;
+		int morale_pending = PlayersData[faction_id].soc_effect_pending.morale;
 		if (morale_pending == 2 || morale_pending == 3) {
 			VehMoraleModifierCount++;
 		}
@@ -279,7 +279,7 @@ uint32_t __cdecl morale_alien(int veh_id, int faction_id_vs_native) {
 			morale = 6;
 		}
 		if (faction_id_vs_native > 0) {
-			morale += (PlayersData[faction_id_vs_native].majorAtrocities != 0)
+			morale += (PlayersData[faction_id_vs_native].major_atrocities != 0)
 				+ (TectonicDetonationCount[faction_id_vs_native] != 0);
 		}
 		if (veh_id >= 0) {
@@ -302,7 +302,7 @@ Return Value: Psi factor
 Status: Complete
 */
 int __cdecl psi_factor(int combat_ratio, uint32_t faction_id, BOOL is_attack, BOOL is_fungal_twr) {
-	int rule_psi = Players[faction_id].rulePsi;
+	int rule_psi = Players[faction_id].rule_psi;
 	int factor = rule_psi ? ((rule_psi + 100) * combat_ratio) / 100 : combat_ratio;
 	if (is_attack) {
 		if (has_project(SP_DREAM_TWISTER, faction_id)) {
@@ -335,7 +335,7 @@ int __cdecl get_basic_offense(uint32_t veh_id_atk, int veh_id_def, uint32_t psi_
 	if (base_id_atk >= 0) {
 		if (has_fac_built(FAC_CHILDREN_CRECHE, base_id_atk)) {
 			morale++;
-			int morale_active = range(PlayersData[faction_id_atk].socEffectActive.morale, -4, 4);
+			int morale_active = range(PlayersData[faction_id_atk].soc_effect_active.morale, -4, 4);
 			if (morale_active <= -2) {
 				morale_active++;
 			}
@@ -344,14 +344,14 @@ int __cdecl get_basic_offense(uint32_t veh_id_atk, int veh_id_def, uint32_t psi_
 			&& (Weapon[VehPrototypes[proto_id_atk].weapon_id].offense_rating < 0
 				|| proto_id_atk == BSC_SPORE_LAUNCHER)) {
 			morale++;
-			int morale_active = range(PlayersData[faction_id_atk].socEffectActive.morale, -4, 4);
+			int morale_active = range(PlayersData[faction_id_atk].soc_effect_active.morale, -4, 4);
 			if (morale_active <= -2) {
 				morale_active++;
 			}
 			morale -= morale_active;
 		}
 		if (unk_tgl) {
-			int morale_pending = PlayersData[faction_id_atk].socEffectPending.morale;
+			int morale_pending = PlayersData[faction_id_atk].soc_effect_pending.morale;
 			if (morale_pending >= 2 && morale_pending <= 3) {
 				morale++;
 			}
@@ -398,7 +398,7 @@ int __cdecl get_basic_defense(uint32_t veh_id_def, int veh_id_atk, uint32_t psi_
 	if (base_id_def >= 0) {
 		if (has_fac_built(FAC_CHILDREN_CRECHE, base_id_def)) {
 			morale++;
-			int morale_active = range(PlayersData[faction_id_def].socEffectActive.morale, -4, 0);
+			int morale_active = range(PlayersData[faction_id_def].soc_effect_active.morale, -4, 0);
 			if (morale_active <= -2) {
 				morale_active++;
 			}
@@ -408,7 +408,7 @@ int __cdecl get_basic_defense(uint32_t veh_id_def, int veh_id_atk, uint32_t psi_
 			&& (Weapon[VehPrototypes[proto_id_def].weapon_id].offense_rating < 0
 				|| proto_id_def == BSC_SPORE_LAUNCHER)) {
 			morale++;
-			int morale_active = range(PlayersData[faction_id_def].socEffectActive.morale, -4, 4);
+			int morale_active = range(PlayersData[faction_id_def].soc_effect_active.morale, -4, 4);
 			if (morale_active <= -2) {
 				morale_active++;
 			}
@@ -417,7 +417,7 @@ int __cdecl get_basic_defense(uint32_t veh_id_def, int veh_id_atk, uint32_t psi_
 		if (has_fac_built(FAC_HEADQUARTERS, base_id_def)) { // bug fix: per manual
 			morale++; // "Units in a headquarters base automatically gain +1 Morale when defending."
 		}
-		int morale_pending = PlayersData[faction_id_def].socEffectPending.morale;
+		int morale_pending = PlayersData[faction_id_def].soc_effect_pending.morale;
 		if (morale_pending >= 2 && morale_pending <= 3) {
 			morale++;
 		}
@@ -520,7 +520,7 @@ void __cdecl battle_compute(int veh_id_atk, int veh_id_def, int *offense_out, in
         //       combat morale functions.
         if (psi_combat_type) {
             // Calculate PSI attack bonus
-            int rule_psi_atk = Players[faction_id_atk].rulePsi;
+            int rule_psi_atk = Players[faction_id_atk].rule_psi;
             if (rule_psi_atk) {
                 add_bat(0, rule_psi_atk, label_get(342)); // "Gaian Psi Bonus"
             }
@@ -529,7 +529,7 @@ void __cdecl battle_compute(int veh_id_atk, int veh_id_def, int *offense_out, in
             }
             // PSI Defense?
             if (psi_combat_type) { // shouldn't this be & 2?
-                int rule_psi_def = Players[faction_id_def].rulePsi;
+                int rule_psi_def = Players[faction_id_def].rule_psi;
                 if (rule_psi_def) {
                     add_bat(1, rule_psi_def, label_get(342)); // "Gaian Psi Bonus"
                 }
@@ -587,21 +587,21 @@ void __cdecl battle_compute(int veh_id_atk, int veh_id_def, int *offense_out, in
                         ? label_get(437) // "Air Drop"
                         : label_get(438)); // "Orbital Insertion"
                 }
-                if (Players[faction_id_atk].ruleFlags & RFLAG_FANATIC
+                if (Players[faction_id_atk].rule_flags & RFLAG_FANATIC
                     && Rules->CombatPctFanaticAtkBonus && !combat_type && !psi_combat_type) {
                     offense = (Rules->CombatPctFanaticAtkBonus + 100) * offense / 100;
                     add_bat(0, Rules->CombatPctFanaticAtkBonus, label_get(528));
                 }
-                int bonus_count = Players[faction_id_atk].factionBonusCount;
+                int bonus_count = Players[faction_id_atk].faction_bonus_count;
                 for (int i = 0; i < bonus_count; i++) {
-                    if (Players[faction_id_atk].factionBonusID[i] == RULE_OFFENSE) {
-                        int rule_off_bonus = Players[faction_id_atk].factionBonusVal1[i];
+                    if (Players[faction_id_atk].faction_bonus_id[i] == RULE_OFFENSE) {
+                        int rule_off_bonus = Players[faction_id_atk].faction_bonus_val1[i];
                         offense = offense * rule_off_bonus / 100;
                         add_bat(0, rule_off_bonus, label_get(1108)); // "Alien Offense"
                     }
                 }
                 if (psi_combat_type && faction_id_atk) {
-                    int planet_se_atk = PlayersData[faction_id_atk].socEffectActive.planet;
+                    int planet_se_atk = PlayersData[faction_id_atk].soc_effect_active.planet;
                     if (planet_se_atk && Rules->CombatPctPsiAtkBonusPLANET) {
                         int planet_modifier = planet_se_atk * Rules->CombatPctPsiAtkBonusPLANET;
                         add_bat(0, planet_modifier, label_get(625)); // "Planet"
@@ -612,10 +612,10 @@ void __cdecl battle_compute(int veh_id_atk, int veh_id_def, int *offense_out, in
         }
         if (!(combat_type & 2) && veh_id_def >= 0) {
             defense = get_basic_defense(veh_id_def, veh_id_atk, psi_combat_type, is_bombard);
-            int bonus_count = Players[faction_id_def].factionBonusCount;
+            int bonus_count = Players[faction_id_def].faction_bonus_count;
             for (int i = 0; i < bonus_count; i++) {
-                if (Players[faction_id_def].factionBonusID[i] == RULE_DEFENSE) {
-                    int rule_def_bonus = Players[faction_id_def].factionBonusVal1[i];
+                if (Players[faction_id_def].faction_bonus_id[i] == RULE_DEFENSE) {
+                    int rule_def_bonus = Players[faction_id_def].faction_bonus_val1[i];
                     defense = defense * rule_def_bonus / 100;
                     add_bat(1, rule_def_bonus, label_get(1109)); // "Alien Defense"
                 }
@@ -1146,7 +1146,7 @@ int __cdecl arm_strat(uint32_t armor_id, uint32_t faction_id) {
 	int defense_rating = Armor[armor_id].defense_rating;
 	if (defense_rating < 0) {
 		return psi_factor((Rules->PsiCombatRatioDef[TRIAD_LAND]
-			* PlayersData[faction_id].enemyBestWeaponValue) / Rules->PsiCombatRatioAtk[TRIAD_LAND],
+			* PlayersData[faction_id].enemy_best_weapon_value) / Rules->PsiCombatRatioAtk[TRIAD_LAND],
 			faction_id, false, false);
 	}
 	return defense_rating;
@@ -1165,7 +1165,7 @@ int __cdecl weap_strat(uint32_t weapon_id, uint32_t faction_id) {
 	int offense_rating = Weapon[weapon_id].offense_rating;
 	if (offense_rating < 0) {
 		return psi_factor((Rules->PsiCombatRatioAtk[TRIAD_LAND]
-			* PlayersData[faction_id].enemyBestArmorValue) / Rules->PsiCombatRatioDef[TRIAD_LAND],
+			* PlayersData[faction_id].enemy_best_armor_value) / Rules->PsiCombatRatioDef[TRIAD_LAND],
 			faction_id, true, false);
 	}
 	return offense_rating;
@@ -1188,7 +1188,7 @@ Return Value: Armor value
 Status: Complete
 */
 int __cdecl arm_val(uint32_t armor_id, int faction_id) {
-    return ((faction_id < 0) ? Armor[armor_id].defense_rating : arm_strat(armor_id, faction_id)) 
+    return ((faction_id >= 0) ? arm_strat(armor_id, faction_id) : Armor[armor_id].defense_rating)
         * 2;
 }
 
@@ -1624,7 +1624,7 @@ int __cdecl hex_cost(int proto_id, int faction_id, uint32_t x_src, uint32_t y_sr
 		|| Weapon[VehPrototypes[proto_id].weapon_id].offense_rating >= 0)) {
 		uint8_t plan = VehPrototypes[proto_id].plan;
 		if (plan != PLAN_TERRAFORMING && plan != PLAN_ALIEN_ARTIFACT
-			&& PlayersData[faction_id].socEffectActive.planet <= 0) {
+			&& PlayersData[faction_id].soc_effect_active.planet <= 0) {
 			return cost + Rules->MoveRateRoads * 2;
 		}
 		uint32_t speed = speed_proto(proto_id);
@@ -2413,9 +2413,9 @@ BOOL __cdecl has_abil(uint32_t proto_id, uint32_t ability_id) {
 	if (is_alien_faction(faction_id) && ability_id == ABL_DEEP_RADAR) {
 		return true; // Caretakers + Usurpers > "Deep Radar" ability for all units
 	}
-	for (int i = 0; i < Players[faction_id].factionBonusCount; i++) {
-		if (Players[faction_id].factionBonusID[i] == RULE_FREEABIL) {
-			int abil_bonus_id = Players[faction_id].factionBonusVal1[i];
+	for (int i = 0; i < Players[faction_id].faction_bonus_count; i++) {
+		if (Players[faction_id].faction_bonus_id[i] == RULE_FREEABIL) {
+			int abil_bonus_id = Players[faction_id].faction_bonus_val1[i];
 			if (has_tech(Ability[abil_bonus_id].preq_tech, faction_id) &&
 				(ability_id & (1 << abil_bonus_id))) {
 				// Pirates > "Marine Detachment" ability for combat sea units with Adaptive Doctrine
@@ -2577,7 +2577,7 @@ void __cdecl veh_clear(uint32_t veh_id, int proto_id, uint32_t faction_id) {
 	Vehs[veh_id].move_to_ai_type = 0;
 	Vehs[veh_id].visibility = 0;
 	Vehs[veh_id].home_base_id = -1;
-	Vehs[veh_id].morale = (uint8_t)(Players[faction_id].ruleMorale + 1);
+	Vehs[veh_id].morale = (uint8_t)(Players[faction_id].rule_morale + 1);
 	Vehs[veh_id].unk_5 = 2;
 	Vehs[veh_id].probe_action = 0;
 	Vehs[veh_id].probe_sabotage_id = 0;
@@ -2620,7 +2620,7 @@ uint32_t __cdecl morale_veh(uint32_t veh_id, BOOL check_drone_riot, int faction_
 	}
 	int16_t proto_id = Vehs[veh_id].proto_id;
 	if (VehPrototypes[proto_id].plan == PLAN_INFO_WARFARE) { // probe
-		int probe_morale = range(PlayersData[faction_id].socEffectActive.probe, 0, 3);
+		int probe_morale = range(PlayersData[faction_id].soc_effect_active.probe, 0, 3);
 		probe_morale += has_project(SP_TELEPATHIC_MATRIX, faction_id) ? 2 : 0;
 		for (int i = 0; i < MaxTechnologyNum; i++) {
 			if (Technology[i].flags & TFLAG_IMPROVED_PROBES && has_tech(i, faction_id)) {
@@ -2635,13 +2635,13 @@ uint32_t __cdecl morale_veh(uint32_t veh_id, BOOL check_drone_riot, int faction_
 		return range(Vehs[veh_id].morale, 0, 6); // Basic Psi Veh
 	}
 	// everything else
-	int morale_modifier = range(PlayersData[faction_id].socEffectActive.morale, -4, 4);
+	int morale_modifier = range(PlayersData[faction_id].soc_effect_active.morale, -4, 4);
 	if (morale_modifier <= -2) {
 		morale_modifier++;
 	} else if (morale_modifier >= 2) {
 		morale_modifier--;
 	}
-	int rule_morale = Players[faction_id].ruleMorale; // different from 'SOCIAL, MORALE'
+	int rule_morale = Players[faction_id].rule_morale; // different from 'SOCIAL, MORALE'
 	if (rule_morale < 0) { // negative effects 1st
 		morale_modifier += rule_morale;
 	}
@@ -2658,7 +2658,7 @@ uint32_t __cdecl morale_veh(uint32_t veh_id, BOOL check_drone_riot, int faction_
 	if (rule_morale > 0) {
 		morale_modifier += rule_morale;
 	}
-	BOOL morale_flag = Players[faction_id].ruleFlags & RFLAG_MORALE;
+	BOOL morale_flag = Players[faction_id].rule_flags & RFLAG_MORALE;
 	if (morale_flag && morale_modifier < 0) {
 		morale_modifier = 0;
 	}
@@ -2835,8 +2835,8 @@ Status: Complete
 */
 uint32_t __cdecl prototype_factor(uint32_t proto_id) {
     uint32_t faction_id = proto_id / MaxVehProtoFactionNum;
-    if (Players[faction_id].ruleFlags & RFLAG_FREEPROTO
-        || PlayersData[faction_id].diffLevel <= DLVL_SPECIALIST) {
+    if (Players[faction_id].rule_flags & RFLAG_FREEPROTO
+        || PlayersData[faction_id].diff_level <= DLVL_SPECIALIST) {
         return 0;
     }
     uint8_t triad = get_proto_triad(proto_id);
