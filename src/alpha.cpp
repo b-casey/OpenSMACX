@@ -35,124 +35,123 @@ LPCSTR AlphaxFileID = "ALPHAX";
 LPCSTR ScriptTxtID = "SCRIPT";
 LPSTR *Compass = (LPSTR *)0x00945D48;
 LPSTR *Difficulty = (LPSTR *)0x0096C85C;
-label *Label = (label *)0x009B90F8;
-rules_resourceinfo *ResourceInfo = (rules_resourceinfo *)0x00945F50; // see resource_info_id
-rules_time_control *TimeControl = (rules_time_control *)0x0094F1B8;
-rules_resource *Resource = (rules_resource *)0x00946158;
-rules_energy *Energy = (rules_energy *)0x0094A318;
-rules_basic *Rules = (rules_basic *)0x00949738;
-rules_worldbuilder *WorldBuilder = (rules_worldbuilder *)0x009502A8;
-alpha_ini *AlphaIni = (alpha_ini *)0x0094B464;
-default_pref *DefaultPrefs = (default_pref *)0x0094B350;
+Label *Labels = (Label *)0x009B90F8;
+RulesResourceinfo *ResourceInfo = (RulesResourceinfo *)0x00945F50; // see resource_info_id
+RulesTimeControl *TimeControl = (RulesTimeControl *)0x0094F1B8;
+RulesResource *Resource = (RulesResource *)0x00946158;
+RulesEnergy *Energy = (RulesEnergy *)0x0094A318;
+RulesBasic *Rules = (RulesBasic *)0x00949738;
+RulesWorldbuilder *WorldBuilder = (RulesWorldbuilder *)0x009502A8;
+AlphaIniPref *AlphaIniPrefs = (AlphaIniPref *)0x0094B464;
+DefaultPref *DefaultPrefs = (DefaultPref *)0x0094B350;
 uint32_t *Language = (uint32_t *)0x009BC054;
 
 /*
-Purpose: Convert tech name string to number offset id
+Purpose: Convert the tech name string to a numeric tech id.
 Original Offset: 00584D60
-Return Value: -1: 'None'; -2: 'Disabled' or error; Otherwise, tech id offset
-Status: Complete. Crash bug if BADTECHKEY is triggered.
+Return Value: Tech id; 'None' (-1); 'Disabled' (-2); or error (-2)
+Status: Complete
 */
-int __cdecl tech_name(LPSTR techName) {
-	purge_trailing(techName);
-	if (!_stricmp(techName, "None")) {
+int __cdecl tech_name(LPSTR name) {
+	purge_trailing(name);
+	if (!_stricmp(name, "None")) {
 		return NoneValue;
 	}
-	if (!_stricmp(techName, "Disable")) {
+	if (!_stricmp(name, "Disable")) {
 		return DisabledValue;
 	}
-	for (int techID = 0; techID < MaxTechnologyNum; techID++) {
-		if (!_stricmp(techName, Technology[techID].id)) {
-			return techID;
+	for (int tech_id = 0; tech_id < MaxTechnologyNum; tech_id++) {
+		if (!_stricmp(name, Technology[tech_id].id)) {
+			return tech_id;
 		}
 	}
 	parse_says(0, Txt->getFilePath(), -1, -1);
-	parse_says(1, techName, -1, -1);
+	parse_says(1, name, -1, -1);
 	parse_says(2, *TextBufferGetPtr, -1, -1);
-	X_pop("BADTECHKEY", NULL);
+	X_pop("BADTECHKEY", NULL); // TODO: Fix crash bug if BADTECHKEY is triggered.
 	return DisabledValue;
 }
 
 /*
-Purpose: Convert chassis name string to number offset id
+Purpose: Convert the chassis name string to a numeric chassis id.
 Original Offset: 00584E40
-Return Value: 0: error; -1: 'None'; -2: 'Disabled'; Otherwise, chassis id offset
-Status: Complete. Crash bug if BADCHASKEY is triggered.
+Return Value: Chassis id; 'None' (-1); 'Disabled' (-2); or error (0)
+Status: Complete
 */
-int __cdecl chas_name(LPSTR chasName) {
-	purge_trailing(chasName);
-	if (!_stricmp(chasName, "None")) {
+int __cdecl chas_name(LPSTR name) {
+	purge_trailing(name);
+	if (!_stricmp(name, "None")) {
 		return NoneValue;
 	}
-	if (!_stricmp(chasName, "Disable")) {
+	if (!_stricmp(name, "Disable")) {
 		return DisabledValue;
 	}
-	for (int chasID = 0; chasID < MaxChassisNum; chasID++) {
-		if (!_stricmp(chasName, Chassis[chasID].offsv_1_name)) {
-			return chasID;
+	for (int chas_id = 0; chas_id < MaxChassisNum; chas_id++) {
+		if (!_stricmp(name, Chassis[chas_id].offsv_1_name)) {
+			return chas_id;
 		}
 	}
 	parse_says(0, Txt->getFilePath(), -1, -1);
-	parse_says(1, chasName, -1, -1);
+	parse_says(1, name, -1, -1);
 	parse_says(2, *TextBufferGetPtr, -1, -1);
-	X_pop("BADCHASKEY", NULL);
+	X_pop("BADCHASKEY", NULL); // TODO: Fix crash bug if BADTECHKEY is triggered.
 	return 0;
 }
 
 /*
-Purpose: Convert weapon name string to number offset id
+Purpose: Convert the weapon name string to a numeric weapon id.
 Original Offset: 00584F40
-Return Value: 0: error; -1: 'None'; -2: 'Disabled'; Otherwise, weapon id offset
-Status: Complete. Crash bug if BADWEAPKEY is triggered.
+Return Value: Weapon id; 'None' (-1); 'Disabled' (-2); or error (0)
+Status: Complete
 */
-int __cdecl weap_name(LPSTR weapName) {
-	purge_trailing(weapName);
-	if (!_stricmp(weapName, "None")) {
+int __cdecl weap_name(LPSTR name) {
+	purge_trailing(name);
+	if (!_stricmp(name, "None")) {
 		return NoneValue;
 	}
-	if (!_stricmp(weapName, "Disable")) {
+	if (!_stricmp(name, "Disable")) {
 		return DisabledValue;
 	}
-	for (int weapID = 0; weapID < MaxWeaponNum; weapID++) {
-		if (!_stricmp(weapName, Weapon[weapID].name_short)) {
-			return weapID;
+	for (int weap_id = 0; weap_id < MaxWeaponNum; weap_id++) {
+		if (!_stricmp(name, Weapon[weap_id].name_short)) {
+			return weap_id;
 		}
 	}
 	parse_says(0, Txt->getFilePath(), -1, -1);
-	parse_says(1, weapName, -1, -1);
+	parse_says(1, name, -1, -1);
 	parse_says(2, *TextBufferGetPtr, -1, -1);
-	X_pop("BADWEAPKEY", NULL);
+	X_pop("BADWEAPKEY", NULL); // TODO: Fix crash bug if BADTECHKEY is triggered.
 	return 0;
 }
 
 /*
-Purpose: Convert armor name string to number offset id
+Purpose: Convert the armor name string to a numeric armor id.
 Original Offset: 00585030
-Return Value: 0: error; -1: 'None'; -2: 'Disabled'; Otherwise, armor id offset
-Status: Complete. Crash bug if BADARMKEY is triggered.
+Return Value: Armor id; 'None' (-1); 'Disabled' (-2); or error (0)
+Status: Complete
 */
-int __cdecl arm_name(LPSTR armName) {
-	purge_trailing(armName);
-	if (!_stricmp(armName, "None")) {
+int __cdecl arm_name(LPSTR name) {
+	purge_trailing(name);
+	if (!_stricmp(name, "None")) {
 		return NoneValue;
 	}
-	if (!_stricmp(armName, "Disable")) {
+	if (!_stricmp(name, "Disable")) {
 		return DisabledValue;
 	}
-	for (int armID = 0; armID < MaxArmorNum; armID++) {
-		if (!_stricmp(armName, Armor[armID].name_short)) {
-			return armID;
+	for (int arm_id = 0; arm_id < MaxArmorNum; arm_id++) {
+		if (!_stricmp(name, Armor[arm_id].name_short)) {
+			return arm_id;
 		}
 	}
 	parse_says(0, Txt->getFilePath(), -1, -1);
-	parse_says(1, armName, -1, -1);
+	parse_says(1, name, -1, -1);
 	parse_says(2, *TextBufferGetPtr, -1, -1);
-	X_pop("BADARMKEY", NULL);
+	X_pop("BADARMKEY", NULL); // TODO: Fix crash bug if BADTECHKEY is triggered.
 	return DisabledValue;
 }
 
 /*
-Purpose: Get tech id value by parsing tech name from Txt item buffer. Optimized out of vanilla code,
-		 useful for readability.
+Purpose: Parse the current tech name inside the Txt item buffer into a tech id.
 Original Offset: 00585150
 Return Value: Tech id
 Status: Complete
@@ -163,139 +162,137 @@ int __cdecl tech_item() {
 }
 
 /*
-Purpose: Parse #RULES & #WORLDBUILDER sections inside alpha(x).txt
+Purpose: Parse the #RULES & #WORLDBUILDER sections inside the alpha(x).txt.
 Original Offset: 00585170
 Return Value: Was there an error? true/false
 Status: Complete
 */
 BOOL __cdecl read_basic_rules() {
-	// Rules
 	if (text_open(AlphaxFileID, "RULES")) {
 		return true;
 	}
-	Rules->MoveRateRoads = text_get_number(1, 100);
-	Rules->NutrientReqCitizen = text_get_number(0, 100);
+	Rules->move_rate_roads = text_get_number(1, 100);
+	Rules->nutrient_req_citizen = text_get_number(0, 100);
 	text_get();
-	Rules->ArtilleryDmgNum = range(text_item_number(), 1, 1000);
-	Rules->ArtilleryDmgDenom = range(text_item_number(), 1, 1000);
-	Rules->ArtilleryMaxRng = text_get_number(1, 8);
-	Rules->MaxAirdropSansOrbInsert = text_get_number(1, 500);
-	Rules->NutrientCostMulti = text_get_number(1, 100);
-	Rules->MineralCostMulti = text_get_number(1, 100);
-	Rules->TechDiscoveryRatePctStd = text_get_number(0, 1000);
-	Rules->LimitMineralMineSansRoad = text_get_number(0, 100);
-	Rules->TglNutrientEffectWithMine = text_get_number(-1, 0); // Weird logic behind -1/0 value
-	Rules->MinBaseSizeSpecialists = text_get_number(0, 100);
-	Rules->DronesGenejackFactory = text_get_number(0, 100);
-	Rules->PopLimitSansHabComplex = text_get_number(1, 100);
-	Rules->PopLimitSansHabDome = text_get_number(1, 100);
-	Rules->ExtraPctCostProtoLand = text_get_number(0, 500);
-	Rules->ExtraPctCostProtoSea = text_get_number(0, 500);
-	Rules->ExtraPctCostProtoAir = text_get_number(0, 500);
+	Rules->artillery_dmg_num = range(text_item_number(), 1, 1000);
+	Rules->artillery_dmg_denom = range(text_item_number(), 1, 1000);
+	Rules->artillery_max_rng = text_get_number(1, 8);
+	Rules->max_airdrop_sans_orb_insert = text_get_number(1, 500);
+	Rules->nutrient_cost_multi = text_get_number(1, 100);
+	Rules->mineral_cost_multi = text_get_number(1, 100);
+	Rules->tech_discovery_rate_pct_std = text_get_number(0, 1000);
+	Rules->limit_mineral_mine_sans_road = text_get_number(0, 100);
+	Rules->tgl_nutrient_effect_with_mine = text_get_number(-1, 0); // Weird logic behind -1/0 value
+	Rules->min_base_size_specialists = text_get_number(0, 100);
+	Rules->drones_genejack_factory = text_get_number(0, 100);
+	Rules->pop_limit_sans_hab_complex = text_get_number(1, 100);
+	Rules->pop_limit_sans_hab_dome = text_get_number(1, 100);
+	Rules->extra_pct_cost_proto_land = text_get_number(0, 500);
+	Rules->extra_pct_cost_proto_sea = text_get_number(0, 500);
+	Rules->extra_pct_cost_proto_air = text_get_number(0, 500);
 	text_get();
-	Rules->PsiCombatRatioAtk[TRIAD_LAND] = range(text_item_number(), 1, 1000);
-	Rules->PsiCombatRatioDef[TRIAD_LAND] = range(text_item_number(), 1, 1000);
+	Rules->psi_combat_ratio_atk[TRIAD_LAND] = range(text_item_number(), 1, 1000);
+	Rules->psi_combat_ratio_def[TRIAD_LAND] = range(text_item_number(), 1, 1000);
 	text_get();
-	Rules->PsiCombatRatioAtk[TRIAD_SEA] = range(text_item_number(), 1, 1000);
-	Rules->PsiCombatRatioDef[TRIAD_SEA] = range(text_item_number(), 1, 1000);
+	Rules->psi_combat_ratio_atk[TRIAD_SEA] = range(text_item_number(), 1, 1000);
+	Rules->psi_combat_ratio_def[TRIAD_SEA] = range(text_item_number(), 1, 1000);
 	text_get();
-	Rules->PsiCombatRatioAtk[TRIAD_AIR] = range(text_item_number(), 1, 1000);
-	Rules->PsiCombatRatioDef[TRIAD_AIR] = range(text_item_number(), 1, 1000);
-	Rules->PlayerStartEnergyReserve = text_get_number(0, 1000);
-	Rules->CombatPctBaseDef = text_get_number(-100, 1000);
-	Rules->CombatPctAtkRoad = text_get_number(-100, 1000);
-	Rules->CombatPctAtkHigherElev = text_get_number(-100, 1000);
-	Rules->CombatPenPctAtkLwrElev = text_get_number(-100, 1000);
-	Rules->CombatPctMobileOpenGround = text_get_number(-100, 1000);
-	Rules->CombatPctDefVsMobileRough = text_get_number(-100, 1000);
-	Rules->CombatPctInfantryVsBase = text_get_number(-100, 1000);
-	Rules->CombatPenPctAtkAirdrop = text_get_number(-100, 1000);
-	Rules->CombatPctFanaticAtkBonus = text_get_number(-100, 1000);
-	Rules->CombatPctLandGunVsShipArt = text_get_number(-100, 1000);
-	Rules->CombatPctArtBonusLvlAlt = text_get_number(-100, 1000);
-	Rules->CombatPctTranceDefVsPsi = text_get_number(-100, 1000);
-	Rules->CombatPctEmpSongAtkVsPsi = text_get_number(-100, 1000);
-	Rules->CombatPenPctAirSuprVsGrnd = text_get_number(-100, 1000);
-	Rules->CombatPctAirSuprVsAir = text_get_number(-100, 1000);
-	Rules->CombatPenPctNonCbtDefVsCbt = text_get_number(-100, 1000);
-	Rules->CombatPctComJamDefVsMobl = text_get_number(-100, 1000);
-	Rules->CombatPctBonusVsShipPort = text_get_number(-100, 1000);
-	Rules->CombatPctAAABonusVsAir = text_get_number(-100, 1000);
-	Rules->CombatPctDefRangeSensor = text_get_number(-100, 1000);
-	Rules->CombatPctPsiAtkBonusPLANET = text_get_number(-100, 1000);
-	Rules->RetoolPctPenProdChg = text_get_number(0, 100);
-	Rules->RetoolStrictness = text_get_number(0, 3); // Bug fix: increased max param to 3
-	Rules->RetoolExemption = text_get_number(0, 1000);
-	Rules->MinTurnsCouncils = text_get_number(0, 1000);
-	Rules->MineralsHarvestingForest = text_get_number(0, 100);
-	Rules->TerritoryMaxDistBase = text_get_number(0, 100);
-	Rules->TurnsCornerGblEnergyMrkt = text_get_number(1, 100);
-	Rules->TechImproveFungusSqr = tech_item();
-	Rules->TechEaseFungusMovement = tech_item();
-	Rules->TechBuildRoadsFungus = tech_item();
-	Rules->TechTwoSpecAbilities = tech_item();
-	Rules->TechThreeNutrientsSqr = tech_item();
-	Rules->TechThreeMineralsSqr = tech_item();
-	Rules->TechThreeEnergySqr = tech_item();
-	Rules->TechOrbInsertSansSpcElev = tech_item();
-	Rules->TechMiningPlatformBonus = tech_item();
-	Rules->TechEconomicVictory = tech_item();
-	Rules->TglProbeCanStealTech = text_get_number(0, 1); // Fix: set min param to 0
-	Rules->TglHumanAlwaysContactNet = text_get_number(0, 1); // Fix: set min param to 0
-	Rules->TglHumansAlwaysContactPBEM = text_get_number(0, 1); // Fix: set min param to 0
-	Rules->MaxPctDmgArtVsUnitBaseBnkr = text_get_number(10, 100);
-	Rules->MaxPctDmgArtVsUnitsOpen = text_get_number(10, 100);
-	Rules->MaxPctDmgArtVsUnitsSea = text_get_number(10, 100);
+	Rules->psi_combat_ratio_atk[TRIAD_AIR] = range(text_item_number(), 1, 1000);
+	Rules->psi_combat_ratio_def[TRIAD_AIR] = range(text_item_number(), 1, 1000);
+	Rules->player_start_energy_reserve = text_get_number(0, 1000);
+	Rules->combat_pct_base_def = text_get_number(-100, 1000);
+	Rules->combat_pct_atk_road = text_get_number(-100, 1000);
+	Rules->combat_pct_atk_higher_elev = text_get_number(-100, 1000);
+	Rules->combat_pen_pct_atk_lwr_elev = text_get_number(-100, 1000);
+	Rules->combat_pct_mobile_open_ground = text_get_number(-100, 1000);
+	Rules->combat_pct_def_vs_mobile_rough = text_get_number(-100, 1000);
+	Rules->combat_pct_infantry_vs_base = text_get_number(-100, 1000);
+	Rules->combat_pen_pct_atk_airdrop = text_get_number(-100, 1000);
+	Rules->combat_pct_fanatic_atk_bonus = text_get_number(-100, 1000);
+	Rules->combat_pct_land_gun_vs_ship_art = text_get_number(-100, 1000);
+	Rules->combat_pct_art_bonus_lvl_alt = text_get_number(-100, 1000);
+	Rules->combat_pct_trance_def_vs_psi = text_get_number(-100, 1000);
+	Rules->combat_pct_emp_song_atk_vs_psi = text_get_number(-100, 1000);
+	Rules->combat_pen_pct_air_supr_vs_grnd = text_get_number(-100, 1000);
+	Rules->combat_pct_air_supr_vs_air = text_get_number(-100, 1000);
+	Rules->combat_pen_pct_non_cbt_def_vs_cbt = text_get_number(-100, 1000);
+	Rules->combat_pct_com_jam_def_vs_mobl = text_get_number(-100, 1000);
+	Rules->combat_pct_bonus_vs_ship_port = text_get_number(-100, 1000);
+	Rules->combat_pct_aaa_bonus_vs_air = text_get_number(-100, 1000);
+	Rules->combat_pct_def_range_sensor = text_get_number(-100, 1000);
+	Rules->combat_pct_psi_atk_bonus_planet = text_get_number(-100, 1000);
+	Rules->retool_pct_pen_prod_chg = text_get_number(0, 100);
+	Rules->retool_strictness = text_get_number(0, 3); // Bug fix: increased max param to 3
+	Rules->retool_exemption = text_get_number(0, 1000);
+	Rules->min_turns_councils = text_get_number(0, 1000);
+	Rules->minerals_harvesting_forest = text_get_number(0, 100);
+	Rules->territory_max_dist_base = text_get_number(0, 100);
+	Rules->turns_corner_gbl_energy_mrkt = text_get_number(1, 100);
+	Rules->tech_improve_fungus_sqr = tech_item();
+	Rules->tech_ease_fungus_movement = tech_item();
+	Rules->tech_build_roads_fungus = tech_item();
+	Rules->tech_two_spec_abilities = tech_item();
+	Rules->tech_three_nutrients_sqr = tech_item();
+	Rules->tech_three_minerals_sqr = tech_item();
+	Rules->tech_three_energy_sqr = tech_item();
+	Rules->tech_orb_insert_sans_spc_elev = tech_item();
+	Rules->tech_mining_platform_bonus = tech_item();
+	Rules->tech_economic_victory = tech_item();
+	Rules->tgl_probe_can_steal_tech = text_get_number(0, 1); // Fix: Set min param to 0
+	Rules->tgl_human_always_contact_net = text_get_number(0, 1); // Fix: Set min param to 0
+	Rules->tgl_humans_always_contact_pbem = text_get_number(0, 1); // Fix: Set min param to 0
+	Rules->max_pct_dmg_art_vs_unit_base_bnkr = text_get_number(10, 100);
+	Rules->max_pct_dmg_art_vs_units_open = text_get_number(10, 100);
+	Rules->max_pct_dmg_art_vs_units_sea = text_get_number(10, 100);
 	text_get();
-	Rules->FreqGlobalWarmingNum = range(text_item_number(), 0, 1000);
-	Rules->FreqGlobalWarmingDenom = range(text_item_number(), 1, 1000);
-	Rules->NormalStartingYear = text_get_number(0, 999999);
-	Rules->NormalEndYearLowThreeDiff = text_get_number(0, 999999);
-	Rules->NormalEndYearHighThreeDiff = text_get_number(0, 999999);
-	Rules->TglOblitBaseAtrocity = text_get_number(0, 1); // Fix: set min param to 0
-	Rules->SizeBaseSubspaceGen = text_get_number(1, 999); // SMACX only
-	Rules->SubspaceGeneratorsNeeded = text_get_number(1, 999); // SMACX only
-	// World Builder
+	Rules->freq_global_warming_num = range(text_item_number(), 0, 1000);
+	Rules->freq_global_warming_denom = range(text_item_number(), 1, 1000);
+	Rules->normal_starting_year = text_get_number(0, 999999);
+	Rules->normal_end_year_low_three_diff = text_get_number(0, 999999);
+	Rules->normal_end_year_high_three_diff = text_get_number(0, 999999);
+	Rules->tgl_oblit_base_atrocity = text_get_number(0, 1); // Fix: Set min param to 0
+	Rules->size_base_subspace_gen = text_get_number(1, 999); // SMACX only
+	Rules->subspace_generators_needed = text_get_number(1, 999); // SMACX only
 	if (text_open(AlphaxFileID, "WORLDBUILDER")) {
 		return 1;
 	}
-	WorldBuilder->LandBase = text_get_number(50, 4000);
-	WorldBuilder->LandMod = text_get_number(0, 2000);
-	WorldBuilder->ContinentBase = text_get_number(5, 1000);
-	WorldBuilder->ContinentMod = text_get_number(5, 1000);
-	WorldBuilder->HillsBase = text_get_number(0, 100);
-	WorldBuilder->HillsMod = text_get_number(0, 100);
-	WorldBuilder->PlateauBase = text_get_number(0, 500);
-	WorldBuilder->PlateauMod = text_get_number(0, 500);
-	WorldBuilder->RiversBase = text_get_number(0, 100);
-	WorldBuilder->RiversRainMod = text_get_number(0, 100);
-	WorldBuilder->SolarEnergy = text_get_number(1, 64);
-	WorldBuilder->ThermalBand = text_get_number(1, 64);
-	WorldBuilder->ThermalDeviance = text_get_number(1, 64);
-	WorldBuilder->GlobalWarming = text_get_number(1, 64);
-	WorldBuilder->SeaLevelRises = text_get_number(1, 100);
-	WorldBuilder->CloudmassPeaks = text_get_number(0, 20);
-	WorldBuilder->CloudmassHills = text_get_number(0, 20);
-	WorldBuilder->RainfallCoeff = text_get_number(0, 8);
-	WorldBuilder->DeepWater = text_get_number(-100, 100);
-	WorldBuilder->Shelf = text_get_number(-100, 100);
-	WorldBuilder->Plains = text_get_number(-100, 100);
-	WorldBuilder->Beach = text_get_number(-100, 100);
-	WorldBuilder->Hills = text_get_number(0, 100);
-	WorldBuilder->Peaks = text_get_number(-100, 100);
-	WorldBuilder->Fungus = text_get_number(0, 5);
+	WorldBuilder->land_base = text_get_number(50, 4000);
+	WorldBuilder->land_mod = text_get_number(0, 2000);
+	WorldBuilder->continent_base = text_get_number(5, 1000);
+	WorldBuilder->continent_mod = text_get_number(5, 1000);
+	WorldBuilder->hills_base = text_get_number(0, 100);
+	WorldBuilder->hills_mod = text_get_number(0, 100);
+	WorldBuilder->plateau_base = text_get_number(0, 500);
+	WorldBuilder->plateau_mod = text_get_number(0, 500);
+	WorldBuilder->rivers_base = text_get_number(0, 100);
+	WorldBuilder->rivers_rain_mod = text_get_number(0, 100);
+	WorldBuilder->solar_energy = text_get_number(1, 64);
+	WorldBuilder->thermal_band = text_get_number(1, 64);
+	WorldBuilder->thermal_deviance = text_get_number(1, 64);
+	WorldBuilder->global_warming = text_get_number(1, 64);
+	WorldBuilder->sea_level_rises = text_get_number(1, 100);
+	WorldBuilder->cloudmass_peaks = text_get_number(0, 20);
+	WorldBuilder->cloudmass_hills = text_get_number(0, 20);
+	WorldBuilder->rainfall_coeff = text_get_number(0, 8);
+	WorldBuilder->deep_water = text_get_number(-100, 100);
+	WorldBuilder->shelf = text_get_number(-100, 100);
+	WorldBuilder->plains = text_get_number(-100, 100);
+	WorldBuilder->beach = text_get_number(-100, 100);
+	WorldBuilder->hills = text_get_number(0, 100);
+	WorldBuilder->peaks = text_get_number(-100, 100);
+	WorldBuilder->fungus = text_get_number(0, 5);
 	text_get();
-	WorldBuilder->ContSizeRatio1 = text_item_number();
-	WorldBuilder->ContSizeRatio2 = text_item_number();
-	WorldBuilder->ContSizeRatio3 = text_item_number();
-	WorldBuilder->ContSizeRatio4 = text_item_number();
-	WorldBuilder->ContSizeRatio5 = text_item_number();
-	WorldBuilder->Islands = text_get_number(1, 500);
+	WorldBuilder->cont_size_ratio1 = text_item_number();
+	WorldBuilder->cont_size_ratio2 = text_item_number();
+	WorldBuilder->cont_size_ratio3 = text_item_number();
+	WorldBuilder->cont_size_ratio4 = text_item_number();
+	WorldBuilder->cont_size_ratio5 = text_item_number();
+	WorldBuilder->islands = text_get_number(1, 500);
 	return false;
 }
 
 /*
-Purpose: Parse #TECHNOLOGY section inside alpha(x).txt with dup check
+Purpose: Parse the #TECHNOLOGY section inside the alpha(x).txt with a duplicate entry check.
 Original Offset: 00585E30
 Return Value: Was there an error? true/false
 Status: Complete
@@ -337,8 +334,8 @@ BOOL __cdecl read_tech() {
 		Technology[i].preq_tech_1 = tech_name(text_item());
 		Technology[i].preq_tech_2 = tech_name(text_item());
 		Technology[i].flags = text_item_binary();
-		if (Technology[i].preq_tech_1 != DisabledValue
-			&& Technology[i].preq_tech_2 != DisabledValue) {
+        if (Technology[i].preq_tech_1 != DisabledValue
+            && Technology[i].preq_tech_2 != DisabledValue) {
 			*TechValidCount += 1;
 			if (Technology[i].flags & TFLAG_INC_COMMERCE) {
 				*TechCommerceCount += 1;
@@ -349,7 +346,7 @@ BOOL __cdecl read_tech() {
 }
 
 /*
-Purpose: Clear rule values for player
+Purpose: Clear the rule values for the specified player.
 Original Offset: 00585FE0
 Return Value: n/a
 Status: Complete
@@ -373,21 +370,21 @@ void __cdecl clear_faction(Player *player) {
 }
 
 /*
-Purpose: Overload of read faction function passing int value rather than player structure.
+Purpose: Parse the faction's file and art for the specified player id.
 Original Offset: 00586050
 Return Value: n/a
 Status: Complete
 */
-void __cdecl read_faction(int playerID) {
-	if (playerID) { // Skips Aliens
-		read_faction(&Players[playerID], 0);
-		load_faction_art(playerID);
+void __cdecl read_faction(uint32_t player_id) {
+	if (player_id) {
+		read_faction(&Players[player_id], 0);
+		load_faction_art(player_id);
 	}
 }
 
 /*
-Purpose: Parse 1st 8 lines of faction files into player structure. Toggle parameter will end the
-		 function early if set to 2. Original code never uses this.
+Purpose: Parse the 1st eight lines of the specified faction's file into a player structure. The 
+         toggle parameter will end the function early if set to 2 (original code never uses this).
 Original Offset: 00586090
 Return Value: n/a
 Status: Complete
@@ -412,8 +409,7 @@ void __cdecl read_faction(Player *player, int toggle) {
 	player->noun_gender = GENDER_MALE;
 	if (gender[0] == 'F' || gender[0] == 'f') {
 		player->noun_gender = GENDER_FEMALE;
-	}
-	else if (gender[0] == 'N' || gender[0] == 'n') {
+	} else if (gender[0] == 'N' || gender[0] == 'n') {
 		player->noun_gender = GENDER_NEUTRAL;
 	}
 	player->is_noun_plural = range(text_item_number() - 1, false, true); // original value: 1 or 2
@@ -430,222 +426,185 @@ void __cdecl read_faction(Player *player, int toggle) {
 	player->ai_wealth = text_item_number();
 	player->ai_growth = text_item_number();
 	text_get();
-	LPSTR parseRuleCheck = text_item();
-	int len = strlen(parseRuleCheck);
+	LPSTR parse_rule_check = text_item();
+	int len = strlen(parse_rule_check);
 	while (len) {
-		LPSTR parseRule = new char[len + 1];
-		strcpy_s(parseRule, len + 1, parseRuleCheck);
-		LPSTR parseParameter = text_item();
-		if (!_stricmp(parseRule, BonusName[0].key)) { // TECH
+		LPSTR parse_rule = new char[len + 1];
+		strcpy_s(parse_rule, len + 1, parse_rule_check);
+		LPSTR parse_param = text_item();
+		if (!_stricmp(parse_rule, BonusName[0].key)) { // TECH
 			// will have issues if custom tech abbreviations starting with numbers are used
-			int playerSelected = atoi(parseParameter);
-			if (!playerSelected && player->faction_bonus_count < 8) {
+			int player_selected = atoi(parse_param);
+			if (!player_selected && player->faction_bonus_count < 8) {
 				player->faction_bonus_id[player->faction_bonus_count] = RULE_TECH;
-				player->faction_bonus_val1[player->faction_bonus_count] = tech_name(parseParameter);
+				player->faction_bonus_val1[player->faction_bonus_count] = tech_name(parse_param);
 				player->faction_bonus_count++;
+			} else {
+				player->rule_tech_selected = player_selected;
 			}
-			else {
-				player->rule_tech_selected = playerSelected;
+		} else if (!_stricmp(parse_rule, BonusName[1].key)) { // MORALE
+			if (parse_param[0] == '+') {
+				parse_param++;
 			}
-		}
-		else if (!_stricmp(parseRule, BonusName[1].key)) { // MORALE
-			if (parseParameter[0] == '+') {
-				parseParameter++;
-			}
-			player->rule_morale = atoi(parseParameter);
+			player->rule_morale = atoi(parse_param);
 			// 0 indicates an exemption from negative modifiers from other sources
 			if (!player->rule_morale) {
 				player->rule_flags |= RFLAG_MORALE;
 			}
-		}
-		// FACILITY
-		else if (!_stricmp(parseRule, BonusName[3].key) && player->faction_bonus_count < 8) {
+		} else if (!_stricmp(parse_rule, BonusName[3].key) && player->faction_bonus_count < 8) {
+            // FACILITY
 			player->faction_bonus_id[player->faction_bonus_count] = RULE_FACILITY;
-			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parseParameter);
+			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parse_param);
 			player->faction_bonus_count++;
-		}
-		else if (!_stricmp(parseRule, BonusName[4].key)) { // RESEARCH
-			player->rule_research = atoi(parseParameter);
-		}
-		else if (!_stricmp(parseRule, BonusName[5].key)) { // DRONE
-			player->rule_drone = atoi(parseParameter);
-		}
-		else if (!_stricmp(parseRule, BonusName[6].key)) { // TALENT
-			player->rule_talent = atoi(parseParameter);
-		}
-		else if (!_stricmp(parseRule, BonusName[7].key)) { // ENERGY
-			player->rule_energy = atoi(parseParameter);
-		}
-		else if (!_stricmp(parseRule, BonusName[8].key)) { // INTEREST
+		} else if (!_stricmp(parse_rule, BonusName[4].key)) { // RESEARCH
+			player->rule_research = atoi(parse_param);
+		} else if (!_stricmp(parse_rule, BonusName[5].key)) { // DRONE
+			player->rule_drone = atoi(parse_param);
+		} else if (!_stricmp(parse_rule, BonusName[6].key)) { // TALENT
+			player->rule_talent = atoi(parse_param);
+		} else if (!_stricmp(parse_rule, BonusName[7].key)) { // ENERGY
+			player->rule_energy = atoi(parse_param);
+		} else if (!_stricmp(parse_rule, BonusName[8].key)) { // INTEREST
 			player->rule_flags |= RFLAG_INTEREST;
-			player->rule_interest = atoi(parseParameter);
-		}
-		else if (!_stricmp(parseRule, BonusName[9].key)) { // COMMERCE
-			player->rule_commerce = atoi(parseParameter);
-		}
-		else if (!_stricmp(parseRule, BonusName[10].key)) { // POPULATION
-			player->rule_population = atoi(parseParameter);
-		}
-		else if (!_stricmp(parseRule, BonusName[11].key)) { // HURRY
-			player->rule_hurry = range(atoi(parseParameter), 1, 1000);
-		}
-		else if (!_stricmp(parseRule, BonusName[13].key)) { // TECHCOST
-			player->rule_techcost = atoi(parseParameter);
-		}
-		else if (!_stricmp(parseRule, BonusName[12].key) && player->faction_bonus_count < 8) { // UNIT
+			player->rule_interest = atoi(parse_param);
+		} else if (!_stricmp(parse_rule, BonusName[9].key)) { // COMMERCE
+			player->rule_commerce = atoi(parse_param);
+		} else if (!_stricmp(parse_rule, BonusName[10].key)) { // POPULATION
+			player->rule_population = atoi(parse_param);
+		} else if (!_stricmp(parse_rule, BonusName[11].key)) { // HURRY
+			player->rule_hurry = range(atoi(parse_param), 1, 1000);
+		} else if (!_stricmp(parse_rule, BonusName[13].key)) { // TECHCOST
+			player->rule_techcost = atoi(parse_param);
+		} else if (!_stricmp(parse_rule, BonusName[12].key) && player->faction_bonus_count < 8) {
+            // UNIT
 			player->faction_bonus_id[player->faction_bonus_count] = RULE_UNIT;
-			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parseParameter);
+			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parse_param);
 			player->faction_bonus_count++;
-		}
-		else if (!_stricmp(parseRule, BonusName[2].key)) { // PSI
-			player->rule_psi = atoi(parseParameter);
-		}
-		else if (!_stricmp(parseRule, BonusName[14].key)) { // SHARETECH
-			player->rule_sharetech = atoi(parseParameter);
-		}
-		else if (!_stricmp(parseRule, BonusName[15].key)) { // TERRAFORM
+		} else if (!_stricmp(parse_rule, BonusName[2].key)) { // PSI
+			player->rule_psi = atoi(parse_param);
+		} else if (!_stricmp(parse_rule, BonusName[14].key)) { // SHARETECH
+			player->rule_sharetech = atoi(parse_param);
+		} else if (!_stricmp(parse_rule, BonusName[15].key)) { // TERRAFORM
 			player->rule_flags |= RFLAG_TERRAFORM;
-		}
-		// SOCIAL, ROBUST, IMMUNITY; Moved faction_bonus_count check to start rather than inner loop
-		else if ((!_stricmp(parseRule, BonusName[16].key) || !_stricmp(parseRule, BonusName[17].key)
-			|| !_stricmp(parseRule, BonusName[18].key)) && player->faction_bonus_count < 8) {
+		} else if ((!_stricmp(parse_rule, BonusName[16].key) // SOCIAL, ROBUST, IMMUNITY
+            || !_stricmp(parse_rule, BonusName[17].key)
+			|| !_stricmp(parse_rule, BonusName[18].key)) && player->faction_bonus_count < 8) {
+            // Moved faction_bonus_count check to start rather than inner loop
 			int value = 0;
-			while (parseParameter[0] == '+' || parseParameter[0] == '-') {
-				(parseParameter[0] == '+') ? value++ : value--;
-				parseParameter++;
+			while (parse_param[0] == '+' || parse_param[0] == '-') {
+				(parse_param[0] == '+') ? value++ : value--;
+				parse_param++;
 			}
 			if (!value) { // cannot be zero
 				value = 1;
 			}
 			for (int j = 0; j < MaxSocialEffectNum; j++) {
-				if (!_stricmp(SocialEffects[j].set1, parseParameter)) {
-					if (!_stricmp(parseRule, BonusName[17].key)) {
+				if (!_stricmp(SocialEffects[j].set1, parse_param)) {
+					if (!_stricmp(parse_rule, BonusName[17].key)) {
 						player->faction_bonus_id[player->faction_bonus_count] = RULE_ROBUST;
-					}
-					else {
+					} else {
 						player->faction_bonus_id[player->faction_bonus_count] =
-							!_stricmp(parseRule, BonusName[16].key) ? RULE_SOCIAL : RULE_IMMUNITY;
+							!_stricmp(parse_rule, BonusName[16].key) ? RULE_SOCIAL : RULE_IMMUNITY;
 					}
-					player->faction_bonus_val1[player->faction_bonus_count] = j; // Social Effect id
-					player->faction_bonus_val2[player->faction_bonus_count] = value; // value modifier
+					player->faction_bonus_val1[player->faction_bonus_count] = j; // soc effect id
+					player->faction_bonus_val2[player->faction_bonus_count] = value; // value mod
 					player->faction_bonus_count++;
 					break;
 				}
 			}
-		}
-		// IMPUNITY, PENALTY; Moved faction_bonus_count check to start rather than inner loop
-		else if ((!_stricmp(parseRule, BonusName[19].key)
-			|| !_stricmp(parseRule, BonusName[20].key)) && player->faction_bonus_count < 8) {
+		} else if ((!_stricmp(parse_rule, BonusName[19].key) // IMPUNITY, PENALTY
+			|| !_stricmp(parse_rule, BonusName[20].key)) && player->faction_bonus_count < 8) {
+            // Moved faction_bonus_count check to start rather than inner loop
 			for (int j = 0; j < MaxSocialCatNum; j++) {
 				for (int k = 0; k < MaxSocialModelNum; k++) {
-					if (!_stricmp(parseParameter,
+					if (!_stricmp(parse_param,
 						StringTable->get((int)SocialCategories[j].name[k]))) {
 						player->faction_bonus_id[player->faction_bonus_count] =
-							!_stricmp(parseRule, BonusName[19].key) ? RULE_IMPUNITY : RULE_PENALTY;
+							!_stricmp(parse_rule, BonusName[19].key) ? RULE_IMPUNITY : RULE_PENALTY;
 						player->faction_bonus_val1[player->faction_bonus_count] = j; // category id
 						player->faction_bonus_val2[player->faction_bonus_count] = k; // model id
 						player->faction_bonus_count++;
 					}
 				}
 			}
-		}
-		// FUNGNUTRIENT
-		else if (!_stricmp(parseRule, BonusName[21].key) && player->faction_bonus_count < 8) {
+		} else if (!_stricmp(parse_rule, BonusName[21].key) && player->faction_bonus_count < 8) {
+            // FUNGNUTRIENT
 			player->faction_bonus_id[player->faction_bonus_count] = RULE_FUNGNUTRIENT;
-			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parseParameter);
+			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parse_param);
 			player->faction_bonus_count++;
-		}
-		// FUNGMINERALS
-		else if (!_stricmp(parseRule, BonusName[22].key) && player->faction_bonus_count < 8) {
+		} else if (!_stricmp(parse_rule, BonusName[22].key) && player->faction_bonus_count < 8) {
+            // FUNGMINERALS
 			player->faction_bonus_id[player->faction_bonus_count] = RULE_FUNGMINERALS;
-			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parseParameter);
+			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parse_param);
 			player->faction_bonus_count++;
-		}
-		// FUNGENERGY
-		else if (!_stricmp(parseRule, BonusName[23].key) && player->faction_bonus_count < 8) {
+		} else if (!_stricmp(parse_rule, BonusName[23].key) && player->faction_bonus_count < 8) {
+            // FUNGENERGY
 			player->faction_bonus_id[player->faction_bonus_count] = RULE_FUNGENERGY;
-			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parseParameter);
+			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parse_param);
 			player->faction_bonus_count++;
-		}
-		else if (!_stricmp(parseRule, BonusName[24].key)) { // COMMFREQ
+		} else if (!_stricmp(parse_rule, BonusName[24].key)) { // COMMFREQ
 			player->rule_flags |= RFLAG_COMMFREQ;
-		}
-		else if (!_stricmp(parseRule, BonusName[25].key)) { // MINDCONTROL
+		} else if (!_stricmp(parse_rule, BonusName[25].key)) { // MINDCONTROL
 			player->rule_flags |= RFLAG_MINDCONTROL;
-		}
-		else if (!_stricmp(parseRule, BonusName[26].key)) { // FANATIC
+		} else if (!_stricmp(parse_rule, BonusName[26].key)) { // FANATIC
 			player->rule_flags |= RFLAG_FANATIC;
-		}
-		// VOTES
-		else if (!_stricmp(parseRule, BonusName[27].key) && player->faction_bonus_count < 8) {
+		} else if (!_stricmp(parse_rule, BonusName[27].key) && player->faction_bonus_count < 8) {
+            // VOTES
 			player->faction_bonus_id[player->faction_bonus_count] = RULE_VOTES;
-			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parseParameter);
+			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parse_param);
 			player->faction_bonus_count++;
-		}
-		else if (!_stricmp(parseRule, BonusName[28].key)) { // FREEPROTO
+		} else if (!_stricmp(parse_rule, BonusName[28].key)) { // FREEPROTO
 			player->rule_flags |= RFLAG_FREEPROTO;
-		}
-		else if (!_stricmp(parseRule, BonusName[29].key)) { // AQUATIC
+		} else if (!_stricmp(parse_rule, BonusName[29].key)) { // AQUATIC
 			player->rule_flags |= RFLAG_AQUATIC;
-		}
-		else if (!_stricmp(parseRule, BonusName[30].key)) { // ALIEN
+		} else if (!_stricmp(parse_rule, BonusName[30].key)) { // ALIEN
 			player->rule_flags |= RFLAG_ALIEN;
-		}
-		// FREEFAC
-		else if (!_stricmp(parseRule, BonusName[31].key) && player->faction_bonus_count < 8) {
+		} else if (!_stricmp(parse_rule, BonusName[31].key) && player->faction_bonus_count < 8) {
+            // FREEFAC
 			player->faction_bonus_id[player->faction_bonus_count] = RULE_FREEFAC;
-			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parseParameter);
+			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parse_param);
 			player->faction_bonus_count++;
-		}
-		// REVOLT
-		else if (!_stricmp(parseRule, BonusName[32].key) && player->faction_bonus_count < 8) {
+		} else if (!_stricmp(parse_rule, BonusName[32].key) && player->faction_bonus_count < 8) {
+            // REVOLT
 			player->faction_bonus_id[player->faction_bonus_count] = RULE_REVOLT;
-			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parseParameter);
+			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parse_param);
 			player->faction_bonus_count++;
-		}
-		// NODRONE
-		else if (!_stricmp(parseRule, BonusName[33].key) && player->faction_bonus_count < 8) {
+		} else if (!_stricmp(parse_rule, BonusName[33].key) && player->faction_bonus_count < 8) {
+            // NODRONE
 			player->faction_bonus_id[player->faction_bonus_count] = RULE_NODRONE;
-			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parseParameter);
+			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parse_param);
 			player->faction_bonus_count++;
-		}
-		else if (!_stricmp(parseRule, BonusName[34].key)) { // WORMPOLICE
+		} else if (!_stricmp(parse_rule, BonusName[34].key)) { // WORMPOLICE
 			player->rule_flags |= RFLAG_WORMPOLICE;
-		}
-		// FREEABIL
-		else if (!_stricmp(parseRule, BonusName[35].key) && player->faction_bonus_count < 8) {
+		} else if (!_stricmp(parse_rule, BonusName[35].key) && player->faction_bonus_count < 8) {
+            // FREEABIL
 			player->faction_bonus_id[player->faction_bonus_count] = RULE_FREEABIL;
-			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parseParameter);
+			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parse_param);
 			player->faction_bonus_count++;
-		}
-		// PROBECOST
-		else if (!_stricmp(parseRule, BonusName[36].key) && player->faction_bonus_count < 8) {
+		} else if (!_stricmp(parse_rule, BonusName[36].key) && player->faction_bonus_count < 8) {
+            // PROBECOST
 			player->faction_bonus_id[player->faction_bonus_count] = RULE_PROBECOST;
-			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parseParameter);
+			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parse_param);
 			player->faction_bonus_count++;
-		}
-		// DEFENSE
-		else if (!_stricmp(parseRule, BonusName[37].key) && player->faction_bonus_count < 8) {
+		} else if (!_stricmp(parse_rule, BonusName[37].key) && player->faction_bonus_count < 8) {
+            // DEFENSE
 			player->faction_bonus_id[player->faction_bonus_count] = RULE_DEFENSE;
-			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parseParameter);
+			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parse_param);
 			player->faction_bonus_count++;
-		}
-		// OFFENSE
-		else if (!_stricmp(parseRule, BonusName[38].key) && player->faction_bonus_count < 8) {
+		} else if (!_stricmp(parse_rule, BonusName[38].key) && player->faction_bonus_count < 8) {
+            // OFFENSE
 			player->faction_bonus_id[player->faction_bonus_count] = RULE_OFFENSE;
-			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parseParameter);
+			player->faction_bonus_val1[player->faction_bonus_count] = atoi(parse_param);
 			player->faction_bonus_count++;
-		}
-		else if (!_stricmp(parseRule, BonusName[39].key)) { // TECHSHARE
+		} else if (!_stricmp(parse_rule, BonusName[39].key)) { // TECHSHARE
 			player->rule_flags |= RFLAG_TECHSHARE;
-			player->rule_sharetech = atoi(parseParameter);
-		}
-		else if (!_stricmp(parseRule, BonusName[40].key)) { // TECHSTEAL
+			player->rule_sharetech = atoi(parse_param);
+		} else if (!_stricmp(parse_rule, BonusName[40].key)) { // TECHSTEAL
 			player->rule_flags |= RFLAG_TECHSTEAL;
 		}
-		parseRuleCheck = text_item();
-		len = strlen(parseRuleCheck);
-		delete [] parseRule;
+		parse_rule_check = text_item();
+		len = strlen(parse_rule_check);
+		delete [] parse_rule;
 	}
 	// Societal Ideology + Anti-Ideology
 	for (int i = 0; i < 2; i++) {
@@ -653,30 +612,30 @@ void __cdecl read_faction(Player *player, int toggle) {
 		*(&player->soc_ideology_model + i) = 0;
 		*(&player->soc_ideology_effect + i) = -1;
 		text_get();
-		LPSTR socCategory = text_item();
+		LPSTR soc_category = text_item();
 		for (int j = 0; j < MaxSocialCatNum; j++) {
-			LPSTR checkCatType = StringTable->get((int)SocialCategories[j].type);
-			if (*Language ?
-				!_strnicmp(socCategory, checkCatType, 4) : !_stricmp(socCategory, checkCatType)) {
+			LPSTR check_cat_type = StringTable->get((int)SocialCategories[j].type);
+			if (*Language ? !_strnicmp(soc_category, check_cat_type, 4) 
+                : !_stricmp(soc_category, check_cat_type)) {
 				*(&player->soc_ideology_category + i) = j;
 				break;
 			}
 		}
-		LPSTR socModel = text_item();
-		int socCatNum = *(&player->soc_ideology_category + i);
-		if (socCatNum >= 0) {
+		LPSTR soc_model = text_item();
+		int soc_cat_num = *(&player->soc_ideology_category + i);
+		if (soc_cat_num >= 0) {
 			for (int j = 0; j < MaxSocialModelNum; j++) {
-				LPSTR checkModel = StringTable->get((int)SocialCategories[socCatNum].name[j]);
+				LPSTR check_model = StringTable->get((int)SocialCategories[soc_cat_num].name[j]);
 				if (*Language ?
-					!_strnicmp(socModel, checkModel, 4) : !_stricmp(socModel, checkModel)) {
+					!_strnicmp(soc_model, check_model, 4) : !_stricmp(soc_model, check_model)) {
 					*(&player->soc_ideology_model + i) = j;
 					break;
 				}
 			}
 		}
-		LPSTR socEffect = text_item();
+		LPSTR soc_effect = text_item();
 		for (int j = 0; j < MaxSocialEffectNum; j++) {
-			if (!_stricmp(SocialEffects[j].set1, socEffect)) {
+			if (!_stricmp(SocialEffects[j].set1, soc_effect)) {
 				// Bug fix: Original code sets this value to -1, disabling AI faction "Emphasis"
 				// value. No indication this was intentional.
 				*(&player->soc_ideology_effect + i) = j;
@@ -712,7 +671,7 @@ void __cdecl read_faction(Player *player, int toggle) {
 }
 
 /*
-Purpose: Parse #BONUSNAMES, #FACTIONS, #NEWFACTIONS sections inside alpha(x).txt
+Purpose: Parse the #BONUSNAMES, #FACTIONS, and #NEWFACTIONS sections inside the alpha(x).txt.
 Original Offset: 00586F30
 Return Value: Was there an error? true/false
 Status: Complete
@@ -721,7 +680,7 @@ BOOL __cdecl read_factions() {
 	if (text_open(AlphaxFileID, "BONUSNAMES")) {
 		return true;
 	}
-	for (unsigned int i = 0; i < MaxBonusNameNum; i++) {
+	for (uint32_t i = 0; i < MaxBonusNameNum; i++) {
 		if (!(i % 8)) { // 8 entries per line
 			text_get();
 		}
@@ -737,11 +696,11 @@ BOOL __cdecl read_factions() {
 	}
 	// SMACX only: Will override any values parsed from alphax.txt #NEWFACTIONS if set in ini;
 	prefs_fac_load(); // Removed an extra SMACX_Enabled check around call since there is one inside
-	uint32_t factionCount = 14;
+	uint32_t faction_count = 14;
 	if (!text_open(AlphaxFileID, "CUSTOMFACTIONS")) { // get count of custom factions
 		text_get();
 		for (LPSTR custom = text_item(); *custom; custom = text_item()) {
-			factionCount++;
+			faction_count++;
 			text_get();
 		}
 	}
@@ -749,13 +708,13 @@ BOOL __cdecl read_factions() {
 		if (!strcmp(Players[i].filename, "JENN282")) {
 			int faction_id;
 			do {
-				int randVal = random(0, factionCount); // replaced rand()
-				uint32_t factionSet = randVal / 7; // 0: SMAC; 1: SMACX; 2+: custom
-				if (text_open(AlphaxFileID, !factionSet ? "FACTIONS" : (factionSet == 1)
+				int rand_val = random(0, faction_count); // replaced rand()
+				uint32_t faction_set = rand_val / 7; // 0: SMAC; 1: SMACX; 2+: custom
+				if (text_open(AlphaxFileID, !faction_set ? "FACTIONS" : (faction_set == 1)
 					? "NEWFACTIONS" : "CUSTOMFACTIONS")) {
 					return true;
 				}
-				faction_id = randVal % 7;
+				faction_id = rand_val % 7;
 				for (int j = faction_id; j >= 0; j--) {
 					text_get();
 				}
@@ -774,8 +733,7 @@ BOOL __cdecl read_factions() {
 					load_faction_art(i);
 				}
 			} while (faction_id == -1);
-		}
-		else {
+		} else {
 			// removed check (&Players[i] != &Players[0]) since Players[0] is already skipped
 			// moved this into same loop to increase performance with random factions
 			read_faction(&Players[i], 0);
@@ -786,20 +744,18 @@ BOOL __cdecl read_factions() {
 }
 
 /*
-Purpose: Parse and set noun item's gender and plurality from Txt buffer. Optimized out of vanilla
-		 code, useful for readability.
+Purpose: Parse and set the noun item's gender and plurality from the Txt buffer.
 Original Offset: 005871D0
 Return Value: n/a
 Status: Complete
 */
-void __cdecl noun_item(int *gender, BOOL *plurality) {
+void __cdecl noun_item(uint32_t *gender, BOOL *plurality) {
 	LPSTR noun = text_item();
 	*gender = 0; // defaults to male ('m' || 'M')
 	*plurality = false; // defaults to singular ('1')
 	if (noun[0] == 'f' || noun[0] == 'F') {
 		*gender = 1;
-	}
-	else if (noun[0] == 'n' || noun[0] == 'N') {
+	} else if (noun[0] == 'n' || noun[0] == 'N') {
 		*gender = 2;
 	}
 	if (noun[1] == '2') {
@@ -808,7 +764,7 @@ void __cdecl noun_item(int *gender, BOOL *plurality) {
 }
 
 /*
-Purpose: Parse #UNITS section inside alpha(x).txt
+Purpose: Parse the #UNITS section inside the alpha(x).txt.
 Original Offset: 00587240
 Return Value: Was there an error? true/false
 Status: Complete
@@ -817,13 +773,13 @@ BOOL __cdecl read_units() {
 	if (text_open(AlphaxFileID, "UNITS")) {
 		return true;
 	}
-	int totalUnits = text_get_number(0, MaxVehProtoFactionNum);
-	for (int proto_id = 0; proto_id < totalUnits; proto_id++) {
+	int total_units = text_get_number(0, MaxVehProtoFactionNum);
+	for (int proto_id = 0; proto_id < total_units; proto_id++) {
 		text_get();
 		LPSTR name = text_item();
 		strncpy_s(VehPrototypes[proto_id].veh_name, 32, name, strlen(name));
-		int chasID = chas_name(text_item());
-		int weapID = weap_name(text_item());
+		int chas_id = chas_name(text_item());
+		int weap_id = weap_name(text_item());
 		int armor_id = arm_name(text_item());
 		int plan = text_item_number();
 		int cost = text_item_number();
@@ -833,21 +789,21 @@ BOOL __cdecl read_units() {
 		int ability = text_item_binary();
 		int reactor_id = text_item_number(); // Add ability to read reactor for #UNITS
 		if (!reactor_id) { // if not set or 0, default behavior
-			switch (proto_id) {
-			// There was a pointless explicit check for BSC_BATTLE_OGRE_MK1 to set reactor to 1
-			// The parameters set by check are no different than default
-			case BSC_BATTLE_OGRE_MK2:
-				reactor_id = RECT_FUSION;
-				break;
-			case BSC_BATTLE_OGRE_MK3:
-				reactor_id = RECT_QUANTUM;
-				break;
-			default:
-				reactor_id = RECT_FISSION;
-				break;
-			}
-		}
-		make_proto(proto_id, chasID, weapID, armor_id, ability, reactor_id);
+            switch (proto_id) {
+              // There was a pointless explicit check for BSC_BATTLE_OGRE_MK1 to set reactor to 1
+              // The parameters set by check are no different than default
+              case BSC_BATTLE_OGRE_MK2:
+                reactor_id = RECT_FUSION;
+                break;
+              case BSC_BATTLE_OGRE_MK3:
+                reactor_id = RECT_QUANTUM;
+                break;
+              default:
+                reactor_id = RECT_FISSION;
+                break;
+            }
+        }
+		make_proto(proto_id, chas_id, weap_id, armor_id, ability, reactor_id);
 		// If set, override auto calculated values from make_proto()
 		if (plan != -1) { // plan auto calculate: -1
 			VehPrototypes[proto_id].plan = (uint8_t)plan;
@@ -864,13 +820,13 @@ BOOL __cdecl read_units() {
 }
 
 /*
-Purpose: Parse in all the game rules via alpha/x.txt. If param is set to true, parse
-		 #UNITS & #FACTIONS. Otherwise, skip both. New game vs reload?
+Purpose: Parse in all the game rules via alpha/x.txt. If the toggle param is set to true, parse the
+         #UNITS & #FACTIONS sections. Otherwise, skip both. New game vs reload?
 Original Offset: 005873C0
 Return Value: Was there an error? true/false
 Status: Complete
 */
-BOOL __cdecl read_rules(BOOL tglAllRules) {
+BOOL __cdecl read_rules(BOOL tgl_all_rules) {
 	StringTable->init(49952);
 	if (labels_init()) {
 		return true;
@@ -878,32 +834,30 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 	text_clear_index();
 	text_make_index(ScriptTxtID);
 	text_make_index(AlphaxFileID);
-	// Technology; Rules; Terrain
 	if (read_tech() || read_basic_rules() || text_open(AlphaxFileID, "TERRAIN")) {
 		return true;
 	}
 	for (int i = 0; i < MaxTerrainNum; i++) {
 		text_get();
-		// land + sea terraforming
+		// Land + sea terraforming
 		for (int j = 0; j < 2; j++) {
 			*(&Terraforming[i].name + j) = text_item_string();
 			*(&Terraforming[i].preq_tech + j) = tech_name(text_item());
-			// add in bits & incompatible bits vs hard coded const struct
+			// Add in bits & incompatible bits vs hard coded constant struct
 			*(&Terraforming[i].bit + j) = TerraformingBits[i][j];
 		}
 		Terraforming[i].rate = text_item_number();
-		// land + sea orders
-		LPSTR orderStr = text_item();
+		// Land + sea orders
+		LPSTR order_str = text_item();
 		for (int j = 0; j < 2; j++) {
 			parse_say(0, (int)*(&Terraforming[i].name + j), -1, -1);
 			stringTemp->str[0] = 0;
-			parse_string_OG(orderStr, stringTemp->str); // TODO: replace with completed parse_string
+			parse_string_OG(order_str, stringTemp->str); // TODO: replace
 			*(&Order[i + 4].order + j) = StringTable->put(stringTemp->str);
 		}
 		Order[i + 4].letter = text_item_string();
 		Terraforming[i].shortcuts = text_item_string();
 	}
-	// Resource Info
 	if (text_open(AlphaxFileID, "RESOURCEINFO")) {
 		return true;
 	}
@@ -915,7 +869,6 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		ResourceInfo[i].energy = text_item_number();
 		ResourceInfo[i].unused = text_item_number();
 	}
-	// Time Controls
 	if (text_open(AlphaxFileID, "TIMECONTROLS")) {
 		return true;
 	}
@@ -930,22 +883,17 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		TimeControl[i].refresh = text_item_number();
 		TimeControl[i].accumulated = text_item_number();
 	}
-	// Chassis
 	if (text_open(AlphaxFileID, "CHASSIS")) {
 		return true;
 	}
 	for (int i = 0; i < MaxChassisNum; i++) {
 		text_get();
-		// offsv1
 		Chassis[i].offsv_1_name = text_item_string();
 		noun_item(&Chassis[i].offsv_1_gender, &Chassis[i].offsv_1_plural);
-		// offsv2
 		Chassis[i].offsv_2_name = text_item_string();
 		noun_item(&Chassis[i].offsv_2_gender, &Chassis[i].offsv_2_plural);
-		// defsv1
 		Chassis[i].defsv_1_name = text_item_string();
 		noun_item(&Chassis[i].defsv_1_gender, &Chassis[i].defsv_1_plural);
-		// defsv2
 		Chassis[i].defsv_2_name = text_item_string();
 		noun_item(&Chassis[i].defsv_2_gender, &Chassis[i].defsv_2_plural);
 		Chassis[i].speed = (uint8_t)text_item_number();
@@ -955,14 +903,11 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		Chassis[i].cargo = (uint8_t)text_item_number();
 		Chassis[i].cost = (uint8_t)text_item_number();
 		Chassis[i].preq_tech = (int16_t)tech_name(text_item());
-		// offsv_lrg
 		Chassis[i].offsv_lrg_name = text_item_string();
 		noun_item(&Chassis[i].offsv_lrg_gender, &Chassis[i].offsv_lrg_plural);
-		// defsv_lrg
 		Chassis[i].defsv_lrg_name = text_item_string();
 		noun_item(&Chassis[i].defsv_lrg_gender, &Chassis[i].defsv_lrg_plural);
 	}
-	// Reactors
 	if (text_open(AlphaxFileID, "REACTORS")) {
 		return true;
 	}
@@ -976,7 +921,6 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		Reactor[i].power = (uint16_t)text_item_number();
 		Reactor[i].preq_tech = (int16_t)tech_name(text_item());
 	}
-	// Weapons
 	if (text_open(AlphaxFileID, "WEAPONS")) {
 		return true;
 	}
@@ -990,8 +934,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		Weapon[i].icon = (int8_t)text_item_number();
 		Weapon[i].preq_tech = (int16_t)tech_name(text_item());
 	}
-	// Defenses / Armor
-	if (text_open(AlphaxFileID, "DEFENSES")) {
+	if (text_open(AlphaxFileID, "DEFENSES")) { // Armor
 		return true;
 	}
 	for (int i = 0; i < MaxArmorNum; i++) {
@@ -1003,7 +946,6 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		Armor[i].cost = (uint8_t)text_item_number();
 		Armor[i].preq_tech = (int16_t)tech_name(text_item());
 	}
-	// Abilities
 	if (text_open(AlphaxFileID, "ABILITIES")) {
 		return true;
 	}
@@ -1016,7 +958,6 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		Ability[i].flags = text_item_binary();
 		Ability[i].description = text_item_string();
 	}
-	// Morale
 	if (text_open(AlphaxFileID, "MORALE")) {
 		return true;
 	}
@@ -1025,7 +966,6 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		Morale[i].name = text_item_string();
 		Morale[i].name_lifecycle = text_item_string();
 	}
-	// Defense Modes
 	if (text_open(AlphaxFileID, "DEFENSEMODES")) {
 		return true;
 	}
@@ -1036,7 +976,6 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		DefenseModes[i].abbrev = text_item_string();
 		DefenseModes[i].letter = text_item_string();
 	}
-	// Offense Modes
 	if (text_open(AlphaxFileID, "OFFENSEMODES")) {
 		return true;
 	}
@@ -1048,8 +987,8 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		OffenseModes[i].letter = text_item_string();
 	}
 	// Units basic prototypes (only if new game param1 boolean is set)
-	// Potential bug: Look into issues with VEH data persisting between loaded saved games?
-	if (tglAllRules) {
+	// TODO: Potential bug, look into issues with Veh data persisting between loaded saved games?
+	if (tgl_all_rules) {
 		for (int i = 0; i < MaxVehProtoNum; i++) {
 			VehPrototypes[i].veh_name[0] = 0;
 			VehPrototypes[i].unk_1 = 0;
@@ -1059,7 +998,6 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 			return true;
 		}
 	}
-	// Facilities
 	if (text_open(AlphaxFileID, "FACILITIES")) {
 		return true;
 	}
@@ -1095,8 +1033,7 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 			Facility[i].sp_ai_growth = text_item_number();
 		}
 	}
-	// Orders (basic)
-	if (text_open(AlphaxFileID, "ORDERS")) {
+	if (text_open(AlphaxFileID, "ORDERS")) { // Basic
 		return true;
 	}
 	for (int i = 0; i < MaxOrderNum; i++) {
@@ -1108,7 +1045,6 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 			Order[i].letter = text_item_string();
 		}
 	}
-	// Compass
 	if (text_open(AlphaxFileID, "COMPASS")) {
 		return true;
 	}
@@ -1116,7 +1052,6 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		text_get();
 		Compass[i] = text_item_string();
 	}
-	// Plans
 	if (text_open(AlphaxFileID, "PLANS")) {
 		return true;
 	}
@@ -1126,7 +1061,6 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		PlansShortName[i] = text_item_string();
 		PlansFullName[i] = text_item_string();
 	}
-	// Triad
 	if (text_open(AlphaxFileID, "TRIAD")) {
 		return true;
 	}
@@ -1134,16 +1068,14 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		text_get();
 		Triad[i] = text_item_string();
 	}
-	// Resources
 	if (text_open(AlphaxFileID, "RESOURCES")) {
 		return true;
 	}
 	for (int i = 0; i < MaxResourceNum; i++) {
 		text_get();
-		Resource[i].nameSingular = text_item_string();
-		Resource[i].namePlural = text_item_string();
+		Resource[i].name_singular = text_item_string();
+		Resource[i].name_plural = text_item_string();
 	}
-	// Energy
 	if (text_open(AlphaxFileID, "ENERGY")) {
 		return true;
 	}
@@ -1152,7 +1084,6 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		Energy[i].abbrev = text_item_string();
 		Energy[i].name = text_item_string();
 	}
-	// Citizens
 	if (text_open(AlphaxFileID, "CITIZENS")) {
 		return true;
 	}
@@ -1168,7 +1099,6 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 			Citizen[i].research_bonus = text_item_number();
 		}
 	}
-	// Socio
 	if (text_open(AlphaxFileID, "SOCIO")) {
 		return true;
 	}
@@ -1190,38 +1120,35 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 			SocialCategories[i].name[j] = text_item_string();
 			SocialCategories[i].preq_tech[j] = tech_name(text_item());
 			ZeroMemory(&SocialCategories[i].model_effect[j], sizeof(SocialEffect));
-			LPSTR modValue = text_item();
-			int modLen = strlen(modValue);
-			while (modLen) {
+			LPSTR mod_value = text_item();
+			int mod_len = strlen(mod_value);
+			while (mod_len) {
 				int value = 0;
-				while (modValue[0] == '+' || modValue[0] == '-') {
-					(modValue[0] == '+') ? value++ : value--;
-					modValue++;
+				while (mod_value[0] == '+' || mod_value[0] == '-') {
+					(mod_value[0] == '+') ? value++ : value--;
+					mod_value++;
 				}
 				for (int k = 0; k < MaxSocialEffectNum; k++) {
-					if (!_stricmp(modValue, SocialEffects[k].set1)) {
+					if (!_stricmp(mod_value, SocialEffects[k].set1)) {
 						*(&SocialCategories[i].model_effect[j].economy + k) = value;
 						break;
 					}
 				}
-				modValue = text_item();
-				modLen = strlen(modValue);
+				mod_value = text_item();
+				mod_len = strlen(mod_value);
 			}
 		}
 	}
-	// Difficulty
-	if (text_open(AlphaxFileID, "DIFF")) {
+	if (text_open(AlphaxFileID, "DIFF")) { // Difficulty
 		return true;
 	}
 	for (int i = 0; i < MaxDiffNum; i++) {
 		text_get();
 		Difficulty[i] = text_item_string();
 	}
-	// Factions
-	if (tglAllRules && read_factions()) {
+	if (tgl_all_rules && read_factions()) {
 		return true;
 	}
-	// Mandate
 	if (text_open(AlphaxFileID, "MANDATE")) {
 		return true;
 	}
@@ -1230,7 +1157,6 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		Mandate[i].name = text_item_string();
 		Mandate[i].name_caps = text_item_string();
 	}
-	// Mood
 	if (text_open(AlphaxFileID, "MOOD")) {
 		return true;
 	}
@@ -1238,7 +1164,6 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		text_get();
 		Mood[i] = text_item_string();
 	}
-	// Repute
 	if (text_open(AlphaxFileID, "REPUTE")) {
 		return true;
 	}
@@ -1246,7 +1171,6 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		text_get();
 		Repute[i] = text_item_string();
 	}
-	// Might
 	if (text_open(AlphaxFileID, "MIGHT")) {
 		return true;
 	}
@@ -1255,7 +1179,6 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		Might[i].adj_start = text_item_string();
 		Might[i].adj = text_item_string();
 	}
-	// Proposals
 	if (text_open(AlphaxFileID, "PROPOSALS")) {
 		return true;
 	}
@@ -1265,7 +1188,6 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 		Proposal[i].preq_tech = tech_name(text_item());
 		Proposal[i].description = text_item_string();
 	}
-	// Natural
 	if (text_open(AlphaxFileID, "NATURAL")) {
 		return true;
 	}
@@ -1297,18 +1219,16 @@ BOOL __cdecl read_rules(BOOL tglAllRules) {
 /*
 Purpose: Attempt to read the setting's value from the ini file.
 Original Offset: 0059D980
-Return Value: Key's string value from ini or default if not set
-Status: Complete with internal string pointers. Eventually, clean up dependent code on string
-		globals and remove these references.
+Return Value: Key's string value from the ini or default if not set
+Status: Complete
 */
-LPSTR __cdecl prefs_get(LPCSTR keyName, LPCSTR defaultValue, BOOL useDefault) {
-	if (useDefault ||
+LPSTR __cdecl prefs_get(LPCSTR key_name, LPCSTR default_value, BOOL use_default) {
+	if (use_default ||
 		(GetPrivateProfileStringA("Alpha Centauri", "Prefs Format", "0", *TextBufferGetPtr, 256,
 			".\\Alpha Centauri.ini"), atoi(*TextBufferGetPtr) != 12)) {
-		strcpy_s(*TextBufferGetPtr, 256, defaultValue);
-	}
-	else {
-		GetPrivateProfileStringA("Alpha Centauri", keyName, defaultValue, *TextBufferGetPtr, 256,
+		strcpy_s(*TextBufferGetPtr, 256, default_value);
+	} else {
+		GetPrivateProfileStringA("Alpha Centauri", key_name, default_value, *TextBufferGetPtr, 256,
 			".\\Alpha Centauri.ini");
 	}
 	return Txt->update();
@@ -1321,7 +1241,7 @@ Return Value: Default preferences
 Status: Complete
 */
 uint32_t __cdecl default_prefs() {
-	uint32_t basePrefs = PREF_ADV_RADIO_BTN_NOT_SEL_SING_CLK | PREF_AUTO_FORMER_BUILD_ADV
+	uint32_t base_prefs = PREF_ADV_RADIO_BTN_NOT_SEL_SING_CLK | PREF_AUTO_FORMER_BUILD_ADV
 		| PREF_AUTO_FORMER_PLANT_FORESTS | PREF_AUTO_END_MOVE_SPOT_VEH_WAR
 		| PREF_AUTO_END_MOVE_SPOT_VEH_TRUCE | PREF_AUTO_END_MOVE_SPOT_VEH_TREATY
 		| PREF_AUTO_AIR_VEH_RET_HOME_FUEL_RNG | PREF_BSC_DONT_QUICK_MOVE_ALLY_VEH
@@ -1329,7 +1249,7 @@ uint32_t __cdecl default_prefs() {
 		| PREF_AV_SOUND_EFFECTS | PREF_MAP_SHOW_GRID | PREF_UNK_10
 		| PREF_BSC_DONT_QUICK_MOVE_ENEMY_VEH | PREF_BSC_AUTOSAVE_EACH_TURN
 		| PREF_AUTO_WAKE_VEH_TRANS_REACH_LAND;
-	return prefs_get("Laptop", 0, false) ? basePrefs : basePrefs  // 0xA3E1DD16 : 0xBBE1DD96
+	return prefs_get("Laptop", 0, false) ? base_prefs : base_prefs  // 0xA3E1DD16 : 0xBBE1DD96
 		| PREF_AV_SECRET_PROJECT_MOVIES | PREF_AV_SLIDING_WINDOWS | PREF_AV_MAP_ANIMATIONS;
 }
 
@@ -1340,12 +1260,12 @@ Return Value: Default preferences 2nd set
 Status: Complete
 */
 uint32_t __cdecl default_prefs2() {
-	uint32_t basePrefs2 = MPREF_ADV_DETAIL_MAIN_MENUS | MPREF_BSC_AUTO_PRUNE_OBS_VEH
+	uint32_t base_prefs2 = MPREF_ADV_DETAIL_MAIN_MENUS | MPREF_BSC_AUTO_PRUNE_OBS_VEH
 		| MPREF_AV_VOICEOVER_STOP_CLOSE_POPUP | MPREF_AV_VOICEOVER_TECH_FAC
 		| MPREF_MAP_SHOW_BASE_NAMES | MPREF_MAP_SHOW_PROD_WITH_BASE_NAMES
 		| MPREF_ADV_RIGHT_CLICK_POPS_UP_MENU | MPREF_ADV_QUICK_MOVE_VEH_ORDERS
 		| MPREF_AUTO_FORMER_BUILD_SENSORS | MPREF_AUTO_FORMER_REMOVE_FUNGUS; // 0x327168 : 0x3A7168
-	return prefs_get("Laptop", 0, false) ? basePrefs2 : basePrefs2 | MPREF_AV_SLIDING_SCROLLBARS;
+	return prefs_get("Laptop", 0, false) ? base_prefs2 : base_prefs2 | MPREF_AV_SLIDING_SCROLLBARS;
 }
 
 /*
@@ -1375,46 +1295,43 @@ uint32_t __cdecl default_rules() {
 /*
 Purpose: Attempt to read the setting's value from the ini file.
 Original Offset: 0059DB40
-Return Value: Key's integer value from ini or default if not set
-Status: Complete with internal string pointers. Eventually, clean up code dependent on string
-		globals and remove these references.
+Return Value: Key's integer value from the ini or default if not set
+Status: Complete
 */
-int __cdecl prefs_get(LPCSTR keyName, int defaultValue, BOOL useDefault) {
-	_itoa_s(defaultValue, stringTemp->str, 256, 10);
-	if (useDefault) {
+int __cdecl prefs_get(LPCSTR key_name, int default_value, BOOL use_default) {
+	_itoa_s(default_value, stringTemp->str, 256, 10);
+	if (use_default) {
 		strcpy_s(*TextBufferGetPtr, 256, stringTemp->str);
-	}
-	else {
-		GetPrivateProfileStringA("Alpha Centauri", keyName, stringTemp->str, *TextBufferGetPtr, 256,
-			".\\Alpha Centauri.ini");
+	} else {
+		GetPrivateProfileStringA("Alpha Centauri", key_name, stringTemp->str, *TextBufferGetPtr, 
+            256, ".\\Alpha Centauri.ini");
 	}
 	return atoi(Txt->update());
 }
 
 /*
-Purpose: Read faction filenames and search keys from the ini file (SMACX only). Has added effect of
-		 forcing player search_key to be set to filename value. Rewrote almost the entire function
-		 because of how terrible the original code logic was.
+Purpose: Read the faction filenames and search for keys from the ini file (SMACX only). This has 
+         the added effect of forcing the player's search_key to be set to the filename value. 
+         Rewrote almost the entire function because of how terrible the original code logic was.
 Original Offset: 0059DBD0
 Return Value: n/a
 Status: Complete
 */
 void __cdecl prefs_fac_load() {
 	if (ExpansionEnabled) {
-		char returnedString[256];
-		GetPrivateProfileStringA("Alpha Centauri", "Prefs Format", "0",
-			returnedString, 256, ".\\Alpha Centauri.ini");
-		if (atoi(returnedString) == 12) {
+		char returned_string[256];
+		GetPrivateProfileStringA("Alpha Centauri", "Prefs Format", "0", returned_string, 256, 
+            ".\\Alpha Centauri.ini");
+		if (atoi(returned_string) == 12) {
 			for (int i = 1; i < MaxPlayerNum; i++) {
 				std::string faction = "Faction ";
 				faction += std::to_string(i);
 				GetPrivateProfileStringA("Alpha Centauri", faction.c_str(), Players[i].filename,
-					returnedString, 256, ".\\Alpha Centauri.ini");
-				strncpy_s(Players[i].filename, returnedString, 24);
-				strncpy_s(Players[i].search_key, returnedString, 24);
+					returned_string, 256, ".\\Alpha Centauri.ini");
+				strncpy_s(Players[i].filename, returned_string, 24);
+				strncpy_s(Players[i].search_key, returned_string, 24);
 			}
-		}
-		else {
+		} else {
 			// use separate loop rather than check "Prefs Format" value each time in single loop
 			for (int i = 1; i < MaxPlayerNum; i++) {
 				strncpy_s(Players[i].search_key, Players[i].filename, 24);
@@ -1424,48 +1341,48 @@ void __cdecl prefs_fac_load() {
 }
 
 /*
-Purpose: Load the most common preferences from the game's ini to memory.
+Purpose: Load the most common preferences from the game's ini to globals.
 Original Offset: 0059DCF0
 Return Value: n/a
 Status: Complete
 */
-void __cdecl prefs_load(BOOL useDefault) {
+void __cdecl prefs_load(BOOL use_default) {
 	set_language(prefs_get("Language", 0, false));
 	prefs_get("Difficulty", 0, false);
-	DefaultPrefs->Difficulty = text_item_number();
+	DefaultPrefs->difficulty = text_item_number();
 	prefs_get("Map Type", 0, false);
-	DefaultPrefs->MapType = text_item_number();
+	DefaultPrefs->map_type = text_item_number();
 	prefs_get("Top Menu", 0, false);
-	DefaultPrefs->TopMenu = text_item_number();
+	DefaultPrefs->top_menu = text_item_number();
 	prefs_get("Faction", 1, false);
-	DefaultPrefs->FactionID = text_item_number();
+	DefaultPrefs->faction_id = text_item_number();
 	uint32_t prefs = default_prefs();
-	if (DefaultPrefs->Difficulty < DLVL_TALENT) {
+	if (DefaultPrefs->difficulty < DLVL_TALENT) {
 		prefs |= PREF_BSC_TUTORIAL_MSGS;
 	}
-	prefs_get("Preferences", prefs_get_binary(prefs).c_str(), useDefault);
-	AlphaIni->Preferences = text_item_binary();
-	prefs_get("More Preferences", prefs_get_binary(default_prefs2()).c_str(), useDefault);
-	AlphaIni->MorePreferences = text_item_binary();
-	prefs_get("Semaphore", "00000000", useDefault);
-	AlphaIni->Semaphore = text_item_binary();
+	prefs_get("Preferences", prefs_get_binary(prefs).c_str(), use_default);
+	AlphaIniPrefs->preferences = text_item_binary();
+	prefs_get("More Preferences", prefs_get_binary(default_prefs2()).c_str(), use_default);
+	AlphaIniPrefs->more_preferences = text_item_binary();
+	prefs_get("Semaphore", "00000000", use_default);
+	AlphaIniPrefs->semaphore = text_item_binary();
 	prefs_get("Customize", 0, false);
-	AlphaIni->Customize = text_item_number();
-	prefs_get("Rules", prefs_get_binary(default_rules()).c_str(), useDefault);
-	AlphaIni->Rules = text_item_binary();
-	prefs_get("Announce", prefs_get_binary(default_warn()).c_str(), useDefault);
-	AlphaIni->Announce = text_item_binary();
+	AlphaIniPrefs->customize = text_item_number();
+	prefs_get("Rules", prefs_get_binary(default_rules()).c_str(), use_default);
+	AlphaIniPrefs->rules = text_item_binary();
+	prefs_get("Announce", prefs_get_binary(default_warn()).c_str(), use_default);
+	AlphaIniPrefs->announce = text_item_binary();
 	std::stringstream ss;
 	for (uint32_t i = 0; i < 7; i++) {
 		ss << (i ? "1, " : "2, ");
 	}
-	std::string customWorldDef = ss.str();
-	prefs_get("Custom World", customWorldDef.c_str(), useDefault);
+	std::string custom_world_def = ss.str();
+	prefs_get("Custom World", custom_world_def.c_str(), use_default);
 	for (uint32_t i = 0; i < 7; i++) {
-		AlphaIni->CustomWorld[i] = text_item_number();
+		AlphaIniPrefs->custom_world[i] = text_item_number();
 	}
-	prefs_get("Time Controls", 1, useDefault);
-	AlphaIni->TimeControls = text_item_number();
+	prefs_get("Time Controls", 1, use_default);
+	AlphaIniPrefs->time_controls = text_item_number();
 }
 
 /*
@@ -1474,8 +1391,8 @@ Original Offset: 0059E510
 Return Value: n/a
 Status: Complete
 */
-void __cdecl prefs_put(LPCSTR keyName, LPCSTR value) {
-	WritePrivateProfileStringA("Alpha Centauri", keyName, value, ".\\Alpha Centauri.ini");
+void __cdecl prefs_put(LPCSTR key_name, LPCSTR value) {
+	WritePrivateProfileStringA("Alpha Centauri", key_name, value, ".\\Alpha Centauri.ini");
 }
 
 /*
@@ -1484,10 +1401,10 @@ Original Offset: 0059E530
 Return Value: n/a
 Status: Complete
 */
-void __cdecl prefs_put(LPCSTR keyName, int value, BOOL binaryTgl) {
+void __cdecl prefs_put(LPCSTR key_name, int value, BOOL tgl_binary) {
 	char temp[33];
-	binaryTgl ? strcpy_s(temp, 33, prefs_get_binary(value).c_str()) : _itoa_s(value, temp, 33, 10);
-	WritePrivateProfileStringA("Alpha Centauri", keyName, temp, ".\\Alpha Centauri.ini");
+	tgl_binary ? strcpy_s(temp, 33, prefs_get_binary(value).c_str()) : _itoa_s(value, temp, 33, 10);
+	WritePrivateProfileStringA("Alpha Centauri", key_name, temp, ".\\Alpha Centauri.ini");
 }
 
 /*
@@ -1496,29 +1413,29 @@ Original Offset: 0059E5D0
 Return Value: n/a
 Status: Complete
 */
-void __cdecl prefs_save(BOOL saveFactions) {
+void __cdecl prefs_save(BOOL save_factions) {
 	prefs_put("Prefs Format", 12, false);
-	prefs_put("Difficulty", DefaultPrefs->Difficulty, false);
-	prefs_put("Map Type", DefaultPrefs->MapType, false);
-	prefs_put("Top Menu", DefaultPrefs->TopMenu, false);
-	prefs_put("Faction", DefaultPrefs->FactionID, false);
-	prefs_put("Preferences", AlphaIni->Preferences, true);
-	prefs_put("More Preferences", AlphaIni->MorePreferences, true);
-	prefs_put("Semaphore", AlphaIni->Semaphore, true);
-	prefs_put("Announce", AlphaIni->Announce, true);
-	prefs_put("Rules", AlphaIni->Rules, true);
-	prefs_put("Customize", AlphaIni->Customize, false);
+	prefs_put("Difficulty", DefaultPrefs->difficulty, false);
+	prefs_put("Map Type", DefaultPrefs->map_type, false);
+	prefs_put("Top Menu", DefaultPrefs->top_menu, false);
+	prefs_put("Faction", DefaultPrefs->faction_id, false);
+	prefs_put("Preferences", AlphaIniPrefs->preferences, true);
+	prefs_put("More Preferences", AlphaIniPrefs->more_preferences, true);
+	prefs_put("Semaphore", AlphaIniPrefs->semaphore, true);
+	prefs_put("Announce", AlphaIniPrefs->announce, true);
+	prefs_put("Rules", AlphaIniPrefs->rules, true);
+	prefs_put("Customize", AlphaIniPrefs->customize, false);
 	std::stringstream ss;
 	for (uint32_t i = 0; i < 7; i++) {
 		if (i != 0) {
 			ss << ", "; // removed last trailing comma
 		}
-		ss << AlphaIni->CustomWorld[i];
+		ss << AlphaIniPrefs->custom_world[i];
 	}
-	std::string customWorldStr = ss.str();
-	prefs_put("Custom World", customWorldStr.c_str());
-	prefs_put("Time Controls", AlphaIni->TimeControls, false);
-	if (saveFactions && *ExpansionEnabled) {
+	std::string custom_world_str = ss.str();
+	prefs_put("Custom World", custom_world_str.c_str());
+	prefs_put("Time Controls", AlphaIniPrefs->time_controls, false);
+	if (save_factions && *ExpansionEnabled) {
 		for (uint32_t i = 1; i < MaxPlayerNum; i++) {
 			sprintf_s(stringTemp->str, "Faction %d", i);
 			prefs_put(stringTemp->str, Players[i].filename);
@@ -1533,13 +1450,13 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl prefs_use() {
-	*GamePreferences = AlphaIni->Preferences;
-	*GameMorePreferences = AlphaIni->MorePreferences;
-	*GameWarnings = AlphaIni->Announce;
+	*GamePreferences = AlphaIniPrefs->preferences;
+	*GameMorePreferences = AlphaIniPrefs->more_preferences;
+	*GameWarnings = AlphaIniPrefs->announce;
 }
 
 /*
-Purpose: Convert value to binary string used by preferences.
+Purpose: Convert the specified value to a binary string for use by various preferences.
 Original Offset: n/a
 Return Value: Binary string
 Status: Complete
@@ -1547,12 +1464,11 @@ Status: Complete
 std::string __cdecl prefs_get_binary(int value) {
 	char temp[33];
 	temp[0] = 0;
-	for (int shift = 31, nonPad = 0; shift >= 0; shift--) {
+	for (int shift = 31, non_pad = 0; shift >= 0; shift--) {
 		if ((1 << shift) & value) {
-			nonPad = 1;
+			non_pad = 1;
 			strcat_s(temp, 33, "1");
-		}
-		else if (nonPad || shift < 8) {
+		} else if (non_pad || shift < 8) {
 			strcat_s(temp, 33, "0");
 		}
 	}
@@ -1560,7 +1476,7 @@ std::string __cdecl prefs_get_binary(int value) {
 }
 
 /*
-Purpose: Parse #LABELS section inside labels.txt
+Purpose: Parse the #LABELS section inside the labels.txt file.
 Original Offset: 00616A00
 Return Value: Was there an error? true/false
 Status: Complete
@@ -1571,30 +1487,30 @@ BOOL __cdecl labels_init() {
 		return true;
 	}
 	text_get();
-	Label->count = text_item_number();
-	Label->stringsPtr = (LPSTR)mem_get(Label->count * 4);
-	if (!Label->stringsPtr) {
+	Labels->count = text_item_number();
+	Labels->strings_ptr = (LPSTR)mem_get(Labels->count * 4);
+	if (!Labels->strings_ptr) {
 		return true;
 	}
-	for (int i = 0; i < Label->count; i++) {
-		*((LPSTR *)Label->stringsPtr + i) = text_string();
+	for (int i = 0; i < Labels->count; i++) {
+		*((LPSTR *)Labels->strings_ptr + i) = text_string();
 	}
 	text_close();
 	return false;
 }
 
 /*
-Purpose: Clean up labels global variable
+Purpose: Shutdown or reset the labels global variable.
 Original Offset: 006169D0
 Return Value: n/a
 Status: Complete
 */
 void __cdecl labels_shutdown() {
-	if (Label->stringsPtr) {
-		free(Label->stringsPtr);
-		Label->stringsPtr = 0;
+	if (Labels->strings_ptr) {
+		free(Labels->strings_ptr);
+		Labels->strings_ptr = 0;
 	}
-	Label->count = 0;
+	Labels->count = 0;
 }
 
 /*
@@ -1608,21 +1524,21 @@ void __cdecl set_language(uint32_t language) {
 }
 
 /*
-Purpose: Get label string and concatenate it to stringTemp buffer.
+Purpose: Get the label string and concatenate it to the stringTemp buffer.
 Original Offset: 005A5880
 Return Value: n/a
 Status: Complete
 */
-void __cdecl say_label(int labelOffset) {
-	strcat_s(stringTemp->str, 1032, label_get(labelOffset));
+void __cdecl say_label(int label_offset) {
+	strcat_s(stringTemp->str, 1032, label_get(label_offset));
 }
 
 /*
-Purpose: Get label string from label offset. Created to reduce code complexity.
+Purpose: Get the label string from a label offset. Created to reduce code complexity.
 Original Offset: n/a
 Return Value: Pointer to label string
 Status: Complete
 */
-LPSTR __cdecl label_get(int labelOffset) {
-	return StringTable->get((int)*((LPSTR *)Label->stringsPtr + labelOffset));
+LPSTR __cdecl label_get(int label_offset) {
+	return StringTable->get((int)*((LPSTR *)Labels->strings_ptr + label_offset));
 }

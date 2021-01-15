@@ -608,7 +608,7 @@ uint32_t __cdecl tech_rate(uint32_t faction_id) {
 	if (PlayersData[faction_id].tech_cost >= 0) {
 		return PlayersData[faction_id].tech_cost; // already set
 	}
-	if (!Rules->TechDiscoveryRatePctStd) {
+	if (!Rules->tech_discovery_rate_pct_std) {
 		return 999999999; // max cost
 	}
 	uint32_t player_factor = range(PlayersData[faction_id].earned_techs_saved * 2
@@ -637,8 +637,8 @@ uint32_t __cdecl tech_rate(uint32_t faction_id) {
 		- range((top_factor - diff_lvl - player_factor + 7) / (8 - diff_lvl),
 			0, diff_lvl * fin_factor / 10 + 1))
 		* range(player_factor - resch_base, 1, 99999);
-	if (Rules->TechDiscoveryRatePctStd != 100) {
-        discovery_rate = 100 * discovery_rate / Rules->TechDiscoveryRatePctStd;
+	if (Rules->tech_discovery_rate_pct_std != 100) {
+        discovery_rate = 100 * discovery_rate / Rules->tech_discovery_rate_pct_std;
 	}
 	if (Players[faction_id].rule_techcost != 100) {
         discovery_rate = discovery_rate * Players[faction_id].rule_techcost / 100;

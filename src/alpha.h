@@ -19,9 +19,9 @@
 #include "faction.h"
 
  /*
-  * Parsing alpha/x.txt
+  * Parsing alpha/x.txt, 'Alpha Centauri.ini' and labels.txt
   */
-enum rules_resourceinfo_id {
+enum RulesResourceinfoId {
 	RSCINFO_OCEAN_SQ = 0,
 	RSCINFO_BASE_SQ = 1,
 	RSCINFO_BONUS_SQ = 2,
@@ -33,7 +33,7 @@ enum rules_resourceinfo_id {
 	RSCINFO_BOREHOLE_SQ = 8,
 };
 
-enum game_base_warnings {
+enum GameBaseWarningsBitfield {
 	WARN_STOP_NEW_FAC_BUILT = 0x1,
 	WARN_STOP_NON_COMBAT_VEH_BUILT = 0x2,
 	WARN_STOP_PROTOTYPE_COMPLETE = 0x4,
@@ -54,7 +54,7 @@ enum game_base_warnings {
 	WARN_STOP_RANDOM_EVENT = 0x20000,
 };
 
-enum game_preferences : uint32_t {
+enum GamePreferencesBitfield : uint32_t {
 	PREF_BSC_PAUSE_END_TURN = 0x1,
 	PREF_BSC_AUTOSAVE_EACH_TURN = 0x2,
 	PREF_BSC_DONT_QUICK_MOVE_ENEMY_VEH = 0x4, // flag set when unchecked
@@ -91,7 +91,7 @@ enum game_preferences : uint32_t {
 	PREF_AUTO_WAKE_VEH_TRANS_REACH_LAND = 0x80000000,
 };
 
-enum game_more_preferences {
+enum GameMorePreferencesBitfield {
 	MPREF_MAP_SHOW_FOG_WAR = 0x1,
 	//
 	MPREF_ADV_ZOOM_BASE_NO_RECENTER_MAP = 0x4,
@@ -127,19 +127,19 @@ enum game_more_preferences {
 	//
 };
 
-struct label {
-	LPSTR stringsPtr;
+struct Label {
+	LPSTR strings_ptr;
 	int count;
 };
 
-struct rules_resourceinfo {
+struct RulesResourceinfo {
 	int nutrients;
 	int minerals;
 	int energy;
 	int unused;
 };
 
-struct rules_time_control {
+struct RulesTimeControl {
 	LPSTR name;
 	int turn;
 	int base;
@@ -150,552 +150,552 @@ struct rules_time_control {
 	int accumulated;
 };
 
-struct rules_resource {
-	LPSTR nameSingular;
-	LPSTR namePlural;
+struct RulesResource {
+	LPSTR name_singular;
+	LPSTR name_plural;
 };
 
-struct rules_energy {
+struct RulesEnergy {
 	LPSTR abbrev;
 	LPSTR name;
 };
 
-struct rules_basic {
+struct RulesBasic {
 	// Alpha(x).txt #RULES: Movement rate along roads
 	// Original bounds: 1 to 100
 	// Default value: 3
-	uint32_t MoveRateRoads;
+	uint32_t move_rate_roads;
 
 	// Alpha(x).txt #RULES: Nutrient intake requirement for citizens
 	// Original bounds: 0 to 100
 	// Default value: 2
-	uint32_t NutrientReqCitizen;
+	uint32_t nutrient_req_citizen;
 
 	// Alpha(x).txt #RULES: Max airdrop range w/o orbital insertion
 	// Original bounds: 1 to 500
 	// Default value: 8
-	uint32_t MaxAirdropSansOrbInsert;
+	uint32_t max_airdrop_sans_orb_insert;
 
 	// Alpha(x).txt #RULES: Max artillery range (larger will break multiplayer)
 	// Original bounds: 1 to 8
 	// Default value: 2
-	uint32_t ArtilleryMaxRng;
+	uint32_t artillery_max_rng;
 
 	// Alpha(x).txt #RULES: Numerator for artillery fire damage
 	// Original bounds: 1 to 1000
 	// Default value: 3
-	uint32_t ArtilleryDmgNum;
+	uint32_t artillery_dmg_num;
 
 	// Alpha(x).txt #RULES: Denominator for artillery fire damage
 	// Original bounds: 1 to 1000
 	// Default value: 2
-	uint32_t ArtilleryDmgDenom;
+	uint32_t artillery_dmg_denom;
 
 	// Alpha(x).txt #RULES: Nutrient cost multiplier
 	// Original bounds: 1 to 100
 	// Default value: 10
-	uint32_t NutrientCostMulti;
+	uint32_t nutrient_cost_multi;
 
 	// Alpha(x).txt #RULES: Minerals cost multiplier
 	// Original bounds: 1 to 100
 	// Default value: 10
-	uint32_t MineralCostMulti;
+	uint32_t mineral_cost_multi;
 
 	// Alpha(x).txt #RULES: Technology discovery rate as a percentage of standard
 	// Original bounds: 0 to 1000
 	// Default value: 100
-	uint32_t TechDiscoveryRatePctStd;
+	uint32_t tech_discovery_rate_pct_std;
 
 	// Alpha(x).txt #RULES: Limits mineral increase for mine without road in square
 	// Original bounds: 0 to 100
 	// Default value: 1
-	uint32_t LimitMineralMineSansRoad;
+	uint32_t limit_mineral_mine_sans_road;
 
 	// Alpha(x).txt #RULES: Nutrient effect in mine square (0 or -1)
 	// Original bounds: 0 or -1
 	// Default value: -1
-	int TglNutrientEffectWithMine;
+	int tgl_nutrient_effect_with_mine;
 
 	// Alpha(x).txt #RULES: Minimum base size to support specialists
 	// Original bounds: 0 to 100
 	// Default value: 5
-	uint32_t MinBaseSizeSpecialists;
+	uint32_t min_base_size_specialists;
 
 	// Alpha(x).txt #RULES: Drones induced by Genejack factory
 	// Original bounds: 0 to 100
 	// Default value: 1
-	uint32_t DronesGenejackFactory;
+	uint32_t drones_genejack_factory;
 
 	// Alpha(x).txt #RULES: Population limit w/o hab complex
 	// Original bounds: 1 to 100
 	// Default value: 7
-	uint32_t PopLimitSansHabComplex;
+	uint32_t pop_limit_sans_hab_complex;
 
 	// Alpha(x).txt #RULES: Population limit w/o hab dome
 	// Original bounds: 1 to 100
 	// Default value: 14
-	uint32_t PopLimitSansHabDome;
+	uint32_t pop_limit_sans_hab_dome;
 
 	// Alpha(x).txt #RULES: Technology to improve fungus squares
 	// Default value: CentPsi (63)
-	int TechImproveFungusSqr;
+	int tech_improve_fungus_sqr;
 
 	// Alpha(x).txt #RULES: Technology to ease fungus movement
 	// Default value: CentPsi (63)
-	int TechEaseFungusMovement;
+	int tech_ease_fungus_movement;
 
 	// Alpha(x).txt #RULES: Technology to build roads in fungus
 	// Default value: CentEmp (58)
-	int TechBuildRoadsFungus;
+	int tech_build_roads_fungus;
 
 	// Alpha(x).txt #RULES: Technology to allow 2 special abilities for a unit
 	// Default value: Neural (52)
-	int TechTwoSpecAbilities;
+	int tech_two_spec_abilities;
 
 	// Alpha(x).txt #RULES: Technology to allow 3 nutrients in a square
 	// Default value: Gene (49)
-	int TechThreeNutrientsSqr;
+	int tech_three_nutrients_sqr;
 
 	// Alpha(x).txt #RULES: Technology to allow 3 minerals in a square
 	// Default value: EcoEng (60)
-	int TechThreeMineralsSqr;
+	int tech_three_minerals_sqr;
 
 	// Alpha(x).txt #RULES: Technology to allow 3 energy in a square
 	// Default value: EnvEcon (59)
-	int TechThreeEnergySqr;
+	int tech_three_energy_sqr;
 
 	// Alpha(x).txt #RULES: Extra percentage cost of prototype LAND unit
 	// Original bounds: 0 to 500
 	// Default value: 50
-	uint32_t ExtraPctCostProtoLand;
+	uint32_t extra_pct_cost_proto_land;
 
 	// Alpha(x).txt #RULES: Extra percentage cost of prototype SEA unit
 	// Original bounds: 0 to 500
 	// Default value: 50
-	uint32_t ExtraPctCostProtoSea;
+	uint32_t extra_pct_cost_proto_sea;
 
 	// Alpha(x).txt #RULES: Extra percentage cost of prototype AIR unit
 	// Original bounds: 0 to 500
 	// Default value: 50
-	uint32_t ExtraPctCostProtoAir;
+	uint32_t extra_pct_cost_proto_air;
 
 	// Alpha(x).txt #RULES: Psi combat offense-to-defense ratio (unit defending) Numerator
 	// Original bounds: 1 to 1000
 	// Default value: 3 (LAND)
 	// Default value: 1 (SEA/AIR)
-	uint32_t PsiCombatRatioAtk[3]; // LAND, SEA, AIR
+	uint32_t psi_combat_ratio_atk[3]; // LAND, SEA, AIR
 
 	// Alpha(x).txt #RULES: Psi combat offense-to-defense ratio (unit defending) Denominator
 	// Original bounds: 1 to 1000
 	// Default value: 2 (LAND)
 	// Default value: 1 (SEA/AIR)
-	uint32_t PsiCombatRatioDef[3]; // LAND, SEA, AIR
+	uint32_t psi_combat_ratio_def[3]; // LAND, SEA, AIR
 
 	// Alpha(x).txt #RULES: Players' starting energy reserves
 	// Original bounds: 0 to 1000
 	// Default value: 10
-	uint32_t PlayerStartEnergyReserve;
+	uint32_t player_start_energy_reserve;
 
 	// Alpha(x).txt #RULES: Combat % -> intrinsic base defense
 	// Original bounds: -100 to 1000
 	// Default value: 25
-	int CombatPctBaseDef;
+	int combat_pct_base_def;
 
 	// Alpha(x).txt #RULES: Combat % -> attacking along road
 	// Original bounds: -100 to 1000
 	// Default value: 0
-	int CombatPctAtkRoad;
+	int combat_pct_atk_road;
 
 	// Alpha(x).txt #RULES: Combat % -> for attacking from higher elevation
 	// Original bounds: -100 to 1000
 	// Default value: 0
-	int CombatPctAtkHigherElev;
+	int combat_pct_atk_higher_elev;
 
 	// Alpha(x).txt #RULES: Combat penalty % -> attacking from lower elevation
 	// Original bounds: -100 to 1000
 	// Default value: 0
-	int CombatPenPctAtkLwrElev;
+	int combat_pen_pct_atk_lwr_elev;
 
 	// Alpha(x).txt #RULES: Technology to allow orbital insertion w/o Space Elevator
 	// Default value: Gravity (21)
-	int TechOrbInsertSansSpcElev;
+	int tech_orb_insert_sans_spc_elev;
 
 	// Alpha(x).txt #RULES: Minimum # of turns between councils
 	// Original bounds: 0 to 1000
 	// Default value: 20
-	uint32_t MinTurnsCouncils;
+	uint32_t min_turns_councils;
 
 	// Alpha(x).txt #RULES: Minerals for harvesting forest
 	// Original bounds: 0 to 100
 	// Default value: 5
-	uint32_t MineralsHarvestingForest;
+	uint32_t minerals_harvesting_forest;
 
 	// Alpha(x).txt #RULES: Territory: max distance from base
 	// Original bounds: 0 to 100
 	// Default value: 8
-	uint32_t TerritoryMaxDistBase;
+	uint32_t territory_max_dist_base;
 
 	// Alpha(x).txt #RULES: Turns to corner Global Energy Market
 	// Original bounds: 1 to 100
 	// Default value: 20
-	uint32_t TurnsCornerGblEnergyMrkt;
+	uint32_t turns_corner_gbl_energy_mrkt;
 
 	// Alpha(x).txt #RULES: Technology for +1 mining platform bonus
 	// Default value: EcoEng2 (62)
-	int TechMiningPlatformBonus;
+	int tech_mining_platform_bonus;
 
 	// Alpha(x).txt #RULES: Technology for economic victory
 	// Default value: PlaEcon (61)
-	int TechEconomicVictory;
+	int tech_economic_victory;
 
 	// Alpha(x).txt #RULES: Combat penalty % -> attack after airdrop
 	// Original bounds: -100 to 1000
 	// Default value: 50
-	int CombatPenPctAtkAirdrop;
+	int combat_pen_pct_atk_airdrop;
 
 	// Alpha(x).txt #RULES: Combat % -> Fanatic attack bonus
 	// Original bounds: -100 to 1000
 	// Default value: 25
-	int CombatPctFanaticAtkBonus;
+	int combat_pct_fanatic_atk_bonus;
 
 	// Alpha(x).txt #RULES: Combat % -> Land based guns vs. ship artillery bonus
 	// Original bounds: -100 to 1000
 	// Default value: 50
-	int CombatPctLandGunVsShipArt;
+	int combat_pct_land_gun_vs_ship_art;
 
 	// Alpha(x).txt #RULES: Combat % -> Artillery bonus per level of altitude
 	// Original bounds: -100 to 1000
 	// Default value: 25
-	int CombatPctArtBonusLvlAlt;
+	int combat_pct_art_bonus_lvl_alt;
 
 	// Alpha(x).txt #RULES: Combat % -> Mobile unit in open ground
 	// Original bounds: -100 to 1000
 	// Default value: 25
-	int CombatPctMobileOpenGround;
+	int combat_pct_mobile_open_ground;
 
 	// Alpha(x).txt #RULES: Combat % -> Defend vs. mobile in rough
 	// Original bounds: -100 to 1000
 	// Default value: 0
-	int CombatPctDefVsMobileRough;
+	int combat_pct_def_vs_mobile_rough;
 
 	// Alpha(x).txt #RULES: Combat % -> Trance bonus defending vs. psi
 	// Original bounds: -100 to 1000
 	// Default value: 50
-	int CombatPctTranceDefVsPsi;
+	int combat_pct_trance_def_vs_psi;
 
 	// Alpha(x).txt #RULES: Combat % -> Empath Song bonus attacking vs. psi
 	// Original bounds: -100 to 1000
 	// Default value: 50
-	int CombatPctEmpSongAtkVsPsi;
+	int combat_pct_emp_song_atk_vs_psi;
 
 	// Alpha(x).txt #RULES: Combat % -> Infantry vs. Base
 	// Original bounds: -100 to 1000
 	// Default value: 25
-	int CombatPctInfantryVsBase;
+	int combat_pct_infantry_vs_base;
 
 	// Alpha(x).txt #RULES: Combat penalty % -> Air superiority unit vs. ground unit
 	// Original bounds: -100 to 1000
 	// Default value: 50
-	int CombatPenPctAirSuprVsGrnd;
+	int combat_pen_pct_air_supr_vs_grnd;
 
 	// Alpha(x).txt #RULES: Combat % -> Air superiority unit vs. air unit
 	// Original bounds: -100 to 1000
 	// Default value: 100
-	int CombatPctAirSuprVsAir;
+	int combat_pct_air_supr_vs_air;
 
 	// Alpha(x).txt #RULES: Combat penalty % -> Non-combat unit defending vs. combat unit
 	// Original bounds: -100 to 1000
 	// Default value: 50
-	int CombatPenPctNonCbtDefVsCbt;
+	int combat_pen_pct_non_cbt_def_vs_cbt;
 
 	// Alpha(x).txt #RULES: Combat % -> Comm Jammer unit defending vs. mobile unit
 	// Original bounds: -100 to 1000
 	// Default value: 50
-	int CombatPctComJamDefVsMobl;
+	int combat_pct_com_jam_def_vs_mobl;
 
 	// Alpha(x).txt #RULES: Combat % -> Bonus vs. ships caught in port
 	// Original bounds: -100 to 1000
 	// Default value: 100
-	int CombatPctBonusVsShipPort;
+	int combat_pct_bonus_vs_ship_port;
 
 	// Alpha(x).txt #RULES: Combat % -> AAA bonus vs. air units
 	// Original bounds: -100 to 1000
 	// Default value: 100
-	int CombatPctAAABonusVsAir;
+	int combat_pct_aaa_bonus_vs_air;
 
 	// Alpha(x).txt #RULES: Combat % -> Defend in range of friendly Sensor
 	// Original bounds: -100 to 1000
 	// Default value: 25
-	int CombatPctDefRangeSensor;
+	int combat_pct_def_range_sensor;
 
 	// Alpha(x).txt #RULES: Combat % -> Psi attack bonus/penalty per +PLANET
 	// Original bounds: -100 to 1000
 	// Default value: 10
-	int CombatPctPsiAtkBonusPLANET;
+	int combat_pct_psi_atk_bonus_planet;
 
 	// Alpha(x).txt #RULES: Retool strictness
 	// (0 = Always Free, 1 = Free in Category, 2 = Free if Project, 3 = Never Free)
 	// Original bounds: 0 to 2 (Bug Fix: Should be 0 to 3)
 	// Default value: 2
-	uint32_t RetoolStrictness;
+	uint32_t retool_strictness;
 
 	// Alpha(x).txt #RULES: Retool percent penalty for production change
 	// Original bounds: 0 to 100
 	// Default value: 50
-	uint32_t RetoolPctPenProdChg;
+	uint32_t retool_pct_pen_prod_chg;
 
 	// Alpha(x).txt #RULES: Retool exemption (first X minerals not affected by penalty)
 	// Original bounds: 0 to 1000
 	// Default value: 10
-	uint32_t RetoolExemption;
+	uint32_t retool_exemption;
 
 	// Alpha(x).txt #RULES: If non-zero, probe teams can steal technologies
 	// Original bounds: 0, 1 or -1 (Changed to 0 or 1 since -1 is treated same as 1)
 	// Default value: 1
-	BOOL TglProbeCanStealTech;
+	BOOL tgl_probe_can_steal_tech;
 
 	// Alpha(x).txt #RULES: If non-zero, humans can always contact each other in net games
 	// Original bounds: 0, 1 or -1 (Changed to 0 or 1 since -1 is treated same as 1)
 	// Default value: 1
-	BOOL TglHumanAlwaysContactNet;
+	BOOL tgl_human_always_contact_net;
 
 	// Alpha(x).txt #RULES: If non-zero, humans can always contact each other in hotseat/email games
 	// Original bounds: 0, 1 or -1 (Changed to 0 or 1 since -1 is treated same as 1)
 	// Default value: 1
-	BOOL TglHumansAlwaysContactPBEM;
+	BOOL tgl_humans_always_contact_pbem;
 
 	// Alpha(x).txt #RULES: Maximum % damage inflicted by arty versus units in base/bunker
 	// Original bounds: 10 to 100
 	// Default value: 50
-	uint32_t MaxPctDmgArtVsUnitBaseBnkr;
+	uint32_t max_pct_dmg_art_vs_unit_base_bnkr;
 
 	// Alpha(x).txt #RULES: Maximum % damage inflicted by arty versus units in open
 	// Original bounds: 10 to 100
 	// Default value: 99
-	uint32_t MaxPctDmgArtVsUnitsOpen;
+	uint32_t max_pct_dmg_art_vs_units_open;
 
 	// Alpha(x).txt #RULES: Maximum % damage inflicted by arty versus units in sea
 	// Original bounds: 10 to 100
 	// Default value: 100
-	uint32_t MaxPctDmgArtVsUnitsSea;
+	uint32_t max_pct_dmg_art_vs_units_sea;
 
 	// Alpha(x).txt #RULES: Numerator for freq of global warming (1,2 would be "half" normal warming).
 	// Original bounds: 0 to 1000
 	// Default value: 1
-	uint32_t FreqGlobalWarmingNum;
+	uint32_t freq_global_warming_num;
 
 	// Alpha(x).txt #RULES: Denominator for freq of global warming (1,2 would be "half" normal warming).
 	// Original bounds: 1 to 1000
 	// Default value: 1
-	uint32_t FreqGlobalWarmingDenom;
+	uint32_t freq_global_warming_denom;
 
 	// Alpha(x).txt #RULES: Normal starting year
 	// Original bounds: 0 to 999999
 	// Default value: 2100
-	uint32_t NormalStartingYear;
+	uint32_t normal_starting_year;
 
 	// Alpha(x).txt #RULES: Normal ending year for lowest 3 difficulty levels
 	// Original bounds: 0 to 999999
 	// Default value: 2600
-	uint32_t NormalEndYearLowThreeDiff;
+	uint32_t normal_end_year_low_three_diff;
 
 	// Alpha(x).txt #RULES: Normal ending year for highest 3 difficulty levels
 	// Original bounds: 0 to 999999
 	// Default value: 2500
-	uint32_t NormalEndYearHighThreeDiff;
+	uint32_t normal_end_year_high_three_diff;
 
 	// Alpha(x).txt #RULES: If non-zero, obliterating a base counts as an atrocity
 	// Original bounds: 0, 1 or -1 (Changed to 0 or 1 since -1 is treated same as 1)
 	// Default value: 1
-	BOOL TglOblitBaseAtrocity;
+	BOOL tgl_oblit_base_atrocity;
 
 	// Alphax.txt #RULES: Size of base for subspace generator
 	// Original bounds: 1 to 999
 	// Default value: 10
-	uint32_t SizeBaseSubspaceGen;
+	uint32_t size_base_subspace_gen;
 
 	// Alphax.txt #RULES: Number of subspace generators needed
 	// Original bounds: 1 to 999
 	// Default value: 6
-	uint32_t SubspaceGeneratorsNeeded;
+	uint32_t subspace_generators_needed;
 };
 
-struct rules_worldbuilder {
+struct RulesWorldbuilder {
 	// Alpha(x).txt #WORLDBUILDER: Seeded land size of a standard world
 	// Original bounds: 50 to 4000
 	// Default value: 384
-	uint32_t LandBase;
+	uint32_t land_base;
 
 	// Alpha(x).txt #WORLDBUILDER: Additional land from LAND selection: x0, x1, x2
 	// Original bounds: 0 to 2000
 	// Default value: 256
-	uint32_t LandMod;
+	uint32_t land_mod;
 
 	// Alpha(x).txt #WORLDBUILDER: Base size of a land mass seed
 	// Original bounds: 5 to 1000
 	// Default value: 12
-	uint32_t ContinentBase;
+	uint32_t continent_base;
 
 	// Alpha(x).txt #WORLDBUILDER: Increased size from LAND selection: x0, x1, x2
 	// Original bounds: 5 to 1000
 	// Default value: 24
-	uint32_t ContinentMod;
+	uint32_t continent_mod;
 
 	// Alpha(x).txt #WORLDBUILDER: Base # of extra hills
 	// Original bounds: 0 to 100
 	// Default value: 1
-	uint32_t HillsBase;
+	uint32_t hills_base;
 
 	// Alpha(x).txt #WORLDBUILDER: Additional hills from TIDAL selection: x0, x1, x2
 	// Original bounds: 0 to 100
 	// Default value: 2
-	uint32_t HillsMod;
+	uint32_t hills_mod;
 
 	// Alpha(x).txt #WORLDBUILDER: Basic plateau size
 	// Original bounds: 0 to 500
 	// Default value: 4
-	uint32_t PlateauBase;
+	uint32_t plateau_base;
 
 	// Alpha(x).txt #WORLDBUILDER: Plateau modifier based on LAND selection: x0, x1, x2
 	// Original bounds: 0 to 500
 	// Default value: 8
-	uint32_t PlateauMod;
+	uint32_t plateau_mod;
 
 	// Alpha(x).txt #WORLDBUILDER: Basic # of rivers
 	// Original bounds: 0 to 100
 	// Default value: 8
-	uint32_t RiversBase;
+	uint32_t rivers_base;
 
 	// Alpha(x).txt #WORLDBUILDER: Additional rivers based on RAIN selection
 	// Original bounds: 0 to 100
 	// Default value: 12
-	uint32_t RiversRainMod;
+	uint32_t rivers_rain_mod;
 
 	// Alpha(x).txt #WORLDBUILDER: Latitude DIVISOR for temperature based on HEAT;
 	// Smaller # increases effect of HEAT selection
 	// Original bounds: 1 to 64
 	// Default value: 14
-	uint32_t SolarEnergy;
+	uint32_t solar_energy;
 
 	// Alpha(x).txt #WORLDBUILDER: Latitude DIVISOR for thermal banding; Smaller # widens hot bands
 	// Original bounds: 1 to 64
 	// Default value: 14
-	uint32_t ThermalBand;
+	uint32_t thermal_band;
 
 	// Alpha(x).txt #WORLDBUILDER: Latitude DIVISOR for thermal deviance; Smaller # increases randomness
 	// Original bounds: 1 to 64
 	// Default value: 8
-	uint32_t ThermalDeviance;
+	uint32_t thermal_deviance;
 
 	// Alpha(x).txt #WORLDBUILDER: Latitude DIVISOR for global warming;
 	// Smaller # increases effect of warming
 	// Original bounds: 1 to 64
 	// Default value: 8
-	uint32_t GlobalWarming;
+	uint32_t global_warming;
 
 	// Alpha(x).txt #WORLDBUILDER: Magnitude of sea level changes from ice cap melting/freezing
 	// Original bounds: 1 to 100
 	// Default value: 5
-	uint32_t SeaLevelRises;
+	uint32_t sea_level_rises;
 
 	// Alpha(x).txt #WORLDBUILDER: Size of cloud mass trapped by peaks
 	// Original bounds: 0 to 20
 	// Default value: 5
-	uint32_t CloudmassPeaks;
+	uint32_t cloudmass_peaks;
 
 	// Alpha(x).txt #WORLDBUILDER: Size of cloud mass trapped by hills
 	// Original bounds: 0 to 20
 	// Default value: 3
-	uint32_t CloudmassHills;
+	uint32_t cloudmass_hills;
 
 	// Alpha(x).txt #WORLDBUILDER: Multiplier for rainfall belts
 	// Original bounds: 0 to 8
 	// Default value: 1
-	uint32_t RainfallCoeff;
+	uint32_t rainfall_coeff;
 
 	// Alpha(x).txt #WORLDBUILDER: Encourages fractal to grow deep water
 	// Original bounds: -100 to 100
 	// Default value: 15
-	int DeepWater;
+	int deep_water;
 
 	// Alpha(x).txt #WORLDBUILDER: Encourages fractal to grow shelf
 	// Original bounds: -100 to 100
 	// Default value: 10
-	int Shelf;
+	int shelf;
 
 	// Alpha(x).txt #WORLDBUILDER: Encourages highland plains
 	// Original bounds: -100 to 100
 	// Default value: 15
-	int Plains;
+	int plains;
 
 	// Alpha(x).txt #WORLDBUILDER: Encourages wider beaches
 	// Original bounds: -100 to 100
 	// Default value: 10
-	int Beach;
+	int beach;
 
 	// Alpha(x).txt #WORLDBUILDER: Encourages hills x TIDAL selection
 	// Original bounds: 0 to 100
 	// Default value: 10
-	uint32_t Hills;
+	uint32_t hills;
 
 	// Alpha(x).txt #WORLDBUILDER: Encourages peaks
 	// Original bounds: -100 to 100
 	// Default value: 25
-	int Peaks;
+	int peaks;
 
 	// Alpha(x).txt #WORLDBUILDER: Fungus coefficient based on LIFE selection
 	// Original bounds: 0 to 5
 	// Default value: 1
-	uint32_t Fungus;
+	uint32_t fungus;
 
 	// Alpha(x).txt #WORLDBUILDER: Continent size ratios #1
 	// Original bounds: n/a
 	// Default value: 3
-	uint32_t ContSizeRatio1;
+	uint32_t cont_size_ratio1;
 
 	// Alpha(x).txt #WORLDBUILDER: Continent size ratios #2
 	// Original bounds: n/a
 	// Default value: 6
-	uint32_t ContSizeRatio2;
+	uint32_t cont_size_ratio2;
 
 	// Alpha(x).txt #WORLDBUILDER: Continent size ratios #3
 	// Original bounds: n/a
 	// Default value: 12
-	uint32_t ContSizeRatio3;
+	uint32_t cont_size_ratio3;
 
 	// Alpha(x).txt #WORLDBUILDER: Continent size ratios #4
 	// Original bounds: n/a
 	// Default value: 18
-	uint32_t ContSizeRatio4;
+	uint32_t cont_size_ratio4;
 
 	// Alpha(x).txt #WORLDBUILDER: Continent size ratios #5
 	// Original bounds: n/a
 	// Default value: 24
-	uint32_t ContSizeRatio5;
+	uint32_t cont_size_ratio5;
 
 	// Alpha(x).txt #WORLDBUILDER: Higher # increases island count
 	// Original bounds: 1 to 500
 	// Default value: 36
-	uint32_t Islands;
+	uint32_t islands;
 };
 
-struct alpha_ini {
-	uint32_t Preferences;
-	uint32_t MorePreferences;
-	uint32_t Announce;
-	uint32_t Rules;
-	uint32_t Semaphore;
-	uint32_t TimeControls;
-	uint32_t Customize;
-	uint32_t CustomWorld[7];
+struct AlphaIniPref {
+	uint32_t preferences;
+	uint32_t more_preferences;
+	uint32_t announce;
+	uint32_t rules;
+	uint32_t semaphore;
+	uint32_t time_controls;
+	uint32_t customize;
+	uint32_t custom_world[7];
 };
 
-struct default_pref {
-	uint32_t Difficulty;
-	uint32_t FactionID;
+struct DefaultPref {
+	uint32_t difficulty;
+	uint32_t faction_id;
 	uint32_t pad; // unused
-	uint32_t MapType;
-	uint32_t TopMenu;
+	uint32_t map_type;
+	uint32_t top_menu;
 };
 
 constexpr int NoneValue = -1;
@@ -710,46 +710,46 @@ constexpr int MaxDiffNum = 6;
 
 extern LPCSTR AlphaxFileID;
 extern LPCSTR ScriptTxtID;
-extern label *Label;
-extern rules_resourceinfo *ResourceInfo;
-extern rules_time_control *TimeControl;
-extern rules_resource *Resource;
-extern rules_energy *Energy;
-extern rules_basic *Rules;
-extern rules_worldbuilder *WorldBuilder;
-extern alpha_ini *AlphaIni;
-extern default_pref *DefaultPrefs;
+extern Label *Labels;
+extern RulesResourceinfo *ResourceInfo;
+extern RulesTimeControl *TimeControl;
+extern RulesResource *Resource;
+extern RulesEnergy *Energy;
+extern RulesBasic *Rules;
+extern RulesWorldbuilder *WorldBuilder;
+extern AlphaIniPref *AlphaIniPrefs;
+extern DefaultPref *DefaultPrefs;
 extern uint32_t *Language;
 
-OPENSMACX_API int __cdecl tech_name(LPSTR techName);
-OPENSMACX_API int __cdecl chas_name(LPSTR chasName);
-OPENSMACX_API int __cdecl weap_name(LPSTR weapName);
-OPENSMACX_API int __cdecl arm_name(LPSTR armName);
+OPENSMACX_API int __cdecl tech_name(LPSTR name);
+OPENSMACX_API int __cdecl chas_name(LPSTR name);
+OPENSMACX_API int __cdecl weap_name(LPSTR name);
+OPENSMACX_API int __cdecl arm_name(LPSTR name);
 OPENSMACX_API int __cdecl tech_item();
 OPENSMACX_API BOOL __cdecl read_basic_rules();
 OPENSMACX_API BOOL __cdecl read_tech();
 OPENSMACX_API void __cdecl clear_faction(Player *player);
-OPENSMACX_API void __cdecl read_faction(int playerID);
+OPENSMACX_API void __cdecl read_faction(uint32_t player_id);
 OPENSMACX_API void __cdecl read_faction(Player *player, int toggle);
 OPENSMACX_API BOOL __cdecl read_factions();
-OPENSMACX_API void __cdecl noun_item(int *gender, BOOL *plurality);
+OPENSMACX_API void __cdecl noun_item(uint32_t *gender, BOOL *plurality);
 OPENSMACX_API BOOL __cdecl read_units();
-OPENSMACX_API BOOL __cdecl read_rules(BOOL tglAllRules);
-OPENSMACX_API LPSTR __cdecl prefs_get(LPCSTR keyName, LPCSTR defaultValue, BOOL useDefault);
+OPENSMACX_API BOOL __cdecl read_rules(BOOL tgl_all_rules);
+OPENSMACX_API LPSTR __cdecl prefs_get(LPCSTR key_name, LPCSTR default_value, BOOL use_default);
 OPENSMACX_API uint32_t __cdecl default_prefs();
 OPENSMACX_API uint32_t __cdecl default_prefs2();
 OPENSMACX_API uint32_t __cdecl default_warn();
 OPENSMACX_API uint32_t __cdecl default_rules();
-OPENSMACX_API int __cdecl prefs_get(LPCSTR keyName, int defaultValue, BOOL useDefault);
+OPENSMACX_API int __cdecl prefs_get(LPCSTR key_name, int default_value, BOOL use_default);
 OPENSMACX_API void __cdecl prefs_fac_load();
-OPENSMACX_API void __cdecl prefs_load(BOOL useDefault);
-OPENSMACX_API void __cdecl prefs_put(LPCSTR keyName, LPCSTR value);
-OPENSMACX_API void __cdecl prefs_put(LPCSTR keyName, int value, BOOL binaryTgl);
-OPENSMACX_API void __cdecl prefs_save(BOOL saveFactions);
+OPENSMACX_API void __cdecl prefs_load(BOOL use_default);
+OPENSMACX_API void __cdecl prefs_put(LPCSTR key_name, LPCSTR value);
+OPENSMACX_API void __cdecl prefs_put(LPCSTR key_name, int value, BOOL tgl_binary);
+OPENSMACX_API void __cdecl prefs_save(BOOL save_factions);
 OPENSMACX_API void __cdecl prefs_use();
 OPENSMACX_API std::string __cdecl prefs_get_binary(int value);
 OPENSMACX_API BOOL __cdecl labels_init();
 OPENSMACX_API void __cdecl labels_shutdown();
 OPENSMACX_API void __cdecl set_language(uint32_t language);
-OPENSMACX_API void __cdecl say_label(int labelOffset);
-OPENSMACX_API LPSTR __cdecl label_get(int labelOffset);
+OPENSMACX_API void __cdecl say_label(int label_offset);
+OPENSMACX_API LPSTR __cdecl label_get(int label_offset);

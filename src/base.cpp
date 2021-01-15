@@ -193,7 +193,7 @@ uint32_t  __cdecl best_specialist() {
 	for (int i = 0; i < MaxSpecialistNum; i++) {
 		if (has_tech(Citizen[i].preq_tech, (*BaseCurrent)->faction_id_current)) {
 			uint32_t bonus = Citizen[i].psych_bonus * 3;
-			if ((*BaseCurrent)->population_size >= (int)Rules->MinBaseSizeSpecialists) {
+			if ((*BaseCurrent)->population_size >= (int)Rules->min_base_size_specialists) {
 				bonus += Citizen[i].ops_bonus + Citizen[i].research_bonus;
 			}
 			if ((int)bonus > current_bonus) {
@@ -350,7 +350,7 @@ int __cdecl cost_factor(uint32_t faction_id, uint32_t rsc_type, int base_id) {
     uint32_t factor = is_human(faction_id) ? 10 : diff_cost_base[*DiffLevelCurrent]
         - great_satan(FactionRankings[7], false)
         - (!*IsMultiplayerNet && is_human(FactionRankings[7]));
-    uint32_t cost_multiplier = rsc_type ? Rules->MineralCostMulti : Rules->NutrientCostMulti;
+    uint32_t cost_multiplier = rsc_type ? Rules->mineral_cost_multi : Rules->nutrient_cost_multi;
     if (cost_multiplier != 10) {
         factor = (factor * cost_multiplier) / 10;
     }
@@ -410,7 +410,7 @@ Return Value: Fixed value (-1, 0, 1, 2, 3, -70) or productionID
 Status: Complete
 */
 int __cdecl base_making(int production_id, uint32_t base_id) {
-    uint32_t retool = Rules->RetoolStrictness;
+    uint32_t retool = Rules->retool_strictness;
     int skn_off = facility_offset("Skunkworks");
     if ((has_fac_built(FAC_SKUNKWORKS, base_id) // has Skunkworks
         || (Players[Bases[base_id].faction_id_current].rule_flags & RFLAG_FREEPROTO // bug fix
@@ -454,13 +454,13 @@ Status: Complete
 */
 int __cdecl base_lose_minerals(uint32_t base_id, int UNUSED(production_id)) {
 	int min_accum;
-	if (Rules->RetoolPctPenProdChg && is_human(Bases[base_id].faction_id_current)
+	if (Rules->retool_pct_pen_prod_chg && is_human(Bases[base_id].faction_id_current)
 		&& base_making(Bases[base_id].production_id_last, base_id)
 		!= base_making(Bases[base_id].queue_production_id[0], base_id)
 		&& (min_accum = Bases[base_id].minerals_accumulated_2, 
-			min_accum > (int)Rules->RetoolExemption)) {
-		return min_accum - (100 - Rules->RetoolPctPenProdChg)
-			* (min_accum - Rules->RetoolExemption) / 100 - Rules->RetoolExemption;
+			min_accum > (int)Rules->retool_exemption)) {
+		return min_accum - (100 - Rules->retool_pct_pen_prod_chg)
+			* (min_accum - Rules->retool_exemption) / 100 - Rules->retool_exemption;
 	}
 	return 0;
 }
@@ -651,7 +651,7 @@ void __cdecl base_nutrient() {
 	}
 	(*BaseCurrent)->nutrient_intake_2 += BaseCurrentConvoyTo[RSC_NUTRIENTS];
 	(*BaseCurrent)->nutrient_consumption = BaseCurrentConvoyFrom[RSC_NUTRIENTS]
-		+ (*BaseCurrent)->population_size * Rules->NutrientReqCitizen;
+		+ (*BaseCurrent)->population_size * Rules->nutrient_req_citizen;
 	(*BaseCurrent)->nutrient_surplus = (*BaseCurrent)->nutrient_intake_2
 		- (*BaseCurrent)->nutrient_consumption;
 	if ((*BaseCurrent)->nutrient_surplus >= 0) {
@@ -725,7 +725,7 @@ void __cdecl base_minerals() {
 	if (is_human(faction_id)) {
 		(*BaseCurrent)->eco_damage += ((PlayersData[faction_id].major_atrocities
 			+ TectonicDetonationCount[faction_id]) * 5) / (range(*MapSeaLevel, 0, 100)
-				/ range(WorldBuilder->SeaLevelRises, 1, 100) + eco_dmg_reduction);
+				/ range(WorldBuilder->sea_level_rises, 1, 100) + eco_dmg_reduction);
 	}
 	if ((*BaseCurrent)->eco_damage < 0) {
 		(*BaseCurrent)->eco_damage = 0;
@@ -862,7 +862,7 @@ void __cdecl base_psych() {
 			break;
 		}
 	}
-	int drones = has_fac_built(FAC_GENEJACK_FACTORY) ? Rules->DronesGenejackFactory : 0;
+	int drones = has_fac_built(FAC_GENEJACK_FACTORY) ? Rules->drones_genejack_factory : 0;
 	if (has_fac_built(FAC_CHILDREN_CRECHE)) {
 		drones -= 2;
 	}
@@ -957,10 +957,11 @@ uint32_t __cdecl pop_goal_fac(uint32_t base_id) {
 	uint32_t faction_id = Bases[base_id].faction_id_current;
 	uint32_t limit_mod = has_project(SP_ASCETIC_VIRTUES, faction_id) ? 2 : 0;
 	int pop = Bases[base_id].population_size - limit_mod + Players[faction_id].rule_population;
-	if (pop >= (int)Rules->PopLimitSansHabComplex && !has_fac_built(FAC_HAB_COMPLEX, base_id)) {
+	if (pop >= (int)Rules->pop_limit_sans_hab_complex && !has_fac_built(FAC_HAB_COMPLEX, base_id)) {
 		return FAC_HAB_COMPLEX;
 	}
-	if (pop >= (int)Rules->PopLimitSansHabDome && !has_fac_built(FAC_HABITATION_DOME, base_id)) {
+	if (pop >= (int)Rules->pop_limit_sans_hab_dome 
+        && !has_fac_built(FAC_HABITATION_DOME, base_id)) {
 		return FAC_HABITATION_DOME;
 	}
 	return 0; // Pop hasn't reached capacity or Base already has Hab Complex and Dome
@@ -980,14 +981,15 @@ uint32_t __cdecl pop_goal(uint32_t base_id) {
 		goal = 6;
 	}
 	if (!has_fac_built(FAC_HAB_COMPLEX, base_id)) {
-		int compare = Rules->PopLimitSansHabComplex - Players[faction_id].rule_population 
+		int compare = Rules->pop_limit_sans_hab_complex - Players[faction_id].rule_population 
 			+ limit_mod;
 		if (goal >= compare) {
 			goal = compare;
 		}
 	}
 	if (!has_fac_built(FAC_HABITATION_DOME, base_id)) {
-		int compare = Rules->PopLimitSansHabDome - Players[faction_id].rule_population + limit_mod;
+		int compare = Rules->pop_limit_sans_hab_dome - Players[faction_id].rule_population 
+            + limit_mod;
 		if (goal >= compare) {
 			goal = compare;
 		}

@@ -1652,7 +1652,7 @@ void __cdecl build_continent(uint32_t size) {
 	if (coverage && *BrushVal1 >= *WorldBuildVal1) {
 		coverage--;
 	}
-	int radius = WorldBuilder->ContinentMod * coverage * coverage + WorldBuilder->ContinentBase;
+	int radius = WorldBuilder->continent_mod * coverage * coverage + WorldBuilder->continent_base;
     int x; 
     int y;
     int i = 0;
@@ -1668,15 +1668,15 @@ void __cdecl build_continent(uint32_t size) {
 	} while (i++ < 100 && alt_at(x, y) >= ALT_BIT_SHORE_LINE);
 	if (alt_at(x, y) < ALT_BIT_SHORE_LINE) {
 		uint32_t ratio = (size * 3200) / *MapArea;
-		if (ratio > WorldBuilder->ContSizeRatio5 || *BrushVal1 >= *WorldBuildVal1) {
+		if (ratio > WorldBuilder->cont_size_ratio5 || *BrushVal1 >= *WorldBuildVal1) {
 			radius /= 4;
-			if (BrushVal1 >= WorldBuildVal1 && ratio > WorldBuilder->ContSizeRatio5) {
+			if (BrushVal1 >= WorldBuildVal1 && ratio > WorldBuilder->cont_size_ratio5) {
 				radius = rand() % 3 + 1;
 			}
-		} else if (ratio <= WorldBuilder->ContSizeRatio4) {
-			if (ratio <= WorldBuilder->ContSizeRatio3) {
-				if (ratio <= WorldBuilder->ContSizeRatio2) {
-					if (ratio < WorldBuilder->ContSizeRatio1 && *MapLandCoverage > 1) {
+		} else if (ratio <= WorldBuilder->cont_size_ratio4) {
+			if (ratio <= WorldBuilder->cont_size_ratio3) {
+				if (ratio <= WorldBuilder->cont_size_ratio2) {
+					if (ratio < WorldBuilder->cont_size_ratio1 && *MapLandCoverage > 1) {
 						radius += radius / 2;
 					}
 				} else  if (rnd(4 - *MapLandCoverage, NULL)) {
@@ -1728,11 +1728,11 @@ void __cdecl build_hills(uint32_t altitude) {
 			}
 		}
         keep_going = false;
-		int plat_mod = WorldBuilder->PlateauMod * (2 - *MapOceanCoverage);
+		int plat_mod = WorldBuilder->plateau_mod * (2 - *MapOceanCoverage);
 		if (altitude != ALT_1_LEVEL_ABOVE_SEA) {
             plat_mod /= 4;
 		}
-		uint32_t plat_base = WorldBuilder->PlateauBase;
+		uint32_t plat_base = WorldBuilder->plateau_base;
 		if (*MapOceanCoverage >= 2) {
             plat_base /= 2;
 		}
@@ -1752,8 +1752,8 @@ void __cdecl world_riverbeds() {
 		(*MapTiles)[i].bit &= ~(BIT_RIVERBED);
 	}
 	uint32_t riverbed_count = 0;
-	uint32_t max_riverbeds = (*MapArea * ((4 - *MapOceanCoverage) * (WorldBuilder->RiversBase 
-		+ *MapCloudCover * WorldBuilder->RiversRainMod) / 3)) / 3200;
+	uint32_t max_riverbeds = (*MapArea * ((4 - *MapOceanCoverage) * (WorldBuilder->rivers_base 
+		+ *MapCloudCover * WorldBuilder->rivers_rain_mod) / 3)) / 3200;
 	for (uint32_t i = 0; i < 4000 && riverbed_count < max_riverbeds; i++) {
         int x = rnd(*MapLongitudeBounds, NULL);
         int y = rnd(*MapLatitudeBounds, NULL);
@@ -1826,10 +1826,10 @@ Status: Complete - testing
 */
 void __cdecl world_temperature() {
 	random_reseed(*MapRandSeed + 17);
-	uint32_t temp_heat = *MapLatitudeBounds / WorldBuilder->SolarEnergy;
-	uint32_t thermal_banding = *MapLatitudeBounds / WorldBuilder->ThermalBand;
-	uint32_t thermal_deviance = *MapLatitudeBounds / WorldBuilder->ThermalDeviance;
-	uint32_t global_warming = *MapLatitudeBounds / WorldBuilder->GlobalWarming;
+	uint32_t temp_heat = *MapLatitudeBounds / WorldBuilder->solar_energy;
+	uint32_t thermal_banding = *MapLatitudeBounds / WorldBuilder->thermal_band;
+	uint32_t thermal_deviance = *MapLatitudeBounds / WorldBuilder->thermal_deviance;
+	uint32_t global_warming = *MapLatitudeBounds / WorldBuilder->global_warming;
 	for (uint32_t y = 0; y < *MapLatitudeBounds; y++) {
 		for (uint32_t x = y & 1; x < *MapLongitudeBounds; x += 2) {
 			if ((bit2_at(x, y) & (BIT2_UNK_80000000 | BIT2_CRATER)) != BIT2_CRATER

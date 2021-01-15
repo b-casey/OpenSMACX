@@ -169,9 +169,9 @@ Return Value: Max range
 Status: Complete
 */
 uint32_t __cdecl drop_range(uint32_t faction_id) {
-	if (!has_tech(Rules->TechOrbInsertSansSpcElev, faction_id) // default 'Graviton Theory'
+	if (!has_tech(Rules->tech_orb_insert_sans_spc_elev, faction_id) // default 'Graviton Theory'
 		&& !has_project(SP_SPACE_ELEVATOR, faction_id)) {
-		return Rules->MaxAirdropSansOrbInsert;
+		return Rules->max_airdrop_sans_orb_insert;
 	}
 	return (*MapLongitudeBounds <= * MapLatitudeBounds) ? *MapLatitudeBounds : *MapLongitudeBounds;
 }
@@ -563,34 +563,34 @@ void __cdecl battle_compute(int veh_id_atk, int veh_id_def, int *offense_out, in
                         add_bat(0, 25, label_get(1110)); // "Resonance Attack"
                     }
                     if (!has_abil(proto_id_def, ABL_DISSOCIATIVE_WAVE) && psi_combat_type &&
-                        has_abil(proto_id_atk, ABL_EMPATHIC) && Rules->CombatPctEmpSongAtkVsPsi) {
-                        offense = offense * (Rules->CombatPctEmpSongAtkVsPsi + 100) / 100;
-                        add_bat(0, Rules->CombatPctEmpSongAtkVsPsi,
+                        has_abil(proto_id_atk, ABL_EMPATHIC) && Rules->combat_pct_emp_song_atk_vs_psi) {
+                        offense = offense * (Rules->combat_pct_emp_song_atk_vs_psi + 100) / 100;
+                        add_bat(0, Rules->combat_pct_emp_song_atk_vs_psi,
                             Ability[abil_index(ABL_EMPATHIC)].name);
                     }
                 }
                 if (Vehs[veh_id_atk].state & VSTATE_MADE_AIRDROP && has_abil(proto_id_atk, ABL_DROP_POD)
-                    && Rules->CombatPenPctAtkAirdrop) {
-                    offense = (100 - Rules->CombatPctEmpSongAtkVsPsi) * offense / 100;
+                    && Rules->combat_pen_pct_atk_airdrop) {
+                    offense = (100 - Rules->combat_pct_emp_song_atk_vs_psi) * offense / 100;
                     /*
                     uint32_t dropRange;
-                    if (has_tech(Rules->TechOrbInsertSansSpcElev, faction_id_atk)
+                    if (has_tech(Rules->tech_orb_insert_sans_spc_elev, faction_id_atk)
                         || has_project(SP_SPACE_ELEVATOR, faction_id_atk)) {
                         dropRange = (*MapHorizontalBounds <= *MapLatitudeBounds)
                             ? *MapLatitudeBounds : *MapHorizontalBounds;
                     } else {
-                        dropRange = Rules->MaxAirdropSansOrbInsert;
+                        dropRange = Rules->max_airdrop_sans_orb_insert;
                     }
                     */
-                    add_bat(0, Rules->CombatPenPctAtkAirdrop,
-                        drop_range(faction_id_atk) <= Rules->MaxAirdropSansOrbInsert 
+                    add_bat(0, Rules->combat_pen_pct_atk_airdrop,
+                        drop_range(faction_id_atk) <= Rules->max_airdrop_sans_orb_insert 
                         ? label_get(437) // "Air Drop"
                         : label_get(438)); // "Orbital Insertion"
                 }
                 if (Players[faction_id_atk].rule_flags & RFLAG_FANATIC
-                    && Rules->CombatPctFanaticAtkBonus && !combat_type && !psi_combat_type) {
-                    offense = (Rules->CombatPctFanaticAtkBonus + 100) * offense / 100;
-                    add_bat(0, Rules->CombatPctFanaticAtkBonus, label_get(528));
+                    && Rules->combat_pct_fanatic_atk_bonus && !combat_type && !psi_combat_type) {
+                    offense = (Rules->combat_pct_fanatic_atk_bonus + 100) * offense / 100;
+                    add_bat(0, Rules->combat_pct_fanatic_atk_bonus, label_get(528));
                 }
                 int bonus_count = Players[faction_id_atk].faction_bonus_count;
                 for (int i = 0; i < bonus_count; i++) {
@@ -602,8 +602,8 @@ void __cdecl battle_compute(int veh_id_atk, int veh_id_def, int *offense_out, in
                 }
                 if (psi_combat_type && faction_id_atk) {
                     int planet_se_atk = PlayersData[faction_id_atk].soc_effect_active.planet;
-                    if (planet_se_atk && Rules->CombatPctPsiAtkBonusPLANET) {
-                        int planet_modifier = planet_se_atk * Rules->CombatPctPsiAtkBonusPLANET;
+                    if (planet_se_atk && Rules->combat_pct_psi_atk_bonus_planet) {
+                        int planet_modifier = planet_se_atk * Rules->combat_pct_psi_atk_bonus_planet;
                         add_bat(0, planet_modifier, label_get(625)); // "Planet"
                         offense = (planet_modifier + 100) * offense / 100;
                     }
@@ -627,9 +627,9 @@ void __cdecl battle_compute(int veh_id_atk, int veh_id_def, int *offense_out, in
                 int y_def = Vehs[veh_id_def].y;
                 int base_id_def = base_at(x_def, y_def);
                 if (psi_combat_type) {
-                    if (base_id_def >= 0 && Rules->CombatPctBaseDef) {
-                        add_bat(1, Rules->CombatPctBaseDef, label_get(332)); // "Base"
-                        defense = defense * (Rules->CombatPctBaseDef + 100) / 100;
+                    if (base_id_def >= 0 && Rules->combat_pct_base_def) {
+                        add_bat(1, Rules->combat_pct_base_def, label_get(332)); // "Base"
+                        defense = defense * (Rules->combat_pct_base_def + 100) / 100;
                     }
                     defense *= 4;
                 } else {
@@ -639,51 +639,51 @@ void __cdecl battle_compute(int veh_id_atk, int veh_id_def, int *offense_out, in
                     uint32_t alt_atk;
                     uint32_t alt_def;
                     if (veh_id_atk >= 0 && get_triad(veh_id_atk) == TRIAD_LAND) {
-                        if (combat_type && Rules->CombatPctArtBonusLvlAlt && triad_def == TRIAD_LAND
+                        if (combat_type && Rules->combat_pct_art_bonus_lvl_alt && triad_def == TRIAD_LAND
                             && (alt_atk = alt_at(Vehs[veh_id_atk].x, Vehs[veh_id_atk].y),
                                 alt_def = alt_at(x_def, y_def), alt_atk > alt_def)) {
-                            offense = offense * (Rules->CombatPctArtBonusLvlAlt 
+                            offense = offense * (Rules->combat_pct_art_bonus_lvl_alt 
                                 * (alt_atk - alt_def) + 100) / 100;
-                            add_bat(0, Rules->CombatPctArtBonusLvlAlt, label_get(576)); //"Altitude"
+                            add_bat(0, Rules->combat_pct_art_bonus_lvl_alt, label_get(576)); //"Altitude"
                         }
-                        if (Rules->CombatPctMobileOpenGround && !combat_type && base_id_def < 0
+                        if (Rules->combat_pct_mobile_open_ground && !combat_type && base_id_def < 0
                             && terrain_def == 2 
                             && rocky_at(x_def, y_def) < TERRAIN_BIT_ROCKY) {
                             uint32_t speed_atk = speed_proto(proto_id_atk);
-                            if (speed_atk > Rules->MoveRateRoads 
+                            if (speed_atk > Rules->move_rate_roads 
                                 && speed_proto(proto_id_def) < speed_atk) {
-                                offense = offense * (Rules->CombatPctMobileOpenGround + 100) / 100;
+                                offense = offense * (Rules->combat_pct_mobile_open_ground + 100) / 100;
                                 // "Mobile in open"
-                                add_bat(0, Rules->CombatPctMobileOpenGround, label_get(611));
+                                add_bat(0, Rules->combat_pct_mobile_open_ground, label_get(611));
                             }
                         }
-                        if (Rules->CombatPctDefVsMobileRough && !combat_type && (terrain_def > 2
+                        if (Rules->combat_pct_def_vs_mobile_rough && !combat_type && (terrain_def > 2
                             || base_id_def >= 0) && rocky_at(x_def, y_def) < TERRAIN_BIT_ROCKY
-                            && speed_proto(proto_id_atk) > Rules->MoveRateRoads) {
-                            defense = defense * (Rules->CombatPctDefVsMobileRough + 100) / 100;
+                            && speed_proto(proto_id_atk) > Rules->move_rate_roads) {
+                            defense = defense * (Rules->combat_pct_def_vs_mobile_rough + 100) / 100;
                             // "Rough vs. Mobile" : "Mobile vs. Base"
-                            add_bat(1, Rules->CombatPctDefVsMobileRough, base_id_def < 0
+                            add_bat(1, Rules->combat_pct_def_vs_mobile_rough, base_id_def < 0
                                 ? label_get(548) : label_get(612));
                         }
-                        if (Rules->CombatPctAtkRoad && !combat_type) {
+                        if (Rules->combat_pct_atk_road && !combat_type) {
                             // TODO: add check road/tube Combat % -> attacking along road
-                            offense = offense * (Rules->CombatPctAtkRoad + 100) / 100;
-                            add_bat(0, Rules->CombatPctAtkRoad, label_get(606)); // "Road Attack"
+                            offense = offense * (Rules->combat_pct_atk_road + 100) / 100;
+                            add_bat(0, Rules->combat_pct_atk_road, label_get(606)); // "Road Attack"
                         }
 
-                        if (Rules->CombatPenPctAtkLwrElev && !combat_type 
+                        if (Rules->combat_pen_pct_atk_lwr_elev && !combat_type 
                             && altitude_at(x_def, y_def) 
                             > altitude_at(Vehs[veh_id_atk].x, Vehs[veh_id_atk].y)
                             && !has_abil(proto_id_atk, ABL_ANTIGRAV_STRUTS)) {
-                            defense = defense * (Rules->CombatPenPctAtkLwrElev + 100) / 100;
-                            add_bat(1, Rules->CombatPenPctAtkLwrElev, label_get(441)); // "Uphill"
+                            defense = defense * (Rules->combat_pen_pct_atk_lwr_elev + 100) / 100;
+                            add_bat(1, Rules->combat_pen_pct_atk_lwr_elev, label_get(441)); // "Uphill"
                         }
-                        if (Rules->CombatPctAtkHigherElev && !combat_type 
+                        if (Rules->combat_pct_atk_higher_elev && !combat_type 
                             && altitude_at(Vehs[veh_id_atk].x, Vehs[veh_id_atk].y) 
                             > altitude_at(x_def, y_def) 
                             && !has_abil(proto_id_def, ABL_ANTIGRAV_STRUTS)) {
-                            offense = offense * (Rules->CombatPctAtkHigherElev + 100) / 100;
-                            add_bat(0, Rules->CombatPctAtkRoad, label_get(330)); // "Downhill"
+                            offense = offense * (Rules->combat_pct_atk_higher_elev + 100) / 100;
+                            add_bat(0, Rules->combat_pct_atk_road, label_get(330)); // "Downhill"
                         }
                     }
                     defense *= terrain_def;
@@ -739,9 +739,9 @@ void __cdecl battle_compute(int veh_id_atk, int veh_id_def, int *offense_out, in
                             }
                             if (fac_modifier < 2 || def_multi == 2
                                 && (veh_id_atk < 0 || has_abil(proto_id_atk, ABL_BLINK_DISPLACER)
-                                    && Rules->CombatPctBaseDef)) {
-                                add_bat(1, Rules->CombatPctBaseDef, label_get(332)); // "Base"
-                                defense = defense * (Rules->CombatPctBaseDef + 100) / 100;
+                                    && Rules->combat_pct_base_def)) {
+                                add_bat(1, Rules->combat_pct_base_def, label_get(332)); // "Base"
+                                defense = defense * (Rules->combat_pct_base_def + 100) / 100;
                             }
                             if (veh_id_atk >= 0 && has_abil(proto_id_atk, ABL_BLINK_DISPLACER)) {
                                 if (def_multi > 2) {
@@ -749,14 +749,14 @@ void __cdecl battle_compute(int veh_id_atk, int veh_id_def, int *offense_out, in
                                 }
                                 display_def = label_get(428); // "Base vs. Blink"
                             }
-                            if (Rules->CombatPctInfantryVsBase && !combat_type && base_id_def >= 0
+                            if (Rules->combat_pct_infantry_vs_base && !combat_type && base_id_def >= 0
                                 && faction_id_atk && proto_id_atk > MaxVehProtoFactionNum
                                 && Weapon[VehPrototypes[proto_id_atk].weapon_id].offense_rating >= 0 
                                 && proto_id_atk != BSC_SPORE_LAUNCHER && !get_proto_triad(proto_id_atk)
                                 && Chassis[VehPrototypes[proto_id_atk].chassis_id].speed == 1) {
-                                offense = offense * (Rules->CombatPctInfantryVsBase + 100) / 100;
+                                offense = offense * (Rules->combat_pct_infantry_vs_base + 100) / 100;
                                 // "Infantry vs. Base"
-                                add_bat(0, Rules->CombatPctInfantryVsBase, label_get(547));
+                                add_bat(0, Rules->combat_pct_infantry_vs_base, label_get(547));
                             }
                             uint32_t bit_def;
                             if (is_artillery && def_multi <= 2 && base_id_def < 0
@@ -826,18 +826,18 @@ void __cdecl battle_compute(int veh_id_atk, int veh_id_def, int *offense_out, in
                         }
                     }
                     if (sensor_def & 1) {
-                        defense = defense * (Rules->CombatPctDefRangeSensor + 100) / 100;
-                        add_bat(1, Rules->CombatPctDefRangeSensor, label_get(613)); // "Sensor"
+                        defense = defense * (Rules->combat_pct_def_range_sensor + 100) / 100;
+                        add_bat(1, Rules->combat_pct_def_range_sensor, label_get(613)); // "Sensor"
                     }
                     if (sensor_def & 2) {
-                        defense = defense * (Rules->CombatPctDefRangeSensor + 100) / 100;
-                        add_bat(1, Rules->CombatPctDefRangeSensor, label_get(1123)); // "GSP"
+                        defense = defense * (Rules->combat_pct_def_range_sensor + 100) / 100;
+                        add_bat(1, Rules->combat_pct_def_range_sensor, label_get(1123)); // "GSP"
                     }
                 }
-                if (!has_abil(proto_id_atk, ABL_DISSOCIATIVE_WAVE) && Rules->CombatPctTranceDefVsPsi
+                if (!has_abil(proto_id_atk, ABL_DISSOCIATIVE_WAVE) && Rules->combat_pct_trance_def_vs_psi
                     && veh_id_atk >= 0 && psi_combat_type & 1 && has_abil(proto_id_def, ABL_TRANCE)) {
-                    defense = defense * (Rules->CombatPctTranceDefVsPsi + 100) / 100;
-                    add_bat(1, Rules->CombatPctTranceDefVsPsi, label_get(329)); // "Trance"
+                    defense = defense * (Rules->combat_pct_trance_def_vs_psi + 100) / 100;
+                    add_bat(1, Rules->combat_pct_trance_def_vs_psi, label_get(329)); // "Trance"
                 }
                 uint32_t armor_id_def = VehPrototypes[proto_id_def].armor_id;
                 if (psi_combat_type & 1 && veh_id_atk >= 0 && (armor_id_def == ARM_RESONANCE_3_ARMOR 
@@ -849,13 +849,13 @@ void __cdecl battle_compute(int veh_id_atk, int veh_id_def, int *offense_out, in
                 if (veh_id_atk >= 0 && get_proto_triad(proto_id_atk) == TRIAD_AIR
                     && has_abil(proto_id_atk, ABL_AIR_SUPERIORITY) && !psi_combat_type) {
                     if (get_proto_triad(proto_id_def) == TRIAD_AIR) {
-                        int ground_strike_pen = Rules->CombatPenPctAirSuprVsGrnd;
+                        int ground_strike_pen = Rules->combat_pen_pct_air_supr_vs_grnd;
                         if (ground_strike_pen) {
                             offense = offense * (100 - ground_strike_pen) / 100;
                             add_bat(0, -ground_strike_pen, label_get(448)); // "Ground Strike"
                         }
                     } else {
-                        int air_to_air = Rules->CombatPctAirSuprVsAir;
+                        int air_to_air = Rules->combat_pct_air_supr_vs_air;
                         if (air_to_air && !has_abil(proto_id_def, ABL_AIR_SUPERIORITY)) {
                             offense = offense * (air_to_air + 100) / 100;
                             add_bat(0, air_to_air, label_get(449)); // "Air-to-Air"
@@ -868,22 +868,22 @@ void __cdecl battle_compute(int veh_id_atk, int veh_id_def, int *offense_out, in
                     && has_abil(proto_id_atk, ABL_AIR_SUPERIORITY) && !psi_combat_type
                     && !Chassis[VehPrototypes[proto_id_atk].chassis_id].missile
                     && !Chassis[VehPrototypes[proto_id_def].chassis_id].missile
-                    && Rules->CombatPctAirSuprVsAir) {
-                    defense = defense * (Rules->CombatPctAirSuprVsAir + 100) / 100;
-                    add_bat(1, Rules->CombatPctAirSuprVsAir, label_get(449)); // "Air-to-Air"
+                    && Rules->combat_pct_air_supr_vs_air) {
+                    defense = defense * (Rules->combat_pct_air_supr_vs_air + 100) / 100;
+                    add_bat(1, Rules->combat_pct_air_supr_vs_air, label_get(449)); // "Air-to-Air"
                 }
                 if (!Weapon[VehPrototypes[proto_id_def].weapon_id].offense_rating
                     && Armor[VehPrototypes[proto_id_def].armor_id].defense_rating == 1 &&
-                    (faction_id_atk || base_id_def < 0) && Rules->CombatPenPctNonCbtDefVsCbt) {
-                    defense = defense * (100 - Rules->CombatPenPctNonCbtDefVsCbt) / 100;
-                    add_bat(1, -Rules->CombatPenPctNonCbtDefVsCbt, label_get(439)); // "Non Combat"
+                    (faction_id_atk || base_id_def < 0) && Rules->combat_pen_pct_non_cbt_def_vs_cbt) {
+                    defense = defense * (100 - Rules->combat_pen_pct_non_cbt_def_vs_cbt) / 100;
+                    add_bat(1, -Rules->combat_pen_pct_non_cbt_def_vs_cbt, label_get(439)); // "Non Combat"
                 }
                 if (veh_id_atk >= 0 // added veh_id_atk check
                     && get_proto_triad(proto_id_atk) == TRIAD_SEA
                     && get_proto_triad(proto_id_def) == TRIAD_SEA && base_id_def >= 0 
-                    && Rules->CombatPctBonusVsShipPort) {
-                    offense = offense * (Rules->CombatPctBonusVsShipPort + 100) / 100;
-                    add_bat(0, Rules->CombatPctBonusVsShipPort, label_get(335)); // "In Port"
+                    && Rules->combat_pct_bonus_vs_ship_port) {
+                    offense = offense * (Rules->combat_pct_bonus_vs_ship_port + 100) / 100;
+                    add_bat(0, Rules->combat_pct_bonus_vs_ship_port, label_get(335)); // "In Port"
                 }
                 if (armor_id_def == ARM_PULSE_3_ARMOR || armor_id_def == ARM_PULSE_8_ARMOR
                     && get_proto_triad(proto_id_atk) == TRIAD_LAND
@@ -895,14 +895,14 @@ void __cdecl battle_compute(int veh_id_atk, int veh_id_def, int *offense_out, in
                     && has_abil(proto_id_def, ABL_COMM_JAMMER)
                     && get_proto_triad(proto_id_atk) == TRIAD_LAND
                     && Chassis[VehPrototypes[proto_id_atk].chassis_id].speed > 1 
-                    && Rules->CombatPctComJamDefVsMobl) {
-                    defense = defense * (Rules->CombatPctComJamDefVsMobl + 100) / 100;
-                    add_bat(1, Rules->CombatPctComJamDefVsMobl, label_get(336)); // "Jammer"
+                    && Rules->combat_pct_com_jam_def_vs_mobl) {
+                    defense = defense * (Rules->combat_pct_com_jam_def_vs_mobl + 100) / 100;
+                    add_bat(1, Rules->combat_pct_com_jam_def_vs_mobl, label_get(336)); // "Jammer"
                 }
                 if (!has_abil(proto_id_atk, ABL_DISSOCIATIVE_WAVE) && has_abil(proto_id_def, ABL_AAA)
-                    && get_proto_triad(proto_id_atk) == TRIAD_AIR && Rules->CombatPctAAABonusVsAir) {
-                    defense = defense * (Rules->CombatPctAAABonusVsAir + 100) / 100;
-                    add_bat(1, Rules->CombatPctAAABonusVsAir, label_get(337)); // "Tracking"
+                    && get_proto_triad(proto_id_atk) == TRIAD_AIR && Rules->combat_pct_aaa_bonus_vs_air) {
+                    defense = defense * (Rules->combat_pct_aaa_bonus_vs_air + 100) / 100;
+                    add_bat(1, Rules->combat_pct_aaa_bonus_vs_air, label_get(337)); // "Tracking"
                 }
             }
         } else if (veh_id_def >= 0) {
@@ -911,29 +911,29 @@ void __cdecl battle_compute(int veh_id_atk, int veh_id_def, int *offense_out, in
                 uint32_t triad_atk = get_proto_triad(proto_id_atk);
                 uint32_t triad_def = get_proto_triad(proto_id_def);
                 if (triad_def == TRIAD_SEA && triad_atk == TRIAD_LAND) {
-                    int gun_vs_ship_art = Rules->CombatPctLandGunVsShipArt;
+                    int gun_vs_ship_art = Rules->combat_pct_land_gun_vs_ship_art;
                     if (gun_vs_ship_art) {
                         offense = (gun_vs_ship_art + 100) * offense / 100;
                         add_bat(0, gun_vs_ship_art, label_get(435)); // "Land Based Guns"
                     }
                 } else if (triad_atk == TRIAD_SEA && triad_def == TRIAD_LAND) {
-                    int gun_vs_ship_art = Rules->CombatPctLandGunVsShipArt;
+                    int gun_vs_ship_art = Rules->combat_pct_land_gun_vs_ship_art;
                     if (gun_vs_ship_art) {
                         defense = (gun_vs_ship_art + 100) * defense / 100;
                         add_bat(1, gun_vs_ship_art, label_get(435)); // "Land Based Guns"
                     }
-                } else if (Rules->CombatPctArtBonusLvlAlt) {
+                } else if (Rules->combat_pct_art_bonus_lvl_alt) {
                     uint32_t alt_atk = alt_at(Vehs[veh_id_atk].x, Vehs[veh_id_atk].y);
                     uint32_t alt_def = alt_at(Vehs[veh_id_def].x, Vehs[veh_id_def].y);
                     if (alt_def >= alt_atk) {
                         if (alt_def > alt_atk) { // ???
                             int alt_modifier_def = (alt_def - alt_atk) 
-                                * Rules->CombatPctArtBonusLvlAlt;
+                                * Rules->combat_pct_art_bonus_lvl_alt;
                             defense = defense * (alt_modifier_def + 100) / 100;
                             add_bat(1, alt_modifier_def, label_get(576)); // "Altitude"
                         }
                     } else {
-                        int alt_modifier_atk = (alt_atk - alt_def) * Rules->CombatPctArtBonusLvlAlt;
+                        int alt_modifier_atk = (alt_atk - alt_def) * Rules->combat_pct_art_bonus_lvl_alt;
                         offense = offense * (alt_modifier_atk + 100) / 100;
                         add_bat(0, alt_modifier_atk, label_get(576)); // "Altitude"
                     }
@@ -1145,8 +1145,8 @@ int __cdecl arm_strat(uint32_t armor_id, uint32_t faction_id) {
 	}
 	int defense_rating = Armor[armor_id].defense_rating;
 	if (defense_rating < 0) {
-		return psi_factor((Rules->PsiCombatRatioDef[TRIAD_LAND]
-			* PlayersData[faction_id].enemy_best_weapon_value) / Rules->PsiCombatRatioAtk[TRIAD_LAND],
+		return psi_factor((Rules->psi_combat_ratio_def[TRIAD_LAND]
+			* PlayersData[faction_id].enemy_best_weapon_value) / Rules->psi_combat_ratio_atk[TRIAD_LAND],
 			faction_id, false, false);
 	}
 	return defense_rating;
@@ -1164,8 +1164,8 @@ int __cdecl weap_strat(uint32_t weapon_id, uint32_t faction_id) {
 		return 1;
 	int offense_rating = Weapon[weapon_id].offense_rating;
 	if (offense_rating < 0) {
-		return psi_factor((Rules->PsiCombatRatioAtk[TRIAD_LAND]
-			* PlayersData[faction_id].enemy_best_armor_value) / Rules->PsiCombatRatioDef[TRIAD_LAND],
+		return psi_factor((Rules->psi_combat_ratio_atk[TRIAD_LAND]
+			* PlayersData[faction_id].enemy_best_armor_value) / Rules->psi_combat_ratio_def[TRIAD_LAND],
 			faction_id, true, false);
 	}
 	return offense_rating;
@@ -1310,7 +1310,7 @@ void __cdecl say_stats_3(LPSTR stat, uint32_t proto_id) {
 	output += (Armor[VehPrototypes[proto_id].armor_id].defense_rating) >= 0 
         ? say_defense(proto_id) : "?";
 	output += "-";
-	output += std::to_string(speed_proto(proto_id) / Rules->MoveRateRoads);
+	output += std::to_string(speed_proto(proto_id) / Rules->move_rate_roads);
 	uint8_t reactor = VehPrototypes[proto_id].reactor_id;
 	if (reactor > RECT_FISSION) {
 		output += "*";
@@ -1351,7 +1351,7 @@ void __cdecl say_stats_2(LPSTR stat, uint32_t proto_id) {
 	output += (Armor[VehPrototypes[proto_id].armor_id].defense_rating) >= 0 
         ? say_defense(proto_id) : label_get(196); // 'Psi'
 	output += "-";
-	output += std::to_string(speed_proto(proto_id) / Rules->MoveRateRoads);
+	output += std::to_string(speed_proto(proto_id) / Rules->move_rate_roads);
 	uint32_t triad = get_proto_triad(proto_id);
 	if (triad == TRIAD_SEA) {
 		output += " ";
@@ -1400,7 +1400,7 @@ void __cdecl say_stats(LPSTR stat, uint32_t proto_id, LPSTR custom_spacer) {
 		output += custom_spacer ? custom_spacer : "/";
 		output += (def_rating < 0) ? label_get(196) : say_defense(proto_id); // 'Psi'
 		output += custom_spacer ? custom_spacer : "/";
-		output += std::to_string(speed_proto(proto_id) / Rules->MoveRateRoads);
+		output += std::to_string(speed_proto(proto_id) / Rules->move_rate_roads);
 	} else if (def_rating != 1 || VehPrototypes[proto_id].ability_flags || (Chassis[chas].speed != 1
 		&& (mode != WPN_MODE_TRANSPORT || chas != CHSI_FOIL))) {
 		output += StringTable->get(int(PlansShortName[mode]));
@@ -1412,7 +1412,7 @@ void __cdecl say_stats(LPSTR stat, uint32_t proto_id, LPSTR custom_spacer) {
 		output += ", ";
 		output += (def_rating < 0) ? label_get(196) : say_defense(proto_id); // 'Psi'
 		output += custom_spacer ? custom_spacer : "/";
-		output += std::to_string(speed_proto(proto_id) / Rules->MoveRateRoads);
+		output += std::to_string(speed_proto(proto_id) / Rules->move_rate_roads);
 	} else {
 		output += StringTable->get((int)PlansFullName[mode]);
 		if (plan == PLAN_NAVAL_TRANSPORT) {
@@ -1580,15 +1580,15 @@ int __cdecl hex_cost(int proto_id, int faction_id, uint32_t x_src, uint32_t y_sr
 			&& get_proto_triad(proto_id) == TRIAD_SEA
 			&& proto_id != BSC_SEALURK // Bug fix
 			&& proto_id != BSC_ISLE_OF_THE_DEEP && !has_project(SP_XENOEMPATYH_DOME, faction_id)) {
-			return Rules->MoveRateRoads * 3;
+			return Rules->move_rate_roads * 3;
 		}
-		return Rules->MoveRateRoads;
+		return Rules->move_rate_roads;
 	}
 	if (is_ocean(x_src, y_src)) {
-		return Rules->MoveRateRoads;
+		return Rules->move_rate_roads;
 	}
 	if (proto_id >= 0 && get_proto_triad(proto_id) != TRIAD_LAND) {
-		return Rules->MoveRateRoads;
+		return Rules->move_rate_roads;
 	}
 	// Land only conditions
 	uint32_t bit_src = bit_at(x_src, y_src);
@@ -1611,21 +1611,21 @@ int __cdecl hex_cost(int proto_id, int faction_id, uint32_t x_src, uint32_t y_sr
 	}
 	if (VehPrototypes[proto_id].chassis_id == CHSI_HOVERTANK
 		|| has_abil(proto_id, ABL_ANTIGRAV_STRUTS)) {
-		return Rules->MoveRateRoads;
+		return Rules->move_rate_roads;
 	}
-	uint32_t cost = Rules->MoveRateRoads;
+	uint32_t cost = Rules->move_rate_roads;
 	if (rocky_at(x_dst, y_dst) > TERRAIN_BIT_ROLLING && !toggle) {
-		cost += Rules->MoveRateRoads;
+		cost += Rules->move_rate_roads;
 	}
 	if (bit_dst & BIT_FOREST && !toggle) {
-		cost += Rules->MoveRateRoads;
+		cost += Rules->move_rate_roads;
 	}
 	if (faction_id && bit_dst & BIT_FUNGUS && (proto_id >= MaxVehProtoFactionNum
 		|| Weapon[VehPrototypes[proto_id].weapon_id].offense_rating >= 0)) {
 		uint8_t plan = VehPrototypes[proto_id].plan;
 		if (plan != PLAN_TERRAFORMING && plan != PLAN_ALIEN_ARTIFACT
 			&& PlayersData[faction_id].soc_effect_active.planet <= 0) {
-			return cost + Rules->MoveRateRoads * 2;
+			return cost + Rules->move_rate_roads * 2;
 		}
 		uint32_t speed = speed_proto(proto_id);
 		if (cost <= speed) {
@@ -2698,8 +2698,8 @@ uint32_t __cdecl offense_proto(uint32_t proto_id, int veh_id_def, BOOL is_bombar
 		}
 		return (veh_id_def < 0) ? off_rating : off_rating * 8; // conventional
 	}
-	return (veh_id_def < 0) ? Rules->PsiCombatRatioAtk[TRIAD_LAND] : // PSI
-		Rules->PsiCombatRatioAtk[get_triad(veh_id_def)] * 8;
+	return (veh_id_def < 0) ? Rules->psi_combat_ratio_atk[TRIAD_LAND] : // PSI
+		Rules->psi_combat_ratio_atk[get_triad(veh_id_def)] * 8;
 }
 
 /*
@@ -2723,8 +2723,8 @@ uint32_t __cdecl armor_proto(uint32_t proto_id, int veh_id_atk, BOOL is_bombard)
 		uint32_t def_rating = range(Armor[VehPrototypes[proto_id].armor_id].defense_rating, 1, 9999);
 		return (veh_id_atk < 0) ? def_rating : def_rating * 8; // conventional
 	}
-	return (veh_id_atk < 0) ? Rules->PsiCombatRatioDef[TRIAD_LAND] : // PSI
-		Rules->PsiCombatRatioDef[get_proto_triad(proto_id)] * 8;
+	return (veh_id_atk < 0) ? Rules->psi_combat_ratio_def[TRIAD_LAND] : // PSI
+		Rules->psi_combat_ratio_def[get_proto_triad(proto_id)] * 8;
 }
 
 /*
@@ -2768,7 +2768,7 @@ uint32_t __cdecl speed_proto(uint32_t proto_id) {
 			speed_val /= 2; // 2nd penalty for air transports: -50%
 		}
 	}
-	return range(speed_val, 1, 99) * Rules->MoveRateRoads;
+	return range(speed_val, 1, 99) * Rules->move_rate_roads;
 }
 
 /*
@@ -2787,16 +2787,16 @@ uint32_t __cdecl speed(uint32_t veh_id, BOOL skip_morale) {
 	uint32_t speed_val = speed_proto(proto_id);
 	uint8_t triad = get_proto_triad(proto_id);
 	if (triad == TRIAD_SEA && has_project(SP_MARITIME_CONTROL_CENTER, Vehs[veh_id].faction_id)) {
-		speed_val += Rules->MoveRateRoads * 2;
+		speed_val += Rules->move_rate_roads * 2;
 	}
 	if (!skip_morale && morale_veh(veh_id, true, 0) == MORALE_ELITE
 		&& (proto_id >= MaxVehProtoFactionNum
 			|| Weapon[VehPrototypes[proto_id].weapon_id].offense_rating >= 0)) {
-		speed_val += Rules->MoveRateRoads;
+		speed_val += Rules->move_rate_roads;
 	}
 	if (Vehs[veh_id].dmg_incurred && triad != TRIAD_AIR) {
 		// optimized code without changes to logic
-        uint32_t moves = speed_val / Rules->MoveRateRoads;
+        uint32_t moves = speed_val / Rules->move_rate_roads;
         uint32_t reactor_fac;
 		if (VehPrototypes[proto_id].plan == PLAN_ALIEN_ARTIFACT) {
 			speed_val = reactor_fac = 1;
@@ -2806,7 +2806,7 @@ uint32_t __cdecl speed(uint32_t veh_id, BOOL skip_morale) {
 		}
 		speed_val = (moves 
             * range(reactor_fac - Vehs[veh_id].dmg_incurred, 0, 9999) + speed_val - 1) / speed_val;
-		speed_val = range(speed_val, (triad == TRIAD_SEA) ? 2 : 1, 999) * Rules->MoveRateRoads;
+		speed_val = range(speed_val, (triad == TRIAD_SEA) ? 2 : 1, 999) * Rules->move_rate_roads;
 	}
 	return speed_val;
 }
@@ -2842,12 +2842,12 @@ uint32_t __cdecl prototype_factor(uint32_t proto_id) {
     uint8_t triad = get_proto_triad(proto_id);
     switch (triad) {
       case TRIAD_SEA:
-        return Rules->ExtraPctCostProtoSea;
+        return Rules->extra_pct_cost_proto_sea;
       case TRIAD_AIR:
-        return Rules->ExtraPctCostProtoAir;
+        return Rules->extra_pct_cost_proto_air;
       case TRIAD_LAND:
       default:
-        return Rules->ExtraPctCostProtoLand;
+        return Rules->extra_pct_cost_proto_land;
     }
 }
 
@@ -2934,7 +2934,7 @@ int __cdecl veh_wake(uint32_t veh_id) {
 	uint32_t state = Vehs[veh_id].state;
 	if (order >= ORDER_FARM && order < ORDER_MOVE_TO && !(state & VSTATE_CRAWLING)) {
 		// TODO bug fix: Issue with moves_expended size / speed return, see veh_skip()
-		Vehs[veh_id].moves_expended = (uint8_t)(speed(veh_id, false) - Rules->MoveRateRoads);
+		Vehs[veh_id].moves_expended = (uint8_t)(speed(veh_id, false) - Rules->move_rate_roads);
 		int terra_turns = Vehs[veh_id].terraforming_turns;
 		if (terra_turns) {
 			terra_turns -= contribution(veh_id, order - 4);

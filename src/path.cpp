@@ -159,7 +159,7 @@ int Path::move(int vehID, int factionID) {
 	}
 	else {
 		uint32_t vehMoves = veh_moves(vehID);
-		if (vehMoves <= Rules->MoveRateRoads) {
+		if (vehMoves <= Rules->move_rate_roads) {
 			flags |= 0x100;
 			if (vehMoves <= (uint32_t)((Vehs[vehID].proto_id != BSC_MIND_WORMS) + 1)) {
 				flags |= 0x100;
@@ -415,7 +415,7 @@ BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
 						|| climate_at(x, y) == RAINFALL_ARID
 						|| !(bit & BIT_FUNGUS) || !is_ocean(x, y)) 
 					&& (!(bit & BIT_FUNGUS) || (!is_ocean(x, y) 
-						&& has_tech(Rules->TechImproveFungusSqr, factionID)))) {
+						&& has_tech(Rules->tech_improve_fungus_sqr, factionID)))) {
 					uint32_t flags = 0;
 					for (uint32_t i = 0; i < 25; i++) {
 						int xRadius = xrange(x + RadiusOffsetX[i]);

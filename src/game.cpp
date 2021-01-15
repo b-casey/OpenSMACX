@@ -88,9 +88,9 @@ void __cdecl clear_scenario() {
 	*ObjectivesSuddenDeathVictory = 9999;
 	*ObjectiveAchievePts = 0;
 	*VictoryAchieveBonusPts = 0;
-	*StartingMissionYear = Rules->NormalStartingYear;
+	*StartingMissionYear = Rules->normal_starting_year;
 	*EndingMissionYear = *DiffLevelCurrent < DLVL_LIBRARIAN
-		? Rules->NormalEndYearLowThreeDiff : Rules->NormalEndYearHighThreeDiff;
+		? Rules->normal_end_year_low_three_diff : Rules->normal_end_year_high_three_diff;
 }
 
 /*

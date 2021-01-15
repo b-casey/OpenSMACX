@@ -312,12 +312,12 @@ struct RulesChassis {
 	LPSTR defsv_1_name;
 	LPSTR defsv_2_name;
 	LPSTR defsv_lrg_name;
-	int offsv_1_gender;
-	int offsv_2_gender;
-	int offsv_lrg_gender;
-	int defsv_1_gender;
-	int defsv_2_gender;
-	int defsv_lrg_gender;
+	uint32_t offsv_1_gender;
+    uint32_t offsv_2_gender;
+    uint32_t offsv_lrg_gender;
+    uint32_t defsv_1_gender;
+    uint32_t defsv_2_gender;
+    uint32_t defsv_lrg_gender;
 	BOOL offsv_1_plural;
 	BOOL offsv_2_plural;
 	BOOL offsv_lrg_plural;

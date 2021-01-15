@@ -167,7 +167,7 @@ enum AiGoalTypes {
 	AI_GOAL_SENSOR_ARRAY = 121,                                   // 0111 1001
 };
 
-enum SocialCategories {
+enum SocialCategoriesId {
 	SOCIAL_CAT_POLITICS = 0,
 	SOCIAL_CAT_ECONOMICS = 1,
 	SOCIAL_CAT_VALUES = 2,

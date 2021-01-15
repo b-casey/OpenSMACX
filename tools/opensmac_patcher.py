@@ -76,19 +76,19 @@ with open(exe_path, "r+b") as f:
 	bin_app.seek(0x00185E30) # ?read_tech@@YAHXZ
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*110))
-	bin_app.seek(0x00185FE0) # ?clear_faction@@YAXPAUplayer@@@Z
+	bin_app.seek(0x00185FE0) # ?clear_faction@@YAXPAUPlayer@@@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*111))
-	bin_app.seek(0x00186050) # ?read_faction@@YAXH@Z
+	bin_app.seek(0x00186050) # ?read_faction@@YAXI@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*112))
-	bin_app.seek(0x00186090) # ?read_faction@@YAXPAUplayer@@H@Z
+	bin_app.seek(0x00186090) # ?read_faction@@YAXPAUPlayer@@H@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*113))
 	bin_app.seek(0x00186F30) # ?read_factions@@YAHXZ
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*114))
-	bin_app.seek(0x001871D0) # ?noun_item@@YAXPAH0@Z
+	bin_app.seek(0x001871D0) # ?noun_item@@YAXPAIPAH@Z
 	patch_call_bytes(bin_app)
 	bin_app.write(struct.pack("<L", addr+4*115))
 	bin_app.seek(0x00187240) # ?read_units@@YAHXZ
