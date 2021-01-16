@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,13 +18,13 @@
 #include "stdafx.h"
 
 BOOL APIENTRY DllMain(HMODULE UNUSED(hModule), uint32_t  ul_reason_for_call,
-	LPVOID UNUSED(lpReserved)) {
-	switch (ul_reason_for_call) {
-	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-		break;
-	}
-	return true;
+    LPVOID UNUSED(lpReserved)) {
+    switch (ul_reason_for_call) {
+    case DLL_PROCESS_ATTACH:
+    case DLL_THREAD_ATTACH:
+    case DLL_THREAD_DETACH:
+    case DLL_PROCESS_DETACH:
+        break;
+    }
+    return true;
 }

@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,15 +25,15 @@ Return Value: Was there an error? true/false
 Status: Complete
 */
 BOOL Strings::init(size_t memSize) {
-	if (isPopulated) {
-		shutdown();
-	}
-	if (Heap::init(memSize)) {
-		return true; // allocation failed
-	}
-	put("-Nil-");
-	isPopulated = true;
-	return false; // successful
+    if (isPopulated) {
+        shutdown();
+    }
+    if (Heap::init(memSize)) {
+        return true; // allocation failed
+    }
+    put("-Nil-");
+    isPopulated = true;
+    return false; // successful
 }
 
 /*
@@ -43,8 +43,8 @@ Return Value: n/a
 Status: Complete
 */
 void Strings::shutdown() {
-	Heap::shutdown();
-	isPopulated = false;
+    Heap::shutdown();
+    isPopulated = false;
 }
 
 /*
@@ -54,10 +54,10 @@ Return Value: Address of stored string
 Status: Complete
 */
 LPSTR Strings::put(LPCSTR input) {
-	int len = strlen(input) + 1;
-	LPSTR tableAddr = LPSTR(Heap::get(len));
-	strcpy_s(tableAddr, len, input);
-	return tableAddr;
+    int len = strlen(input) + 1;
+    LPSTR tableAddr = LPSTR(Heap::get(len));
+    strcpy_s(tableAddr, len, input);
+    return tableAddr;
 }
 
 /*
@@ -67,13 +67,13 @@ Return Value: Address of stored string
 Status: Complete
 */
 LPSTR Strings::get(int address) {
-	// checking if ptr is after base
-	if ((LPVOID)address > getBasePtr()) {
-		// checking ptr is not after end of table
-		return ((LPSTR)address <= LPSTR(size_t(getBasePtr()) + getBaseSize())) ?
-			(LPSTR)address : NULL;
-	}
-	return LPSTR(getBasePtr()); // return base
+    // checking if ptr is after base
+    if ((LPVOID)address > getBasePtr()) {
+        // checking ptr is not after end of table
+        return ((LPSTR)address <= LPSTR(size_t(getBasePtr()) + getBaseSize())) ?
+            (LPSTR)address : NULL;
+    }
+    return LPSTR(getBasePtr()); // return base
 }
 
 // global

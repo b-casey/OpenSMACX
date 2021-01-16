@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,36 +21,36 @@
   * Font class
   */
 class OPENSMACX_API Font {
-	int unk_1; // height offset? set outside of class functions
-	BOOL isFotSet; // used only by both init() functions
-	HFONT fontObj;
-	int lineHeight;
-	int height;
-	int internalLeading;
-	int ascent;
-	int descent;
-	int pad; // padding? no references
-	LPSTR fotFileName;
+    int unk_1; // height offset? set outside of class functions
+    BOOL isFotSet; // used only by both init() functions
+    HFONT fontObj;
+    int lineHeight;
+    int height;
+    int internalLeading;
+    int ascent;
+    int descent;
+    int pad; // padding? no references
+    LPSTR fotFileName;
 
 public:
-	Font() : unk_1(-1), isFotSet(0), fontObj(0), lineHeight(0), height(0), ascent(0), descent(0),
-		fotFileName(0) { } // 00618EA0
-	Font(LPSTR fontName, int lfHeight, int style) { init(fontName, lfHeight, style); } // 00618EC0
-	~Font() { close(); } // 00618EE0
+    Font() : unk_1(-1), isFotSet(0), fontObj(0), lineHeight(0), height(0), ascent(0), descent(0),
+        fotFileName(0) { } // 00618EA0
+    Font(LPSTR fontName, int lfHeight, int style) { init(fontName, lfHeight, style); } // 00618EC0
+    ~Font() { close(); } // 00618EE0
 
-	// int UNK1(int, int, int, int) { return 1; } // no direct references
-	int init(LPCSTR fontName, int lfHeight, uint32_t style);
-	int init(LPCSTR file, LPCSTR fontName, int lfHeight, uint32_t style);
-	void close();
-	int width(LPSTR input);
-	int width(LPSTR input, int maxLen);
-	LPSTR find_line_break_l(LPSTR input, int *breakLen, size_t len);
+    // int UNK1(int, int, int, int) { return 1; } // no direct references
+    int init(LPCSTR fontName, int lfHeight, uint32_t style);
+    int init(LPCSTR file, LPCSTR fontName, int lfHeight, uint32_t style);
+    void close();
+    int width(LPSTR input);
+    int width(LPSTR input, int maxLen);
+    LPSTR find_line_break_l(LPSTR input, int *breakLen, size_t len);
 
-	// eventually make atomic for thread safety
-	static HDC FontHDC;
-	static int FontInitCount;
-	static int __cdecl init_font_class(Font *font);
-	static void __cdecl close_font_class();
+    // eventually make atomic for thread safety
+    static HDC FontHDC;
+    static int FontInitCount;
+    static int __cdecl init_font_class(Font *font);
+    static void __cdecl close_font_class();
 };
 
 // global

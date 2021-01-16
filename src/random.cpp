@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,13 +33,13 @@ Return Value: Random uint32_t value within bounds
 Status: Complete
 */
 uint32_t Random::get(uint32_t min, uint32_t max) {
-	if (min > max) {
-		uint32_t temp = min;
-		min = max;
-		max = temp;
-	}
-	seed = seed * 0x19660D + 0x3C6EF35F;
-	return (((max - min) * LOWORD(seed)) >> 16) + min;
+    if (min > max) {
+        uint32_t temp = min;
+        min = max;
+        max = temp;
+    }
+    seed = seed * 0x19660D + 0x3C6EF35F;
+    return (((max - min) * LOWORD(seed)) >> 16) + min;
 }
 
 /*
@@ -49,9 +49,9 @@ Return Value: Random double value
 Status: Complete
 */
 double Random::get() {
-	seed = seed * 0x19660D + 0x3C6EF35F;
-	uint32_t temp = (seed & 0x7FFFFF) | 0x3F800000; // FPU logic?
-	return *reinterpret_cast<double *>(&temp) - 1.0;
+    seed = seed * 0x19660D + 0x3C6EF35F;
+    uint32_t temp = (seed & 0x7FFFFF) | 0x3F800000; // FPU logic?
+    return *reinterpret_cast<double *>(&temp) - 1.0;
 }
 
 // global

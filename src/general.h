@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,11 +21,11 @@
   * General related objects, variables and functions.
   */
 struct Filefind {
-	char cdPath[256];   // internal
-	char altPath[256];  // internal
-	char lastPath[256]; // used globally
-	char exeDir[256];   // internal
-	char relativePath[256]; // internal
+    char cdPath[256];   // internal
+    char altPath[256];  // internal
+    char lastPath[256]; // used globally
+    char exeDir[256];   // internal
+    char relativePath[256]; // internal
 };
 
 extern uint32_t ScenEditorUndoPosition;

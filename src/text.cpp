@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,16 +30,16 @@ Return Value: Non-zero error (4); 0 no errors
 Status: Complete
 */
 int Text::init(size_t size) {
-	shutdown();
-	bufferGet = (LPSTR)mem_get(size);
-	if (!bufferGet) {
-		return 4;
-	}
-	bufferItem = (LPSTR)mem_get(size);
-	if (!bufferItem) {
-		return 4;
-	}
-	return 0;
+    shutdown();
+    bufferGet = (LPSTR)mem_get(size);
+    if (!bufferGet) {
+        return 4;
+    }
+    bufferItem = (LPSTR)mem_get(size);
+    if (!bufferItem) {
+        return 4;
+    }
+    return 0;
 }
 
 /*
@@ -49,15 +49,15 @@ Return Value: n/a
 Status: Complete
 */
 void Text::shutdown() {
-	close();
-	if (bufferGet) {
-		free(bufferGet);
-		bufferGet = 0;
-	}
-	if (bufferItem) {
-		free(bufferItem);
-		bufferItem = 0;
-	}
+    close();
+    if (bufferGet) {
+        free(bufferGet);
+        bufferGet = 0;
+    }
+    if (bufferItem) {
+        free(bufferItem);
+        bufferItem = 0;
+    }
 }
 
 /*
@@ -67,10 +67,10 @@ Return Value: n/a
 Status: Complete
 */
 void Text::close() {
-	if (textFile) {
-		fclose(textFile);
-		textFile = 0;
-	}
+    if (textFile) {
+        fclose(textFile);
+        textFile = 0;
+    }
 }
 
 /*
@@ -80,62 +80,62 @@ Return Value: Was there an error? true/false
 Status: Complete
 */
 BOOL Text::open(LPCSTR srcFileID, LPCSTR sectionID) {
-	BOOL isFileOpen = false; // open / possibly tracker for reading through whole file?
-	if (srcFileID) {
-		strcpy_s(fileName, 80, srcFileID);
-		if (!strchr(fileName, '.')) {
-			strcat_s(fileName, 80, ".txt");
-		}
-		close();
-		textFile = env_open(fileName, "rt");
-		if (!textFile) {
-			return true;
-		}
-		strcpy_s(filePath, 256, FilefindPath->lastPath);
-	}
-	else if (textFile) {
-		isFileOpen = true;
-	}
-	else {
-		textFile = env_open(fileName, "rt");
-		if (!textFile) {
-			return true;
-		}
-		strcpy_s(filePath, 256, FilefindPath->lastPath);
-	}
-	if (!sectionID) {
-		return false;
-	}
+    BOOL isFileOpen = false; // open / possibly tracker for reading through whole file?
+    if (srcFileID) {
+        strcpy_s(fileName, 80, srcFileID);
+        if (!strchr(fileName, '.')) {
+            strcat_s(fileName, 80, ".txt");
+        }
+        close();
+        textFile = env_open(fileName, "rt");
+        if (!textFile) {
+            return true;
+        }
+        strcpy_s(filePath, 256, FilefindPath->lastPath);
+    }
+    else if (textFile) {
+        isFileOpen = true;
+    }
+    else {
+        textFile = env_open(fileName, "rt");
+        if (!textFile) {
+            return true;
+        }
+        strcpy_s(filePath, 256, FilefindPath->lastPath);
+    }
+    if (!sectionID) {
+        return false;
+    }
 
-	int seekAddr = text_search_index(fileName, sectionID);
-	if (seekAddr >= 0) {
-		log_say("Seeking to", sectionID, seekAddr, 0, 0);
-		fseek(textFile, seekAddr, SEEK_SET);
-		isFileOpen = true;
-	}
+    int seekAddr = text_search_index(fileName, sectionID);
+    if (seekAddr >= 0) {
+        log_say("Seeking to", sectionID, seekAddr, 0, 0);
+        fseek(textFile, seekAddr, SEEK_SET);
+        isFileOpen = true;
+    }
 
-	std::string sectHeader("#");
-	sectHeader += sectionID;
-	do {
-		if (feof(textFile)) {
-			if (isFileOpen) {
-				isFileOpen = false;
-				rewind(textFile);
-			}
-			else {
-				close();
-				return true;
-			}
-		}
-		if (!fgets(bufferGet, 511, textFile)) {
-			close();
-			return true;
-		}
-		kill_lf(bufferGet);
-		purge_spaces(bufferGet);
-	} while (_stricmp(sectHeader.c_str(), bufferGet));
-	currentPos = bufferGet;
-	return false;
+    std::string sectHeader("#");
+    sectHeader += sectionID;
+    do {
+        if (feof(textFile)) {
+            if (isFileOpen) {
+                isFileOpen = false;
+                rewind(textFile);
+            }
+            else {
+                close();
+                return true;
+            }
+        }
+        if (!fgets(bufferGet, 511, textFile)) {
+            close();
+            return true;
+        }
+        kill_lf(bufferGet);
+        purge_spaces(bufferGet);
+    } while (_stricmp(sectHeader.c_str(), bufferGet));
+    currentPos = bufferGet;
+    return false;
 }
 
 /*
@@ -145,19 +145,19 @@ Return Value: Pointer to string
 Status: Complete
 */
 LPSTR Text::get() {
-	if (feof(textFile)) {
-		bufferGet[0] = 0;
-		return NULL;
-	}
-	if (fgets(bufferGet, 511, textFile)) {
-		kill_lf(bufferGet);
-		purge_spaces(bufferGet);
-		currentPos = bufferGet;
-	}
-	else {
-		bufferGet[0] = 0;
-	}
-	return bufferGet;
+    if (feof(textFile)) {
+        bufferGet[0] = 0;
+        return NULL;
+    }
+    if (fgets(bufferGet, 511, textFile)) {
+        kill_lf(bufferGet);
+        purge_spaces(bufferGet);
+        currentPos = bufferGet;
+    }
+    else {
+        bufferGet[0] = 0;
+    }
+    return bufferGet;
 }
 
 /*
@@ -167,7 +167,7 @@ Return Value: Pointer to string
 Status: Complete
 */
 LPSTR Text::string() {
-	return StringTable->put(get());
+    return StringTable->put(get());
 }
 
 /*
@@ -177,16 +177,16 @@ Return Value: Pointer to string
 Status: Complete
 */
 LPSTR Text::item() {
-	LPSTR lpParse = bufferItem;
-	while (*currentPos != 0 && *currentPos != ',') {
-		*lpParse++ = *currentPos++;
-	}
-	*lpParse = 0;
-	if (*currentPos) {
-		*currentPos++;
-	}
-	purge_spaces(bufferItem);
-	return bufferItem;
+    LPSTR lpParse = bufferItem;
+    while (*currentPos != 0 && *currentPos != ',') {
+        *lpParse++ = *currentPos++;
+    }
+    *lpParse = 0;
+    if (*currentPos) {
+        *currentPos++;
+    }
+    purge_spaces(bufferItem);
+    return bufferItem;
 }
 
 /*
@@ -196,7 +196,7 @@ Return Value: Pointer to string from string table
 Status: Complete
 */
 LPSTR Text::item_string() {
-	return StringTable->put(item());
+    return StringTable->put(item());
 }
 
 /*
@@ -206,7 +206,7 @@ Return Value: Pointer to string from string table
 Status: Complete
 */
 int Text::item_number() {
-	return stoi(item());
+    return stoi(item());
 }
 
 /*
@@ -216,7 +216,7 @@ Return Value: Pointer to string from string table
 Status: Complete
 */
 int Text::item_binary() {
-	return btoi(item());
+    return btoi(item());
 }
 
 /*
@@ -226,7 +226,7 @@ Return Value: Pointer to string from string table
 Status: Complete
 */
 int Text::item_hex() {
-	return htoi(item());
+    return htoi(item());
 }
 
 // global
@@ -245,7 +245,7 @@ void __cdecl text_set_item_ptr() { *TextBufferItemPtr = Txt->getBufferItem(); } 
 void __cdecl text_close() { Txt->close(); } // 005FD530
 
 BOOL __cdecl text_open(LPCSTR srcID, LPCSTR sectionID) { // 005FD550
-	return Txt->open(srcID, sectionID);
+    return Txt->open(srcID, sectionID);
 }
 
 LPSTR __cdecl text_get() { return Txt->get(); } // 005FD570
@@ -263,5 +263,5 @@ int __cdecl text_item_binary() { return Txt->item_binary(); } // 005FD7A0
 int __cdecl text_item_hex() { return Txt->item_hex(); } // 005FD800
 
 int __cdecl text_get_number(int min, int max) { // 00585120
-	text_get(); return range(text_item_number(), min, max);
+    text_get(); return range(text_item_number(), min, max);
 }

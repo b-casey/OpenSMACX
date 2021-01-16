@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,24 +21,24 @@
   * FileMap class: Handles file IO operations.
   */
 class OPENSMACX_API Filemap {
-	LPVOID mapViewAddr; // (+0)
-	HANDLE hFile;       // (+4)
-	HANDLE hFileMap;    // (+8)
-	uint32_t fileSize;     // (+12)
+    LPVOID mapViewAddr; // (+0)
+    HANDLE hFile;       // (+4)
+    HANDLE hFileMap;    // (+8)
+    uint32_t fileSize;     // (+12)
 
 public:
-	Filemap() : mapViewAddr(NULL), hFile(INVALID_HANDLE_VALUE), hFileMap(NULL),
-		fileSize(0) { }      // 00628380
-	~Filemap() { close(); }  // 006283E0
+    Filemap() : mapViewAddr(NULL), hFile(INVALID_HANDLE_VALUE), hFileMap(NULL),
+        fileSize(0) { }      // 00628380
+    ~Filemap() { close(); }  // 006283E0
 
-	Filemap *init(LPCSTR fileName, BOOL isSequential);
-	Filemap *init(LPCSTR fileName);
-	LPVOID open_read(LPCSTR fileName, BOOL isSequential);
-	LPVOID open(LPCSTR fileName, BOOL isSequential);
-	LPVOID create(LPCSTR fileName, uint32_t size, BOOL isSequential);
-	void close();
-	void close(LPVOID newAddr);
+    Filemap *init(LPCSTR fileName, BOOL isSequential);
+    Filemap *init(LPCSTR fileName);
+    LPVOID open_read(LPCSTR fileName, BOOL isSequential);
+    LPVOID open(LPCSTR fileName, BOOL isSequential);
+    LPVOID create(LPCSTR fileName, uint32_t size, BOOL isSequential);
+    void close();
+    void close(LPVOID newAddr);
 
-	// additional functions to assist with encapsulation
-	uint32_t getSize() { return fileSize; }
+    // additional functions to assist with encapsulation
+    uint32_t getSize() { return fileSize; }
 };

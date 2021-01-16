@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,44 +22,44 @@
   * Text class: Handles basic text operations.
   */
 class OPENSMACX_API Text {
-	char fileName[80];  // (+0)    : stores text filename string
-	char filePath[256]; // (+0x50) : stores path of last opened file
-	LPSTR currentPos;   // (+0x150)
-	FILE *textFile;     // (+0x154)
-	LPSTR bufferGet;    // (+0x158)
-	LPSTR bufferItem;   // (+0x15C)
+    char fileName[80];  // (+0)    : stores text filename string
+    char filePath[256]; // (+0x50) : stores path of last opened file
+    LPSTR currentPos;   // (+0x150)
+    FILE *textFile;     // (+0x154)
+    LPSTR bufferGet;    // (+0x158)
+    LPSTR bufferItem;   // (+0x15C)
 
 public:
-	Text() : currentPos(0), textFile(0), bufferGet(0), bufferItem(0) { // 005FD860
-		fileName[0] = 0;
-		filePath[0] = 0;
-	}
-	Text(size_t size) : currentPos(0), textFile(0), bufferGet(0), bufferItem(0) { // 005FD880
-		fileName[0] = 0; filePath[0] = 0;
-		bufferGet = (LPSTR)mem_get(size);
-		if (bufferGet) {
-			bufferItem = (LPSTR)mem_get(size);
-		}
-	}
-	~Text() { shutdown(); } // 00608C00
+    Text() : currentPos(0), textFile(0), bufferGet(0), bufferItem(0) { // 005FD860
+        fileName[0] = 0;
+        filePath[0] = 0;
+    }
+    Text(size_t size) : currentPos(0), textFile(0), bufferGet(0), bufferItem(0) { // 005FD880
+        fileName[0] = 0; filePath[0] = 0;
+        bufferGet = (LPSTR)mem_get(size);
+        if (bufferGet) {
+            bufferItem = (LPSTR)mem_get(size);
+        }
+    }
+    ~Text() { shutdown(); } // 00608C00
 
-	int init(size_t size);
-	void shutdown();
-	void close();
-	BOOL open(LPCSTR srcID, LPCSTR sectionID);
-	LPSTR get();
-	LPSTR string();
-	LPSTR item();
-	LPSTR item_string();
-	int item_number();
-	int item_binary();
-	int item_hex();
+    int init(size_t size);
+    void shutdown();
+    void close();
+    BOOL open(LPCSTR srcID, LPCSTR sectionID);
+    LPSTR get();
+    LPSTR string();
+    LPSTR item();
+    LPSTR item_string();
+    int item_number();
+    int item_binary();
+    int item_hex();
 
-	// additional functions to assist with encapsulation
-	LPSTR update() { currentPos = bufferGet; return bufferGet; }
-	LPSTR getFilePath() { return filePath; }
-	LPSTR getBufferItem() { return bufferItem; }
-	LPSTR getBufferGet() { return bufferGet; }
+    // additional functions to assist with encapsulation
+    LPSTR update() { currentPos = bufferGet; return bufferGet; }
+    LPSTR getFilePath() { return filePath; }
+    LPSTR getBufferItem() { return bufferItem; }
+    LPSTR getBufferGet() { return bufferGet; }
 };
 
 // global

@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,11 +35,11 @@ Return Value: None
 Status: Complete
 */
 void __cdecl purge_trailing(LPSTR input) {
-	LPSTR trim = input + strlen(input);
-	while ((*(trim - 1) - ' ') == 0 && (trim != input)) {
-		*trim--;
-	}
-	input[(trim - input)] = 0;
+    LPSTR trim = input + strlen(input);
+    while ((*(trim - 1) - ' ') == 0 && (trim != input)) {
+        *trim--;
+    }
+    input[(trim - input)] = 0;
 }
 
 /*
@@ -49,11 +49,11 @@ Return Value: None
 Status: Complete
 */
 void __cdecl purge_leading(LPSTR input) {
-	LPSTR trim = input;
-	while ((*trim - ' ') == 0 && *trim != 0) {
-		*trim++;
-	}
-	strcpy_s(input, strlen(input) + 1, trim);
+    LPSTR trim = input;
+    while ((*trim - ' ') == 0 && *trim != 0) {
+        *trim++;
+    }
+    strcpy_s(input, strlen(input) + 1, trim);
 }
 
 /*
@@ -63,8 +63,8 @@ Return Value: None
 Status: Complete
 */
 void __cdecl purge_spaces(LPSTR input) {
-	purge_leading(input);
-	purge_trailing(input);
+    purge_leading(input);
+    purge_trailing(input);
 }
 
 /*
@@ -74,24 +74,24 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl kill_lf(LPSTR str) {
-	LPSTR newlineLoc = strrchr(str, '\n');
-	if (newlineLoc) {
-		*newlineLoc = 0;
-	}
+    LPSTR newlineLoc = strrchr(str, '\n');
+    if (newlineLoc) {
+        *newlineLoc = 0;
+    }
 }
 
 /*
 Purpose: Remove newline (Windows: CR LF). Fixes bug with TextIndex having CR at end "HEADER\r"
-		 breaking compare. This is because it uses Filemap vs fopen(x, "rt").
+         breaking compare. This is because it uses Filemap vs fopen(x, "rt").
 Original Offset: n/a
 Return Value: n/a
 Status: Complete
 */
 void __cdecl kill_nl(LPSTR str) {
-	LPSTR newlineLoc = strstr(str, "\r\n");
-	if (newlineLoc) {
-		*newlineLoc = 0;
-	}
+    LPSTR newlineLoc = strstr(str, "\r\n");
+    if (newlineLoc) {
+        *newlineLoc = 0;
+    }
 }
 
 /*
@@ -101,9 +101,9 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl add_lf(LPSTR str) {
-	int len = strlen(str);
-	str[len] = '\n';
-	str[len + 1] = 0;
+    int len = strlen(str);
+    str[len] = '\n';
+    str[len + 1] = 0;
 }
 
 /*
@@ -113,13 +113,13 @@ Return Value: Bounded input
 Status: Complete
 */
 int __cdecl range(int input, int min, int max) {
-	if (input < min || max < min) {
-		return min;
-	}
-	if (input > max) {
-		return max;
-	}
-	return input;
+    if (input < min || max < min) {
+        return min;
+    }
+    if (input > max) {
+        return max;
+    }
+    return input;
 }
 
 /*
@@ -127,56 +127,56 @@ Purpose: Allocate memory with error checking
 Original Offset: 005D4510
 Return Value: Pointer to allocated memory
 Status: Complete with two versions of malloc to prevent crash. Incompatibility with
-		newer SDK version of malloc CRT. Revisit once more code is redirected to dll.
+        newer SDK version of malloc CRT. Revisit once more code is redirected to dll.
 */
 LPVOID __cdecl mem_get_old(size_t size) {
-	LPVOID result = _malloc(size);
-	if (!result) {
-		MessageBoxA(NULL,
-			"Windows has run out of virtual memory; the game will exit. "
-			"Recommendations: defragment your hard drive; use Control Panel "
-			"(System/Performance/Virtual Memory) to increase your virtual memory to at least 128MB",
-			"FATAL ERROR", MB_ICONWARNING);
-		exit(4);
-	}
-	return result;
+    LPVOID result = _malloc(size);
+    if (!result) {
+        MessageBoxA(NULL,
+            "Windows has run out of virtual memory; the game will exit. "
+            "Recommendations: defragment your hard drive; use Control Panel "
+            "(System/Performance/Virtual Memory) to increase your virtual memory to at least 128MB",
+            "FATAL ERROR", MB_ICONWARNING);
+        exit(4);
+    }
+    return result;
 }
 
 LPVOID __cdecl mem_get(size_t size) {
-	LPVOID result = malloc(size);
-	if (!result) {
-		MessageBoxA(NULL,
-			"Windows has run out of virtual memory; the game will exit. "
-			"Recommendations: defragment your hard drive; use Control Panel "
-			"(System/Performance/Virtual Memory) to increase your virtual memory to at least 128MB",
-			"FATAL ERROR", MB_ICONWARNING);
-		exit(4);
-	}
-	return result;
+    LPVOID result = malloc(size);
+    if (!result) {
+        MessageBoxA(NULL,
+            "Windows has run out of virtual memory; the game will exit. "
+            "Recommendations: defragment your hard drive; use Control Panel "
+            "(System/Performance/Virtual Memory) to increase your virtual memory to at least 128MB",
+            "FATAL ERROR", MB_ICONWARNING);
+        exit(4);
+    }
+    return result;
 }
 /*
 Purpose: Checks file paths, opens file
 Original Offset: 00634BB0
 Return Value: FILE ptr
 Status: Complete with two versions of fopen to prevent crash. Incompatibility with
-		newer SDK version of fopen/fopen_s. Revisit once more code is redirected to dll.
+        newer SDK version of fopen/fopen_s. Revisit once more code is redirected to dll.
 */
 FILE *__cdecl env_open_old(LPCSTR source, LPCSTR mode) {
-	LPCSTR srcCheck = filefind_get(source);
-	if (!srcCheck) {
-		srcCheck = source;
-	}
-	return _fopen(srcCheck, mode);
+    LPCSTR srcCheck = filefind_get(source);
+    if (!srcCheck) {
+        srcCheck = source;
+    }
+    return _fopen(srcCheck, mode);
 }
 
 FILE *__cdecl env_open(LPCSTR source, LPCSTR mode) {
-	LPCSTR srcCheck = filefind_get(source);
-	if (!srcCheck) {
-		srcCheck = source;
-	}
-	FILE *fileOut;
-	fopen_s(&fileOut, srcCheck, mode);
-	return fileOut;
+    LPCSTR srcCheck = filefind_get(source);
+    if (!srcCheck) {
+        srcCheck = source;
+    }
+    FILE *fileOut;
+    fopen_s(&fileOut, srcCheck, mode);
+    return fileOut;
 }
 
 /*
@@ -186,8 +186,8 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl parse_set(int gender, BOOL plurality) {
-	*GenderDefault = gender;
-	*PluralityDefault = plurality;
+    *GenderDefault = gender;
+    *PluralityDefault = plurality;
 }
 
 /*
@@ -197,11 +197,11 @@ Return Value: 0: no errors; 3: error
 Status: Complete
 */
 int __cdecl parse_num(uint32_t id, int value) {
-	if (id > 9) {
-		return 3; // error
-	}
-	ParseNumTable[id] = value;
-	return 0;
+    if (id > 9) {
+        return 3; // error
+    }
+    ParseNumTable[id] = value;
+    return 0;
 }
 
 /*
@@ -211,19 +211,19 @@ Return Value: 0: no errors; 3: error
 Status: Complete
 */
 int __cdecl parse_say(uint32_t id, int input, int gender, int pluralality) {
-	if (id > 9) {
-		return 3;
-	}
-	if (gender < 0) {
-		gender = *GenderDefault;
-	}
-	ParseStrGender[id] = gender;
-	if (pluralality < 0) {
-		pluralality = *PluralityDefault;
-	}
-	ParseStrPlurality[id] = pluralality;
-	strcpy_s(ParseStrBuffer[id].str, 256, StringTable->get(input));
-	return 0;
+    if (id > 9) {
+        return 3;
+    }
+    if (gender < 0) {
+        gender = *GenderDefault;
+    }
+    ParseStrGender[id] = gender;
+    if (pluralality < 0) {
+        pluralality = *PluralityDefault;
+    }
+    ParseStrPlurality[id] = pluralality;
+    strcpy_s(ParseStrBuffer[id].str, 256, StringTable->get(input));
+    return 0;
 }
 
 /*
@@ -233,19 +233,19 @@ Return Value: 0: no errors; 3: error
 Status: Complete
 */
 int __cdecl parse_says(uint32_t id, LPCSTR input, int gender, int pluralality) {
-	if (!input || id > 9) {
-		return 3;
-	}
-	if (gender < 0) {
-		gender = *GenderDefault;
-	}
-	ParseStrGender[id] = gender;
-	if (pluralality < 0) {
-		pluralality = *PluralityDefault;
-	}
-	ParseStrPlurality[id] = pluralality;
-	strcpy_s(ParseStrBuffer[id].str, 256, input);
-	return 0;
+    if (!input || id > 9) {
+        return 3;
+    }
+    if (gender < 0) {
+        gender = *GenderDefault;
+    }
+    ParseStrGender[id] = gender;
+    if (pluralality < 0) {
+        pluralality = *PluralityDefault;
+    }
+    ParseStrPlurality[id] = pluralality;
+    strcpy_s(ParseStrBuffer[id].str, 256, input);
+    return 0;
 }
 
 /*
@@ -255,11 +255,11 @@ Return Value: int value of string
 Status: Complete
 */
 int __cdecl btoi(LPCSTR str) {
-	int result = 0;
-	while (*str == '0' || *str == '1') {
-		result = *str++ - '0' + 2 * result;
-	}
-	return result;
+    int result = 0;
+    while (*str == '0' || *str == '1') {
+        result = *str++ - '0' + 2 * result;
+    }
+    return result;
 }
 
 /*
@@ -269,18 +269,18 @@ Return Value: int value of string
 Status: Complete
 */
 int __cdecl htoi(LPCSTR str) {
-	int result = 0;
-	while (isxdigit(*str)) {
-		result *= 16;
-		if (isdigit(*str)) {
-			result += *str - '0';
-		}
-		else {
-			result += toupper(*str) - '7';
-		}
-		*str++;
-	}
-	return result;
+    int result = 0;
+    while (isxdigit(*str)) {
+        result *= 16;
+        if (isdigit(*str)) {
+            result += *str - '0';
+        }
+        else {
+            result += toupper(*str) - '7';
+        }
+        *str++;
+    }
+    return result;
 }
 
 /*
@@ -290,26 +290,26 @@ Return Value: int value of string
 Status: Complete
 */
 int __cdecl stoi(LPCSTR str) {
-	if (*str == '0') {
-		*str++;
-		switch (*str) {
-		case 'B':
-		case 'b':
-			*str++;
-			return btoi(str);
-		case 'X':
-		case 'x':
-			*str++;
-			return htoi(str);
-		case 'D':
-		case 'd':
-			*str++;
-			return atoi(str);
-		default:
-			return atoi(str);
-		}
-	}
-	return atoi(str);
+    if (*str == '0') {
+        *str++;
+        switch (*str) {
+        case 'B':
+        case 'b':
+            *str++;
+            return btoi(str);
+        case 'X':
+        case 'x':
+            *str++;
+            return htoi(str);
+        case 'D':
+        case 'd':
+            *str++;
+            return atoi(str);
+        default:
+            return atoi(str);
+        }
+    }
+    return atoi(str);
 }
 
 /*
@@ -319,35 +319,35 @@ Return Value: Pointer to first number, otherwise zero
 Status: Complete
 */
 LPSTR __cdecl findnum(LPSTR str) {
-	if (!str) {
-		return 0;
-	}
-	while ((*str < '0') || (*str > '9')) {
-		if (*str == 0) {
-			return 0;
-		}
-		*str++;
-	}
-	return str;
+    if (!str) {
+        return 0;
+    }
+    while ((*str < '0') || (*str > '9')) {
+        if (*str == 0) {
+            return 0;
+        }
+        *str++;
+    }
+    return str;
 }
 
 /*
 Purpose: Check to see if JACKAL lib version is up to date. Pretty pointless but might add OpenSMACX
-		 check in future.
+         check in future.
 Original Offset: 0062D570
 Return Value: Was there an error? true/false
 Status: Complete
 */
 BOOL __cdecl jackal_version_check(LPCSTR version) {
-	if (strcmp(version, "10.10")) {
-		MessageBoxA(NULL,
-			"The version of the JACKAL library you (Brian Reynolds) are attempting to use "
-			"is out of sync with the library headers! Please rebuild JACKAL.LIB...Bye!",
-			"Oh, such serious danger, William Robinson!!!",
-			MB_OK);
-		return true;
-	}
-	return false;
+    if (strcmp(version, "10.10")) {
+        MessageBoxA(NULL,
+            "The version of the JACKAL library you (Brian Reynolds) are attempting to use "
+            "is out of sync with the library headers! Please rebuild JACKAL.LIB...Bye!",
+            "Oh, such serious danger, William Robinson!!!",
+            MB_OK);
+        return true;
+    }
+    return false;
 }
 
 /*
@@ -357,279 +357,279 @@ Return Value: 0: no errors; 3: error
 Status: WIP
 */
 int __cdecl parse_string(LPSTR input, LPSTR output) {
-	if (!input || !output) { // EBX || ESI
-		return 3;
-	}
-	//LPSTR outputCopy = output;
-	LPSTR var; // EDI
-	do {
-		var = strstr(input, "$");
-		if (!var) {
-			break;
-		}
-		//LPSTR parsingInput = &input[1];
-		switch (var[1]) {
-		case '$': // done -> needs testing
-		{
-			int len = (var - input) + 1;
-			strncpy_s(output, 1024, input, len);
-			output += len;
-			input = var + 2;
-			*output = 0;
-		}
-		break;
-		case 'H': // done -> needs testing
-		{
-			if (strncmp(var, "$HEX", 4)) {
-				int number = var[4] - '0';
-				if (number > 9) {
-					return 14; // parse error
-				}
-				int len = var - input;
-				strncpy_s(output, 1024, input, len);
-				output += len;
-				*output = 0;
-				input = var + 5;
-				char outputNum[5];
-				_itoa_s(ParseNumTable[number], outputNum, 5, 10);
-				strcat_s(output, 1024, outputNum);
-				output += strlen(output);
-			}
-			else {
-				LPSTR num = findnum(var);
-				if (!num) {
-					break;
-				}
-				int number = num[0] - '0';
-				if (number > 9) {
-					return 14; // parse error
-				}
-				int len = (var - input) + 1;
-				strncpy_s(output, 1024, input, len);
-				output += len;
-				*output = 0;
-				input = num + 1;
-				strcat_s(output, 1024, ParseStrBuffer[number].str);
-				output += strlen(output);
-			}
-		}
-		break;
-		case 'N': // done -> needs testing
-		{
-			if (strncmp(var, "$NUMBER", 7)) {
-				int number = var[7] - '0';
-				if (number > 9) {
-					return 14; // parse error
-				}
-				int len = var - input;
-				strncpy_s(output, 1024, input, len);
-				output += len;
-				*output = 0;
-				input = var + 8;
-				char outputNum[5];
-				_itoa_s(ParseNumTable[number], outputNum, 5, 10);
-				strcat_s(output, 1024, outputNum);
-				output += strlen(output);
-			}
-			else if (strncmp(var, "$NUM", 4)) {
-				int number = var[4] - '0';
-				if (number > 9) {
-					return 14; // parse error
-				}
-				int len = var - input;
-				strncpy_s(output, 1024, input, len);
-				output += len;
-				*output = 0;
-				input = var + 5;
-				char outputNum[5];
-				_itoa_s(ParseNumTable[number], outputNum, 5, 10);
-				strcat_s(output, 1024, outputNum);
-				output += strlen(output);
-			}
-			else {
-				LPSTR num = findnum(var);
-				if (!num) {
-					break;
-				}
-				int number = num[0] - '0';
-				if (number > 9) {
-					return 14; // parse error
-				}
-				int len = var - input;
-				strncpy_s(output, 1024, input, len);
-				output += len;
-				*output = 0;
-				input = num + 1;
-				strcat_s(output, 1024, ParseStrBuffer[number].str);
-				output += strlen(output);
-			}
-		}
-		break;
-		case '<':
-		{
-			int len = var - input;
-			strncpy_s(output, 1024, input, len);
-			output += len;
-			*output = 0;
-			LPSTR endBracket = strstr(var, ">");
-			if (!endBracket) {
-				input = var + 1;
-				continue;
-			}
-			var += 2;
-			input = endBracket + 1;
-			purge_leading(var);
-			int gender;// , plural = 0, num = -1;
-			switch (var[0]) {
-			case 'M':
-			case 'm':
-			{
-				gender = 0;
-			}
-			break;
-			case 'F':
-			case 'f':
-			{
-				gender = 1;
-			}
-			break;
-			case 'N':
-			case 'n':
-			{
-				gender = 2;
-			}
-			break;
-			case '#':
-			{
-				//
-			}
-			break;
-			default:
-			{
-				//
-			}
-			break;
-			}
-			/*
-			else if (szGender == '#') {
-				nNum = var[1] - '0';
-				if (nNum > 9 || nNum < 0) {
-					break;
-				}
-				var++;
-				nPlural = (ParseNumTable[nNum] == 1) ? 0 : 1;
-			}
-			else {
-				nNum = szGender - '0';
-				if (nNum > 9 || nNum < 0) {
-					break;
-				}
-				nPlural = ParseStrPlurality[nNum];
-				nGender = ParseStrGender[nNum];
-			}
-			var++;
-			if (nNum < 0) {
-				if (isdigit(var[0])) {
-					nNum = var[0] - '1';
-					var++;
-				}
-			}
-			purge_leading(var);
-			if (var[0] == ':') {
-				var++;
-			}
-			// unfinished
-			*/
-		}
-		break;
-		case 'L': // done -> needs testing
-		{
-			if (strncmp(var, "$LINK<", 6)) {
-				LPSTR num = findnum(var);
-				if (!num) {
-					var = 0;
-					break;
-				}
-				int number = num[0] - '0';
-				if (number > 9) {
-					return 14; // parse error
-				}
-				int len = var - input;
-				strncpy_s(output, 1024, input, len);
-				output += len;
-				*output = 0;
-				input = num + 1;
-				strcat_s(output, 1024, ParseStrBuffer[number].str);
-				output += strlen(output);
-			}
-			else {
-				int len = (var - input) + 1;
-				strncpy_s(output, 1024, input, len);
-				output += len;
-				*output = 0;
-				input = var + 1;
-				break;
-			}
-		}
-		break;
-		default: // done -> needs testing
-		{
-			LPSTR num = findnum(var);
-			if (!num) {
-				var = 0;
-				break;
-			}
-			int number = num[0] - '0';
-			if (number > 9) {
-				return 14; // parse error
-			}
-			int len = var - input;
-			strncpy_s(output, 1024, input, len);
-			output += len;
-			*output = 0;
-			input = num + 1;
-			strcat_s(output, 1024, ParseStrBuffer[number].str);
-			output += strlen(output);
-		}
-		break;
-		}
-	} while (var);
+    if (!input || !output) { // EBX || ESI
+        return 3;
+    }
+    //LPSTR outputCopy = output;
+    LPSTR var; // EDI
+    do {
+        var = strstr(input, "$");
+        if (!var) {
+            break;
+        }
+        //LPSTR parsingInput = &input[1];
+        switch (var[1]) {
+        case '$': // done -> needs testing
+        {
+            int len = (var - input) + 1;
+            strncpy_s(output, 1024, input, len);
+            output += len;
+            input = var + 2;
+            *output = 0;
+        }
+        break;
+        case 'H': // done -> needs testing
+        {
+            if (strncmp(var, "$HEX", 4)) {
+                int number = var[4] - '0';
+                if (number > 9) {
+                    return 14; // parse error
+                }
+                int len = var - input;
+                strncpy_s(output, 1024, input, len);
+                output += len;
+                *output = 0;
+                input = var + 5;
+                char outputNum[5];
+                _itoa_s(ParseNumTable[number], outputNum, 5, 10);
+                strcat_s(output, 1024, outputNum);
+                output += strlen(output);
+            }
+            else {
+                LPSTR num = findnum(var);
+                if (!num) {
+                    break;
+                }
+                int number = num[0] - '0';
+                if (number > 9) {
+                    return 14; // parse error
+                }
+                int len = (var - input) + 1;
+                strncpy_s(output, 1024, input, len);
+                output += len;
+                *output = 0;
+                input = num + 1;
+                strcat_s(output, 1024, ParseStrBuffer[number].str);
+                output += strlen(output);
+            }
+        }
+        break;
+        case 'N': // done -> needs testing
+        {
+            if (strncmp(var, "$NUMBER", 7)) {
+                int number = var[7] - '0';
+                if (number > 9) {
+                    return 14; // parse error
+                }
+                int len = var - input;
+                strncpy_s(output, 1024, input, len);
+                output += len;
+                *output = 0;
+                input = var + 8;
+                char outputNum[5];
+                _itoa_s(ParseNumTable[number], outputNum, 5, 10);
+                strcat_s(output, 1024, outputNum);
+                output += strlen(output);
+            }
+            else if (strncmp(var, "$NUM", 4)) {
+                int number = var[4] - '0';
+                if (number > 9) {
+                    return 14; // parse error
+                }
+                int len = var - input;
+                strncpy_s(output, 1024, input, len);
+                output += len;
+                *output = 0;
+                input = var + 5;
+                char outputNum[5];
+                _itoa_s(ParseNumTable[number], outputNum, 5, 10);
+                strcat_s(output, 1024, outputNum);
+                output += strlen(output);
+            }
+            else {
+                LPSTR num = findnum(var);
+                if (!num) {
+                    break;
+                }
+                int number = num[0] - '0';
+                if (number > 9) {
+                    return 14; // parse error
+                }
+                int len = var - input;
+                strncpy_s(output, 1024, input, len);
+                output += len;
+                *output = 0;
+                input = num + 1;
+                strcat_s(output, 1024, ParseStrBuffer[number].str);
+                output += strlen(output);
+            }
+        }
+        break;
+        case '<':
+        {
+            int len = var - input;
+            strncpy_s(output, 1024, input, len);
+            output += len;
+            *output = 0;
+            LPSTR endBracket = strstr(var, ">");
+            if (!endBracket) {
+                input = var + 1;
+                continue;
+            }
+            var += 2;
+            input = endBracket + 1;
+            purge_leading(var);
+            int gender;// , plural = 0, num = -1;
+            switch (var[0]) {
+            case 'M':
+            case 'm':
+            {
+                gender = 0;
+            }
+            break;
+            case 'F':
+            case 'f':
+            {
+                gender = 1;
+            }
+            break;
+            case 'N':
+            case 'n':
+            {
+                gender = 2;
+            }
+            break;
+            case '#':
+            {
+                //
+            }
+            break;
+            default:
+            {
+                //
+            }
+            break;
+            }
+            /*
+            else if (szGender == '#') {
+                nNum = var[1] - '0';
+                if (nNum > 9 || nNum < 0) {
+                    break;
+                }
+                var++;
+                nPlural = (ParseNumTable[nNum] == 1) ? 0 : 1;
+            }
+            else {
+                nNum = szGender - '0';
+                if (nNum > 9 || nNum < 0) {
+                    break;
+                }
+                nPlural = ParseStrPlurality[nNum];
+                nGender = ParseStrGender[nNum];
+            }
+            var++;
+            if (nNum < 0) {
+                if (isdigit(var[0])) {
+                    nNum = var[0] - '1';
+                    var++;
+                }
+            }
+            purge_leading(var);
+            if (var[0] == ':') {
+                var++;
+            }
+            // unfinished
+            */
+        }
+        break;
+        case 'L': // done -> needs testing
+        {
+            if (strncmp(var, "$LINK<", 6)) {
+                LPSTR num = findnum(var);
+                if (!num) {
+                    var = 0;
+                    break;
+                }
+                int number = num[0] - '0';
+                if (number > 9) {
+                    return 14; // parse error
+                }
+                int len = var - input;
+                strncpy_s(output, 1024, input, len);
+                output += len;
+                *output = 0;
+                input = num + 1;
+                strcat_s(output, 1024, ParseStrBuffer[number].str);
+                output += strlen(output);
+            }
+            else {
+                int len = (var - input) + 1;
+                strncpy_s(output, 1024, input, len);
+                output += len;
+                *output = 0;
+                input = var + 1;
+                break;
+            }
+        }
+        break;
+        default: // done -> needs testing
+        {
+            LPSTR num = findnum(var);
+            if (!num) {
+                var = 0;
+                break;
+            }
+            int number = num[0] - '0';
+            if (number > 9) {
+                return 14; // parse error
+            }
+            int len = var - input;
+            strncpy_s(output, 1024, input, len);
+            output += len;
+            *output = 0;
+            input = num + 1;
+            strcat_s(output, 1024, ParseStrBuffer[number].str);
+            output += strlen(output);
+        }
+        break;
+        }
+    } while (var);
 
-	//strcat(output, input); // replace with safe version _s
+    //strcat(output, input); // replace with safe version _s
 
-	if (*Language == 1) { // French : handling for poor translations
-		do {
-			//LPSTR partSpeach[] = { " de ", " le ", " la ", "De ", "Le ", "La " };
-			//LPSTR langParse = output;
-			LPSTR searching = 0;
-			for (int i = 0; i < 6; i++) {
-				LPSTR partFound = 0;// strstr(langParse, partSpeach[i]);
-				if (partFound && (!searching || partFound < searching)) {
-					searching = partFound;
-				}
-			}
-		} while (1);
+    if (*Language == 1) { // French : handling for poor translations
+        do {
+            //LPSTR partSpeach[] = { " de ", " le ", " la ", "De ", "Le ", "La " };
+            //LPSTR langParse = output;
+            LPSTR searching = 0;
+            for (int i = 0; i < 6; i++) {
+                LPSTR partFound = 0;// strstr(langParse, partSpeach[i]);
+                if (partFound && (!searching || partFound < searching)) {
+                    searching = partFound;
+                }
+            }
+        } while (1);
 
-		/*
-		int nLoop = 0;
-		do {
-				int nOffset = (nLoop < 3) + 3;
-				char szVowel = tolower(partFound[nOffset]);
-				if (szVowel == 'a' || szVowel == 'e' || szVowel == 'i'
-				|| szVowel == 'o' || szVowel == 'u' || szVowel == 'y' || szVowel == 'h') {
-					int nDiff = strlen(output) - strlen(partFound);
-					strcpy_s(&output[nDiff + nOffset - 1], 1024, &output[nDiff + nOffset]);
-					output[nDiff + nOffset - 2] = '\'';
-				}
-			}
-			else {
-				nLoop++;
-			}
-		} while (nLoop < 6);
-		*/
-	}
+        /*
+        int nLoop = 0;
+        do {
+                int nOffset = (nLoop < 3) + 3;
+                char szVowel = tolower(partFound[nOffset]);
+                if (szVowel == 'a' || szVowel == 'e' || szVowel == 'i'
+                || szVowel == 'o' || szVowel == 'u' || szVowel == 'y' || szVowel == 'h') {
+                    int nDiff = strlen(output) - strlen(partFound);
+                    strcpy_s(&output[nDiff + nOffset - 1], 1024, &output[nDiff + nOffset]);
+                    output[nDiff + nOffset - 2] = '\'';
+                }
+            }
+            else {
+                nLoop++;
+            }
+        } while (nLoop < 6);
+        */
+    }
 
-	return false;
+    return false;
 }
 
 /*
@@ -647,73 +647,73 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl filefind_set_alternative(LPCSTR path) {
-	FilefindPath->altPath[0] = 0;
-	if (path) {
-		if (!strchr(path, ':') && path[0] != '\\') {
-			strcat_s(FilefindPath->altPath, 256, FilefindPath->exeDir);
-		}
-		strcat_s(FilefindPath->altPath, 256, path);
-	}
+    FilefindPath->altPath[0] = 0;
+    if (path) {
+        if (!strchr(path, ':') && path[0] != '\\') {
+            strcat_s(FilefindPath->altPath, 256, FilefindPath->exeDir);
+        }
+        strcat_s(FilefindPath->altPath, 256, path);
+    }
 }
 
 /*
 Purpose: Initialize filefind struct and CD check with callback if not complete install. Changed
-		 logic since most installs will be on HDD making CD check less important.
+         logic since most installs will be on HDD making CD check less important.
 Original Offset: 00600400
 Return Value: Zero: no errors; Non-zero: error
 Status: WIP
 */
 int __cdecl filefind_init(LPCSTR fileCheck, BOOL isComplete) {
-	FilefindPath->altPath[0] = 0;
-	GetCurrentDirectoryA(256, FilefindPath->exeDir);
-	strcat_s(FilefindPath->exeDir, 256, "\\");
+    FilefindPath->altPath[0] = 0;
+    GetCurrentDirectoryA(256, FilefindPath->exeDir);
+    strcat_s(FilefindPath->exeDir, 256, "\\");
 
-	if (isComplete) {
-		return 0; // complete install, no need for further checks
-	}
-	if (!fileCheck) {
-		return 16; // error, fileCheck shouldn't be NULL
-	}
-	WIN32_FIND_DATAA findFileData;
-	strcpy_s(FilefindPath->lastPath, 256, FilefindPath->exeDir);
-	strcat_s(FilefindPath->lastPath, fileCheck);
-	HANDLE hFileFound = FindFirstFileA(FilefindPath->lastPath, &findFileData);
-	FindClose(hFileFound);
-	if (hFileFound != INVALID_HANDLE_VALUE) {
-		return 0; // complete install on HDD, no need for CD
-	}
+    if (isComplete) {
+        return 0; // complete install, no need for further checks
+    }
+    if (!fileCheck) {
+        return 16; // error, fileCheck shouldn't be NULL
+    }
+    WIN32_FIND_DATAA findFileData;
+    strcpy_s(FilefindPath->lastPath, 256, FilefindPath->exeDir);
+    strcat_s(FilefindPath->lastPath, fileCheck);
+    HANDLE hFileFound = FindFirstFileA(FilefindPath->lastPath, &findFileData);
+    FindClose(hFileFound);
+    if (hFileFound != INVALID_HANDLE_VALUE) {
+        return 0; // complete install on HDD, no need for CD
+    }
 
-	/*
-	JACKAL_CLASS callBack = JACKAL_init();
-	if(!callBack)
-	return 4;
-	*/
-	char szRootPath[5];
-	do {
-		strcpy_s(szRootPath, 5, "A:\\");
-		for (int nPos = 0; nPos < 26; nPos++) {
-			if (GetDriveTypeA(szRootPath) == DRIVE_CDROM) {
-				// problem if drive was disconnected
-				strcpy_s(FilefindPath->lastPath, 256, szRootPath);
-				strcat_s(FilefindPath->lastPath, fileCheck);
-				//WIN32_FIND_DATA findFileData;
-				//HANDLE hFileFound = FindFirstFile(g_filefind.last_path, &findFileData);
-				hFileFound = FindFirstFileA(FilefindPath->lastPath, &findFileData);
-				FindClose(hFileFound);
-				if (hFileFound != INVALID_HANDLE_VALUE) {
-					strcpy_s(FilefindPath->cdPath, 256, szRootPath);
-					// destroy JACKAL callBack
-					return 0;
-				}
-			}
-			szRootPath[0]++;
-		}
-		// send FILEFIND_NOCD message -> if doesn't exist (removed from jackal.txt) -> exit
-		// if user response is to retry -> loop around again
-		// if user response is "ok", exit loop
-	} while (0);
-	// destroy JACKAL callBack
-	return 0;
+    /*
+    JACKAL_CLASS callBack = JACKAL_init();
+    if(!callBack)
+    return 4;
+    */
+    char szRootPath[5];
+    do {
+        strcpy_s(szRootPath, 5, "A:\\");
+        for (int nPos = 0; nPos < 26; nPos++) {
+            if (GetDriveTypeA(szRootPath) == DRIVE_CDROM) {
+                // problem if drive was disconnected
+                strcpy_s(FilefindPath->lastPath, 256, szRootPath);
+                strcat_s(FilefindPath->lastPath, fileCheck);
+                //WIN32_FIND_DATA findFileData;
+                //HANDLE hFileFound = FindFirstFile(g_filefind.last_path, &findFileData);
+                hFileFound = FindFirstFileA(FilefindPath->lastPath, &findFileData);
+                FindClose(hFileFound);
+                if (hFileFound != INVALID_HANDLE_VALUE) {
+                    strcpy_s(FilefindPath->cdPath, 256, szRootPath);
+                    // destroy JACKAL callBack
+                    return 0;
+                }
+            }
+            szRootPath[0]++;
+        }
+        // send FILEFIND_NOCD message -> if doesn't exist (removed from jackal.txt) -> exit
+        // if user response is to retry -> loop around again
+        // if user response is "ok", exit loop
+    } while (0);
+    // destroy JACKAL callBack
+    return 0;
 }
 
 /*
@@ -723,46 +723,46 @@ Return Value: File path string or 0 if not found
 Status: Complete
 */
 LPSTR __cdecl filefind_get(LPCSTR fileName) {
-	if (!fileName) {
-		return 0;
-	}
-	if (fileName == FilefindPath->lastPath) {
-		return FilefindPath->lastPath;
-	}
-	WIN32_FIND_DATAA findFileData;
-	HANDLE hFileFound;
-	if (fileName[1] == ':') {
-		strcpy_s(FilefindPath->lastPath, 256, fileName);
-		hFileFound = FindFirstFileA(FilefindPath->lastPath, &findFileData);
-		FindClose(hFileFound);
-		return (hFileFound != INVALID_HANDLE_VALUE) ? FilefindPath->lastPath : 0;
-	}
-	if (FilefindPath->altPath[0]) {
-		strcpy_s(FilefindPath->lastPath, 256, FilefindPath->altPath);
-		strcat_s(FilefindPath->lastPath, 256, fileName);
-		hFileFound = FindFirstFileA(FilefindPath->lastPath, &findFileData);
-		FindClose(hFileFound);
-		if (hFileFound != INVALID_HANDLE_VALUE) {
-			return FilefindPath->lastPath;
-		}
-	}
-	strcpy_s(FilefindPath->lastPath, 256, FilefindPath->exeDir);
-	strcat_s(FilefindPath->lastPath, 256, fileName);
-	hFileFound = FindFirstFileA(FilefindPath->lastPath, &findFileData);
-	FindClose(hFileFound);
-	if (hFileFound != INVALID_HANDLE_VALUE) {
-		return FilefindPath->lastPath;
-	}
-	if (FilefindPath->cdPath[0]) {
-		strcpy_s(FilefindPath->lastPath, 256, FilefindPath->cdPath);
-		strcat_s(FilefindPath->lastPath, 256, fileName);
-		hFileFound = FindFirstFileA(FilefindPath->lastPath, &findFileData);
-		FindClose(hFileFound);
-		if (hFileFound != INVALID_HANDLE_VALUE) {
-			return FilefindPath->lastPath;
-		}
-	}
-	return 0;
+    if (!fileName) {
+        return 0;
+    }
+    if (fileName == FilefindPath->lastPath) {
+        return FilefindPath->lastPath;
+    }
+    WIN32_FIND_DATAA findFileData;
+    HANDLE hFileFound;
+    if (fileName[1] == ':') {
+        strcpy_s(FilefindPath->lastPath, 256, fileName);
+        hFileFound = FindFirstFileA(FilefindPath->lastPath, &findFileData);
+        FindClose(hFileFound);
+        return (hFileFound != INVALID_HANDLE_VALUE) ? FilefindPath->lastPath : 0;
+    }
+    if (FilefindPath->altPath[0]) {
+        strcpy_s(FilefindPath->lastPath, 256, FilefindPath->altPath);
+        strcat_s(FilefindPath->lastPath, 256, fileName);
+        hFileFound = FindFirstFileA(FilefindPath->lastPath, &findFileData);
+        FindClose(hFileFound);
+        if (hFileFound != INVALID_HANDLE_VALUE) {
+            return FilefindPath->lastPath;
+        }
+    }
+    strcpy_s(FilefindPath->lastPath, 256, FilefindPath->exeDir);
+    strcat_s(FilefindPath->lastPath, 256, fileName);
+    hFileFound = FindFirstFileA(FilefindPath->lastPath, &findFileData);
+    FindClose(hFileFound);
+    if (hFileFound != INVALID_HANDLE_VALUE) {
+        return FilefindPath->lastPath;
+    }
+    if (FilefindPath->cdPath[0]) {
+        strcpy_s(FilefindPath->lastPath, 256, FilefindPath->cdPath);
+        strcat_s(FilefindPath->lastPath, 256, fileName);
+        hFileFound = FindFirstFileA(FilefindPath->lastPath, &findFileData);
+        FindClose(hFileFound);
+        if (hFileFound != INVALID_HANDLE_VALUE) {
+            return FilefindPath->lastPath;
+        }
+    }
+    return 0;
 }
 
 /*
@@ -772,26 +772,26 @@ Return Value: Bit count
 Status: Complete
 */
 uint32_t __cdecl bit_count(uint32_t bitfield) {
-	uint32_t count;
-	for (count = 0; bitfield; count++) {
-		bitfield &= bitfield - 1; // clear the least significant bit set
-	}
-	return count;
+    uint32_t count;
+    for (count = 0; bitfield; count++) {
+        bitfield &= bitfield - 1; // clear the least significant bit set
+    }
+    return count;
 }
 
 /*
 Purpose: Count number of bits set (signed). Added a fix to prevent an infinite loop. Only referenced
-		 by one GraphicWin function.
+         by one GraphicWin function.
 Original Offset: 00628AB0
 Return Value: Bit count
 Status: Complete
 */
 uint32_t __cdecl bit_count_signed(int input) {
-	uint32_t count = 0;
-	for (count = 0; input && count < 32; count++) {
-		input >>= 1;
-	}
-	return count;
+    uint32_t count = 0;
+    for (count = 0; input && count < 32; count++) {
+        input >>= 1;
+    }
+    return count;
 }
 
 /*
@@ -801,71 +801,71 @@ Return Value: n/a
 Status: Complete with built in version of srand(). Revisit once more code is redirected to dll.
 */
 void __cdecl my_srand(uint32_t reseed) {
-	log_say("Reseed to", reseed, 0, 0);
-	srand(reseed);
-	_srand(reseed);
+    log_say("Reseed to", reseed, 0, 0);
+    srand(reseed);
+    _srand(reseed);
 }
 
 /*
 Purpose: Swap the values of two 32-bit variables. Added an additional check when swapping the same
-		 memory location. Future: convert to MACRO?
+         memory location. Future: convert to MACRO?
 Original Offset: 00628A50
 Return Value: n/a
 Status: Complete
 */
 void __cdecl swap(int *var1, int *var2) {
-	if (var1 == var2) {
-		return;
-	}
-	int temp = *var1 ^ *var2;
-	*var1 = temp;
-	*var2 ^= temp;
-	*var1 ^= *var2;
+    if (var1 == var2) {
+        return;
+    }
+    int temp = *var1 ^ *var2;
+    *var1 = temp;
+    *var2 ^= temp;
+    *var1 ^= *var2;
 }
 
 /*
 Purpose: Swap the values of two 8-bit variables. Added an additional check when swapping the same
-		 memory location. Future: convert to MACRO?
+         memory location. Future: convert to MACRO?
 Original Offset: 00628A80
 Return Value: n/a
 Status: Complete
 */
 void __cdecl swap(uint8_t *var1, uint8_t *var2) {
-	if (var1 == var2) {
-		return;
-	}
-	uint8_t temp = *var1 ^ *var2;
-	*var1 = temp;
-	*var2 ^= temp;
-	*var1 ^= *var2;
+    if (var1 == var2) {
+        return;
+    }
+    uint8_t temp = *var1 ^ *var2;
+    *var1 = temp;
+    *var2 ^= temp;
+    *var1 ^= *var2;
 }
 
 /*
 Purpose: Shift numerator to left by 16 then divide denominator. Added a check to prevent divide by
-		 zero crash.
+         zero crash.
 Original Offset: 00628AD0
 Return Value: Quotient
 Status: Complete
 */
 int __cdecl fixed_div(int numer, int denom) {
-	if (!denom) {
-		return 0;
-	}
-	return ((int64_t)numer << 16) / denom;
+    if (!denom) {
+        return 0;
+    }
+    return ((int64_t)numer << 16) / denom;
 }
 
 /*
 Purpose: Reverse string search for last occurrence of specified character. Replaced searching logic
-		 with strrchr() that does same thing. End parameter can be removed in future.
+         with strrchr() that does same thing. End parameter can be removed in future.
 Original Offset: 00628AF0
 Return Value: Position of character or null if not found.
 Status: Complete
 */
 const char *__cdecl memrchr(LPCSTR start, LPCSTR end, char value) {
-	if (!start || !end || start == end) {
-		return 0;
-	}
-	return strrchr(start, value);
+    if (!start || !end || start == end) {
+        return 0;
+    }
+    return strrchr(start, value);
 }
 
 /*
@@ -875,15 +875,15 @@ Return Value: root
 Status: Complete
 */
 int __cdecl quick_root(int input) {
-	int temp = input >> 1, root;
-	if (input <= 1) {
-		return input;
-	}
-	do {
-		root = temp;
-		temp = (temp + input / temp) >> 1;
-	} while (temp < root);
-	return root;
+    int temp = input >> 1, root;
+    if (input <= 1) {
+        return input;
+    }
+    do {
+        root = temp;
+        temp = (temp + input / temp) >> 1;
+    } while (temp < root);
+    return root;
 }
 
 /*
@@ -893,8 +893,8 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl bitmask(uint32_t input, uint32_t *offset, uint32_t *mask) {
-	*offset = input / 8;
-	*mask = 1 << (input & 7);
+    *offset = input / 8;
+    *mask = 1 << (input & 7);
 }
 
 /*
@@ -904,8 +904,8 @@ Return Value: checksum
 Status: Complete
 */
 uint8_t __cdecl checksum(uint8_t *buffer, uint32_t size, uint8_t seed) {
-	while (size--) seed ^= *buffer++;
-	return seed;
+    while (size--) seed ^= *buffer++;
+    return seed;
 }
 
 /*
@@ -915,29 +915,29 @@ Return Value: checksum
 Status: Complete
 */
 uint32_t __cdecl checksum_password(LPCSTR password) {
-	if (!strlen(password)) {
-		return 0;
-	}
-	char buffer[256];
-	strcpy_s(buffer, 256, password);
-	CharUpper(buffer); // incorrect results for Turkish/Azerbaijani 'i'
-	uint8_t chksum = 0;
-	uint32_t len = strlen(buffer);
-	if (len) {
-		chksum = checksum((LPBYTE)&buffer, len, 0);
-	}
-	return chksum + 1;
+    if (!strlen(password)) {
+        return 0;
+    }
+    char buffer[256];
+    strcpy_s(buffer, 256, password);
+    CharUpper(buffer); // incorrect results for Turkish/Azerbaijani 'i'
+    uint8_t chksum = 0;
+    uint32_t len = strlen(buffer);
+    if (len) {
+        chksum = checksum((LPBYTE)&buffer, len, 0);
+    }
+    return chksum + 1;
 }
 
 /*
 Purpose: Calculate a random value within provided bounds. The 2nd string parameter is unused. It
-		 was possibly meant to have the random value append to it. Left in for compatibility.
+         was possibly meant to have the random value append to it. Left in for compatibility.
 Original Offset: 00579770
 Return Value: Randomized value
 Status: Complete
 */
 uint32_t __cdecl rnd(int bounds, LPSTR UNUSED(input)) {
-	return (bounds - 1 > 0) ? rand() % bounds : 0;
+    return (bounds - 1 > 0) ? rand() % bounds : 0;
 }
 
 /*
@@ -947,13 +947,13 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl danger(LPCSTR msg1, LPCSTR msg2, int num1, int num2, int num3) {
-	parse_says(0, msg1, -1, -1);
-	parse_says(1, msg2, -1, -1);
-	parse_num(0, num1);
-	parse_num(1, num2);
-	parse_num(2, num3);
-	log_say(msg1, msg2, num1, num2, num3);
-	popp(ScriptTxtID, "DANGER", 0, "hasty_sm.pcx", 0);
+    parse_says(0, msg1, -1, -1);
+    parse_says(1, msg2, -1, -1);
+    parse_num(0, num1);
+    parse_num(1, num2);
+    parse_num(2, num3);
+    log_say(msg1, msg2, num1, num2, num3);
+    popp(ScriptTxtID, "DANGER", 0, "hasty_sm.pcx", 0);
 }
 
 /*
@@ -963,7 +963,7 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl kill_auto_save() {
-	remove("saves\\auto\\Alpha Centauri Autosave 1.SAV");
+    remove("saves\\auto\\Alpha Centauri Autosave 1.SAV");
 }
 
 /*
@@ -973,38 +973,38 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl auto_save() {
-	if (!*IsMultiplayerPBEM || *IsMultiplayerNet) { // auto-saving disabled for PBEM/HotSeat games
-		if (*GameRules & RULES_IRONMAN && !(*GameState & STATE_SCENARIO_EDITOR)) {
-			remove("saves\\auto\\Alpha Centauri Autosave 30.SAV");
-			remove("saves\\auto\\Alpha Centauri Autosave 20.SAV");
-			remove("saves\\auto\\Alpha Centauri Autosave 10.SAV");
-			remove("saves\\auto\\Alpha Centauri Autosave 5.SAV");
-			remove("saves\\auto\\Alpha Centauri Autosave 4.SAV");
-			remove("saves\\auto\\Alpha Centauri Autosave 3.SAV");
-			remove("saves\\auto\\Alpha Centauri Autosave 2.SAV");
-			save_daemon("saves\\auto\\Alpha Centauri Autosave 1");
-		}
-		else { // standard auto saves
-			if (!(*TurnCurrentNum % 10)) {
-				remove("saves\\auto\\Alpha Centauri Autosave 30.SAV");
-				rename("saves\\auto\\Alpha Centauri Autosave 20.SAV",
-					"saves\\auto\\Alpha Centauri Autosave 30.SAV");
-				rename("saves\\auto\\Alpha Centauri Autosave 10.SAV",
-					"saves\\auto\\Alpha Centauri Autosave 20.SAV");
-				save_daemon("saves\\auto\\Alpha Centauri Autosave 10");
-			}
-			remove("saves\\auto\\Alpha Centauri Autosave 5.SAV");
-			rename("saves\\auto\\Alpha Centauri Autosave 4.SAV",
-				"saves\\auto\\Alpha Centauri Autosave 5.SAV");
-			rename("saves\\auto\\Alpha Centauri Autosave 3.SAV",
-				"saves\\auto\\Alpha Centauri Autosave 4.SAV");
-			rename("saves\\auto\\Alpha Centauri Autosave 2.SAV",
-				"saves\\auto\\Alpha Centauri Autosave 3.SAV");
-			rename("saves\\auto\\Alpha Centauri Autosave 1.SAV",
-				"saves\\auto\\Alpha Centauri Autosave 2.SAV");
-			save_daemon("saves\\auto\\Alpha Centauri Autosave 1");
-		}
-	}
+    if (!*IsMultiplayerPBEM || *IsMultiplayerNet) { // auto-saving disabled for PBEM/HotSeat games
+        if (*GameRules & RULES_IRONMAN && !(*GameState & STATE_SCENARIO_EDITOR)) {
+            remove("saves\\auto\\Alpha Centauri Autosave 30.SAV");
+            remove("saves\\auto\\Alpha Centauri Autosave 20.SAV");
+            remove("saves\\auto\\Alpha Centauri Autosave 10.SAV");
+            remove("saves\\auto\\Alpha Centauri Autosave 5.SAV");
+            remove("saves\\auto\\Alpha Centauri Autosave 4.SAV");
+            remove("saves\\auto\\Alpha Centauri Autosave 3.SAV");
+            remove("saves\\auto\\Alpha Centauri Autosave 2.SAV");
+            save_daemon("saves\\auto\\Alpha Centauri Autosave 1");
+        }
+        else { // standard auto saves
+            if (!(*TurnCurrentNum % 10)) {
+                remove("saves\\auto\\Alpha Centauri Autosave 30.SAV");
+                rename("saves\\auto\\Alpha Centauri Autosave 20.SAV",
+                    "saves\\auto\\Alpha Centauri Autosave 30.SAV");
+                rename("saves\\auto\\Alpha Centauri Autosave 10.SAV",
+                    "saves\\auto\\Alpha Centauri Autosave 20.SAV");
+                save_daemon("saves\\auto\\Alpha Centauri Autosave 10");
+            }
+            remove("saves\\auto\\Alpha Centauri Autosave 5.SAV");
+            rename("saves\\auto\\Alpha Centauri Autosave 4.SAV",
+                "saves\\auto\\Alpha Centauri Autosave 5.SAV");
+            rename("saves\\auto\\Alpha Centauri Autosave 3.SAV",
+                "saves\\auto\\Alpha Centauri Autosave 4.SAV");
+            rename("saves\\auto\\Alpha Centauri Autosave 2.SAV",
+                "saves\\auto\\Alpha Centauri Autosave 3.SAV");
+            rename("saves\\auto\\Alpha Centauri Autosave 1.SAV",
+                "saves\\auto\\Alpha Centauri Autosave 2.SAV");
+            save_daemon("saves\\auto\\Alpha Centauri Autosave 1");
+        }
+    }
 }
 
 /*
@@ -1014,30 +1014,30 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl auto_save_debug() {
-	if (*TurnCurrentNum == 1) {
-		remove("saves\\auto\\Alpha Centauri Autosave Turn 1.SAV");
-		save_daemon("saves\\auto\\Alpha Centauri Autosave Turn 1");
-	}
-	if (!(*TurnCurrentNum % 10)) {
-		remove("saves\\auto\\Alpha Centauri Autosave 500.SAV");
-		char savePathNew[45], savePathOld[45];
-		for (int i = 0; i < 490; i += 10) {
-			sprintf_s(savePathOld, 45, "saves\\auto\\Alpha Centauri Autosave %d.SAV", 490 - i);
-			sprintf_s(savePathNew, 45, "saves\\auto\\Alpha Centauri Autosave %d.SAV", 500 - i);
-			rename(savePathOld, savePathNew);
-		}
-		save_daemon("saves\\auto\\Alpha Centauri Autosave 10");
-	}
-	remove("saves\\auto\\Alpha Centauri Autosave 5.SAV");
-	rename("saves\\auto\\Alpha Centauri Autosave 4.SAV",
-		"saves\\auto\\Alpha Centauri Autosave 5.SAV");
-	rename("saves\\auto\\Alpha Centauri Autosave 3.SAV",
-		"saves\\auto\\Alpha Centauri Autosave 4.SAV");
-	rename("saves\\auto\\Alpha Centauri Autosave 2.SAV",
-		"saves\\auto\\Alpha Centauri Autosave 3.SAV");
-	rename("saves\\auto\\Alpha Centauri Autosave 1.SAV",
-		"saves\\auto\\Alpha Centauri Autosave 2.SAV");
-	save_daemon("saves\\auto\\Alpha Centauri Autosave 1");
+    if (*TurnCurrentNum == 1) {
+        remove("saves\\auto\\Alpha Centauri Autosave Turn 1.SAV");
+        save_daemon("saves\\auto\\Alpha Centauri Autosave Turn 1");
+    }
+    if (!(*TurnCurrentNum % 10)) {
+        remove("saves\\auto\\Alpha Centauri Autosave 500.SAV");
+        char savePathNew[45], savePathOld[45];
+        for (int i = 0; i < 490; i += 10) {
+            sprintf_s(savePathOld, 45, "saves\\auto\\Alpha Centauri Autosave %d.SAV", 490 - i);
+            sprintf_s(savePathNew, 45, "saves\\auto\\Alpha Centauri Autosave %d.SAV", 500 - i);
+            rename(savePathOld, savePathNew);
+        }
+        save_daemon("saves\\auto\\Alpha Centauri Autosave 10");
+    }
+    remove("saves\\auto\\Alpha Centauri Autosave 5.SAV");
+    rename("saves\\auto\\Alpha Centauri Autosave 4.SAV",
+        "saves\\auto\\Alpha Centauri Autosave 5.SAV");
+    rename("saves\\auto\\Alpha Centauri Autosave 3.SAV",
+        "saves\\auto\\Alpha Centauri Autosave 4.SAV");
+    rename("saves\\auto\\Alpha Centauri Autosave 2.SAV",
+        "saves\\auto\\Alpha Centauri Autosave 3.SAV");
+    rename("saves\\auto\\Alpha Centauri Autosave 1.SAV",
+        "saves\\auto\\Alpha Centauri Autosave 2.SAV");
+    save_daemon("saves\\auto\\Alpha Centauri Autosave 1");
 }
 
 /*
@@ -1048,19 +1048,19 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl load_undo(int type) {
-	if (type == -1 && ScenEditorUndoPosition == 1) {
-		return; // bug fix: skip redo if undo hasn't been triggered yet or on 1st undo
-	}
-	if (type < 0 && ScenEditorUndoPosition > 1) {
-		ScenEditorUndoPosition--;
-	}
-	char loadPath[38];
-	sprintf_s(loadPath, 38, "saves\\auto\\Scenario Editor Undo %d.SAV", ScenEditorUndoPosition);
-	if (type > 0 && ScenEditorUndoPosition < 9) {
-		ScenEditorUndoPosition++;
-	}
-	load_daemon(loadPath, false);
-	draw_map(true); // bug fix: map artifacts display issue; TODO: best method of refreshing map?
+    if (type == -1 && ScenEditorUndoPosition == 1) {
+        return; // bug fix: skip redo if undo hasn't been triggered yet or on 1st undo
+    }
+    if (type < 0 && ScenEditorUndoPosition > 1) {
+        ScenEditorUndoPosition--;
+    }
+    char loadPath[38];
+    sprintf_s(loadPath, 38, "saves\\auto\\Scenario Editor Undo %d.SAV", ScenEditorUndoPosition);
+    if (type > 0 && ScenEditorUndoPosition < 9) {
+        ScenEditorUndoPosition++;
+    }
+    load_daemon(loadPath, false);
+    draw_map(true); // bug fix: map artifacts display issue; TODO: best method of refreshing map?
 }
 
 /*
@@ -1070,11 +1070,11 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl wipe_undo() {
-	char undoPath[38];
-	for (int i = 9; i >= 1; i--) {
-		sprintf_s(undoPath, 38, "saves\\auto\\Scenario Editor Undo %d.SAV", i);
-		remove(undoPath);
-	}
+    char undoPath[38];
+    for (int i = 9; i >= 1; i--) {
+        sprintf_s(undoPath, 38, "saves\\auto\\Scenario Editor Undo %d.SAV", i);
+        remove(undoPath);
+    }
 }
 
 /*
@@ -1084,17 +1084,17 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl auto_undo() {
-	if (*GamePreferences & PREF_BSC_AUTOSAVE_EACH_TURN) {
-		ScenEditorUndoPosition = 1;
-		remove("saves\\auto\\Scenario Editor Undo 9.SAV");
-		char savePathNew[38], savePathOld[38];
-		for (int i = 9; i >= 2; i--) {
-			sprintf_s(savePathOld, 38, "saves\\auto\\Scenario Editor Undo %d.SAV", i - 1);
-			sprintf_s(savePathNew, 38, "saves\\auto\\Scenario Editor Undo %d.SAV", i);
-			rename(savePathOld, savePathNew);
-		}
-		save_daemon("saves\\auto\\Scenario Editor Undo 1");
-	}
+    if (*GamePreferences & PREF_BSC_AUTOSAVE_EACH_TURN) {
+        ScenEditorUndoPosition = 1;
+        remove("saves\\auto\\Scenario Editor Undo 9.SAV");
+        char savePathNew[38], savePathOld[38];
+        for (int i = 9; i >= 2; i--) {
+            sprintf_s(savePathOld, 38, "saves\\auto\\Scenario Editor Undo %d.SAV", i - 1);
+            sprintf_s(savePathNew, 38, "saves\\auto\\Scenario Editor Undo %d.SAV", i);
+            rename(savePathOld, savePathNew);
+        }
+        save_daemon("saves\\auto\\Scenario Editor Undo 1");
+    }
 }
 
 /*
@@ -1105,19 +1105,19 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl header_check(LPSTR header, FILE *file) {
-	int headerChr = _fgetc(file);
-	*header++ = (char)headerChr;
-	if (headerChr) {
-		int i = 0;
-		do {
-			if (++i >= 256) {
-				break;
-			}
-			headerChr = _fgetc(file);
-			*header++ = (char)headerChr;
-		} while (headerChr);
-	}
-	_fgetc(file);
+    int headerChr = _fgetc(file);
+    *header++ = (char)headerChr;
+    if (headerChr) {
+        int i = 0;
+        do {
+            if (++i >= 256) {
+                break;
+            }
+            headerChr = _fgetc(file);
+            *header++ = (char)headerChr;
+        } while (headerChr);
+    }
+    _fgetc(file);
 }
 
 /*
@@ -1127,12 +1127,12 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl header_write(LPCSTR header, FILE *file) {
-	int headerChr;
-	do {
-		headerChr = *header++;
-		_fputc(headerChr, file);
-	} while (headerChr);
-	_fputc(0x1A, file);
+    int headerChr;
+    do {
+        headerChr = *header++;
+        _fputc(headerChr, file);
+    } while (headerChr);
+    _fputc(0x1A, file);
 }
 
 /*
@@ -1142,16 +1142,16 @@ Return Value: n/a
 Status: Complete - testing
 */
 void __cdecl sort(uint32_t count, int *id, int *value) {
-	int bounds = count - 1;
-	BOOL has_swapped;
-	do {
-		has_swapped = false;
-		for (int i = 0; i < bounds; i++) {
-			if (value[i] < value[i + 1]) {
-				has_swapped = true;
-				swap(&value[i], &value[i + 1]);
-				swap(&id[i], &id[i + 1]);
-			}
-		}
-	} while (has_swapped);
+    int bounds = count - 1;
+    BOOL has_swapped;
+    do {
+        has_swapped = false;
+        for (int i = 0; i < bounds; i++) {
+            if (value[i] < value[i + 1]) {
+                has_swapped = true;
+                swap(&value[i], &value[i + 1]);
+                swap(&id[i], &id[i + 1]);
+            }
+        }
+    } while (has_swapped);
 }

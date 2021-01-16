@@ -162,7 +162,7 @@ Enhancement:
   included as is. You can revert to vanilla behavior by modifying the four entries below in 
   alpha/x.txt #FACILITIES with free tech parameter set to "Disabled".
 
-	Recycling Tanks, 4, 0, Biogen, EcoEng2,   > free with "Adv.Ecological Engineering"
-	Recreation Commons, 4, 1, Psych, SentEco, > free with "Sentient Econometrics"
-	Energy Bank, 8, 1, IndEcon, QuanMac,      > free with "Quantum Machinery"
-	Network Node, 8, 1, InfNet, HAL9000,      > free with "Self - Aware Machines"
+    Recycling Tanks, 4, 0, Biogen, EcoEng2,   > free with "Adv.Ecological Engineering"
+    Recreation Commons, 4, 1, Psych, SentEco, > free with "Sentient Econometrics"
+    Energy Bank, 8, 1, IndEcon, QuanMac,      > free with "Quantum Machinery"
+    Network Node, 8, 1, InfNet, HAL9000,      > free with "Self - Aware Machines"

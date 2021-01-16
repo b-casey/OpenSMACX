@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,18 +21,18 @@
   * Random class: Handles pseudo random number generator.
   */
 class OPENSMACX_API Random {
-	uint32_t seed;
+    uint32_t seed;
 
 public:
-	Random() : seed(0) { } // 00625730
-	~Random() { seed = 0; } // 00625740
+    Random() : seed(0) { } // 00625730
+    ~Random() { seed = 0; } // 00625740
 
-	void reseed(uint32_t reseedValue);
-	uint32_t get(uint32_t min, uint32_t max);
-	double get();
+    void reseed(uint32_t reseedValue);
+    uint32_t get(uint32_t min, uint32_t max);
+    double get();
 
-	// additional functions to assist with encapsulation
-	uint32_t getSeed() { return seed; }
+    // additional functions to assist with encapsulation
+    uint32_t getSeed() { return seed; }
 };
 
 // global

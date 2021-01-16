@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,20 +23,20 @@
 * in text files by creating an index of the file sections prefixed by '#'
 */
 class OPENSMACX_API TextIndex {
-	char fileName[256]; // name of file to be mapped
-	uint32_t sectionCount; // number of section entries
-	Heap heap;
+    char fileName[256]; // name of file to be mapped
+    uint32_t sectionCount; // number of section entries
+    Heap heap;
 
 public:
-	TextIndex() : sectionCount(0) { fileName[0] = 0; } // 005FDF40
-	~TextIndex() { shutdown(); }                       // 005FDF60
-	void shutdown() { sectionCount = 0; fileName[0] = 0; heap.shutdown(); }
+    TextIndex() : sectionCount(0) { fileName[0] = 0; } // 005FDF40
+    ~TextIndex() { shutdown(); }                       // 005FDF60
+    void shutdown() { sectionCount = 0; fileName[0] = 0; heap.shutdown(); }
 
-	void make_index(LPCSTR sourceTxt);
-	int search_index(LPCSTR sourceTxt, LPCSTR sectionTxt);
+    void make_index(LPCSTR sourceTxt);
+    int search_index(LPCSTR sourceTxt, LPCSTR sectionTxt);
 
-	// additional functions to assist with encapsulation
-	uint32_t getCount() { return sectionCount; }
+    // additional functions to assist with encapsulation
+    uint32_t getCount() { return sectionCount; }
 };
 
 /*

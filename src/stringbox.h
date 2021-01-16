@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,25 +22,25 @@
   * StringBox class
   */
 class OPENSMACX_API StringBox : GraphicWin {
-	uint32_t field_A14;
-	uint32_t field_A18;
-	uint32_t field_A1C;
-	Scroll scroll;
-	uint32_t field_2B6C;
-	uint32_t field_2B70;
-	uint32_t field_2B74;
-	uint32_t field_2B78;
-	uint32_t field_2B7C;
-	uint32_t field_2B80;
-	uint32_t field_2B84;
-	uint32_t field_2B88;
-	uint32_t field_2B8C;
-	uint32_t field_2B90;
-	uint32_t field_2B94;
-	uint32_t field_2B98;
-	uint32_t field_2B9C;
+    uint32_t field_A14;
+    uint32_t field_A18;
+    uint32_t field_A1C;
+    Scroll scroll;
+    uint32_t field_2B6C;
+    uint32_t field_2B70;
+    uint32_t field_2B74;
+    uint32_t field_2B78;
+    uint32_t field_2B7C;
+    uint32_t field_2B80;
+    uint32_t field_2B84;
+    uint32_t field_2B88;
+    uint32_t field_2B8C;
+    uint32_t field_2B90;
+    uint32_t field_2B94;
+    uint32_t field_2B98;
+    uint32_t field_2B9C;
 
 public:
-	StringBox() { ; }
-	~StringBox() { ; }
+    StringBox() { ; }
+    ~StringBox() { ; }
 };

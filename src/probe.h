@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,16 +21,16 @@
   * Probe related objects, variables and functions.
   */
 enum ProbePrimaryAction {
-	PRB_INFILTRATE_DATALINKS = 0,
-	PRB_PROCURE_RESEARCH_DATA = 1,
-	PRB_ACTIVATE_SABOTAGE_VIRUS = 2,
-	PRB_DRAIN_ENERGY_RESERVES = 3,
-	PRB_INCITE_DRONE_RIOTS = 4,
-	PRB_ASSASSINATE_PROMINENT_RESEARCHERS = 5,
-	PRB_MIND_CONTROL_CITY = 6,
-	PRB_INTRODUCE_GENETIC_PLAGUE = 7,
-	PRB_FREE_CAPTURED_FACTION_LEADER = 8,
-	PRB_MIND_CONTROL_VEH = -1,
+    PRB_INFILTRATE_DATALINKS = 0,
+    PRB_PROCURE_RESEARCH_DATA = 1,
+    PRB_ACTIVATE_SABOTAGE_VIRUS = 2,
+    PRB_DRAIN_ENERGY_RESERVES = 3,
+    PRB_INCITE_DRONE_RIOTS = 4,
+    PRB_ASSASSINATE_PROMINENT_RESEARCHERS = 5,
+    PRB_MIND_CONTROL_CITY = 6,
+    PRB_INTRODUCE_GENETIC_PLAGUE = 7,
+    PRB_FREE_CAPTURED_FACTION_LEADER = 8,
+    PRB_MIND_CONTROL_VEH = -1,
 };
 
 extern BOOL *ProbeHasAlgoEnhancement;

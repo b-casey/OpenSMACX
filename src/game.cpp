@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,29 +52,29 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl planetfall(uint32_t faction_id) {
-	parse_set(Players[faction_id].is_leader_female, false);
-	parse_says(0, Players[faction_id].adj_name_faction, -1, -1);
-	parse_says(2, Players[faction_id].title_leader, -1, -1);
-	parse_says(3, Players[faction_id].name_leader, -1, -1);
-	parse_set(Players[faction_id].noun_gender, Players[faction_id].is_noun_plural);
-	parse_says(1, Players[faction_id].noun_faction, -1, -1); // unused in script, leaving in for now
-	char script_id[13];
-	if (*TurnCurrentNum) { // shifted logic to top to fix nonexistent accelerated script ids
-		parse_num(0, *TurnCurrentNum);
-		for (uint32_t i = 0; i < MaxSecretProjectNum; i++) {
-			if (has_project(i, faction_id)) { // script assumes at least one SP is built per faction
-				parse_says(4, Facility[FAC_HUMAN_GENOME_PROJ + i].name, -1, -1);
-			}
-		}
-		strcpy_s(script_id, 13, "PLANETFALL2"); // bug fix: changed to fixed id rather than concat 2
-	} else if (is_alien_faction(faction_id) && !_stricmp(Players[faction_id].filename, "USURPER")) {
-		strcpy_s(script_id, 13, "PLANETFALLX");
-	} else if (!_stricmp(Players[faction_id].filename, "FUNGBOY")) {
-		strcpy_s(script_id, 13, "PLANETFALLF");
-	} else {
-		strcpy_s(script_id, 13, "PLANETFALL");
-	}
-	X_pop(script_id, NULL);
+    parse_set(Players[faction_id].is_leader_female, false);
+    parse_says(0, Players[faction_id].adj_name_faction, -1, -1);
+    parse_says(2, Players[faction_id].title_leader, -1, -1);
+    parse_says(3, Players[faction_id].name_leader, -1, -1);
+    parse_set(Players[faction_id].noun_gender, Players[faction_id].is_noun_plural);
+    parse_says(1, Players[faction_id].noun_faction, -1, -1); // unused in script, leaving in for now
+    char script_id[13];
+    if (*TurnCurrentNum) { // shifted logic to top to fix nonexistent accelerated script ids
+        parse_num(0, *TurnCurrentNum);
+        for (uint32_t i = 0; i < MaxSecretProjectNum; i++) {
+            if (has_project(i, faction_id)) { // script assumes at least one SP is built per faction
+                parse_says(4, Facility[FAC_HUMAN_GENOME_PROJ + i].name, -1, -1);
+            }
+        }
+        strcpy_s(script_id, 13, "PLANETFALL2"); // bug fix: changed to fixed id rather than concat 2
+    } else if (is_alien_faction(faction_id) && !_stricmp(Players[faction_id].filename, "USURPER")) {
+        strcpy_s(script_id, 13, "PLANETFALLX");
+    } else if (!_stricmp(Players[faction_id].filename, "FUNGBOY")) {
+        strcpy_s(script_id, 13, "PLANETFALLF");
+    } else {
+        strcpy_s(script_id, 13, "PLANETFALL");
+    }
+    X_pop(script_id, NULL);
 }
 
 /*
@@ -84,13 +84,13 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl clear_scenario() {
-	*ObjectiveReqVictory = 9999;
-	*ObjectivesSuddenDeathVictory = 9999;
-	*ObjectiveAchievePts = 0;
-	*VictoryAchieveBonusPts = 0;
-	*StartingMissionYear = Rules->normal_starting_year;
-	*EndingMissionYear = *DiffLevelCurrent < DLVL_LIBRARIAN
-		? Rules->normal_end_year_low_three_diff : Rules->normal_end_year_high_three_diff;
+    *ObjectiveReqVictory = 9999;
+    *ObjectivesSuddenDeathVictory = 9999;
+    *ObjectiveAchievePts = 0;
+    *VictoryAchieveBonusPts = 0;
+    *StartingMissionYear = Rules->normal_starting_year;
+    *EndingMissionYear = *DiffLevelCurrent < DLVL_LIBRARIAN
+        ? Rules->normal_end_year_low_three_diff : Rules->normal_end_year_high_three_diff;
 }
 
 /*
@@ -100,7 +100,7 @@ Return Value: Game year
 Status: Complete
 */
 uint32_t __cdecl game_year(int turn) {
-	return *StartingMissionYear + turn;
+    return *StartingMissionYear + turn;
 }
 
 /*
@@ -110,7 +110,7 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl say_year(LPSTR output) {
-	char year[80];
-	_itoa_s(game_year(*TurnCurrentNum), year, 80, 10);
-	strcat_s(output, 80, year);
+    char year[80];
+    _itoa_s(game_year(*TurnCurrentNum), year, 80, 10);
+    strcat_s(output, 80, year);
 }

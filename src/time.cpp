@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,16 +29,16 @@ Return Value: n/a
 Status: Complete
 */
 void Time::init(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res) {
-	stop();
-	unkToggle = 0;
-	callback1 = callback;
-	callback2 = 0;
-	cbParam2 = 0;
-	cbParam1 = param;
-	count = cnt;
-	unk_1 = 0;
-	resolution = res;
-	unk_2 = 0;
+    stop();
+    unkToggle = 0;
+    callback1 = callback;
+    callback2 = 0;
+    cbParam2 = 0;
+    cbParam1 = param;
+    count = cnt;
+    unk_1 = 0;
+    resolution = res;
+    unk_2 = 0;
 }
 
 /*
@@ -48,17 +48,17 @@ Return Value: n/a
 Status: Complete
 */
 void Time::init(void(__cdecl *callback)(int, int), int param, int param2,
-	uint32_t cnt, uint32_t res) {
-	stop();
-	unkToggle = 0;
-	callback1 = 0;
-	callback2 = callback;
-	cbParam2 = param2;
-	cbParam1 = param;
-	count = cnt;
-	unk_1 = 0;
-	resolution = res;
-	unk_2 = 0;
+    uint32_t cnt, uint32_t res) {
+    stop();
+    unkToggle = 0;
+    callback1 = 0;
+    callback2 = callback;
+    cbParam2 = param2;
+    cbParam1 = param;
+    count = cnt;
+    unk_1 = 0;
+    resolution = res;
+    unk_2 = 0;
 }
 
 /*
@@ -68,19 +68,19 @@ Return Value: Zero success, non-zero error
 Status: Complete
 */
 uint32_t Time::start(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res) {
-	init(callback, param, cnt, res);
-	if (!callback) {
-		return 7;
-	}
-	unkToggle = 0;
-	if (count < 50) {
-		idEvent = timeSetEvent(count, resolution,
-			(LPTIMECALLBACK)MultimediaProc, (UINT_PTR)this, TIME_PERIODIC);
-	}
-	else {
-		idEvent = SetTimer(*HandleMain, (UINT_PTR)this, count, (TIMERPROC)TimerProc);
-	}
-	return idEvent ? 0 : 2;
+    init(callback, param, cnt, res);
+    if (!callback) {
+        return 7;
+    }
+    unkToggle = 0;
+    if (count < 50) {
+        idEvent = timeSetEvent(count, resolution,
+            (LPTIMECALLBACK)MultimediaProc, (UINT_PTR)this, TIME_PERIODIC);
+    }
+    else {
+        idEvent = SetTimer(*HandleMain, (UINT_PTR)this, count, (TIMERPROC)TimerProc);
+    }
+    return idEvent ? 0 : 2;
 }
 
 /*
@@ -90,20 +90,20 @@ Return Value: Zero success, non-zero error
 Status: Complete
 */
 uint32_t Time::start(void(__cdecl *callback)(int, int), int param, int param2,
-	uint32_t cnt, uint32_t res) {
-	init(callback, param, param2, cnt, res);
-	if (!callback) {
-		return 7;
-	}
-	unkToggle = 0;
-	if (count < 50) {
-		idEvent = timeSetEvent(count, resolution,
-			(LPTIMECALLBACK)MultimediaProc, (UINT_PTR)this, TIME_PERIODIC);
-	}
-	else {
-		idEvent = SetTimer(*HandleMain, (UINT_PTR)this, count, (TIMERPROC)TimerProc);
-	}
-	return idEvent ? 0 : 2;
+    uint32_t cnt, uint32_t res) {
+    init(callback, param, param2, cnt, res);
+    if (!callback) {
+        return 7;
+    }
+    unkToggle = 0;
+    if (count < 50) {
+        idEvent = timeSetEvent(count, resolution,
+            (LPTIMECALLBACK)MultimediaProc, (UINT_PTR)this, TIME_PERIODIC);
+    }
+    else {
+        idEvent = SetTimer(*HandleMain, (UINT_PTR)this, count, (TIMERPROC)TimerProc);
+    }
+    return idEvent ? 0 : 2;
 }
 
 /*
@@ -113,22 +113,22 @@ Return Value: Zero success, non-zero error
 Status: Complete
 */
 uint32_t Time::pulse(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res) {
-	init(callback, param, cnt, res);
-	if (!callback) {
-		return 7;
-	}
-	unkToggle = 0;
-	if (count < 50) {
-		// Bug fix: Original code had fuEvent param set to TIME_PERIODIC, the same as start().
-		// Based on how the other pulse() functions work, this should be TIME_ONESHOT. It appears
-		// this code branch is never used in the original game.
-		idEvent = timeSetEvent(count, resolution,
-			(LPTIMECALLBACK)MultimediaProc, (UINT_PTR)this, TIME_ONESHOT);
-	}
-	else {
-		idEvent = SetTimer(*HandleMain, (UINT_PTR)this, count, (TIMERPROC)TimerProc);
-	}
-	return idEvent ? 0 : 2;
+    init(callback, param, cnt, res);
+    if (!callback) {
+        return 7;
+    }
+    unkToggle = 0;
+    if (count < 50) {
+        // Bug fix: Original code had fuEvent param set to TIME_PERIODIC, the same as start().
+        // Based on how the other pulse() functions work, this should be TIME_ONESHOT. It appears
+        // this code branch is never used in the original game.
+        idEvent = timeSetEvent(count, resolution,
+            (LPTIMECALLBACK)MultimediaProc, (UINT_PTR)this, TIME_ONESHOT);
+    }
+    else {
+        idEvent = SetTimer(*HandleMain, (UINT_PTR)this, count, (TIMERPROC)TimerProc);
+    }
+    return idEvent ? 0 : 2;
 }
 
 /*
@@ -138,20 +138,20 @@ Return Value: Zero success, non-zero error
 Status: Complete
 */
 uint32_t Time::pulse(void(__cdecl *callback)(int, int), int param, int param2,
-	uint32_t cnt, uint32_t res) {
-	init(callback, param, param2, cnt, res);
-	if (!callback) {
-		return 7;
-	}
-	if (count < 50) {
-		idEvent = timeSetEvent(count, resolution,
-			(LPTIMECALLBACK)MultimediaProc, (UINT_PTR)this, TIME_ONESHOT);
-	}
-	else {
-		unkToggle = 1;
-		idEvent = SetTimer(*HandleMain, (UINT_PTR)this, count, (TIMERPROC)TimerProc);
-	}
-	return idEvent ? 0 : 2;
+    uint32_t cnt, uint32_t res) {
+    init(callback, param, param2, cnt, res);
+    if (!callback) {
+        return 7;
+    }
+    if (count < 50) {
+        idEvent = timeSetEvent(count, resolution,
+            (LPTIMECALLBACK)MultimediaProc, (UINT_PTR)this, TIME_ONESHOT);
+    }
+    else {
+        unkToggle = 1;
+        idEvent = SetTimer(*HandleMain, (UINT_PTR)this, count, (TIMERPROC)TimerProc);
+    }
+    return idEvent ? 0 : 2;
 }
 
 /*
@@ -161,18 +161,18 @@ Return Value: Zero success, non-zero error
 Status: Complete
 */
 uint32_t Time::start() {
-	if (!callback1 && !callback2) {
-		return 7;
-	}
-	unkToggle &= ~1;
-	if (count < 50) {
-		idEvent = timeSetEvent(count, resolution, (LPTIMECALLBACK)MultimediaProc,
-			(UINT_PTR)this, TIME_PERIODIC);
-	}
-	else {
-		idEvent = SetTimer(*HandleMain, (UINT_PTR)this, count, (TIMERPROC)TimerProc);
-	}
-	return idEvent ? 0 : 2;
+    if (!callback1 && !callback2) {
+        return 7;
+    }
+    unkToggle &= ~1;
+    if (count < 50) {
+        idEvent = timeSetEvent(count, resolution, (LPTIMECALLBACK)MultimediaProc,
+            (UINT_PTR)this, TIME_PERIODIC);
+    }
+    else {
+        idEvent = SetTimer(*HandleMain, (UINT_PTR)this, count, (TIMERPROC)TimerProc);
+    }
+    return idEvent ? 0 : 2;
 }
 
 /*
@@ -182,18 +182,18 @@ Return Value: Zero success, non-zero error
 Status: Complete
 */
 uint32_t Time::pulse() {
-	if (!callback1 && !callback2) {
-		return 7;
-	}
-	if (count < 50) {
-		idEvent = timeSetEvent(count, resolution,
-			(LPTIMECALLBACK)MultimediaProc, (UINT_PTR)this, TIME_ONESHOT);
-	}
-	else {
-		unkToggle = (unkToggle & ~2) | 1;
-		idEvent = SetTimer(*HandleMain, (UINT_PTR)this, count, (TIMERPROC)TimerProc);
-	}
-	return idEvent ? 0 : 2;
+    if (!callback1 && !callback2) {
+        return 7;
+    }
+    if (count < 50) {
+        idEvent = timeSetEvent(count, resolution,
+            (LPTIMECALLBACK)MultimediaProc, (UINT_PTR)this, TIME_ONESHOT);
+    }
+    else {
+        unkToggle = (unkToggle & ~2) | 1;
+        idEvent = SetTimer(*HandleMain, (UINT_PTR)this, count, (TIMERPROC)TimerProc);
+    }
+    return idEvent ? 0 : 2;
 }
 
 /*
@@ -203,18 +203,18 @@ Return Value: n/a
 Status: Complete
 */
 void Time::stop() {
-	if (idEvent) {
-		if (count < 50) {
-			timeKillEvent(idEvent);
-		}
-		else {
-			KillTimer(*HandleMain, idEvent);
-		}
-		idEvent = 0;
-	}
-	if (~unkToggle & 1) {
-		flush_timer();
-	}
+    if (idEvent) {
+        if (count < 50) {
+            timeKillEvent(idEvent);
+        }
+        else {
+            KillTimer(*HandleMain, idEvent);
+        }
+        idEvent = 0;
+    }
+    if (~unkToggle & 1) {
+        flush_timer();
+    }
 }
 
 /*
@@ -224,16 +224,16 @@ Return Value: n/a
 Status: Complete
 */
 void Time::close() {
-	stop();
-	unkToggle = 0;
-	callback1 = 0;
-	callback2 = 0;
-	cbParam2 = 0;
-	cbParam1 = 0;
-	count = 0;
-	unk_1 = 0;
-	resolution = 5;
-	unk_2 = 0;
+    stop();
+    unkToggle = 0;
+    callback1 = 0;
+    callback2 = 0;
+    cbParam2 = 0;
+    cbParam1 = 0;
+    count = 0;
+    unk_1 = 0;
+    resolution = 5;
+    unk_2 = 0;
 }
 
 /*
@@ -243,12 +243,12 @@ Return Value: n/a
 Status: Complete
 */
 void Time::TimerProc(HWND UNUSED(hwnd), uint32_t UNUSED(msg), UINT_PTR idTimer,
-	DWORD UNUSED(elapsed)) {
-	if (idTimer && (!TimeModal || idTimer == (UINT_PTR)TimeModal)
-		&& !reinterpret_cast<Time *>(idTimer)->unk_1) {
-		PostMessageA(*HandleMain, WM_USER + 1, idTimer, 0);
-		reinterpret_cast<Time *>(idTimer)->unk_1 = 1;
-	}
+    DWORD UNUSED(elapsed)) {
+    if (idTimer && (!TimeModal || idTimer == (UINT_PTR)TimeModal)
+        && !reinterpret_cast<Time *>(idTimer)->unk_1) {
+        PostMessageA(*HandleMain, WM_USER + 1, idTimer, 0);
+        reinterpret_cast<Time *>(idTimer)->unk_1 = 1;
+    }
 }
 
 /*
@@ -258,12 +258,12 @@ Return Value: n/a
 Status: Complete
 */
 void Time::MultimediaProc(uint32_t UNUSED(timerID), uint32_t UNUSED(msg), DWORD_PTR dwUser,
-	DWORD_PTR UNUSED(dw1), DWORD_PTR UNUSED(dw2)) {
-	if (dwUser && (!TimeModal || dwUser == (DWORD_PTR)TimeModal)
-		&& !reinterpret_cast<Time *>(dwUser)->unk_1) {
-		PostMessageA(*HandleMain, WM_USER + 1, dwUser, 0);
-		reinterpret_cast<Time *>(dwUser)->unk_1 = 1;
-	}
+    DWORD_PTR UNUSED(dw1), DWORD_PTR UNUSED(dw2)) {
+    if (dwUser && (!TimeModal || dwUser == (DWORD_PTR)TimeModal)
+        && !reinterpret_cast<Time *>(dwUser)->unk_1) {
+        PostMessageA(*HandleMain, WM_USER + 1, dwUser, 0);
+        reinterpret_cast<Time *>(dwUser)->unk_1 = 1;
+    }
 }
 
 // global
@@ -281,10 +281,10 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl start_timers() {
-	BlinkTimer->start(blink_timer, 1, 150, 150);
-	Blink2Timer->start(blink2_timer, 2, 100, 100);
-	LineTimer->start(line_timer, 3, 100, 100);
-	TurnTimer->start(turn_timer, 4, 500, 500);
+    BlinkTimer->start(blink_timer, 1, 150, 150);
+    Blink2Timer->start(blink2_timer, 2, 100, 100);
+    LineTimer->start(line_timer, 3, 100, 100);
+    TurnTimer->start(turn_timer, 4, 500, 500);
 }
 
 /*
@@ -294,10 +294,10 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl stop_timers() {
-	Blink2Timer->close();
-	BlinkTimer->close();
-	LineTimer->close();
-	// missing MP TurnTimer. TODO: In future determine if timer should be closed on stop
+    Blink2Timer->close();
+    BlinkTimer->close();
+    LineTimer->close();
+    // missing MP TurnTimer. TODO: In future determine if timer should be closed on stop
 }
 
 /*
@@ -307,11 +307,11 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl flush_timer() {
-	*MsgStatus |= 0x3F;
-	MSG uMsg;
-	while (PeekMessage(&uMsg, NULL, WM_USER + 1, WM_USER + 1, PM_REMOVE)) {
-		TranslateMessage(&uMsg);
-		DispatchMessage(&uMsg);
-	}
-	*MsgStatus = 0;
+    *MsgStatus |= 0x3F;
+    MSG uMsg;
+    while (PeekMessage(&uMsg, NULL, WM_USER + 1, WM_USER + 1, PM_REMOVE)) {
+        TranslateMessage(&uMsg);
+        DispatchMessage(&uMsg);
+    }
+    *MsgStatus = 0;
 }

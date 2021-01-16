@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,10 +26,10 @@ Return Value: n/a
 Status: Complete
 */
 void Spot::shutdown() {
-	if (spots) {
-		free(spots);
-	}
-	clear();
+    if (spots) {
+        free(spots);
+    }
+    clear();
 }
 
 /*
@@ -39,12 +39,12 @@ Return Value: n/a
 Status: Complete
 */
 void Spot::init(uint32_t count) {
-	shutdown();
-	spots = (SpotInternal *)mem_get(count * sizeof(SpotInternal));
-	if (spots) {
-		maxCount = count;
-		addCount = 0;
-	}
+    shutdown();
+    spots = (SpotInternal *)mem_get(count * sizeof(SpotInternal));
+    if (spots) {
+        maxCount = count;
+        addCount = 0;
+    }
 }
 
 /*
@@ -54,14 +54,14 @@ Return Value: n/a
 Status: Complete
 */
 void Spot::replace(int position, int type, int left, int top, int length, int width) {
-	for (uint32_t i = 0; i < addCount; i++) {
-		if (spots[i].position == position && spots[i].type == type) {
-			spots[i].rect.left = left;
-			spots[i].rect.right = left + length;
-			spots[i].rect.top = top;
-			spots[i].rect.bottom = top + width;
-		}
-	}
+    for (uint32_t i = 0; i < addCount; i++) {
+        if (spots[i].position == position && spots[i].type == type) {
+            spots[i].rect.left = left;
+            spots[i].rect.right = left + length;
+            spots[i].rect.top = top;
+            spots[i].rect.bottom = top + width;
+        }
+    }
 }
 
 /*
@@ -71,16 +71,16 @@ Return Value: -1 error, otherwise Spot position on success.
 Status: Complete
 */
 int Spot::add(int position, int type, int left, int top, int length, int width) {
-	if (addCount >= maxCount) {
-		return -1;
-	}
-	spots[addCount].rect.left = left;
-	spots[addCount].rect.right = left + length;
-	spots[addCount].rect.top = top;
-	spots[addCount].rect.bottom = top + width;
-	spots[addCount].position = position;
-	spots[addCount].type = type;
-	return addCount++;
+    if (addCount >= maxCount) {
+        return -1;
+    }
+    spots[addCount].rect.left = left;
+    spots[addCount].rect.right = left + length;
+    spots[addCount].rect.top = top;
+    spots[addCount].rect.bottom = top + width;
+    spots[addCount].position = position;
+    spots[addCount].type = type;
+    return addCount++;
 }
 
 /*
@@ -90,8 +90,8 @@ Return Value: -1 error, otherwise Spot position on success.
 Status: Complete
 */
 int Spot::add(int position, int type, RECT *rect) {
-	return add(position, type, rect->left, rect->top,
-		rect->right - rect->left, rect->bottom - rect->top);
+    return add(position, type, rect->left, rect->top,
+        rect->right - rect->left, rect->bottom - rect->top);
 }
 
 /*
@@ -101,14 +101,14 @@ Return Value: n/a
 Status: Complete
 */
 void Spot::kill_pos(int position) {
-	if (position < 0 || (uint32_t)position >= addCount) {
-		return;
-	}
-	addCount--;
-	if ((uint32_t)position < addCount) {
-		size_t size = sizeof(SpotInternal) * (addCount - position);
-		memcpy_s(&spots[position], size, &spots[position + 1], size);
-	}
+    if (position < 0 || (uint32_t)position >= addCount) {
+        return;
+    }
+    addCount--;
+    if ((uint32_t)position < addCount) {
+        size_t size = sizeof(SpotInternal) * (addCount - position);
+        memcpy_s(&spots[position], size, &spots[position + 1], size);
+    }
 }
 
 /*
@@ -118,11 +118,11 @@ Return Value: n/a
 Status: Complete
 */
 void Spot::kill_specific(int position, int type) {
-	for (int i = addCount - 1; i >= 0; i--) {
-		if (spots[i].position == position && spots[i].type == type) {
-			kill_pos(i);
-		}
-	}
+    for (int i = addCount - 1; i >= 0; i--) {
+        if (spots[i].position == position && spots[i].type == type) {
+            kill_pos(i);
+        }
+    }
 }
 
 /*
@@ -132,11 +132,11 @@ Return Value: n/a
 Status: Complete
 */
 void Spot::kill_type(int type) {
-	for (int i = addCount - 1; i >= 0; i--) {
-		if (spots[i].type == type) {
-			kill_pos(i);
-		}
-	}
+    for (int i = addCount - 1; i >= 0; i--) {
+        if (spots[i].type == type) {
+            kill_pos(i);
+        }
+    }
 }
 
 /*
@@ -146,23 +146,23 @@ Return Value: -1 error, otherwise Spot position on success.
 Status: Complete
 */
 int Spot::check(int xCoord, int yCoord, int *spotPos, int *spotType) {
-	int offset = addCount - 1;
-	if (offset < 0) {
-		return -1;
-	}
-	for (int i = offset; i >= 0; i--) {
-		if (xCoord >= spots[i].rect.left && xCoord < spots[i].rect.right
-			&& yCoord >= spots[i].rect.top && yCoord < spots[i].rect.bottom) {
-			if (spotPos) {
-				*spotPos = spots[i].position;
-			}
-			if (spotType) {
-				*spotType = spots[i].type;
-			}
-			return i;
-		}
-	}
-	return -1;
+    int offset = addCount - 1;
+    if (offset < 0) {
+        return -1;
+    }
+    for (int i = offset; i >= 0; i--) {
+        if (xCoord >= spots[i].rect.left && xCoord < spots[i].rect.right
+            && yCoord >= spots[i].rect.top && yCoord < spots[i].rect.bottom) {
+            if (spotPos) {
+                *spotPos = spots[i].position;
+            }
+            if (spotType) {
+                *spotType = spots[i].type;
+            }
+            return i;
+        }
+    }
+    return -1;
 }
 
 /*
@@ -172,26 +172,26 @@ Return Value: -1 error, otherwise Spot position on success.
 Status: Complete
 */
 int Spot::check(int xCoord, int yCoord, int *spotPos, int *spotType, RECT *spotRect) {
-	int offset = addCount - 1;
-	if (offset < 0) {
-		return -1;
-	}
-	for (int i = offset; i >= 0; i--) {
-		if (xCoord >= spots[i].rect.left && xCoord < spots[i].rect.right
-			&& yCoord >= spots[i].rect.top && yCoord < spots[i].rect.bottom) {
-			if (spotPos) {
-				*spotPos = spots[i].position;
-			}
-			if (spotType) {
-				*spotType = spots[i].type;
-			}
-			if (spotRect) {
-				*spotRect = spots[i].rect;
-			}
-			return i;
-		}
-	}
-	return -1;
+    int offset = addCount - 1;
+    if (offset < 0) {
+        return -1;
+    }
+    for (int i = offset; i >= 0; i--) {
+        if (xCoord >= spots[i].rect.left && xCoord < spots[i].rect.right
+            && yCoord >= spots[i].rect.top && yCoord < spots[i].rect.bottom) {
+            if (spotPos) {
+                *spotPos = spots[i].position;
+            }
+            if (spotType) {
+                *spotType = spots[i].type;
+            }
+            if (spotRect) {
+                *spotRect = spots[i].rect;
+            }
+            return i;
+        }
+    }
+    return -1;
 }
 
 /*
@@ -201,17 +201,17 @@ Return Value: -1 error, otherwise Spot position on success.
 Status: Complete
 */
 int Spot::get_rect(int position, int type, RECT *spotRect) {
-	int offset = addCount - 1;
-	if (offset < 0) {
-		return -1;
-	}
-	for (int i = offset; i >= 0; i--) {
-		if (spots[i].position == position && spots[i].type == type) {
-			if (spotRect) {
-				*spotRect = spots[i].rect;
-			}
-			return i;
-		}
-	}
-	return -1;
+    int offset = addCount - 1;
+    if (offset < 0) {
+        return -1;
+    }
+    for (int i = offset; i >= 0; i--) {
+        if (spots[i].position == position && spots[i].type == type) {
+            if (spotRect) {
+                *spotRect = spots[i].rect;
+            }
+            return i;
+        }
+    }
+    return -1;
 }

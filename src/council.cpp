@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,31 +30,31 @@ Return Value: Faction vote count
 Status: Complete
 */
 uint32_t __cdecl council_votes(uint32_t faction_id) {
-	if (is_alien_faction(faction_id)) {
-		return 0;
-	}
-	uint32_t votes = 0;
-	for (int i = 0; i < *BaseCurrentCount; i++) {
-		if (faction_id == Bases[i].faction_id_current) {
-			votes += Bases[i].population_size;
-		}
-	}
-	if (has_project(SP_EMPATH_GUILD, faction_id)) {
-		votes += votes / 2; // +50% votes
-	}
-	if (has_project(SP_CLINICAL_IMMORTALITY, faction_id)) {
-		votes *= 2; // Doubles votes
-	}
-	int bonus_count = Players[faction_id].faction_bonus_count;
-	for (int i = 0; i < bonus_count; i++) {
-		if (Players[faction_id].faction_bonus_id[i] == RULE_VOTES) {
-			int votes_bonus = Players[faction_id].faction_bonus_val1[i];
-			if (votes_bonus >= 0) {
-				votes *= votes_bonus; // Peacekeeper bonus
-			}
-		}
-	}
-	return votes;
+    if (is_alien_faction(faction_id)) {
+        return 0;
+    }
+    uint32_t votes = 0;
+    for (int i = 0; i < *BaseCurrentCount; i++) {
+        if (faction_id == Bases[i].faction_id_current) {
+            votes += Bases[i].population_size;
+        }
+    }
+    if (has_project(SP_EMPATH_GUILD, faction_id)) {
+        votes += votes / 2; // +50% votes
+    }
+    if (has_project(SP_CLINICAL_IMMORTALITY, faction_id)) {
+        votes *= 2; // Doubles votes
+    }
+    int bonus_count = Players[faction_id].faction_bonus_count;
+    for (int i = 0; i < bonus_count; i++) {
+        if (Players[faction_id].faction_bonus_id[i] == RULE_VOTES) {
+            int votes_bonus = Players[faction_id].faction_bonus_val1[i];
+            if (votes_bonus >= 0) {
+                votes *= votes_bonus; // Peacekeeper bonus
+            }
+        }
+    }
+    return votes;
 }
 
 /*
@@ -64,15 +64,15 @@ Return Value: Is the leader eligible (top two vote totals)? true/false
 Status: Complete
 */
 BOOL __cdecl eligible(uint32_t faction_id) {
-	if (is_alien_faction(faction_id)) {
-		return false;
-	}
-	uint32_t votes = council_votes(faction_id);
-	uint32_t faction_count = 0;
-	for (uint32_t i = 1; i < MaxPlayerNum; i++) {
-		if (faction_id != i && is_alive(i) && council_votes(i) > votes) {
-			faction_count++;
-		}
-	}
-	return faction_count < 2;
+    if (is_alien_faction(faction_id)) {
+        return false;
+    }
+    uint32_t votes = council_votes(faction_id);
+    uint32_t faction_count = 0;
+    for (uint32_t i = 1; i < MaxPlayerNum; i++) {
+        if (faction_id != i && is_alive(i) && council_votes(i) > votes) {
+            faction_count++;
+        }
+    }
+    return faction_count < 2;
 }

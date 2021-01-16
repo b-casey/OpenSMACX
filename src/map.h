@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,122 +21,122 @@
   * Map related objects, variables and functions.
   */
 enum TerrainAltitudeBit {
-	ALT_BIT_OCEAN_TRENCH = 0x0,
-	ALT_BIT_OCEAN = 0x20,
-	ALT_BIT_OCEAN_SHELF = 0x40,
-	ALT_BIT_SHORE_LINE = 0x60,
-	ALT_BIT_1_LEVEL_ABOVE_SEA = 0x80,
-	ALT_BIT_2_LEVELS_ABOVE_SEA = 0xA0,
-	ALT_BIT_3_LEVELS_ABOVE_SEA = 0xC0,
+    ALT_BIT_OCEAN_TRENCH = 0x0,
+    ALT_BIT_OCEAN = 0x20,
+    ALT_BIT_OCEAN_SHELF = 0x40,
+    ALT_BIT_SHORE_LINE = 0x60,
+    ALT_BIT_1_LEVEL_ABOVE_SEA = 0x80,
+    ALT_BIT_2_LEVELS_ABOVE_SEA = 0xA0,
+    ALT_BIT_3_LEVELS_ABOVE_SEA = 0xC0,
 };
 
 enum TerrainAltitude {
-	ALT_OCEAN_TRENCH = 0,
-	ALT_OCEAN = 1,
-	ALT_OCEAN_SHELF = 2,
-	ALT_SHORE_LINE = 3,
-	ALT_1_LEVEL_ABOVE_SEA = 4,
-	ALT_2_LEVELS_ABOVE_SEA = 5,
-	ALT_3_LEVELS_ABOVE_SEA = 6,
+    ALT_OCEAN_TRENCH = 0,
+    ALT_OCEAN = 1,
+    ALT_OCEAN_SHELF = 2,
+    ALT_SHORE_LINE = 3,
+    ALT_1_LEVEL_ABOVE_SEA = 4,
+    ALT_2_LEVELS_ABOVE_SEA = 5,
+    ALT_3_LEVELS_ABOVE_SEA = 6,
 };
 
 enum TerrainRainfallBit { // land modifiers only
-	RAINFALL_ARID = 0x0,
-	RAINFALL_MOIST = 0x8, // can only have one value set, otherwise tile glitches
-	RAINFALL_RAINY = 0x10, // " "
+    RAINFALL_ARID = 0x0,
+    RAINFALL_MOIST = 0x8, // can only have one value set, otherwise tile glitches
+    RAINFALL_RAINY = 0x10, // " "
 };
 
 enum TerrainRockBit { // land modifiers only
-	TERRAIN_BIT_ROLLING = 0x40, // can only have one value set, otherwise game will crash
-	TERRAIN_BIT_ROCKY = 0x80, // " "
+    TERRAIN_BIT_ROLLING = 0x40, // can only have one value set, otherwise game will crash
+    TERRAIN_BIT_ROCKY = 0x80, // " "
 };
 
 enum TerrainRockiness { // land modifiers only
-	ROCKINESS_FLAT = 0,
-	ROCKINESS_ROLLING = 1, // can only have one value set, otherwise game will crash
-	ROCKINESS_ROCKY = 2, // " "
+    ROCKINESS_FLAT = 0,
+    ROCKINESS_ROLLING = 1, // can only have one value set, otherwise game will crash
+    ROCKINESS_ROCKY = 2, // " "
 };
 
 enum TerrainBit : uint32_t {
-	BIT_BASE_IN_TILE = 0x1,
-	BIT_VEH_IN_TILE = 0x2,
-	BIT_ROAD = 0x4,
-	BIT_MAGTUBE = 0x8,
-	BIT_MINE = 0x10,
-	BIT_FUNGUS = 0x20,
-	BIT_SOLAR_TIDAL = 0x40,
-	BIT_RIVER = 0x80,
-	BIT_RIVERBED = 0x100, // River source for world river creation and visual effect
-	BIT_RIVER_LAKE = 0x200, // Shows more water for visual effect
-	BIT_RSC_BONUS = 0x400, // Mineral, Nutrient, Energy
-	BIT_BUNKER = 0x800,
-	BIT_BASE_RADIUS = 0x1000, // production radius; 21 tiles per base (20 surrounding + base tile)
-	BIT_MONOLITH = 0x2000,
-	BIT_UNK_4000 = 0x4000, // continent + single tile island off coast, used by AI; boundary?
-	BIT_FARM = 0x8000,
-	BIT_ENERGY_RSC = 0x10000,
-	BIT_MINERAL_RSC = 0x20000,
-	BIT_AIRBASE = 0x40000,
-	BIT_SOIL_ENRICHER = 0x80000,
-	BIT_SUPPLY_REMOVE = 0x100000, // Prevent randomly generated pods from appearing here
-	BIT_FOREST = 0x200000,
-	BIT_CONDENSER = 0x400000,
-	BIT_ECH_MIRROR = 0x800000,
-	BIT_THERMAL_BORE = 0x1000000,
-	BIT_UNK_2000000 = 0x2000000, // related to monoliths
-	BIT_UNK_4000000 = 0x4000000, // related to pods
-	BIT_UNK_8000000 = 0x8000000, // related to pods
-	BIT_SUPPLY_POD = 0x10000000,
-	BIT_NUTRIENT_RSC = 0x20000000,
-	BIT_UNK_40000000 = 0x40000000, // ?
-	BIT_SENSOR_ARRAY = 0x80000000,
+    BIT_BASE_IN_TILE = 0x1,
+    BIT_VEH_IN_TILE = 0x2,
+    BIT_ROAD = 0x4,
+    BIT_MAGTUBE = 0x8,
+    BIT_MINE = 0x10,
+    BIT_FUNGUS = 0x20,
+    BIT_SOLAR_TIDAL = 0x40,
+    BIT_RIVER = 0x80,
+    BIT_RIVERBED = 0x100, // River source for world river creation and visual effect
+    BIT_RIVER_LAKE = 0x200, // Shows more water for visual effect
+    BIT_RSC_BONUS = 0x400, // Mineral, Nutrient, Energy
+    BIT_BUNKER = 0x800,
+    BIT_BASE_RADIUS = 0x1000, // production radius; 21 tiles per base (20 surrounding + base tile)
+    BIT_MONOLITH = 0x2000,
+    BIT_UNK_4000 = 0x4000, // continent + single tile island off coast, used by AI; boundary?
+    BIT_FARM = 0x8000,
+    BIT_ENERGY_RSC = 0x10000,
+    BIT_MINERAL_RSC = 0x20000,
+    BIT_AIRBASE = 0x40000,
+    BIT_SOIL_ENRICHER = 0x80000,
+    BIT_SUPPLY_REMOVE = 0x100000, // Prevent randomly generated pods from appearing here
+    BIT_FOREST = 0x200000,
+    BIT_CONDENSER = 0x400000,
+    BIT_ECH_MIRROR = 0x800000,
+    BIT_THERMAL_BORE = 0x1000000,
+    BIT_UNK_2000000 = 0x2000000, // related to monoliths
+    BIT_UNK_4000000 = 0x4000000, // related to pods
+    BIT_UNK_8000000 = 0x8000000, // related to pods
+    BIT_SUPPLY_POD = 0x10000000,
+    BIT_NUTRIENT_RSC = 0x20000000,
+    BIT_UNK_40000000 = 0x40000000, // ?
+    BIT_SENSOR_ARRAY = 0x80000000,
 };
 
 enum TerrainLandmarkBit2 {
-	BIT2_CRATER = 0x1,
-	BIT2_VOLCANO = 0x2,
-	BIT2_JUNGLE = 0x4,
-	BIT2_URANIUM = 0x8,
-	BIT2_SARGASSO = 0x10,
-	BIT2_RUINS = 0x20,
-	BIT2_DUNES = 0x40,
-	BIT2_FRESH = 0x80,
-	BIT2_MESA = 0x100,
-	BIT2_CANYON = 0x200,
-	BIT2_GEOTHERMAL = 0x400,
-	BIT2_RIDGE = 0x800,
-	BIT2_BOREHOLE = 0x1000,
-	BIT2_NEXUS = 0x2000,
-	BIT2_UNITY = 0x4000,
-	BIT2_FOSSIL = 0x8000,
-	//
-	BIT2_UNK_80000000 = 0x80000000,
+    BIT2_CRATER = 0x1,
+    BIT2_VOLCANO = 0x2,
+    BIT2_JUNGLE = 0x4,
+    BIT2_URANIUM = 0x8,
+    BIT2_SARGASSO = 0x10,
+    BIT2_RUINS = 0x20,
+    BIT2_DUNES = 0x40,
+    BIT2_FRESH = 0x80,
+    BIT2_MESA = 0x100,
+    BIT2_CANYON = 0x200,
+    BIT2_GEOTHERMAL = 0x400,
+    BIT2_RIDGE = 0x800,
+    BIT2_BOREHOLE = 0x1000,
+    BIT2_NEXUS = 0x2000,
+    BIT2_UNITY = 0x4000,
+    BIT2_FOSSIL = 0x8000,
+    //
+    BIT2_UNK_80000000 = 0x80000000,
 };
 
 enum TerrainLandmarkId {
-	LM_CRATER = 0,
-	LM_VOLCANO = 1,
-	LM_JUNGLE = 2,
-	LM_URANIUM = 3,
-	LM_SARGASSO = 4,
-	LM_RUINS = 5,
-	LM_DUNES = 6,
-	LM_FRESH = 7,
-	LM_MESA = 8,
-	LM_CANYON = 9,
-	LM_GEOTHERMAL = 10,
-	LM_RIDGE = 11,
-	LM_BOREHOLE = 12,
-	LM_NEXUS = 13,
-	LM_UNITY = 14,
-	LM_FOSSIL = 15,
+    LM_CRATER = 0,
+    LM_VOLCANO = 1,
+    LM_JUNGLE = 2,
+    LM_URANIUM = 3,
+    LM_SARGASSO = 4,
+    LM_RUINS = 5,
+    LM_DUNES = 6,
+    LM_FRESH = 7,
+    LM_MESA = 8,
+    LM_CANYON = 9,
+    LM_GEOTHERMAL = 10,
+    LM_RIDGE = 11,
+    LM_BOREHOLE = 12,
+    LM_NEXUS = 13,
+    LM_UNITY = 14,
+    LM_FOSSIL = 15,
 };
 
 enum ResourceType {
-	RSC_NUTRIENTS = 0,
-	RSC_MINERALS = 1,
-	RSC_ENERGY = 2,
-	RSC_PSI = 3, // dropped mechanic
+    RSC_NUTRIENTS = 0,
+    RSC_MINERALS = 1,
+    RSC_ENERGY = 2,
+    RSC_PSI = 3, // dropped mechanic
 };
 
 /*
@@ -153,38 +153,38 @@ enum ResourceType {
 * 128: bad region, n/a
 */
 struct Map {
-	uint8_t climate; // 000 00 000 | altitude (3 bit) ; rainfall (2 bit) ; temperature (3 bit)
-	uint8_t contour; // altitude details
-	uint8_t val2; // 0000 0000 | site (0xF0) ; owner (0x0F) - last immediate control occupying tile
-															// or 0x0F for unoccupied
-	uint8_t region; // grouping of disjoint water/land areas; see above notes for more details
-	uint8_t visibility; // faction bitfield of those who can see tile (mapped: dim/bright)
-	uint8_t val3; // 00 000 000 | rocky (2 bit); lock faction_id (3 bit); using faction_id (3 bit)
-	uint8_t unk_1; // flags? bitfield
-	int8_t territory; // physical owner factionID of geographic area or -1 for unclaimed
-	uint32_t bit; // see terrain_bit
-	uint32_t bit2; // bitwho[0]? FF FF FFFF | code (landmark tile sequence); unk flags; landmark id
-	uint32_t bit_visible[7]; // how each faction sees tile (ex. pods another faction already got)
+    uint8_t climate; // 000 00 000 | altitude (3 bit) ; rainfall (2 bit) ; temperature (3 bit)
+    uint8_t contour; // altitude details
+    uint8_t val2; // 0000 0000 | site (0xF0) ; owner (0x0F) - last immediate control occupying tile
+                                                            // or 0x0F for unoccupied
+    uint8_t region; // grouping of disjoint water/land areas; see above notes for more details
+    uint8_t visibility; // faction bitfield of those who can see tile (mapped: dim/bright)
+    uint8_t val3; // 00 000 000 | rocky (2 bit); lock faction_id (3 bit); using faction_id (3 bit)
+    uint8_t unk_1; // flags? bitfield
+    int8_t territory; // physical owner factionID of geographic area or -1 for unclaimed
+    uint32_t bit; // see terrain_bit
+    uint32_t bit2; // bitwho[0]? FF FF FFFF | code (landmark tile sequence); unk flags; landmark id
+    uint32_t bit_visible[7]; // how each faction sees tile (ex. pods another faction already got)
 };
 
 struct Landmark {
-	int x;
-	int y;
-	char name[32];
+    int x;
+    int y;
+    char name[32];
 };
 
 struct Continent {
-	uint32_t tile_count; // count of tiles in region
-	uint32_t open_terrain; // count of non-rocky, non-fungus tiles (only 1 movement point to travel)
-	uint32_t unk_3; // highest world_site value (0-15)
-	uint32_t pods; // current count of supply and unity pods in region
-	uint32_t unk_5; // padding?
-	uint8_t sea_coasts[8]; // sea specific regions, connections to land regions? bitmask
+    uint32_t tile_count; // count of tiles in region
+    uint32_t open_terrain; // count of non-rocky, non-fungus tiles (only 1 movement point to travel)
+    uint32_t unk_3; // highest world_site value (0-15)
+    uint32_t pods; // current count of supply and unity pods in region
+    uint32_t unk_5; // padding?
+    uint8_t sea_coasts[8]; // sea specific regions, connections to land regions? bitmask
 };
 
 struct RulesNatural {
-	LPSTR name;
-	LPSTR name_short;
+    LPSTR name;
+    LPSTR name_short;
 };
 
 constexpr int MaxNaturalNum = 16;
@@ -197,37 +197,37 @@ const uint32_t RadiusRange[] = { 1, 9, 25, 49, 81, 121, 169, 225, 289 };
 const int RadiusBaseX[] = {  1, 2, 1, 0, -1, -2, -1,  0, 0 };
 const int RadiusBaseY[] = { -1, 0, 1, 2,  1,  0, -1, -2, 0 };
 const int RadiusOffsetX[] = {
-	 0,  1,  2,  1,  0, -1, -2,  -1,   0,   2,   2,  -2,  -2,   1,   3,   3,   1,  -1,  -3,  -3,
-	-1,  4, -4,  0,  0,  1,  2,   3,   4,   5,   5,   4,   3,   2,   1,  -1,  -2,  -3,  -4,  -5,
-	-5, -4, -3, -2, -1,  0,  6,   0,  -6,   0,   1,   2,   3,   4,   5,   6,   7,   8,   7,   6,
-	 5,  4,  3,  2,  1,  0, -1,  -2,  -3,  -4,  -5,  -6,  -7,  -8,  -7,  -6,  -5,  -4,  -3,  -2,
-	-1,  0,  1,  2,  3,  4,  5,   6,   7,   8,   9,  10,   9,   8,   7,   6,   5,   4,   3,   2,
-	 1,  0, -1, -2, -3, -4, -5,  -6,  -7,  -8,  -9, -10,  -9,  -8,  -7,  -6,  -5,  -4,  -3,  -2,
-	-1,  0,  1,  2,  3,  4,  5,   6,   7,   8,   9,  10,  11,  12,  11,  10,   9,   8,   7,   6,
-	 5,  4,  3,  2,  1,  0, -1,  -2,  -3,  -4,  -5,  -6,  -7,  -8,  -9, -10, -11, -12, -11, -10,
-	-9, -8, -7, -6, -5, -4, -3,  -2,  -1,   0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,
-	11, 12, 13, 14, 13, 12, 11,  10,   9,   8,   7,   6,   5,   4,   3,   2,   1,   0,  -1,  -2,
-	-3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, -14, -13, -12, -11, -10,  -9,  -8,  -7,  -6,
-	-5, -4, -3, -2, -1,  0,  1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,
-	15, 16, 15, 14, 13, 12, 11,  10,   9,   8,   7,   6,   5,   4,   3,   2,   1,   0,  -1,  -2,
-	-3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, -14, -15, -16, -15, -14, -13, -12, -11, -10,
-	-9, -8, -7, -6, -5, -4, -3,  -2,  -1, };
+     0,  1,  2,  1,  0, -1, -2,  -1,   0,   2,   2,  -2,  -2,   1,   3,   3,   1,  -1,  -3,  -3,
+    -1,  4, -4,  0,  0,  1,  2,   3,   4,   5,   5,   4,   3,   2,   1,  -1,  -2,  -3,  -4,  -5,
+    -5, -4, -3, -2, -1,  0,  6,   0,  -6,   0,   1,   2,   3,   4,   5,   6,   7,   8,   7,   6,
+     5,  4,  3,  2,  1,  0, -1,  -2,  -3,  -4,  -5,  -6,  -7,  -8,  -7,  -6,  -5,  -4,  -3,  -2,
+    -1,  0,  1,  2,  3,  4,  5,   6,   7,   8,   9,  10,   9,   8,   7,   6,   5,   4,   3,   2,
+     1,  0, -1, -2, -3, -4, -5,  -6,  -7,  -8,  -9, -10,  -9,  -8,  -7,  -6,  -5,  -4,  -3,  -2,
+    -1,  0,  1,  2,  3,  4,  5,   6,   7,   8,   9,  10,  11,  12,  11,  10,   9,   8,   7,   6,
+     5,  4,  3,  2,  1,  0, -1,  -2,  -3,  -4,  -5,  -6,  -7,  -8,  -9, -10, -11, -12, -11, -10,
+    -9, -8, -7, -6, -5, -4, -3,  -2,  -1,   0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,
+    11, 12, 13, 14, 13, 12, 11,  10,   9,   8,   7,   6,   5,   4,   3,   2,   1,   0,  -1,  -2,
+    -3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, -14, -13, -12, -11, -10,  -9,  -8,  -7,  -6,
+    -5, -4, -3, -2, -1,  0,  1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,
+    15, 16, 15, 14, 13, 12, 11,  10,   9,   8,   7,   6,   5,   4,   3,   2,   1,   0,  -1,  -2,
+    -3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, -14, -15, -16, -15, -14, -13, -12, -11, -10,
+    -9, -8, -7, -6, -5, -4, -3,  -2,  -1, };
 const int RadiusOffsetY[] = {
-	 0,  -1,   0,   1,   2,   1,   0,  -1,  -2,  -2,   2,   2,  -2,  -3, -1,  1,  3,  3,  1, -1,
-	-3,   0,   0,   4,  -4,  -5,  -4,  -3,  -2,  -1,   1,   2,   3,   4,  5,  5,  4,  3,  2,  1,
-	-1,  -2,  -3,  -4,  -5,   6,   0,  -6,   0,  -8,  -7,  -6,  -5,  -4, -3, -2, -1,  0,  1,  2,
-	 3,   4,   5,   6,   7,   8,   7,   6,   5,   4,   3,   2,   1,   0, -1, -2, -3, -4, -5, -6,
-	-7, -10,  -9,  -8,  -7,  -6,  -5,  -4,  -3,  -2,  -1,   0,   1,   2,  3,  4,  5,  6,  7,  8,
-	 9,  10,   9,   8,   7,   6,   5,   4,   3,   2,   1,   0,  -1,  -2, -3, -4, -5, -6, -7, -8,
-	-9, -12, -11, -10,  -9,  -8,  -7,  -6,  -5,  -4,  -3,  -2,  -1,   0,  1,  2,  3,  4,  5,  6,
-	 7,   8,   9,  10,  11,  12,  11,  10,   9,   8,   7,   6,   5,   4,  3,  2,  1,  0, -1, -2,
-	-3,  -4,  -5,  -6,  -7,  -8,  -9, -10, -11, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4,
-	-3,  -2,  -1,   0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10, 11, 12, 13, 14, 13, 12,
-	11,  10,   9,   8,   7,   6,   5,   4,   3,   2,   1,   0,  -1,  -2, -3, -4, -5, -6, -7, -8,
-	-9, -10, -11, -12, -13, -16, -15, -14, -13, -12, -11, -10,  -9,  -8, -7, -6, -5, -4, -3, -2,
-	-1,   0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12, 13, 14, 15, 16, 15, 14,
-	13,  12,  11,  10,   9,   8,   7,   6,   5,   4,   3,   2,   1,   0, -1, -2, -3, -4, -5, -6,
-	-7,  -8,  -9, -10, -11, -12, -13, -14, -15, };
+     0,  -1,   0,   1,   2,   1,   0,  -1,  -2,  -2,   2,   2,  -2,  -3, -1,  1,  3,  3,  1, -1,
+    -3,   0,   0,   4,  -4,  -5,  -4,  -3,  -2,  -1,   1,   2,   3,   4,  5,  5,  4,  3,  2,  1,
+    -1,  -2,  -3,  -4,  -5,   6,   0,  -6,   0,  -8,  -7,  -6,  -5,  -4, -3, -2, -1,  0,  1,  2,
+     3,   4,   5,   6,   7,   8,   7,   6,   5,   4,   3,   2,   1,   0, -1, -2, -3, -4, -5, -6,
+    -7, -10,  -9,  -8,  -7,  -6,  -5,  -4,  -3,  -2,  -1,   0,   1,   2,  3,  4,  5,  6,  7,  8,
+     9,  10,   9,   8,   7,   6,   5,   4,   3,   2,   1,   0,  -1,  -2, -3, -4, -5, -6, -7, -8,
+    -9, -12, -11, -10,  -9,  -8,  -7,  -6,  -5,  -4,  -3,  -2,  -1,   0,  1,  2,  3,  4,  5,  6,
+     7,   8,   9,  10,  11,  12,  11,  10,   9,   8,   7,   6,   5,   4,  3,  2,  1,  0, -1, -2,
+    -3,  -4,  -5,  -6,  -7,  -8,  -9, -10, -11, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4,
+    -3,  -2,  -1,   0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10, 11, 12, 13, 14, 13, 12,
+    11,  10,   9,   8,   7,   6,   5,   4,   3,   2,   1,   0,  -1,  -2, -3, -4, -5, -6, -7, -8,
+    -9, -10, -11, -12, -13, -16, -15, -14, -13, -12, -11, -10,  -9,  -8, -7, -6, -5, -4, -3, -2,
+    -1,   0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12, 13, 14, 15, 16, 15, 14,
+    13,  12,  11,  10,   9,   8,   7,   6,   5,   4,   3,   2,   1,   0, -1, -2, -3, -4, -5, -6,
+    -7,  -8,  -9, -10, -11, -12, -13, -14, -15, };
 const uint32_t ElevDetail[] = { 0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200 };
 
 extern uint32_t *MapLongitudeBounds; // x

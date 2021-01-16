@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,51 +30,51 @@ Return Value: Non-zero error; Zero successful
 Status: Complete
 */
 int Font::init(LPCSTR fontName, int lfHeight, uint32_t style) {
-	if (!fontName) {
-		return 3;
-	}
-	if (isFotSet & 1) {
-		lineHeight = 0;
-		height = 0;
-		ascent = 0;
-		descent = 0;
-		if (fontObj) {
-			DeleteObject(fontObj);
-			fontObj = 0;
-		}
-	}
-	else {
-		close();
-	}
-	LOGFONT lf;
-	lf.lfHeight = -lfHeight;
-	lf.lfWidth = 0;
-	lf.lfEscapement = 0;
-	lf.lfUnderline = (style >> 2) & 1;
-	lf.lfOrientation = 0;
-	lf.lfWeight = (style & 1) ? 700 : 0;
-	lf.lfItalic = (style >> 1) & 1;
-	lf.lfStrikeOut = 0;
-	lf.lfCharSet = 0;
-	lf.lfOutPrecision = 7;
-	lf.lfClipPrecision = 0;
-	lf.lfQuality = 0;
-	lf.lfPitchAndFamily = 0;
-	strcpy_s(lf.lfFaceName, 32, fontName);
-	fontObj = CreateFontIndirectA(&lf);
-	if (!fontObj) {
-		return 13;
-	}
-	SelectObject(FontHDC, fontObj);
-	TEXTMETRIC tm;
-	GetTextMetricsA(FontHDC, &tm);
-	internalLeading = tm.tmInternalLeading;
-	lineHeight = tm.tmHeight + tm.tmExternalLeading;
-	ascent = tm.tmAscent;
-	height = ascent - internalLeading;
-	descent = tm.tmDescent;
-	SelectObject(FontHDC, GetStockObject(SYSTEM_FONT));
-	return 0;
+    if (!fontName) {
+        return 3;
+    }
+    if (isFotSet & 1) {
+        lineHeight = 0;
+        height = 0;
+        ascent = 0;
+        descent = 0;
+        if (fontObj) {
+            DeleteObject(fontObj);
+            fontObj = 0;
+        }
+    }
+    else {
+        close();
+    }
+    LOGFONT lf;
+    lf.lfHeight = -lfHeight;
+    lf.lfWidth = 0;
+    lf.lfEscapement = 0;
+    lf.lfUnderline = (style >> 2) & 1;
+    lf.lfOrientation = 0;
+    lf.lfWeight = (style & 1) ? 700 : 0;
+    lf.lfItalic = (style >> 1) & 1;
+    lf.lfStrikeOut = 0;
+    lf.lfCharSet = 0;
+    lf.lfOutPrecision = 7;
+    lf.lfClipPrecision = 0;
+    lf.lfQuality = 0;
+    lf.lfPitchAndFamily = 0;
+    strcpy_s(lf.lfFaceName, 32, fontName);
+    fontObj = CreateFontIndirectA(&lf);
+    if (!fontObj) {
+        return 13;
+    }
+    SelectObject(FontHDC, fontObj);
+    TEXTMETRIC tm;
+    GetTextMetricsA(FontHDC, &tm);
+    internalLeading = tm.tmInternalLeading;
+    lineHeight = tm.tmHeight + tm.tmExternalLeading;
+    ascent = tm.tmAscent;
+    height = ascent - internalLeading;
+    descent = tm.tmDescent;
+    SelectObject(FontHDC, GetStockObject(SYSTEM_FONT));
+    return 0;
 }
 
 /*
@@ -84,28 +84,28 @@ Return Value: Non-zero error; Zero successful
 Status: Complete
 */
 int Font::init(LPCSTR file, LPCSTR fontName, int lfHeight, uint32_t style) {
-	close();
-	if (!file || !fontName) {
-		return 16;
-	}
-	size_t len = strlen(file) + 1;
-	fotFileName = (LPSTR)mem_get(len);
-	if (!fotFileName) {
-		return 4;
-	}
-	strcpy_s(fotFileName, len, file);
-	fotFileName[len - 5] = 0; // font extension length + 1
-	strcat_s(fotFileName, len, ".fot");
-	char path[MAX_PATH + 1];
-	GetCurrentDirectoryA(MAX_PATH, path);
-	CreateScalableFontResourceA(0, fotFileName, file, path);
-	if (!AddFontResourceA(fotFileName)) {
-		GetLastError();
-		return 1;
-	}
-	PostMessageA(HWND_BROADCAST, WM_FONTCHANGE, 0, 0);
-	isFotSet |= 1;
-	return init(fontName, lfHeight, style);
+    close();
+    if (!file || !fontName) {
+        return 16;
+    }
+    size_t len = strlen(file) + 1;
+    fotFileName = (LPSTR)mem_get(len);
+    if (!fotFileName) {
+        return 4;
+    }
+    strcpy_s(fotFileName, len, file);
+    fotFileName[len - 5] = 0; // font extension length + 1
+    strcat_s(fotFileName, len, ".fot");
+    char path[MAX_PATH + 1];
+    GetCurrentDirectoryA(MAX_PATH, path);
+    CreateScalableFontResourceA(0, fotFileName, file, path);
+    if (!AddFontResourceA(fotFileName)) {
+        GetLastError();
+        return 1;
+    }
+    PostMessageA(HWND_BROADCAST, WM_FONTCHANGE, 0, 0);
+    isFotSet |= 1;
+    return init(fontName, lfHeight, style);
 }
 
 /*
@@ -115,20 +115,20 @@ Return Value: n/a
 Status: Complete
 */
 void Font::close() {
-	unk_1 = -1;
-	lineHeight = 0;
-	height = 0;
-	ascent = 0;
-	descent = 0;
-	if (fontObj) {
-		DeleteObject(fontObj);
-		fontObj = 0;
-	}
-	if (fotFileName) {
-		RemoveFontResourceA(fotFileName);
-		free(fotFileName); // removed 2nd redundant check if fotFileName isn't null
-		fotFileName = 0;
-	}
+    unk_1 = -1;
+    lineHeight = 0;
+    height = 0;
+    ascent = 0;
+    descent = 0;
+    if (fontObj) {
+        DeleteObject(fontObj);
+        fontObj = 0;
+    }
+    if (fotFileName) {
+        RemoveFontResourceA(fotFileName);
+        free(fotFileName); // removed 2nd redundant check if fotFileName isn't null
+        fotFileName = 0;
+    }
 }
 
 /*
@@ -138,14 +138,14 @@ Return Value: Width, otherwise zero if error
 Status: Complete
 */
 int Font::width(LPSTR input) {
-	if (!input) {
-		return 0;
-	}
-	SelectObject(FontHDC, fontObj);
-	SIZE sz;
-	GetTextExtentPoint32A(FontHDC, input, strlen(input), &sz);
-	SelectObject(FontHDC, GetStockObject(SYSTEM_FONT));
-	return sz.cx;
+    if (!input) {
+        return 0;
+    }
+    SelectObject(FontHDC, fontObj);
+    SIZE sz;
+    GetTextExtentPoint32A(FontHDC, input, strlen(input), &sz);
+    SelectObject(FontHDC, GetStockObject(SYSTEM_FONT));
+    return sz.cx;
 }
 
 /*
@@ -155,18 +155,18 @@ Return Value: Width, otherwise zero if error
 Status: Complete
 */
 int Font::width(LPSTR input, int maxLen) {
-	if (!input) {
-		return 0;
-	}
-	int len = strlen(input);
-	if (len > maxLen) {
-		len = maxLen;
-	}
-	SelectObject(FontHDC, fontObj);
-	SIZE sz;
-	GetTextExtentPoint32A(FontHDC, input, len, &sz);
-	SelectObject(FontHDC, GetStockObject(SYSTEM_FONT));
-	return sz.cx;
+    if (!input) {
+        return 0;
+    }
+    int len = strlen(input);
+    if (len > maxLen) {
+        len = maxLen;
+    }
+    SelectObject(FontHDC, fontObj);
+    SIZE sz;
+    GetTextExtentPoint32A(FontHDC, input, len, &sz);
+    SelectObject(FontHDC, GetStockObject(SYSTEM_FONT));
+    return sz.cx;
 }
 
 /*
@@ -176,38 +176,38 @@ Return Value: Length
 Status: Complete
 */
 LPSTR Font::find_line_break_l(LPSTR input, int *breakLen, size_t len) {
-	int searchBrk = *breakLen;
-	LPSTR searchStr = input;
-	if (!len) {
-		return 0;
-	}
-	do {
-		LPSTR space = (LPSTR)memchr(searchStr + 1, ' ', len);
-		if (!space) {
-			searchBrk -= width(searchStr, len);
-			if (searchBrk < 0) {
-				*breakLen = 0;
-				if (searchStr != input) {
-					return searchStr + 1;
-				}
-				return *BufferStrHeight ? searchStr : 0;
-			}
-			break;
-		}
-		searchBrk -= width(searchStr, space - searchStr);
-		if (searchBrk < 0) {
-			*breakLen = 0;
-			if (searchStr != input) {
-				return searchStr + 1;
-			}
-			return *BufferStrHeight ? searchStr : space + 1;
-		}
-		len += searchStr - space;
-		searchStr = space;
-	} while (len);
-	*BufferStrHeight += *breakLen - searchBrk;
-	*breakLen = searchBrk;
-	return 0;
+    int searchBrk = *breakLen;
+    LPSTR searchStr = input;
+    if (!len) {
+        return 0;
+    }
+    do {
+        LPSTR space = (LPSTR)memchr(searchStr + 1, ' ', len);
+        if (!space) {
+            searchBrk -= width(searchStr, len);
+            if (searchBrk < 0) {
+                *breakLen = 0;
+                if (searchStr != input) {
+                    return searchStr + 1;
+                }
+                return *BufferStrHeight ? searchStr : 0;
+            }
+            break;
+        }
+        searchBrk -= width(searchStr, space - searchStr);
+        if (searchBrk < 0) {
+            *breakLen = 0;
+            if (searchStr != input) {
+                return searchStr + 1;
+            }
+            return *BufferStrHeight ? searchStr : space + 1;
+        }
+        len += searchStr - space;
+        searchStr = space;
+    } while (len);
+    *BufferStrHeight += *breakLen - searchBrk;
+    *breakLen = searchBrk;
+    return 0;
 }
 
 /*
@@ -217,21 +217,21 @@ Return Value: Non-zero error; Zero successful (or already initalized)
 Status: Complete
 */
 int __cdecl Font::init_font_class(Font *font) {
-	if (++FontInitCount > 1) {
-		return 0;
-	}
-	if (!font) {
-		return 3;
-	}
-	FontHDC = CreateCompatibleDC(NULL);
-	if (!FontHDC) {
-		return 2;
-	}
-	*FontDefaultPtr = font;
-	if (font->fontObj) {
-		return 0;
-	}
-	return font->init("Times New Roman", 12, 0);
+    if (++FontInitCount > 1) {
+        return 0;
+    }
+    if (!font) {
+        return 3;
+    }
+    FontHDC = CreateCompatibleDC(NULL);
+    if (!FontHDC) {
+        return 2;
+    }
+    *FontDefaultPtr = font;
+    if (font->fontObj) {
+        return 0;
+    }
+    return font->init("Times New Roman", 12, 0);
 }
 
 /*
@@ -241,13 +241,13 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl Font::close_font_class() {
-	if (--FontInitCount <= 0) {
-		if (FontHDC) {
-			DeleteDC(FontHDC);
-			FontHDC = 0;
-		}
-		*FontDefaultPtr = NULL;
-	}
+    if (--FontInitCount <= 0) {
+        if (FontHDC) {
+            DeleteDC(FontHDC);
+            FontHDC = 0;
+        }
+        *FontDefaultPtr = NULL;
+    }
 }
 
 // global

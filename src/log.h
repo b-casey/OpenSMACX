@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,30 +22,30 @@
   * Log class: Handles debug logging.
   */
 class OPENSMACX_API Log {
-	LPSTR logFile;
-	BOOL isDisabled;
+    LPSTR logFile;
+    BOOL isDisabled;
 
 public:
-	Log() : logFile(0), isDisabled(false) { } // 00625FB0
-	Log(LPCSTR input) : logFile(0), isDisabled(false) { // 00625FC0
-		if (input) {
-			int len = strlen(input) + 1;
-			logFile = (LPSTR)mem_get(len);
-			if (logFile) {
-				strcpy_s(logFile, len, input);
-				reset();
-			}
-		}
-	}
-	~Log() { if (logFile) { free(logFile); logFile = 0; } } // 00626020
+    Log() : logFile(0), isDisabled(false) { } // 00625FB0
+    Log(LPCSTR input) : logFile(0), isDisabled(false) { // 00625FC0
+        if (input) {
+            int len = strlen(input) + 1;
+            logFile = (LPSTR)mem_get(len);
+            if (logFile) {
+                strcpy_s(logFile, len, input);
+                reset();
+            }
+        }
+    }
+    ~Log() { if (logFile) { free(logFile); logFile = 0; } } // 00626020
 
-	int init(LPCSTR input);
-	void reset();
-	void say(LPCSTR str1, LPCSTR str2, int num1, int num2, int num3);
-	void say_hex(LPCSTR str1, LPCSTR str2, int num1, int num2, int num3);
+    int init(LPCSTR input);
+    void reset();
+    void say(LPCSTR str1, LPCSTR str2, int num1, int num2, int num3);
+    void say_hex(LPCSTR str1, LPCSTR str2, int num1, int num2, int num3);
 
-	// additional functions to assist with encapsulation
-	void set_state(BOOL state) { isDisabled = state ? false : true; }
+    // additional functions to assist with encapsulation
+    void set_state(BOOL state) { isDisabled = state ? false : true; }
 };
 
 // global

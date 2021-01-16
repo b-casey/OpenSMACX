@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,24 +23,24 @@
   * Flic class
   */
 class OPENSMACX_API Flic {
-	uint32_t field_0;
-	Buffer buffer;
-	uint32_t field_58C;
-	uint32_t field_590;
-	uint32_t field_594;
-	uint32_t field_598;
-	uint32_t field_59C;
-	uint32_t field_5A0;
-	uint32_t field_5A4;
-	Buffer *ptrBuffer2;
-	uint32_t field_5AC;
-	uint32_t field_5B0;
-	uint32_t field_5B4;
-	FILE *file;
-	Palette *palette;
-	uint32_t field_5C0[329];
+    uint32_t field_0;
+    Buffer buffer;
+    uint32_t field_58C;
+    uint32_t field_590;
+    uint32_t field_594;
+    uint32_t field_598;
+    uint32_t field_59C;
+    uint32_t field_5A0;
+    uint32_t field_5A4;
+    Buffer *ptrBuffer2;
+    uint32_t field_5AC;
+    uint32_t field_5B0;
+    uint32_t field_5B4;
+    FILE *file;
+    Palette *palette;
+    uint32_t field_5C0[329];
 
 public:
-	Flic() { ; }
-	~Flic() { ; }
+    Flic() { ; }
+    ~Flic() { ; }
 };

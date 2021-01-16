@@ -1,6 +1,6 @@
 /*
  * OpenSMACX - an open source clone of Sid Meier's Alpha Centauri.
- * Copyright (C) 2013-2020 Brendan Casey
+ * Copyright (C) 2013-2021 Brendan Casey
  *
  * OpenSMACX is free software: you can redistribute it and / or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,34 +25,34 @@ class ButtonGroup; // forward declaration
   * BaseButton class
   */
 class OPENSMACX_API BaseButton : GraphicWin {
-	uint32_t field_A14;
-	uint32_t field_A18;
-	Time time1;
-	uint32_t field_A44;
-	uint32_t field_A48;
-	Time time2;
-	uint32_t field_A74;
-	uint32_t field_A78;
-	LPSTR name;
-	LPSTR bubbleText;
-	uint32_t color;
-	uint32_t bevelUpper;
-	uint32_t bevelLower;
-	uint32_t bevelThickness;
-	uint32_t field_A94;
-	uint32_t field_A98;
-	uint32_t field_A9C;
-	uint32_t field_AA0;
-	uint32_t field_AA4;
-	ButtonGroup *btnGroup;
-	uint32_t field_AAC;
-	uint32_t field_AB0;
-	uint32_t field_AB4;
+    uint32_t field_A14;
+    uint32_t field_A18;
+    Time time1;
+    uint32_t field_A44;
+    uint32_t field_A48;
+    Time time2;
+    uint32_t field_A74;
+    uint32_t field_A78;
+    LPSTR name;
+    LPSTR bubbleText;
+    uint32_t color;
+    uint32_t bevelUpper;
+    uint32_t bevelLower;
+    uint32_t bevelThickness;
+    uint32_t field_A94;
+    uint32_t field_A98;
+    uint32_t field_A9C;
+    uint32_t field_AA0;
+    uint32_t field_AA4;
+    ButtonGroup *btnGroup;
+    uint32_t field_AAC;
+    uint32_t field_AB0;
+    uint32_t field_AB4;
 
 public:
-	BaseButton() { ; }
-	~BaseButton() { ; }
+    BaseButton() { ; }
+    ~BaseButton() { ; }
 
-	int set_bubble_text(LPCSTR input);
-	int set_name(LPCSTR input);
+    int set_bubble_text(LPCSTR input);
+    int set_name(LPCSTR input);
 };
