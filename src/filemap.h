@@ -20,7 +20,7 @@
  /*
   * FileMap class: Handles file IO operations.
   */
-class OPENSMACX_API Filemap {
+class DLLEXPORT Filemap {
     LPVOID mapViewAddr; // (+0)
     HANDLE hFile;       // (+4)
     HANDLE hFileMap;    // (+8)

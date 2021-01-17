@@ -20,7 +20,7 @@
  /*
   * Random class: Handles pseudo random number generator.
   */
-class OPENSMACX_API Random {
+class DLLEXPORT Random {
     uint32_t seed;
 
 public:
@@ -37,9 +37,9 @@ public:
 
 // global
 extern Random *Rand;
-OPENSMACX_API void __cdecl random_rand();
-OPENSMACX_API void __cdecl random_rand_exit();
-OPENSMACX_API void __cdecl random_reseed(uint32_t reseedValue);
-OPENSMACX_API uint32_t __cdecl random_get();
-OPENSMACX_API uint32_t __cdecl random(uint32_t min, uint32_t max);
-OPENSMACX_API double __cdecl random();
+DLLEXPORT void __cdecl random_rand();
+DLLEXPORT void __cdecl random_rand_exit();
+DLLEXPORT void __cdecl random_reseed(uint32_t reseedValue);
+DLLEXPORT uint32_t __cdecl random_get();
+DLLEXPORT uint32_t __cdecl random(uint32_t min, uint32_t max);
+DLLEXPORT double __cdecl random();

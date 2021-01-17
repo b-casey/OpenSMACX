@@ -37,6 +37,6 @@ extern BOOL *ProbeHasAlgoEnhancement;
 extern uint32_t *ProbeTargetFactionID;
 extern BOOL *ProbeTargetHasHSA;
 
-OPENSMACX_API int __cdecl steal_energy(uint32_t base_id);
-OPENSMACX_API int __cdecl mind_control(uint32_t base_id, uint32_t faction_id, BOOL is_corner_market);
-OPENSMACX_API int __cdecl success_rates(uint32_t id, uint32_t morale, int diff_modifier, int base_id);
+DLLEXPORT int __cdecl steal_energy(uint32_t base_id);
+DLLEXPORT int __cdecl mind_control(uint32_t base_id, uint32_t faction_id, BOOL is_corner_market);
+DLLEXPORT int __cdecl success_rates(uint32_t id, uint32_t morale, int diff_modifier, int base_id);

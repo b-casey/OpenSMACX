@@ -26,7 +26,8 @@
 //#endif
 //#define _CRT_SECURE_NO_WARNINGS 1 // eventually remove
 #define WIN32_LEAN_AND_MEAN       // Exclude rarely-used stuff from Windows headers
-#define OPENSMACX_API __declspec(dllexport)
+#define DLLEXPORT __declspec(dllexport)
+
 #include <SDKDDKVer.h>
 #include <random>
 #include <sstream>

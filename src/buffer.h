@@ -22,7 +22,7 @@
  /*
   * Buffer class
   */
-class OPENSMACX_API Buffer {
+class DLLEXPORT Buffer {
     typedef int32_t Dib;
     LPVOID vtable;
     uint32_t field_4;

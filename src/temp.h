@@ -115,12 +115,12 @@ extern uint32_t *UnkBitfield1;
 extern Filefind *FilefindPath;
 extern MainInterface *MainInterfaceVar;
 
-OPENSMACX_API int __cdecl tester();
+DLLEXPORT int __cdecl tester();
 
 // tech_val output
 typedef int func13(int, int, BOOL);
 extern func13 *tech_val_OG;
-OPENSMACX_API void __cdecl tech_calc_output();
+DLLEXPORT void __cdecl tech_calc_output();
 
 // message handling testing
 typedef void *func_msg(void);
@@ -131,9 +131,9 @@ extern func_msg *do_non_input_;
 
 extern uint32_t *MsgStatus;
 
-OPENSMACX_API BOOL __cdecl do_non_input();
-OPENSMACX_API void __cdecl do_all_non_input();
-OPENSMACX_API BOOL __cdecl do_draw();
-OPENSMACX_API void __cdecl do_all_draws();
-OPENSMACX_API BOOL __cdecl do_keyboard();
-OPENSMACX_API void __cdecl do_all_keyboard();
+DLLEXPORT BOOL __cdecl do_non_input();
+DLLEXPORT void __cdecl do_all_non_input();
+DLLEXPORT BOOL __cdecl do_draw();
+DLLEXPORT void __cdecl do_all_draws();
+DLLEXPORT BOOL __cdecl do_keyboard();
+DLLEXPORT void __cdecl do_all_keyboard();

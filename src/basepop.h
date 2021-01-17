@@ -22,7 +22,7 @@
  /*
   * BasePop class
   */
-class OPENSMACX_API BasePop : GraphicWin {
+class DLLEXPORT BasePop : GraphicWin {
     uint32_t field_A14;
     uint32_t field_A18;
     uint32_t field_A1C;

@@ -22,7 +22,7 @@
  /*
   * FlatButton class
   */
-class OPENSMACX_API FlatButton : public BaseButton {
+class DLLEXPORT FlatButton : public BaseButton {
     uint32_t field_AB8;
     uint32_t field_ABC;
     uint32_t field_AC0;

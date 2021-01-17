@@ -22,7 +22,7 @@
  /*
   * Time class
   */
-class OPENSMACX_API Time {
+class DLLEXPORT Time {
 private:
     int unkToggle; // some kind of toggle or type
     UINT_PTR idEvent;
@@ -73,6 +73,6 @@ extern Time *Blink2Timer;
 extern Time *GoTimer;
 extern Time *ConsoleTimer;
 
-OPENSMACX_API void __cdecl start_timers();
-OPENSMACX_API void __cdecl stop_timers();
-OPENSMACX_API void __cdecl flush_timer();
+DLLEXPORT void __cdecl start_timers();
+DLLEXPORT void __cdecl stop_timers();
+DLLEXPORT void __cdecl flush_timer();

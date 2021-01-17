@@ -21,7 +21,7 @@
  /*
   * Log class: Handles debug logging.
   */
-class OPENSMACX_API Log {
+class DLLEXPORT Log {
     LPSTR logFile;
     BOOL isDisabled;
 
@@ -52,11 +52,11 @@ public:
 extern Log *Logging;
 extern BOOL *IsLoggingDisabled;
 
-OPENSMACX_API void __cdecl log_logging();
-OPENSMACX_API void __cdecl log_logging_exit();
-OPENSMACX_API void __cdecl log_reset();
-OPENSMACX_API void __cdecl log_say(LPCSTR str1, LPCSTR str2, int num1, int num2, int num3);
-OPENSMACX_API void __cdecl log_say(LPCSTR str1, int num1, int num2, int num3);
-OPENSMACX_API void __cdecl log_say_hex(LPCSTR str1, LPCSTR str2, int num1, int num2, int num3);
-OPENSMACX_API void __cdecl log_say_hex(LPCSTR str1, int num1, int num2, int num3);
-OPENSMACX_API void __cdecl log_set_state(BOOL state);
+DLLEXPORT void __cdecl log_logging();
+DLLEXPORT void __cdecl log_logging_exit();
+DLLEXPORT void __cdecl log_reset();
+DLLEXPORT void __cdecl log_say(LPCSTR str1, LPCSTR str2, int num1, int num2, int num3);
+DLLEXPORT void __cdecl log_say(LPCSTR str1, int num1, int num2, int num3);
+DLLEXPORT void __cdecl log_say_hex(LPCSTR str1, LPCSTR str2, int num1, int num2, int num3);
+DLLEXPORT void __cdecl log_say_hex(LPCSTR str1, int num1, int num2, int num3);
+DLLEXPORT void __cdecl log_set_state(BOOL state);

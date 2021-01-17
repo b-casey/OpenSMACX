@@ -90,6 +90,6 @@ constexpr int MaxTerrainNum = 20;
 
 extern RulesTerraforming *Terraforming;
 
-OPENSMACX_API uint32_t __cdecl terraform_cost(int x, int y, uint32_t faction_id);
-OPENSMACX_API uint32_t __cdecl contribution(uint32_t veh_id, uint32_t terraform_id);
-OPENSMACX_API BOOL __cdecl terrain_avail(uint32_t terraform_id, BOOL is_sea, int faction_id);
+DLLEXPORT uint32_t __cdecl terraform_cost(int x, int y, uint32_t faction_id);
+DLLEXPORT uint32_t __cdecl contribution(uint32_t veh_id, uint32_t terraform_id);
+DLLEXPORT BOOL __cdecl terrain_avail(uint32_t terraform_id, BOOL is_sea, int faction_id);

@@ -21,7 +21,7 @@
  /*
   * Strings class: Create and interact with a basic string table.
   */
-class OPENSMACX_API Strings : Heap {
+class DLLEXPORT Strings : Heap {
     BOOL isPopulated; // (+20) -> set to true when table is created
 
 public:

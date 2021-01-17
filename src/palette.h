@@ -21,7 +21,7 @@
  /*
   * Palette class
   */
-class OPENSMACX_API Palette {
+class DLLEXPORT Palette {
     struct PaletteInternal {
         uint32_t field_0;
         Time *ptrTime;

@@ -20,7 +20,7 @@
  /*
   * Font class
   */
-class OPENSMACX_API Font {
+class DLLEXPORT Font {
     int unk_1; // height offset? set outside of class functions
     BOOL isFotSet; // used only by both init() functions
     HFONT fontObj;

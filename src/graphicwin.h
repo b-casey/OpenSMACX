@@ -22,7 +22,7 @@
  /*
   * GraphicWin class
   */
-class OPENSMACX_API GraphicWin : Win {
+class DLLEXPORT GraphicWin : Win {
     Buffer buffer;
     uint32_t field_9CC;
     uint32_t field_9D0;

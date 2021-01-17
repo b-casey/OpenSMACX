@@ -20,7 +20,7 @@
  /*
   * Path related objects, variables and functions.
   */
-class OPENSMACX_API Path {
+class DLLEXPORT Path {
 private:
     int *mapTable;
     int16_t *xCoordTable;

@@ -21,7 +21,7 @@
  /*
   * StringBox class
   */
-class OPENSMACX_API StringBox : GraphicWin {
+class DLLEXPORT StringBox : GraphicWin {
     uint32_t field_A14;
     uint32_t field_A18;
     uint32_t field_A1C;

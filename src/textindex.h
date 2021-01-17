@@ -22,7 +22,7 @@
 * Designed to speed up the time it takes to find string resources
 * in text files by creating an index of the file sections prefixed by '#'
 */
-class OPENSMACX_API TextIndex {
+class DLLEXPORT TextIndex {
     char fileName[256]; // name of file to be mapped
     uint32_t sectionCount; // number of section entries
     Heap heap;
@@ -49,6 +49,6 @@ public:
 */
 constexpr int MaxTextIndexNum = 4;
 extern TextIndex *TxtIndex;
-OPENSMACX_API void __cdecl text_make_index(LPCSTR sourceTxt);
-OPENSMACX_API int __cdecl text_search_index(LPCSTR sourceTxt, LPCSTR sectionTxt);
-OPENSMACX_API void __cdecl text_clear_index();
+DLLEXPORT void __cdecl text_make_index(LPCSTR sourceTxt);
+DLLEXPORT int __cdecl text_search_index(LPCSTR sourceTxt, LPCSTR sectionTxt);
+DLLEXPORT void __cdecl text_clear_index();

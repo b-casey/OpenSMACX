@@ -21,7 +21,7 @@
  /*
   * ButtonGroup class
   */
-class OPENSMACX_API ButtonGroup {
+class DLLEXPORT ButtonGroup {
     BaseButton *buttons[32];
     uint32_t btnCount;
     uint32_t field_84;

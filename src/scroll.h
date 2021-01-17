@@ -24,7 +24,7 @@
  /*
   * Scroll class
   */
-class OPENSMACX_API Scroll : GraphicWin {
+class DLLEXPORT Scroll : GraphicWin {
     uint32_t field_A14;
     uint32_t field_A18;
     uint32_t borderColor;

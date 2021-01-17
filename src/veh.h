@@ -494,98 +494,95 @@ extern int *VehBattleModifier;
 extern LPSTR *VehBattleDisplay;
 extern LPSTR VehBattleDisplayTerrain;
 
-OPENSMACX_API void __cdecl say_morale(LPSTR morale_output, uint32_t veh_id, 
+DLLEXPORT void __cdecl say_morale(LPSTR morale_output, uint32_t veh_id, int faction_id_vs_native);
+DLLEXPORT void __cdecl say_morale(uint32_t veh_id, int faction_id_vs_native);
+DLLEXPORT uint32_t __cdecl drop_range(uint32_t faction_id);
+DLLEXPORT uint32_t __cdecl planet_buster2(int proto_id);
+DLLEXPORT uint32_t __cdecl planet_buster(int veh_id);
+DLLEXPORT uint32_t __cdecl defense_value(uint32_t faction_id, uint32_t x, uint32_t y, 
+                                         uint32_t veh_id_def, int veh_id_atk);
+DLLEXPORT uint32_t __cdecl morale_alien(int veh_id, int faction_id_vs_native);
+DLLEXPORT int __cdecl psi_factor(int combat_ratio, uint32_t faction_id, BOOL is_attack,
+                                 BOOL is_fungal_twr);
+DLLEXPORT int __cdecl get_basic_offense(uint32_t veh_id_atk, int veh_id_def, 
+                                        uint32_t psi_combat_type, BOOL is_bombard, BOOL unk_tgl);
+DLLEXPORT int __cdecl get_basic_defense(uint32_t veh_id_def, int veh_id_atk, 
+                                        uint32_t psi_combat_type, BOOL is_bombard);
+DLLEXPORT void __cdecl battle_init();
+DLLEXPORT void __cdecl add_bat(uint32_t type, int modifier, LPCSTR display_str);
+DLLEXPORT void __cdecl battle_compute(int veh_id_atk, int veh_id_def, int *offense_out, 
+                                      int *defense_out, int combat_type);
+DLLEXPORT uint32_t __cdecl best_defender(uint32_t veh_id_def, int veh_id_atk, BOOL check_artillery);
+DLLEXPORT void __cdecl invasions(uint32_t base_id);
+DLLEXPORT void __cdecl go_to(uint32_t veh_id, uint8_t type, int x, int y);
+DLLEXPORT int __cdecl veh_top(int veh_id);
+DLLEXPORT uint32_t __cdecl veh_moves(uint32_t veh_id);
+DLLEXPORT uint32_t __cdecl proto_power(uint32_t veh_id);
+DLLEXPORT BOOL __cdecl want_monolith(uint32_t veh_id);
+DLLEXPORT int __cdecl arm_strat(uint32_t armor_id, uint32_t faction_id);
+DLLEXPORT int __cdecl weap_strat(uint32_t weapon_id, uint32_t faction_id);
+DLLEXPORT int __cdecl weap_val(uint32_t proto_id, uint32_t faction_id);
+DLLEXPORT int __cdecl arm_val(uint32_t armor_id, int faction_id);
+DLLEXPORT int __cdecl armor_val(uint32_t proto_id, int faction_id);
+DLLEXPORT uint32_t __cdecl transport_val(uint32_t chassis_id, uint32_t ability, 
+                                         uint32_t reactor_id);
+DLLEXPORT std::string __cdecl say_offense(uint32_t proto_id);
+DLLEXPORT std::string __cdecl say_defense(uint32_t proto_id);
+DLLEXPORT void __cdecl say_stats_3(LPSTR stat, uint32_t proto_id);
+DLLEXPORT void __cdecl say_stats_3(uint32_t proto_id);
+DLLEXPORT void __cdecl say_stats_2(LPSTR stat, uint32_t proto_id);
+DLLEXPORT void __cdecl say_stats(LPSTR stat, uint32_t proto_id, LPSTR custom_spacer);
+DLLEXPORT uint32_t __cdecl best_reactor(int faction_id);
+DLLEXPORT int __cdecl pick_chassis(int faction_id, int triad_chk, int speed_chk);
+DLLEXPORT int __cdecl weapon_budget(int faction_id, int condition, BOOL check_mode);
+DLLEXPORT int __cdecl armor_budget(int faction_id, int max_cost);
+DLLEXPORT int __cdecl abil_index(int ability_id);
+DLLEXPORT int __cdecl hex_cost(int proto_id, int faction_id, uint32_t x_src, uint32_t y_src, 
+                               uint32_t x_dst, uint32_t y_dst, BOOL toggle);
+DLLEXPORT void __cdecl veh_put(uint32_t veh_id, int x, int y);
+DLLEXPORT uint32_t __cdecl veh_health(uint32_t veh_id);
+DLLEXPORT uint32_t __cdecl proto_cost(uint32_t chassis_id, uint32_t weapon_id, uint32_t armor_id, 
+                                      uint32_t ability, uint32_t reactor_id);
+DLLEXPORT uint32_t __cdecl base_cost(uint32_t proto_id);
+DLLEXPORT void __cdecl make_proto(int proto_id, uint32_t chassis_id, uint32_t weapon_id, 
+                                  uint32_t armor_id, uint32_t ability, uint32_t reactor_id);
+DLLEXPORT int __cdecl get_plan(uint32_t faction_id, uint32_t plan);
+DLLEXPORT BOOL __cdecl want_to_wake(uint32_t faction_id, uint32_t veh_id, int spotted_veh_id);
+DLLEXPORT void __cdecl wake_stack(int veh_id);
+DLLEXPORT void __cdecl stack_put(int veh_id, int x, int y);
+DLLEXPORT void __cdecl stack_sort(uint32_t veh_id);
+DLLEXPORT void __cdecl stack_sort_2(uint32_t veh_id);
+DLLEXPORT int __cdecl stack_fix(int veh_id);
+DLLEXPORT int __cdecl stack_check(int veh_id, uint32_t type, int cond1, int cond2, int cond3);
+DLLEXPORT BOOL __cdecl veh_avail(uint32_t proto_id, uint32_t faction_id, int base_id);
+DLLEXPORT BOOL __cdecl wants_prototype(uint32_t proto_id, uint32_t faction_id);
+DLLEXPORT int __cdecl veh_at(int x, int y);
+DLLEXPORT BOOL __cdecl has_abil(uint32_t proto_id, uint32_t ability_id);
+DLLEXPORT int __cdecl veh_lift(uint32_t veh_id);
+DLLEXPORT int __cdecl veh_drop(uint32_t veh_id, int x, int y);
+DLLEXPORT void __cdecl sleep(uint32_t veh_id);
+DLLEXPORT void __cdecl veh_demote(int veh_id);
+DLLEXPORT void __cdecl veh_promote(int veh_id);
+DLLEXPORT void __cdecl veh_clear(uint32_t veh_id, int proto_id, uint32_t faction_id);
+DLLEXPORT BOOL __cdecl can_arty(uint32_t proto_id, BOOL sea_triad_retn);
+DLLEXPORT uint32_t __cdecl morale_veh(uint32_t veh_id, BOOL check_drone_riot, 
                                       int faction_id_vs_native);
-OPENSMACX_API void __cdecl say_morale(uint32_t veh_id, int faction_id_vs_native);
-OPENSMACX_API uint32_t __cdecl drop_range(uint32_t faction_id);
-OPENSMACX_API uint32_t __cdecl planet_buster2(int proto_id);
-OPENSMACX_API uint32_t __cdecl planet_buster(int veh_id);
-OPENSMACX_API uint32_t __cdecl defense_value(uint32_t faction_id, uint32_t x, uint32_t y, 
-                                             uint32_t veh_id_def, int veh_id_atk);
-OPENSMACX_API uint32_t __cdecl morale_alien(int veh_id, int faction_id_vs_native);
-OPENSMACX_API int __cdecl psi_factor(int combat_ratio, uint32_t faction_id, BOOL is_attack,
-                                     BOOL is_fungal_twr);
-OPENSMACX_API int __cdecl get_basic_offense(uint32_t veh_id_atk, int veh_id_def, 
-                                            uint32_t psi_combat_type, BOOL is_bombard,
-                                            BOOL unk_tgl);
-OPENSMACX_API int __cdecl get_basic_defense(uint32_t veh_id_def, int veh_id_atk, 
-                                            uint32_t psi_combat_type, BOOL is_bombard);
-OPENSMACX_API void __cdecl battle_init();
-OPENSMACX_API void __cdecl add_bat(uint32_t type, int modifier, LPCSTR display_str);
-OPENSMACX_API void __cdecl battle_compute(int veh_id_atk, int veh_id_def, int *offense_out, 
-                                          int *defense_out, int combat_type);
-OPENSMACX_API uint32_t __cdecl best_defender(uint32_t veh_id_def, int veh_id_atk, 
-                                             BOOL check_artillery);
-OPENSMACX_API void __cdecl invasions(uint32_t base_id);
-OPENSMACX_API void __cdecl go_to(uint32_t veh_id, uint8_t type, int x, int y);
-OPENSMACX_API int __cdecl veh_top(int veh_id);
-OPENSMACX_API uint32_t __cdecl veh_moves(uint32_t veh_id);
-OPENSMACX_API uint32_t __cdecl proto_power(uint32_t veh_id);
-OPENSMACX_API BOOL __cdecl want_monolith(uint32_t veh_id);
-OPENSMACX_API int __cdecl arm_strat(uint32_t armor_id, uint32_t faction_id);
-OPENSMACX_API int __cdecl weap_strat(uint32_t weapon_id, uint32_t faction_id);
-OPENSMACX_API int __cdecl weap_val(uint32_t proto_id, uint32_t faction_id);
-OPENSMACX_API int __cdecl arm_val(uint32_t armor_id, int faction_id);
-OPENSMACX_API int __cdecl armor_val(uint32_t proto_id, int faction_id);
-OPENSMACX_API uint32_t __cdecl transport_val(uint32_t chassis_id, uint32_t ability, 
-                                             uint32_t reactor_id);
-OPENSMACX_API std::string __cdecl say_offense(uint32_t proto_id);
-OPENSMACX_API std::string __cdecl say_defense(uint32_t proto_id);
-OPENSMACX_API void __cdecl say_stats_3(LPSTR stat, uint32_t proto_id);
-OPENSMACX_API void __cdecl say_stats_3(uint32_t proto_id);
-OPENSMACX_API void __cdecl say_stats_2(LPSTR stat, uint32_t proto_id);
-OPENSMACX_API void __cdecl say_stats(LPSTR stat, uint32_t proto_id, LPSTR custom_spacer);
-OPENSMACX_API uint32_t __cdecl best_reactor(int faction_id);
-OPENSMACX_API int __cdecl pick_chassis(int faction_id, int triad_chk, int speed_chk);
-OPENSMACX_API int __cdecl weapon_budget(int faction_id, int condition, BOOL check_mode);
-OPENSMACX_API int __cdecl armor_budget(int faction_id, int max_cost);
-OPENSMACX_API int __cdecl abil_index(int ability_id);
-OPENSMACX_API int __cdecl hex_cost(int proto_id, int faction_id, uint32_t x_src, uint32_t y_src, 
-                                   uint32_t x_dst, uint32_t y_dst, BOOL toggle);
-OPENSMACX_API void __cdecl veh_put(uint32_t veh_id, int x, int y);
-OPENSMACX_API uint32_t __cdecl veh_health(uint32_t veh_id);
-OPENSMACX_API uint32_t __cdecl proto_cost(uint32_t chassis_id, uint32_t weapon_id, 
-                                          uint32_t armor_id, uint32_t ability, uint32_t reactor_id);
-OPENSMACX_API uint32_t __cdecl base_cost(uint32_t proto_id);
-OPENSMACX_API void __cdecl make_proto(int proto_id, uint32_t chassis_id, uint32_t weapon_id,
-                                      uint32_t armor_id, uint32_t ability, uint32_t reactor_id);
-OPENSMACX_API int __cdecl get_plan(uint32_t faction_id, uint32_t plan);
-OPENSMACX_API BOOL __cdecl want_to_wake(uint32_t faction_id, uint32_t veh_id, int spotted_veh_id);
-OPENSMACX_API void __cdecl wake_stack(int veh_id);
-OPENSMACX_API void __cdecl stack_put(int veh_id, int x, int y);
-OPENSMACX_API void __cdecl stack_sort(uint32_t veh_id);
-OPENSMACX_API void __cdecl stack_sort_2(uint32_t veh_id);
-OPENSMACX_API int __cdecl stack_fix(int veh_id);
-OPENSMACX_API int __cdecl stack_check(int veh_id, uint32_t type, int cond1, int cond2, int cond3);
-OPENSMACX_API BOOL __cdecl veh_avail(uint32_t proto_id, uint32_t faction_id, int base_id);
-OPENSMACX_API BOOL __cdecl wants_prototype(uint32_t proto_id, uint32_t faction_id);
-OPENSMACX_API int __cdecl veh_at(int x, int y);
-OPENSMACX_API BOOL __cdecl has_abil(uint32_t proto_id, uint32_t ability_id);
-OPENSMACX_API int __cdecl veh_lift(uint32_t veh_id);
-OPENSMACX_API int __cdecl veh_drop(uint32_t veh_id, int x, int y);
-OPENSMACX_API void __cdecl sleep(uint32_t veh_id);
-OPENSMACX_API void __cdecl veh_demote(int veh_id);
-OPENSMACX_API void __cdecl veh_promote(int veh_id);
-OPENSMACX_API void __cdecl veh_clear(uint32_t veh_id, int proto_id, uint32_t faction_id);
-OPENSMACX_API BOOL __cdecl can_arty(uint32_t proto_id, BOOL sea_triad_retn);
-OPENSMACX_API uint32_t __cdecl morale_veh(uint32_t veh_id, BOOL check_drone_riot, 
-                                          int faction_id_vs_native);
-OPENSMACX_API uint32_t __cdecl offense_proto(uint32_t proto_id, int veh_id_def, BOOL is_bombard);
-OPENSMACX_API uint32_t __cdecl armor_proto(uint32_t proto_id, int veh_id_atk, BOOL is_bombard);
-OPENSMACX_API uint32_t __cdecl speed_proto(uint32_t proto_id);
-OPENSMACX_API uint32_t __cdecl speed(uint32_t veh_id, BOOL skip_morale);
-OPENSMACX_API uint32_t __cdecl veh_cargo(uint32_t veh_id);
-OPENSMACX_API uint32_t __cdecl prototype_factor(uint32_t proto_id);
-OPENSMACX_API uint32_t __cdecl veh_cost(uint32_t proto_id, int base_id, BOOL *has_proto_cost);
-OPENSMACX_API BOOL __cdecl veh_jail(uint32_t veh_id);
-OPENSMACX_API void __cdecl veh_skip(uint32_t veh_id);
-OPENSMACX_API int __cdecl veh_fake(int proto_id, uint32_t faction_id);
-OPENSMACX_API int __cdecl veh_wake(uint32_t veh_id);
-OPENSMACX_API uint8_t __cdecl get_proto_triad(uint32_t proto_id);
-OPENSMACX_API uint8_t __cdecl get_triad(uint32_t veh_id);
-OPENSMACX_API int8_t __cdecl get_proto_offense_rating(uint32_t proto_id);
-OPENSMACX_API int8_t __cdecl get_offense_rating(uint32_t veh_id);
-OPENSMACX_API int8_t __cdecl get_proto_defense_rating(uint32_t proto_id);
-OPENSMACX_API int8_t __cdecl get_defense_rating(uint32_t veh_id);
-OPENSMACX_API BOOL __cdecl is_proto_missile(uint32_t proto_id);
-OPENSMACX_API BOOL __cdecl is_missile(uint32_t veh_id);
+DLLEXPORT uint32_t __cdecl offense_proto(uint32_t proto_id, int veh_id_def, BOOL is_bombard);
+DLLEXPORT uint32_t __cdecl armor_proto(uint32_t proto_id, int veh_id_atk, BOOL is_bombard);
+DLLEXPORT uint32_t __cdecl speed_proto(uint32_t proto_id);
+DLLEXPORT uint32_t __cdecl speed(uint32_t veh_id, BOOL skip_morale);
+DLLEXPORT uint32_t __cdecl veh_cargo(uint32_t veh_id);
+DLLEXPORT uint32_t __cdecl prototype_factor(uint32_t proto_id);
+DLLEXPORT uint32_t __cdecl veh_cost(uint32_t proto_id, int base_id, BOOL *has_proto_cost);
+DLLEXPORT BOOL __cdecl veh_jail(uint32_t veh_id);
+DLLEXPORT void __cdecl veh_skip(uint32_t veh_id);
+DLLEXPORT int __cdecl veh_fake(int proto_id, uint32_t faction_id);
+DLLEXPORT int __cdecl veh_wake(uint32_t veh_id);
+DLLEXPORT uint8_t __cdecl get_proto_triad(uint32_t proto_id);
+DLLEXPORT uint8_t __cdecl get_triad(uint32_t veh_id);
+DLLEXPORT int8_t __cdecl get_proto_offense_rating(uint32_t proto_id);
+DLLEXPORT int8_t __cdecl get_offense_rating(uint32_t veh_id);
+DLLEXPORT int8_t __cdecl get_proto_defense_rating(uint32_t proto_id);
+DLLEXPORT int8_t __cdecl get_defense_rating(uint32_t veh_id);
+DLLEXPORT BOOL __cdecl is_proto_missile(uint32_t proto_id);
+DLLEXPORT BOOL __cdecl is_missile(uint32_t veh_id);

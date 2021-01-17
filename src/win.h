@@ -28,7 +28,7 @@ class Scroll; // forward declaration
  /*
   * Win class: Most basic window class.
   */
-class OPENSMACX_API Win {
+class DLLEXPORT Win {
     AutoSound autoSound;
     uint32_t field_98;
     uint32_t field_9C;

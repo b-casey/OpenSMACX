@@ -24,7 +24,7 @@ class ButtonGroup; // forward declaration
  /*
   * BaseButton class
   */
-class OPENSMACX_API BaseButton : GraphicWin {
+class DLLEXPORT BaseButton : GraphicWin {
     uint32_t field_A14;
     uint32_t field_A18;
     Time time1;

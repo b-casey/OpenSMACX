@@ -21,7 +21,7 @@
  /*
   * Sprite class
   */
-class OPENSMACX_API Sprite {
+class DLLEXPORT Sprite {
     int field_0;
     int field_4;
     char field_8;

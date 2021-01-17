@@ -20,7 +20,7 @@
  /*
   * Heap class: Handles managing or allocating memory.
   */
-class OPENSMACX_API Heap {
+class DLLEXPORT Heap {
     char errFlags;     // (+0) -> error toggle
     LPVOID basePtr;    // (+4) -> pointer to base memory address
     LPVOID currentPtr; // (+8) -> current memory address position

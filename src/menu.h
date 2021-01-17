@@ -22,7 +22,7 @@
  /*
   * Menu class
   */
-class OPENSMACX_API Menu : GraphicWin {
+class DLLEXPORT Menu : GraphicWin {
     uint32_t proc;
     uint32_t field_A18;
     uint32_t field_A1C;

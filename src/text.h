@@ -21,7 +21,7 @@
  /*
   * Text class: Handles basic text operations.
   */
-class OPENSMACX_API Text {
+class DLLEXPORT Text {
     char fileName[80];  // (+0)    : stores text filename string
     char filePath[256]; // (+0x50) : stores path of last opened file
     LPSTR currentPos;   // (+0x150)
@@ -66,17 +66,17 @@ public:
 extern Text *Txt;
 extern LPSTR *TextBufferGetPtr;
 extern LPSTR *TextBufferItemPtr;
-OPENSMACX_API void __cdecl text_txt();
-OPENSMACX_API void __cdecl text_txt_exit();
-OPENSMACX_API void __cdecl text_set_get_ptr();
-OPENSMACX_API void __cdecl text_set_item_ptr();
-OPENSMACX_API void __cdecl text_close();
-OPENSMACX_API BOOL __cdecl text_open(LPCSTR srcID, LPCSTR sectionID);
-OPENSMACX_API LPSTR __cdecl text_get();
-OPENSMACX_API LPSTR __cdecl text_string();
-OPENSMACX_API LPSTR __cdecl text_item();
-OPENSMACX_API LPSTR __cdecl text_item_string();
-OPENSMACX_API int __cdecl text_item_number();
-OPENSMACX_API int __cdecl text_item_binary();
-OPENSMACX_API int __cdecl text_item_hex();
-OPENSMACX_API int __cdecl text_get_number(int min, int max);
+DLLEXPORT void __cdecl text_txt();
+DLLEXPORT void __cdecl text_txt_exit();
+DLLEXPORT void __cdecl text_set_get_ptr();
+DLLEXPORT void __cdecl text_set_item_ptr();
+DLLEXPORT void __cdecl text_close();
+DLLEXPORT BOOL __cdecl text_open(LPCSTR srcID, LPCSTR sectionID);
+DLLEXPORT LPSTR __cdecl text_get();
+DLLEXPORT LPSTR __cdecl text_string();
+DLLEXPORT LPSTR __cdecl text_item();
+DLLEXPORT LPSTR __cdecl text_item_string();
+DLLEXPORT int __cdecl text_item_number();
+DLLEXPORT int __cdecl text_item_binary();
+DLLEXPORT int __cdecl text_item_hex();
+DLLEXPORT int __cdecl text_get_number(int min, int max);

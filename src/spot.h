@@ -20,7 +20,7 @@
  /*
   * Spot class
   */
-class OPENSMACX_API Spot {
+class DLLEXPORT Spot {
     struct SpotInternal {
         RECT rect;
         int type;

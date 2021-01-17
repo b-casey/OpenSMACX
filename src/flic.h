@@ -22,7 +22,7 @@
  /*
   * Flic class
   */
-class OPENSMACX_API Flic {
+class DLLEXPORT Flic {
     uint32_t field_0;
     Buffer buffer;
     uint32_t field_58C;

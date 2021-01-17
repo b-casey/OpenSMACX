@@ -22,7 +22,7 @@
  /*
   * Dialog class
   */
-class OPENSMACX_API Dialog {
+class DLLEXPORT Dialog {
     LPVOID vtable;
     Heap heap;
     Heap *pHeap;

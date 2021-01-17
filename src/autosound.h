@@ -20,7 +20,7 @@
  /*
   * AutoSound class
   */
-class OPENSMACX_API AutoSound {
+class DLLEXPORT AutoSound {
     PVOID vtable;
     int val1;
     int val2;

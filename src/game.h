@@ -122,7 +122,7 @@ extern int *DustCloudDuration;
 extern BOOL *IsMultiplayerNet;
 extern BOOL *IsMultiplayerPBEM;
 
-OPENSMACX_API void __cdecl planetfall(uint32_t faction_id);
-OPENSMACX_API void __cdecl clear_scenario();
-OPENSMACX_API uint32_t __cdecl game_year(int turn);
-OPENSMACX_API void __cdecl say_year(LPSTR output);
+DLLEXPORT void __cdecl planetfall(uint32_t faction_id);
+DLLEXPORT void __cdecl clear_scenario();
+DLLEXPORT uint32_t __cdecl game_year(int turn);
+DLLEXPORT void __cdecl say_year(LPSTR output);
