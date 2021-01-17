@@ -890,7 +890,7 @@ uint32_t __cdecl minerals_at(uint32_t x, uint32_t y) {
 }
 
 /*
-Purpose: Determine if the tile has a resource bonus. While the last parameter is unused, it's set to 
+Purpose: Determine if the tile has a resource bonus. While the last parameter is unused, it's set to
          1 by two calls inside world_site(). Otherwise, all other calls have it set to 0.
 Original Offset: 00592030
 Return Value: 0 (no bonus), 1 (nutrient), 2 (mineral), 3 (energy)
@@ -1855,7 +1855,8 @@ void __cdecl world_temperature() {
                 }
                 if (temperature > 1) {
                     if (alt <= ALT_2_LEVELS_ABOVE_SEA) {
-                        if (alt > ALT_1_LEVEL_ABOVE_SEA && !rand_orbit) { // ==ALT_2_LEVELS_ABOVE_SEA
+                        // == ALT_2_LEVELS_ABOVE_SEA, simplify?
+                        if (alt > ALT_1_LEVEL_ABOVE_SEA && !rand_orbit) {
                             temperature--;
                         }
                     } else if (*MapPlanetaryOrbit < 2 || !random(0, 2)) {

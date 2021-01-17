@@ -527,7 +527,7 @@ void __cdecl base_first(uint32_t base_id) {
     for (int i = 0; i < MaxVehProtoNum; i++) {
         if (veh_avail(i, faction_id, base_id)) {
             if (i < MaxVehProtoFactionNum || VehPrototypes[i].flags & PROTO_TYPED_COMPLETE) {
-                int compare = Armor[VehPrototypes[i].armor_id].defense_rating * 32;
+                int compare = get_proto_defense_rating(i) * 32;
                 uint32_t plan = VehPrototypes[i].plan;
                 if (plan == PLAN_DEFENSIVE) {
                     compare *= 4;
@@ -843,7 +843,8 @@ void __cdecl base_psych() {
     psych_check(faction_id, &drones_base, &talents_base);
     if (talents_base) {
         talents_base = range((*BaseIDCurrentSelected % talents_base
-            + PlayersData[faction_id].current_num_bases - talents_base) / talents_base, 0, pop_size);
+            + PlayersData[faction_id].current_num_bases - talents_base) 
+            / talents_base, 0, pop_size);
     }
     int psych_val = range(pop_size - drones_base, 0, pop_size);
     psych_val += range(((*BaseCurrent)->assimilation_turns_left + 9) / 10,
@@ -1214,7 +1215,7 @@ uint32_t __cdecl attack_from(uint32_t base_id, uint32_t faction_id) {
 }
 
 /*
-Purpose: Determine the value of the specified base between the requester and the respondent faction. 
+Purpose: Determine the value of the specified base between the requester and the respondent faction.
          This valuation could be triggered either from a gift, a threat or a base swap.
 Original Offset: 0054CB50
 Return Value: Value of base or -1 for invalid requests

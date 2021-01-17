@@ -1400,7 +1400,8 @@ void __cdecl social_ai(uint32_t faction_id, int growth_val, int tech_val, int we
             // planet
             int planet_weight = (4 - soc_eff.planet) * PlayersData[faction_id].unk_49 * 4 / 4; // ?
             if (PlayersData[faction_id].soc_effect_base.planet > 0
-                || PlayersData[faction_id].best_psi_offense > PlayersData[faction_id].best_weapon_value) {
+                || PlayersData[faction_id].best_psi_offense 
+                > PlayersData[faction_id].best_weapon_value) {
                 planet_weight += PlayersData[faction_id].total_mil_veh;
             } else if (unk_val3 > 1) {
                 planet_weight /= 2;
@@ -1671,7 +1672,8 @@ void __cdecl enemy_capabilities_t(uint32_t faction_id) {
             //if (Armor[i].defense_rating < 0 && arm_val > PlayersData[faction_id].bestPsiDefVal) {
             //    PlayersData[faction_id].bestPsiDefVal = arm_val;
             //}
-            if (Armor[i].defense_rating >= 0 && arm_val > PlayersData[faction_id].best_armor_value) {
+            if (Armor[i].defense_rating >= 0 
+                && arm_val > PlayersData[faction_id].best_armor_value) {
                 PlayersData[faction_id].best_armor_value = arm_val;
             }
         }

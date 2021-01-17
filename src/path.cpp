@@ -274,7 +274,8 @@ void Path::continent(int xCoord, int yCoord, uint32_t region) {
         }
     } while (index2 && index1 != index2);
     if (freshWaterCount) {
-        BOOL isFreshWater = freshWaterCount >= ((Continents[region].tile_count * 3) / 4); // land locked?
+        // land locked?
+        BOOL isFreshWater = freshWaterCount >= ((Continents[region].tile_count * 3) / 4);
         for (uint32_t y = 0; y < *MapLatitudeBounds; y++) {
             for (uint32_t x = y & 1; x < *MapLongitudeBounds; x += 2) {
                 if (region_at(x, y) == region) {
@@ -442,7 +443,7 @@ BOOL Path::sensors(int factionID, int *xCoordPtr, int *yCoordPtr) {
                                 for (uint32_t j = 0; j < 25; j++) {
                                     int xRadius2 = xrange(xRadius + RadiusOffsetX[j]);
                                     int yRadius2 = yRadius + RadiusOffsetY[j];
-                                    if (on_map(xRadius2, yRadius2) && !is_sensor(xRadius2, yRadius2) 
+                                    if (on_map(xRadius2, yRadius2) && !is_sensor(xRadius2, yRadius2)
                                         && (whose_territory(factionID, xRadius2, yRadius2, NULL,
                                             false) == factionID || get(xRadius2, yRadius2))) {
                                         check = false;

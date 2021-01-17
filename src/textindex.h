@@ -42,8 +42,8 @@ public:
 /*
 * global
 * Can skip setting TxtIndex constructor/destructor; Messy vector logic otherwise trying to assign to
-* existing memory location. Existing code maps to class TextIndex() and ~TextIndex() that redirect to
-* dll so no need replace them. Revisit in future.
+* existing memory location. Existing code maps to class TextIndex() and ~TextIndex() that redirect
+* to dll so no need replace them. Revisit in future.
 * void __cdecl `dynamic initializer for 'TxtIndex''(): 005FD4E0
 * void __cdecl `dynamic atexit destructor for 'TxtIndex''(): 005FD510
 */

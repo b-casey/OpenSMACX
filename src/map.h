@@ -343,7 +343,7 @@ OPENSMACX_API BOOL __cdecl map_write(FILE *map_file);
 OPENSMACX_API BOOL __cdecl map_read(FILE *map_file);
 OPENSMACX_API uint8_t __cdecl abstract_at(uint32_t x, uint32_t y);
 OPENSMACX_API void __cdecl abstract_set(uint32_t x, uint32_t y, uint8_t region);
-OPENSMACX_API void __cdecl quick_zoc(uint32_t x_src, uint32_t y_src, uint32_t faction_id, int x_dst, 
+OPENSMACX_API void __cdecl quick_zoc(uint32_t x_src, uint32_t y_src, uint32_t faction_id, int x_dst,
                                      int y_dst, int *x_zoc, int *y_zoc);
 OPENSMACX_API int __cdecl radius_move(int x_radius_off, int y_radius_off, int range);
 OPENSMACX_API  int __cdecl radius_move(int x_src, int y_src, int x_dst, int y_dst, int range);

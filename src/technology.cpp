@@ -71,7 +71,7 @@ BOOL __cdecl valid_tech_leap(uint32_t tech_id, uint32_t faction_id) {
         }
     }
     for (uint32_t i = 0; i < MaxWeaponNum; i++) {
-        if (Weapon[i].preq_tech == (int)tech_id) { // may end early if two weapons have the same preq
+        if (Weapon[i].preq_tech == (int)tech_id) { // may end early if 2 weapons have the same preq
             return (PlayersData[faction_id].ranking <= 2 // lowest two ranking factions
                 // this line is an odd comparison (offensive rating <= best weapon id + 2)
                 // however it might be to prevent leaps for later weapon tech
@@ -240,11 +240,14 @@ void __cdecl tech_effects(uint32_t faction_id) {
     }
     for (int i = 0; i < Players[faction_id].faction_bonus_count; i++) {
         if (Players[faction_id].faction_bonus_id[i] == RULE_FUNGNUTRIENT) {
-            PlayersData[faction_id].tech_fungus_nutrient += Players[faction_id].faction_bonus_val1[i];
+            PlayersData[faction_id].tech_fungus_nutrient 
+                += Players[faction_id].faction_bonus_val1[i];
         } else if (Players[faction_id].faction_bonus_id[i] == RULE_FUNGMINERALS) {
-            PlayersData[faction_id].tech_fungus_mineral += Players[faction_id].faction_bonus_val1[i];
+            PlayersData[faction_id].tech_fungus_mineral 
+                += Players[faction_id].faction_bonus_val1[i];
         } else if (Players[faction_id].faction_bonus_id[i] == RULE_FUNGENERGY) {
-            PlayersData[faction_id].tech_fungus_energy += Players[faction_id].faction_bonus_val1[i];
+            PlayersData[faction_id].tech_fungus_energy 
+                += Players[faction_id].faction_bonus_val1[i];
         }
     }
     // if values are below zero, cap at zero
@@ -328,7 +331,7 @@ int __cdecl tech_val(uint32_t tech_id, int faction_id, BOOL simple_calc) {
         if (!is_human_player && !has_tech(tech_id, faction_id) && simple_calc) {
             uint32_t achieved_count = bit_count(GameTechAchieved[tech_id]);
             if (achieved_count > 1) {
-                value_ret += 2 - 2 * achieved_count; // increase priority if more factions have tech 
+                value_ret += 2 - 2 * achieved_count; // increase priority if more factions have tech
             }
             int search_lvl = 1;
             for (int i = 0; i < MaxTechnologyNum; i++) {
@@ -515,8 +518,8 @@ int __cdecl tech_val(uint32_t tech_id, int faction_id, BOOL simple_calc) {
         value_ret = factor * (factor / (PlayersData[faction_id].ai_fight + 2));
     } else {  // prototypes
         uint32_t proto_id = tech_id - 97;
-        value_ret = range(Weapon[VehPrototypes[proto_id].weapon_id].offense_rating, 1, 2)
-            + range(Armor[VehPrototypes[proto_id].armor_id].defense_rating, 1, 2)
+        value_ret = range(get_proto_offense_rating(proto_id), 1, 2)
+            + range(get_proto_defense_rating(proto_id), 1, 2)
             + range(Chassis[VehPrototypes[proto_id].chassis_id].speed, 1, 2)
             + VehPrototypes[proto_id].reactor_id - 2;
     }
