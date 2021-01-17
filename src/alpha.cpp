@@ -312,7 +312,7 @@ BOOL __cdecl read_tech() {
                 parse_num(0, i);
                 parse_num(1, j);
                 parse_says(0, Technology[i].id, -1, -1);
-                parse_says(1, FilefindPath->lastPath, -1, -1);
+                parse_says(1, FilefindPath->last_path, -1, -1);
                 parse_says(2, *TextBufferGetPtr, -1, -1);
                 X_pop("DUPLICATETECH", NULL);
             }

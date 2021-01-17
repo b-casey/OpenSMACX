@@ -21,11 +21,11 @@
   * General related objects, variables and functions.
   */
 struct Filefind {
-    char cdPath[256];   // internal
-    char altPath[256];  // internal
-    char lastPath[256]; // used globally
-    char exeDir[256];   // internal
-    char relativePath[256]; // internal
+    char cd_path[256];
+    char alt_path[256];
+    char last_path[256];
+    char exe_dir[256];
+    char relative_path[256];
 };
 
 extern uint32_t ScenEditorUndoPosition;
@@ -54,13 +54,13 @@ DLLEXPORT LPSTR __cdecl findnum(LPSTR str);
 DLLEXPORT BOOL __cdecl jackal_version_check(LPCSTR version);
 DLLEXPORT char __cdecl filefind_cd_drive_letter();
 DLLEXPORT void __cdecl filefind_set_alternative(LPCSTR path);
-DLLEXPORT LPSTR __cdecl filefind_get(LPCSTR fileName);
+DLLEXPORT LPSTR __cdecl filefind_get(LPCSTR file_name);
 DLLEXPORT uint32_t __cdecl bit_count(uint32_t bitfield);
 DLLEXPORT uint32_t __cdecl bit_count_signed(int bitfield);
 DLLEXPORT void __cdecl my_srand(uint32_t reseed);
 DLLEXPORT void __cdecl swap(int *var1, int *var2);
 DLLEXPORT void __cdecl swap(uint8_t *var1, uint8_t *var2);
-DLLEXPORT int __cdecl fixed_div(int numer, int denom);
+DLLEXPORT int __cdecl fixed_div(int numerator, int denominator);
 DLLEXPORT const char *__cdecl memrchr(LPCSTR start, LPCSTR end, char value);
 DLLEXPORT int __cdecl quick_root(int input);
 DLLEXPORT void __cdecl bitmask(uint32_t input, uint32_t *offset, uint32_t *mask);
@@ -79,5 +79,5 @@ DLLEXPORT void __cdecl header_write(LPCSTR header, FILE *file);
 DLLEXPORT void __cdecl sort(uint32_t count, int *id, int *value);
 
 // WIP
-int __cdecl filefind_init(LPCSTR path, BOOL isComplete);
+int __cdecl filefind_init(LPCSTR file_check, BOOL is_complete);
 int __cdecl parse_string(LPSTR input, LPSTR output);

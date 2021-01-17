@@ -29,9 +29,9 @@ int *GenderDefault = (int *)0x009BBFEC;
 BOOL *PluralityDefault = (BOOL *)0x009BBFF0;
 
 /*
-Purpose: Trim trailing spaces inline from end of string
+Purpose: Trim the trailing spaces in-line from the end of the string.
 Original Offset: 00600780
-Return Value: None
+Return Value: n/a
 Status: Complete
 */
 void __cdecl purge_trailing(LPSTR input) {
@@ -43,9 +43,9 @@ void __cdecl purge_trailing(LPSTR input) {
 }
 
 /*
-Purpose: Trim leading spaces inline from start of string
+Purpose: Trim the leading spaces in-line from the start of the string.
 Original Offset: 00600760
-Return Value: None
+Return Value: n/a
 Status: Complete
 */
 void __cdecl purge_leading(LPSTR input) {
@@ -57,9 +57,9 @@ void __cdecl purge_leading(LPSTR input) {
 }
 
 /*
-Purpose: Trim leading and trailing spaces from string
+Purpose: Trim the leading and trailing spaces from the string.
 Original Offset: 006007B0
-Return Value: None
+Return Value: n/a
 Status: Complete
 */
 void __cdecl purge_spaces(LPSTR input) {
@@ -68,34 +68,35 @@ void __cdecl purge_spaces(LPSTR input) {
 }
 
 /*
-Purpose: Truncate string at LF. Doesn't take into account CR.
+Purpose: Truncate the string at the line feed (LF). Doesn't take into account carriage return (CR).
 Original Offset: 00600820
 Return Value: n/a
 Status: Complete
 */
 void __cdecl kill_lf(LPSTR str) {
-    LPSTR newlineLoc = strrchr(str, '\n');
-    if (newlineLoc) {
-        *newlineLoc = 0;
+    LPSTR newline_loc = strrchr(str, '\n');
+    if (newline_loc) {
+        *newline_loc = 0;
     }
 }
 
 /*
-Purpose: Remove newline (Windows: CR LF). Fixes bug with TextIndex having CR at end "HEADER\r"
-         breaking compare. This is because it uses Filemap vs fopen(x, "rt").
+Purpose: Remove newline (Windows: CR LF). This fixes a bug with TextIndex having CR at the end of 
+         "HEADER\r" breaking the compare. This is because it uses Filemap vs fopen(x, "rt").
 Original Offset: n/a
 Return Value: n/a
 Status: Complete
 */
 void __cdecl kill_nl(LPSTR str) {
-    LPSTR newlineLoc = strstr(str, "\r\n");
-    if (newlineLoc) {
-        *newlineLoc = 0;
+    LPSTR newline_loc = strstr(str, "\r\n");
+    if (newline_loc) {
+        *newline_loc = 0;
     }
 }
 
 /*
-Purpose: Add LF to end of string, assumes buffer has an extra byte. Doesn't take into account CR.
+Purpose: Add a line feed (LF) to the end of a string. This assumes the buffer has an extra byte and 
+         doesn't take into account a carriage return (CR).
 Original Offset: 00600840
 Return Value: n/a
 Status: Complete
@@ -107,7 +108,7 @@ void __cdecl add_lf(LPSTR str) {
 }
 
 /*
-Purpose: Use min and max bounds to limit input
+Purpose: Use the min and max parameters to bound the input.
 Original Offset: 00422F00
 Return Value: Bounded input
 Status: Complete
@@ -123,11 +124,11 @@ int __cdecl range(int input, int min, int max) {
 }
 
 /*
-Purpose: Allocate memory with error checking
+Purpose: Allocate memory with error checking.
 Original Offset: 005D4510
 Return Value: Pointer to allocated memory
-Status: Complete with two versions of malloc to prevent crash. Incompatibility with
-        newer SDK version of malloc CRT. Revisit once more code is redirected to dll.
+Status: Complete with two versions of malloc to prevent crash. Incompatibility with newer SDK 
+        version of malloc CRT. Revisit once more code is redirected to dll.
 */
 LPVOID __cdecl mem_get_old(size_t size) {
     LPVOID result = _malloc(size);
@@ -155,32 +156,32 @@ LPVOID __cdecl mem_get(size_t size) {
     return result;
 }
 /*
-Purpose: Checks file paths, opens file
+Purpose: Check the source file path and attempt to open a handle to the file.
 Original Offset: 00634BB0
-Return Value: FILE ptr
-Status: Complete with two versions of fopen to prevent crash. Incompatibility with
-        newer SDK version of fopen/fopen_s. Revisit once more code is redirected to dll.
+Return Value: FILE pointer
+Status: Complete with two versions of fopen to prevent a crash. Incompatibility with newer SDK 
+        version of fopen/fopen_s. Revisit once more code is redirected to dll.
 */
 FILE *__cdecl env_open_old(LPCSTR source, LPCSTR mode) {
-    LPCSTR srcCheck = filefind_get(source);
-    if (!srcCheck) {
-        srcCheck = source;
+    LPCSTR src_check = filefind_get(source);
+    if (!src_check) {
+        src_check = source;
     }
-    return _fopen(srcCheck, mode);
+    return _fopen(src_check, mode);
 }
 
 FILE *__cdecl env_open(LPCSTR source, LPCSTR mode) {
-    LPCSTR srcCheck = filefind_get(source);
-    if (!srcCheck) {
-        srcCheck = source;
+    LPCSTR src_check = filefind_get(source);
+    if (!src_check) {
+        src_check = source;
     }
-    FILE *fileOut;
-    fopen_s(&fileOut, srcCheck, mode);
-    return fileOut;
+    FILE *file_out;
+    fopen_s(&file_out, src_check, mode);
+    return file_out;
 }
 
 /*
-Purpose: Set global gender and plurality values used by parse functions.
+Purpose: Set the global gender and plurality variables used by various parse functions.
 Original Offset: 005A58E0
 Return Value: n/a
 Status: Complete
@@ -191,23 +192,23 @@ void __cdecl parse_set(int gender, BOOL plurality) {
 }
 
 /*
-Purpose: Copies number value into number message buffer using id
+Purpose: Copies the value into a number global message buffer using id.
 Original Offset: 00625E30
-Return Value: 0: no errors; 3: error
+Return Value: No errors (0); Error (3)
 Status: Complete
 */
 int __cdecl parse_num(uint32_t id, int value) {
     if (id > 9) {
-        return 3; // error
+        return 3;
     }
     ParseNumTable[id] = value;
     return 0;
 }
 
 /*
-Purpose: Copies string into message buffer from string table
+Purpose: Use the string table input reference to copy a string into the global message buffer.
 Original Offset: 00625E50
-Return Value: 0: no errors; 3: error
+Return Value: No errors (0); Error (3)
 Status: Complete
 */
 int __cdecl parse_say(uint32_t id, int input, int gender, int pluralality) {
@@ -227,9 +228,9 @@ int __cdecl parse_say(uint32_t id, int input, int gender, int pluralality) {
 }
 
 /*
-Purpose: Copies string into message buffer
+Purpose: Copies the input string into the global message buffer.
 Original Offset: 00625EC0
-Return Value: 0: no errors; 3: error
+Return Value: No errors (0); Error (3)
 Status: Complete
 */
 int __cdecl parse_says(uint32_t id, LPCSTR input, int gender, int pluralality) {
@@ -249,9 +250,9 @@ int __cdecl parse_says(uint32_t id, LPCSTR input, int gender, int pluralality) {
 }
 
 /*
-Purpose: Convert binary string to int.
+Purpose: Convert the binary string to an integer.
 Original Offset: 006288D0
-Return Value: int value of string
+Return Value: Integer value of the string
 Status: Complete
 */
 int __cdecl btoi(LPCSTR str) {
@@ -263,9 +264,9 @@ int __cdecl btoi(LPCSTR str) {
 }
 
 /*
-Purpose: Convert hex string to int.
+Purpose: Convert the hex string to an integer.
 Original Offset: 006288F0
-Return Value: int value of string
+Return Value: Integer value of the string
 Status: Complete
 */
 int __cdecl htoi(LPCSTR str) {
@@ -284,28 +285,28 @@ int __cdecl htoi(LPCSTR str) {
 }
 
 /*
-Purpose: Converts a binary, hex or decimal string to int.
+Purpose: Converts a binary, hex or decimal string to an integer.
 Original Offset: 00628950
-Return Value: int value of string
+Return Value: Integer value of the string
 Status: Complete
 */
 int __cdecl stoi(LPCSTR str) {
     if (*str == '0') {
         *str++;
         switch (*str) {
-        case 'B':
-        case 'b':
+          case 'B':
+          case 'b':
             *str++;
             return btoi(str);
-        case 'X':
-        case 'x':
+          case 'X':
+          case 'x':
             *str++;
             return htoi(str);
-        case 'D':
-        case 'd':
+          case 'D':
+          case 'd':
             *str++;
             return atoi(str);
-        default:
+          default:
             return atoi(str);
         }
     }
@@ -313,9 +314,9 @@ int __cdecl stoi(LPCSTR str) {
 }
 
 /*
-Purpose: Locates first number in string
+Purpose: Locates the first number in a string.
 Original Offset: 00628B30
-Return Value: Pointer to first number, otherwise zero
+Return Value: Pointer to the first number, otherwise zero
 Status: Complete
 */
 LPSTR __cdecl findnum(LPSTR str) {
@@ -332,8 +333,8 @@ LPSTR __cdecl findnum(LPSTR str) {
 }
 
 /*
-Purpose: Check to see if JACKAL lib version is up to date. Pretty pointless but might add OpenSMACX
-         check in future.
+Purpose: Checks to see if the JACKAL library version is up to date. Pretty pointless but might add 
+         an OpenSMACX check in the future.
 Original Offset: 0062D570
 Return Value: Was there an error? true/false
 Status: Complete
@@ -351,9 +352,9 @@ BOOL __cdecl jackal_version_check(LPCSTR version) {
 }
 
 /*
-Purpose: Primary string parsing function
+Purpose: This handles parsing the input string and storing it in the output.
 Original Offset: 00625880
-Return Value: 0: no errors; 3: error
+Return Value: No errors (0); Error (3)
 Status: WIP
 */
 int __cdecl parse_string(LPSTR input, LPSTR output) {
@@ -369,17 +370,15 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
         }
         //LPSTR parsingInput = &input[1];
         switch (var[1]) {
-        case '$': // done -> needs testing
-        {
+          case '$': { // done -> needs testing
             int len = (var - input) + 1;
             strncpy_s(output, 1024, input, len);
             output += len;
             input = var + 2;
             *output = 0;
-        }
-        break;
-        case 'H': // done -> needs testing
-        {
+            break;
+          }
+          case 'H': { // done -> needs testing
             if (strncmp(var, "$HEX", 4)) {
                 int number = var[4] - '0';
                 if (number > 9) {
@@ -390,9 +389,9 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
                 output += len;
                 *output = 0;
                 input = var + 5;
-                char outputNum[5];
-                _itoa_s(ParseNumTable[number], outputNum, 5, 10);
-                strcat_s(output, 1024, outputNum);
+                char output_num[5];
+                _itoa_s(ParseNumTable[number], output_num, 5, 10);
+                strcat_s(output, 1024, output_num);
                 output += strlen(output);
             }
             else {
@@ -412,10 +411,9 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
                 strcat_s(output, 1024, ParseStrBuffer[number].str);
                 output += strlen(output);
             }
-        }
-        break;
-        case 'N': // done -> needs testing
-        {
+            break;
+          }
+          case 'N': { // done -> needs testing
             if (strncmp(var, "$NUMBER", 7)) {
                 int number = var[7] - '0';
                 if (number > 9) {
@@ -426,9 +424,9 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
                 output += len;
                 *output = 0;
                 input = var + 8;
-                char outputNum[5];
-                _itoa_s(ParseNumTable[number], outputNum, 5, 10);
-                strcat_s(output, 1024, outputNum);
+                char output_num[5];
+                _itoa_s(ParseNumTable[number], output_num, 5, 10);
+                strcat_s(output, 1024, output_num);
                 output += strlen(output);
             }
             else if (strncmp(var, "$NUM", 4)) {
@@ -441,9 +439,9 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
                 output += len;
                 *output = 0;
                 input = var + 5;
-                char outputNum[5];
-                _itoa_s(ParseNumTable[number], outputNum, 5, 10);
-                strcat_s(output, 1024, outputNum);
+                char output_num[5];
+                _itoa_s(ParseNumTable[number], output_num, 5, 10);
+                strcat_s(output, 1024, output_num);
                 output += strlen(output);
             }
             else {
@@ -463,52 +461,41 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
                 strcat_s(output, 1024, ParseStrBuffer[number].str);
                 output += strlen(output);
             }
-        }
-        break;
-        case '<':
-        {
+            break;
+          }
+          case '<': {
             int len = var - input;
             strncpy_s(output, 1024, input, len);
             output += len;
             *output = 0;
-            LPSTR endBracket = strstr(var, ">");
-            if (!endBracket) {
+            LPSTR end_bracket = strstr(var, ">");
+            if (!end_bracket) {
                 input = var + 1;
                 continue;
             }
             var += 2;
-            input = endBracket + 1;
+            input = end_bracket + 1;
             purge_leading(var);
             int gender;// , plural = 0, num = -1;
             switch (var[0]) {
-            case 'M':
-            case 'm':
-            {
+              case 'M':
+              case 'm':
                 gender = 0;
-            }
-            break;
-            case 'F':
-            case 'f':
-            {
+                break;
+              case 'F':
+              case 'f':
                 gender = 1;
-            }
-            break;
-            case 'N':
-            case 'n':
-            {
+                break;
+              case 'N':
+              case 'n':
                 gender = 2;
-            }
-            break;
-            case '#':
-            {
+                break;
+              case '#':
                 //
-            }
-            break;
-            default:
-            {
+                break;
+              default:
                 //
-            }
-            break;
+                break;
             }
             /*
             else if (szGender == '#') {
@@ -540,10 +527,9 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
             }
             // unfinished
             */
-        }
-        break;
-        case 'L': // done -> needs testing
-        {
+            break;
+          }
+          case 'L': { // done -> needs testing
             if (strncmp(var, "$LINK<", 6)) {
                 LPSTR num = findnum(var);
                 if (!num) {
@@ -570,10 +556,9 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
                 input = var + 1;
                 break;
             }
-        }
-        break;
-        default: // done -> needs testing
-        {
+            break;
+          }
+          default: { // done -> needs testing
             LPSTR num = findnum(var);
             if (!num) {
                 var = 0;
@@ -590,8 +575,8 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
             input = num + 1;
             strcat_s(output, 1024, ParseStrBuffer[number].str);
             output += strlen(output);
-        }
-        break;
+            break;
+          }
         }
     } while (var);
 
@@ -603,9 +588,9 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
             //LPSTR langParse = output;
             LPSTR searching = 0;
             for (int i = 0; i < 6; i++) {
-                LPSTR partFound = 0;// strstr(langParse, partSpeach[i]);
-                if (partFound && (!searching || partFound < searching)) {
-                    searching = partFound;
+                LPSTR part_found = 0;// strstr(langParse, partSpeach[i]);
+                if (part_found && (!searching || part_found < searching)) {
+                    searching = part_found;
                 }
             }
         } while (1);
@@ -614,10 +599,10 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
         int nLoop = 0;
         do {
                 int nOffset = (nLoop < 3) + 3;
-                char szVowel = tolower(partFound[nOffset]);
+                char szVowel = tolower(part_found[nOffset]);
                 if (szVowel == 'a' || szVowel == 'e' || szVowel == 'i'
                 || szVowel == 'o' || szVowel == 'u' || szVowel == 'y' || szVowel == 'h') {
-                    int nDiff = strlen(output) - strlen(partFound);
+                    int nDiff = strlen(output) - strlen(part_found);
                     strcpy_s(&output[nDiff + nOffset - 1], 1024, &output[nDiff + nOffset]);
                     output[nDiff + nOffset - 2] = '\'';
                 }
@@ -633,53 +618,53 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
 }
 
 /*
-Purpose: Get drive letter of CD path
+Purpose: Get the drive letter of the CD path.
 Original Offset: 006003A0
-Return Value: Drive letter
+Return Value: CD drive letter
 Status: Complete
 */
-char __cdecl filefind_cd_drive_letter() { return FilefindPath->cdPath[0]; }
+char __cdecl filefind_cd_drive_letter() { return FilefindPath->cd_path[0]; }
 
 /*
-Purpose: Sets an alternative path for filefind checks
+Purpose: Set an alternative path for the Filefind checks.
 Original Offset: 006003B0
 Return Value: n/a
 Status: Complete
 */
 void __cdecl filefind_set_alternative(LPCSTR path) {
-    FilefindPath->altPath[0] = 0;
+    FilefindPath->alt_path[0] = 0;
     if (path) {
         if (!strchr(path, ':') && path[0] != '\\') {
-            strcat_s(FilefindPath->altPath, 256, FilefindPath->exeDir);
+            strcat_s(FilefindPath->alt_path, 256, FilefindPath->exe_dir);
         }
-        strcat_s(FilefindPath->altPath, 256, path);
+        strcat_s(FilefindPath->alt_path, 256, path);
     }
 }
 
 /*
-Purpose: Initialize filefind struct and CD check with callback if not complete install. Changed
-         logic since most installs will be on HDD making CD check less important.
+Purpose: Initialize the Filefind global along with a CD check if there isn't a complete install. 
+         Optimized logic since most installs will be on a HDD making the CD check less important.
 Original Offset: 00600400
-Return Value: Zero: no errors; Non-zero: error
+Return Value: No errors (0) otherwise error
 Status: WIP
 */
-int __cdecl filefind_init(LPCSTR fileCheck, BOOL isComplete) {
-    FilefindPath->altPath[0] = 0;
-    GetCurrentDirectoryA(256, FilefindPath->exeDir);
-    strcat_s(FilefindPath->exeDir, 256, "\\");
+int __cdecl filefind_init(LPCSTR file_check, BOOL is_complete) {
+    FilefindPath->alt_path[0] = 0;
+    GetCurrentDirectoryA(256, FilefindPath->exe_dir);
+    strcat_s(FilefindPath->exe_dir, 256, "\\");
 
-    if (isComplete) {
+    if (is_complete) {
         return 0; // complete install, no need for further checks
     }
-    if (!fileCheck) {
-        return 16; // error, fileCheck shouldn't be NULL
+    if (!file_check) {
+        return 16; // error, file_check shouldn't be NULL
     }
-    WIN32_FIND_DATAA findFileData;
-    strcpy_s(FilefindPath->lastPath, 256, FilefindPath->exeDir);
-    strcat_s(FilefindPath->lastPath, fileCheck);
-    HANDLE hFileFound = FindFirstFileA(FilefindPath->lastPath, &findFileData);
-    FindClose(hFileFound);
-    if (hFileFound != INVALID_HANDLE_VALUE) {
+    WIN32_FIND_DATAA find_file_data;
+    strcpy_s(FilefindPath->last_path, 256, FilefindPath->exe_dir);
+    strcat_s(FilefindPath->last_path, file_check);
+    HANDLE file_found = FindFirstFileA(FilefindPath->last_path, &find_file_data);
+    FindClose(file_found);
+    if (file_found != INVALID_HANDLE_VALUE) {
         return 0; // complete install on HDD, no need for CD
     }
 
@@ -688,25 +673,25 @@ int __cdecl filefind_init(LPCSTR fileCheck, BOOL isComplete) {
     if(!callBack)
     return 4;
     */
-    char szRootPath[5];
+    char root_path[5];
     do {
-        strcpy_s(szRootPath, 5, "A:\\");
-        for (int nPos = 0; nPos < 26; nPos++) {
-            if (GetDriveTypeA(szRootPath) == DRIVE_CDROM) {
+        strcpy_s(root_path, 5, "A:\\");
+        for (int i = 0; i < 26; i++) {
+            if (GetDriveTypeA(root_path) == DRIVE_CDROM) {
                 // problem if drive was disconnected
-                strcpy_s(FilefindPath->lastPath, 256, szRootPath);
-                strcat_s(FilefindPath->lastPath, fileCheck);
-                //WIN32_FIND_DATA findFileData;
-                //HANDLE hFileFound = FindFirstFile(g_filefind.last_path, &findFileData);
-                hFileFound = FindFirstFileA(FilefindPath->lastPath, &findFileData);
-                FindClose(hFileFound);
-                if (hFileFound != INVALID_HANDLE_VALUE) {
-                    strcpy_s(FilefindPath->cdPath, 256, szRootPath);
+                strcpy_s(FilefindPath->last_path, 256, root_path);
+                strcat_s(FilefindPath->last_path, file_check);
+                //WIN32_FIND_DATA find_file_data;
+                //HANDLE file_found = FindFirstFile(g_filefind.last_path, &find_file_data);
+                file_found = FindFirstFileA(FilefindPath->last_path, &find_file_data);
+                FindClose(file_found);
+                if (file_found != INVALID_HANDLE_VALUE) {
+                    strcpy_s(FilefindPath->cd_path, 256, root_path);
                     // destroy JACKAL callBack
                     return 0;
                 }
             }
-            szRootPath[0]++;
+            root_path[0]++;
         }
         // send FILEFIND_NOCD message -> if doesn't exist (removed from jackal.txt) -> exit
         // if user response is to retry -> loop around again
@@ -717,56 +702,57 @@ int __cdecl filefind_init(LPCSTR fileCheck, BOOL isComplete) {
 }
 
 /*
-Purpose: Checks to see if it can find file at some other path
+Purpose: Check to see if the specified file can be found at some other path.
 Original Offset: 006005D0
-Return Value: File path string or 0 if not found
+Return Value: File path string or NULL if not found
 Status: Complete
 */
-LPSTR __cdecl filefind_get(LPCSTR fileName) {
-    if (!fileName) {
+LPSTR __cdecl filefind_get(LPCSTR file_name) {
+    if (!file_name) {
         return 0;
     }
-    if (fileName == FilefindPath->lastPath) {
-        return FilefindPath->lastPath;
+    if (file_name == FilefindPath->last_path) {
+        return FilefindPath->last_path;
     }
-    WIN32_FIND_DATAA findFileData;
-    HANDLE hFileFound;
-    if (fileName[1] == ':') {
-        strcpy_s(FilefindPath->lastPath, 256, fileName);
-        hFileFound = FindFirstFileA(FilefindPath->lastPath, &findFileData);
-        FindClose(hFileFound);
-        return (hFileFound != INVALID_HANDLE_VALUE) ? FilefindPath->lastPath : 0;
+    WIN32_FIND_DATAA find_file_data;
+    HANDLE file_found;
+    if (file_name[1] == ':') {
+        strcpy_s(FilefindPath->last_path, 256, file_name);
+        file_found = FindFirstFileA(FilefindPath->last_path, &find_file_data);
+        FindClose(file_found);
+        return (file_found != INVALID_HANDLE_VALUE) ? FilefindPath->last_path : 0;
     }
-    if (FilefindPath->altPath[0]) {
-        strcpy_s(FilefindPath->lastPath, 256, FilefindPath->altPath);
-        strcat_s(FilefindPath->lastPath, 256, fileName);
-        hFileFound = FindFirstFileA(FilefindPath->lastPath, &findFileData);
-        FindClose(hFileFound);
-        if (hFileFound != INVALID_HANDLE_VALUE) {
-            return FilefindPath->lastPath;
+    if (FilefindPath->alt_path[0]) {
+        strcpy_s(FilefindPath->last_path, 256, FilefindPath->alt_path);
+        strcat_s(FilefindPath->last_path, 256, file_name);
+        file_found = FindFirstFileA(FilefindPath->last_path, &find_file_data);
+        FindClose(file_found);
+        if (file_found != INVALID_HANDLE_VALUE) {
+            return FilefindPath->last_path;
         }
     }
-    strcpy_s(FilefindPath->lastPath, 256, FilefindPath->exeDir);
-    strcat_s(FilefindPath->lastPath, 256, fileName);
-    hFileFound = FindFirstFileA(FilefindPath->lastPath, &findFileData);
-    FindClose(hFileFound);
-    if (hFileFound != INVALID_HANDLE_VALUE) {
-        return FilefindPath->lastPath;
+    strcpy_s(FilefindPath->last_path, 256, FilefindPath->exe_dir);
+    strcat_s(FilefindPath->last_path, 256, file_name);
+    file_found = FindFirstFileA(FilefindPath->last_path, &find_file_data);
+    FindClose(file_found);
+    if (file_found != INVALID_HANDLE_VALUE) {
+        return FilefindPath->last_path;
     }
-    if (FilefindPath->cdPath[0]) {
-        strcpy_s(FilefindPath->lastPath, 256, FilefindPath->cdPath);
-        strcat_s(FilefindPath->lastPath, 256, fileName);
-        hFileFound = FindFirstFileA(FilefindPath->lastPath, &findFileData);
-        FindClose(hFileFound);
-        if (hFileFound != INVALID_HANDLE_VALUE) {
-            return FilefindPath->lastPath;
+    if (FilefindPath->cd_path[0]) {
+        strcpy_s(FilefindPath->last_path, 256, FilefindPath->cd_path);
+        strcat_s(FilefindPath->last_path, 256, file_name);
+        file_found = FindFirstFileA(FilefindPath->last_path, &find_file_data);
+        FindClose(file_found);
+        if (file_found != INVALID_HANDLE_VALUE) {
+            return FilefindPath->last_path;
         }
     }
     return 0;
 }
 
 /*
-Purpose: Count number of bits set (unsigned). Replaced existing code with Brian Kernighan's algo.
+Purpose: Count the number of unsigned bits set. Replaced the original code with Brian Kernighan's 
+         algorithm.
 Original Offset: 0050BA30
 Return Value: Bit count
 Status: Complete
@@ -780,8 +766,7 @@ uint32_t __cdecl bit_count(uint32_t bitfield) {
 }
 
 /*
-Purpose: Count number of bits set (signed). Added a fix to prevent an infinite loop. Only referenced
-         by one GraphicWin function.
+Purpose: Count the number of signed bits set. Added a fix to prevent an infinite loop.
 Original Offset: 00628AB0
 Return Value: Bit count
 Status: Complete
@@ -795,7 +780,7 @@ uint32_t __cdecl bit_count_signed(int input) {
 }
 
 /*
-Purpose: Initialize pseudo-random number generator.
+Purpose: Initialize the pseudo-random number generator.
 Original Offset: 00538FB0
 Return Value: n/a
 Status: Complete with built in version of srand(). Revisit once more code is redirected to dll.
@@ -808,7 +793,7 @@ void __cdecl my_srand(uint32_t reseed) {
 
 /*
 Purpose: Swap the values of two 32-bit variables. Added an additional check when swapping the same
-         memory location. Future: convert to MACRO?
+         memory location.
 Original Offset: 00628A50
 Return Value: n/a
 Status: Complete
@@ -825,7 +810,7 @@ void __cdecl swap(int *var1, int *var2) {
 
 /*
 Purpose: Swap the values of two 8-bit variables. Added an additional check when swapping the same
-         memory location. Future: convert to MACRO?
+         memory location.
 Original Offset: 00628A80
 Return Value: n/a
 Status: Complete
@@ -841,24 +826,25 @@ void __cdecl swap(uint8_t *var1, uint8_t *var2) {
 }
 
 /*
-Purpose: Shift numerator to left by 16 then divide denominator. Added a check to prevent divide by
-         zero crash.
+Purpose: Shift the numerator to the left by 16 then divide by the denominator. Added a check to 
+         prevent a divide by zero crash.
 Original Offset: 00628AD0
 Return Value: Quotient
 Status: Complete
 */
-int __cdecl fixed_div(int numer, int denom) {
-    if (!denom) {
+int __cdecl fixed_div(int numerator, int denominator) {
+    if (!denominator) {
         return 0;
     }
-    return ((int64_t)numer << 16) / denom;
+    return ((int64_t)numerator << 16) / denominator;
 }
 
 /*
-Purpose: Reverse string search for last occurrence of specified character. Replaced searching logic
-         with strrchr() that does same thing. End parameter can be removed in future.
+Purpose: Reverse string search for the last occurrence of the specified character. Replaced the
+         original searching logic with strrchr() that does same thing. The end parameter can be 
+         removed in the future.
 Original Offset: 00628AF0
-Return Value: Position of character or null if not found.
+Return Value: Position of character or NULL if not found.
 Status: Complete
 */
 const char *__cdecl memrchr(LPCSTR start, LPCSTR end, char value) {
@@ -869,25 +855,26 @@ const char *__cdecl memrchr(LPCSTR start, LPCSTR end, char value) {
 }
 
 /*
-Purpose: Calculate the square root of input.
+Purpose: Calculate the square root of the input.
 Original Offset: 006290E0
-Return Value: root
+Return Value: Square root
 Status: Complete
 */
 int __cdecl quick_root(int input) {
-    int temp = input >> 1, root;
+    int temp = input >> 1;
+    int sq_root;
     if (input <= 1) {
         return input;
     }
     do {
-        root = temp;
+        sq_root = temp;
         temp = (temp + input / temp) >> 1;
-    } while (temp < root);
-    return root;
+    } while (temp < sq_root);
+    return sq_root;
 }
 
 /*
-Purpose: Calculate offset & bitmask for input.
+Purpose: Calculate the offset and bitmask for the specified input.
 Original Offset: 0050BA00
 Return Value: n/a
 Status: Complete
@@ -898,9 +885,9 @@ void __cdecl bitmask(uint32_t input, uint32_t *offset, uint32_t *mask) {
 }
 
 /*
-Purpose: Calculate a basic XOR checksum for input data.
+Purpose: Calculate a basic XOR checksum for the data buffer.
 Original Offset: 00539090
-Return Value: checksum
+Return Value: Checksum
 Status: Complete
 */
 uint8_t __cdecl checksum(uint8_t *buffer, uint32_t size, uint8_t seed) {
@@ -911,7 +898,7 @@ uint8_t __cdecl checksum(uint8_t *buffer, uint32_t size, uint8_t seed) {
 /*
 Purpose: Calculate a basic XOR checksum for a password string.
 Original Offset: 005390C0
-Return Value: checksum
+Return Value: Checksum
 Status: Complete
 */
 uint32_t __cdecl checksum_password(LPCSTR password) {
@@ -930,10 +917,10 @@ uint32_t __cdecl checksum_password(LPCSTR password) {
 }
 
 /*
-Purpose: Calculate a random value within provided bounds. The 2nd string parameter is unused. It
-         was possibly meant to have the random value append to it. Left in for compatibility.
+Purpose: Calculate a random value within the provided bounds. The unused 2nd parameter was possibly 
+         meant to have the random value append to it.
 Original Offset: 00579770
-Return Value: Randomized value
+Return Value: Bounded random value
 Status: Complete
 */
 uint32_t __cdecl rnd(int bounds, LPSTR UNUSED(input)) {
@@ -941,7 +928,7 @@ uint32_t __cdecl rnd(int bounds, LPSTR UNUSED(input)) {
 }
 
 /*
-Purpose: Create a debug error pop-up with both messages and numbers then write these values to log.
+Purpose: Create a debug error pop-up then write all the parameters to the log file.
 Original Offset: 00538F30
 Return Value: n/a
 Status: Complete
@@ -957,7 +944,7 @@ void __cdecl danger(LPCSTR msg1, LPCSTR msg2, int num1, int num2, int num3) {
 }
 
 /*
-Purpose: Delete the initial auto-saved game.
+Purpose: Delete the initial auto-save game file.
 Original Offset: 005ABD10
 Return Value: n/a
 Status: Complete
@@ -967,7 +954,7 @@ void __cdecl kill_auto_save() {
 }
 
 /*
-Purpose: Handle the creation and management of auto-save games.
+Purpose: Handle the creation and management of the auto-save game files.
 Original Offset: 005ABD20
 Return Value: n/a
 Status: Complete
@@ -1008,7 +995,7 @@ void __cdecl auto_save() {
 }
 
 /*
-Purpose: Extended auto-saving regardless of game type or settings for debugging purposes.
+Purpose: Extended auto-saving regardless of the game type or settings for debug purposes.
 Original Offset: n/a
 Return Value: n/a
 Status: Complete
@@ -1020,11 +1007,12 @@ void __cdecl auto_save_debug() {
     }
     if (!(*TurnCurrentNum % 10)) {
         remove("saves\\auto\\Alpha Centauri Autosave 500.SAV");
-        char savePathNew[45], savePathOld[45];
+        char save_path_new[45];
+        char save_path_old[45];
         for (int i = 0; i < 490; i += 10) {
-            sprintf_s(savePathOld, 45, "saves\\auto\\Alpha Centauri Autosave %d.SAV", 490 - i);
-            sprintf_s(savePathNew, 45, "saves\\auto\\Alpha Centauri Autosave %d.SAV", 500 - i);
-            rename(savePathOld, savePathNew);
+            sprintf_s(save_path_old, 45, "saves\\auto\\Alpha Centauri Autosave %d.SAV", 490 - i);
+            sprintf_s(save_path_new, 45, "saves\\auto\\Alpha Centauri Autosave %d.SAV", 500 - i);
+            rename(save_path_old, save_path_new);
         }
         save_daemon("saves\\auto\\Alpha Centauri Autosave 10");
     }
@@ -1054,26 +1042,26 @@ void __cdecl load_undo(int type) {
     if (type < 0 && ScenEditorUndoPosition > 1) {
         ScenEditorUndoPosition--;
     }
-    char loadPath[38];
-    sprintf_s(loadPath, 38, "saves\\auto\\Scenario Editor Undo %d.SAV", ScenEditorUndoPosition);
+    char load_path[38];
+    sprintf_s(load_path, 38, "saves\\auto\\Scenario Editor Undo %d.SAV", ScenEditorUndoPosition);
     if (type > 0 && ScenEditorUndoPosition < 9) {
         ScenEditorUndoPosition++;
     }
-    load_daemon(loadPath, false);
-    draw_map(true); // bug fix: map artifacts display issue; TODO: best method of refreshing map?
+    load_daemon(load_path, false);
+    draw_map(true); // Bug fix: Map artifacts display issue; TODO: best method of refreshing map?
 }
 
 /*
-Purpose: Remove all existing Scenario Editor undo auto-saves.
+Purpose: Remove all the existing Scenario Editor undo auto-saves.
 Original Offset: 005ABEC0
 Return Value: n/a
 Status: Complete
 */
 void __cdecl wipe_undo() {
-    char undoPath[38];
+    char undo_path[38];
     for (int i = 9; i >= 1; i--) {
-        sprintf_s(undoPath, 38, "saves\\auto\\Scenario Editor Undo %d.SAV", i);
-        remove(undoPath);
+        sprintf_s(undo_path, 38, "saves\\auto\\Scenario Editor Undo %d.SAV", i);
+        remove(undo_path);
     }
 }
 
@@ -1087,35 +1075,36 @@ void __cdecl auto_undo() {
     if (*GamePreferences & PREF_BSC_AUTOSAVE_EACH_TURN) {
         ScenEditorUndoPosition = 1;
         remove("saves\\auto\\Scenario Editor Undo 9.SAV");
-        char savePathNew[38], savePathOld[38];
+        char save_path_new[38];
+        char save_path_old[38];
         for (int i = 9; i >= 2; i--) {
-            sprintf_s(savePathOld, 38, "saves\\auto\\Scenario Editor Undo %d.SAV", i - 1);
-            sprintf_s(savePathNew, 38, "saves\\auto\\Scenario Editor Undo %d.SAV", i);
-            rename(savePathOld, savePathNew);
+            sprintf_s(save_path_old, 38, "saves\\auto\\Scenario Editor Undo %d.SAV", i - 1);
+            sprintf_s(save_path_new, 38, "saves\\auto\\Scenario Editor Undo %d.SAV", i);
+            rename(save_path_old, save_path_new);
         }
         save_daemon("saves\\auto\\Scenario Editor Undo 1");
     }
 }
 
 /*
-Purpose: Read the specified header from a file. Assumes header string buffer is at least 256 chars.
-         TODO: Replace built-in versions of _fgetc and change return to std::string.
+Purpose: Read the specified header from a file. This assumes the header string buffer is at least 
+         256 characters. TODO: Replace built-in versions of _fgetc and change return to std::string.
 Original Offset: 0057D1F0
 Return Value: n/a
 Status: Complete
 */
 void __cdecl header_check(LPSTR header, FILE *file) {
-    int headerChr = _fgetc(file);
-    *header++ = (char)headerChr;
-    if (headerChr) {
+    int header_chr = _fgetc(file);
+    *header++ = (char)header_chr;
+    if (header_chr) {
         int i = 0;
         do {
             if (++i >= 256) {
                 break;
             }
-            headerChr = _fgetc(file);
-            *header++ = (char)headerChr;
-        } while (headerChr);
+            header_chr = _fgetc(file);
+            *header++ = (char)header_chr;
+        } while (header_chr);
     }
     _fgetc(file);
 }
@@ -1127,11 +1116,11 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl header_write(LPCSTR header, FILE *file) {
-    int headerChr;
+    int header_chr;
     do {
-        headerChr = *header++;
-        _fputc(headerChr, file);
-    } while (headerChr);
+        header_chr = *header++;
+        _fputc(header_chr, file);
+    } while (header_chr);
     _fputc(0x1A, file);
 }
 
