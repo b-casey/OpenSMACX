@@ -1039,9 +1039,9 @@ void __cdecl invasions(uint32_t base_id) {
     int16_t base_x = Bases[base_id].x;
     int16_t base_y = Bases[base_id].y;
     for (int i = 0; i < *VehCurrentCount; i++) {
-        uint32_t faction_id_veh = Vehs[i].faction_id;
-        if (faction_id_veh && !is_human(faction_id_veh) && faction_id_veh != faction_id_base
-            && !has_treaty(faction_id_veh, faction_id_base, DTREATY_TREATY)) {
+        uint32_t veh_faction_id = Vehs[i].faction_id;
+        if (veh_faction_id && !is_human(veh_faction_id) && veh_faction_id != faction_id_base
+            && !has_treaty(veh_faction_id, faction_id_base, DTREATY_TREATY)) {
             int veh_x = Vehs[i].x;
             int veh_y = Vehs[i].y;
             if (is_ocean(veh_x, veh_y) && veh_cargo(i) && stack_check(i, 3, TRIAD_LAND, -1, -1)) {
@@ -2706,7 +2706,7 @@ uint32_t __cdecl armor_proto(uint32_t proto_id, int veh_id_atk, BOOL is_bombard)
         return 16; // probe defending against another probe
     }
     // Bug fix: Vehs[].proto_id with veh_id_atk -1 could cause arbitrary memory read (Reactor 
-    // struct) due to lack of bounds checking when comparing veh_id_atk protoID to Spore Launcher
+    // struct) due to lack of bounds checking when comparing veh_id_atk prototype to Spore Launcher
     if (is_bombard && (veh_id_atk < 0 || Vehs[veh_id_atk].proto_id != BSC_SPORE_LAUNCHER)
         && proto_id != BSC_SPORE_LAUNCHER || (get_proto_defense_rating(proto_id) >= 0 
             && (veh_id_atk < 0 || get_offense_rating(veh_id_atk) >= 0))) {

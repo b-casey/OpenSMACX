@@ -850,7 +850,7 @@ with open(exe_path, "r+b") as f:
     bin_app.seek(0x0019A2D0) # ?shutdown@Path@@QAEXXZ
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*323))
-    bin_app.seek(0x0019A370) # ?zoc_path@Path@@QAEHHHH@Z
+    bin_app.seek(0x0019A370) # ?zoc_path@Path@@QAEHIII@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*408))
     bin_app.seek(0x0019C200) # ?make_abstract@Path@@QAEXXZ
@@ -859,10 +859,10 @@ with open(exe_path, "r+b") as f:
     bin_app.seek(0x0019C340) # ?merge@Path@@QAEXII@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*410))
-    bin_app.seek(0x0019C3C0) # ?territory@Path@@QAEXHHHH@Z
+    bin_app.seek(0x0019C3C0) # ?territory@Path@@QAEXIIHH@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*411))
-    bin_app.seek(0x0019C520) # ?continent@Path@@QAEXHHI@Z
+    bin_app.seek(0x0019C520) # ?continent@Path@@QAEXIII@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*412))
     bin_app.seek(0x0019C790) # ?continents@Path@@QAEXXZ

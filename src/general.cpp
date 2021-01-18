@@ -275,8 +275,7 @@ int __cdecl htoi(LPCSTR str) {
         result *= 16;
         if (isdigit(*str)) {
             result += *str - '0';
-        }
-        else {
+        } else {
             result += toupper(*str) - '7';
         }
         *str++;
@@ -393,8 +392,7 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
                 _itoa_s(ParseNumTable[number], output_num, 5, 10);
                 strcat_s(output, 1024, output_num);
                 output += strlen(output);
-            }
-            else {
+            } else {
                 LPSTR num = findnum(var);
                 if (!num) {
                     break;
@@ -428,8 +426,7 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
                 _itoa_s(ParseNumTable[number], output_num, 5, 10);
                 strcat_s(output, 1024, output_num);
                 output += strlen(output);
-            }
-            else if (strncmp(var, "$NUM", 4)) {
+            } else if (strncmp(var, "$NUM", 4)) {
                 int number = var[4] - '0';
                 if (number > 9) {
                     return 14; // parse error
@@ -443,8 +440,7 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
                 _itoa_s(ParseNumTable[number], output_num, 5, 10);
                 strcat_s(output, 1024, output_num);
                 output += strlen(output);
-            }
-            else {
+            } else {
                 LPSTR num = findnum(var);
                 if (!num) {
                     break;
@@ -505,8 +501,7 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
                 }
                 var++;
                 nPlural = (ParseNumTable[nNum] == 1) ? 0 : 1;
-            }
-            else {
+            } else {
                 nNum = szGender - '0';
                 if (nNum > 9 || nNum < 0) {
                     break;
@@ -547,8 +542,7 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
                 input = num + 1;
                 strcat_s(output, 1024, ParseStrBuffer[number].str);
                 output += strlen(output);
-            }
-            else {
+            } else {
                 int len = (var - input) + 1;
                 strncpy_s(output, 1024, input, len);
                 output += len;
@@ -606,8 +600,7 @@ int __cdecl parse_string(LPSTR input, LPSTR output) {
                     strcpy_s(&output[nDiff + nOffset - 1], 1024, &output[nDiff + nOffset]);
                     output[nDiff + nOffset - 2] = '\'';
                 }
-            }
-            else {
+            } else {
                 nLoop++;
             }
         } while (nLoop < 6);
@@ -970,8 +963,7 @@ void __cdecl auto_save() {
             remove("saves\\auto\\Alpha Centauri Autosave 3.SAV");
             remove("saves\\auto\\Alpha Centauri Autosave 2.SAV");
             save_daemon("saves\\auto\\Alpha Centauri Autosave 1");
-        }
-        else { // standard auto saves
+        } else { // standard auto saves
             if (!(*TurnCurrentNum % 10)) {
                 remove("saves\\auto\\Alpha Centauri Autosave 30.SAV");
                 rename("saves\\auto\\Alpha Centauri Autosave 20.SAV",

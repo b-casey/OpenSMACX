@@ -408,7 +408,7 @@ struct VehPrototype {
     uint8_t plan;
     int8_t unk_1; // some kind of internal prototype category?
     uint8_t obsolete_factions; // faction bitfield of those who marked this prototype obsolete
-    int8_t combat_factions; // faction bitfield for those that have seen protoID in combat (atk/def)
+    int8_t combat_factions; // faction bitfield for those that have seen it in combat (atk/def)
     int8_t icon_offset;
     int8_t padding; // unused
     uint16_t flags; // see veh_prototype_flag_bitfield

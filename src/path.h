@@ -21,38 +21,38 @@
   * Path related objects, variables and functions.
   */
 class DLLEXPORT Path {
-private:
-    int *mapTable;
-    int16_t *xCoordTable;
-    int16_t *yCoordTable;
-    int index1; // specific territory count
-    int index2; // overall territory count
-    int factionID1;
-    int xCoordDst;
-    int yCoordDst;
-    int field_20;
-    int factionID2;
-    int protoID;
+ public:
+  Path() : map_table_(0), x_table_(0), y_table_(0), index1_(0), index2_(0), faction_id_(0), 
+           x_dst_(0), y_dst_(0), unk_(5), faction_id_2_(0), proto_id_(0) { } // n/a
+  ~Path() { shutdown(); } // 0059A320
 
-public:
-    Path() : mapTable(0), xCoordTable(0), yCoordTable(0), index1(0), index2(0), factionID1(0),
-        xCoordDst(0), yCoordDst(0), field_20(5), factionID2(0), protoID(0) { } // n/a
-    ~Path() { shutdown(); } // 0059A320
+  void init();
+  void shutdown();
+  int get(uint32_t x, uint32_t y);
+  void set(uint32_t x, uint32_t y, int val);
+  int zoc_path(uint32_t x, uint32_t y, uint32_t faction_id);
+  int find(int x_src, int y_src, int x_dst, int y_dst, int proto_id, int faction_id, int unk1, 
+           int unk2);
+  int move(uint32_t veh_id, int faction_id);
+  void make_abstract();
+  void merge(uint32_t region_old, uint32_t region_new);
+  void territory(uint32_t x, uint32_t y, int region, int faction_id);
+  void continent(uint32_t x, uint32_t y, uint32_t region);
+  void continents();
+  BOOL sensors(uint32_t faction_id, int *x_sensor, int *y_sensor);
 
-    void init();
-    void shutdown();
-    int get(int xCoord, int yCoord);
-    void set(int xCoord, int yCoord, int val);
-    int zoc_path(int xCoord, int yCoord, int factionID);
-    int find(int xCoordSrc, int yCoordSrc, int xCoordDstA, int yCoordDstA, int protoID_,
-        int factionID, int unk1, int unk2);
-    int move(int vehID, int factionID);
-    void make_abstract();
-    void merge(uint32_t regionOld, uint32_t regionNew);
-    void territory(int xCoord, int yCoord, int region, int factionID);
-    void continent(int xCoord, int yCoord, uint32_t region);
-    void continents();
-    BOOL sensors(int factionID, int *xCoordPtr, int *yCoordPtr);
+ private:
+  int *map_table_;
+  int16_t *x_table_;
+  int16_t *y_table_;
+  int index1_; // specific territory count
+  int index2_; // overall territory count
+  int faction_id_;
+  int x_dst_;
+  int y_dst_;
+  int unk_;
+  int faction_id_2_;
+  int proto_id_;
 };
 
 // global
