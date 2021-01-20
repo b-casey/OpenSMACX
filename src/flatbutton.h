@@ -23,45 +23,46 @@
   * FlatButton class
   */
 class DLLEXPORT FlatButton : public BaseButton {
-    uint32_t field_AB8;
-    uint32_t field_ABC;
-    uint32_t field_AC0;
-    uint32_t field_AC4;
-    uint32_t field_AC8;
-    uint32_t field_ACC;
-    uint32_t field_AD0;
-    uint32_t field_AD4;
-    uint32_t field_AD8;
-    uint32_t field_ADC;
-    Sprite *sprite0;
-    uint32_t field_AE4;
-    uint32_t field_AE8;
-    uint32_t field_AEC;
-    uint32_t field_AF0;
-    uint32_t field_AF4;
-    uint32_t field_AF8;
-    uint32_t field_AFC;
-    uint32_t field_B00;
-    uint32_t field_B04;
-    uint32_t field_B08;
-    uint32_t field_B0C;
-    Sprite *sprite1;
-    Sprite *sprite2;
-    Sprite *sprite3;
-    uint32_t field_B1C;
-    uint32_t field_B20;
-    uint32_t field_B24;
-    uint32_t field_B28;
-    uint32_t field_B2C;
-    uint32_t field_B30;
-    uint32_t field_B34;
-    uint32_t field_B38;
-    uint32_t field_B3C;
-    uint32_t field_B40;
-    uint32_t field_B44;
-    uint32_t field_B48;
+ public:
+  FlatButton() { ; }
+  ~FlatButton() { ; }
 
-public:
-    FlatButton() { ; }
-    ~FlatButton() { ; }
+ private:
+  uint32_t field_AB8_;
+  uint32_t field_ABC_;
+  uint32_t field_AC0_;
+  uint32_t field_AC4_;
+  uint32_t field_AC8_;
+  uint32_t field_ACC_;
+  uint32_t field_AD0_;
+  uint32_t field_AD4_;
+  uint32_t field_AD8_;
+  uint32_t field_ADC_;
+  Sprite *sprite0_;
+  uint32_t field_AE4_;
+  uint32_t field_AE8_;
+  uint32_t field_AEC_;
+  uint32_t field_AF0_;
+  uint32_t field_AF4_;
+  uint32_t field_AF8_;
+  uint32_t field_AFC_;
+  uint32_t field_B00_;
+  uint32_t field_B04_;
+  uint32_t field_B08_;
+  uint32_t field_B0C_;
+  Sprite *sprite1_;
+  Sprite *sprite2_;
+  Sprite *sprite3_;
+  uint32_t field_B1C_;
+  uint32_t field_B20_;
+  uint32_t field_B24_;
+  uint32_t field_B28_;
+  uint32_t field_B2C_;
+  uint32_t field_B30_;
+  uint32_t field_B34_;
+  uint32_t field_B38_;
+  uint32_t field_B3C_;
+  uint32_t field_B40_;
+  uint32_t field_B44_;
+  uint32_t field_B48_;
 };

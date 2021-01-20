@@ -17,3 +17,13 @@
  */
 #include "stdafx.h"
 #include "maininterface.h"
+
+ /*
+ Purpose: Set the flat button's bubble text.
+ Original Offset: n/a
+ Return Value: Zero success, non-zero error
+ Status: Complete
+ */
+uint32_t MainInterface::set_bubble_text(uint32_t button_id, LPCSTR text) {
+    return flat_button_[button_id].set_bubble_text(text);
+}

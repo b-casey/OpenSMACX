@@ -23,65 +23,66 @@
   * Dialog class
   */
 class DLLEXPORT Dialog {
-    LPVOID vtable;
-    Heap heap;
-    Heap *pHeap;
-    uint32_t field_1C;
-    uint32_t field_20;
-    uint32_t field_24;
-    uint32_t field_28;
-    uint32_t field_2C;
-    uint32_t field_30;
-    uint32_t field_34;
-    uint32_t field_38;
-    uint32_t field_3C;
-    uint32_t field_40;
-    uint32_t field_44;
-    uint32_t field_48;
-    uint32_t field_4C;
-    uint32_t field_50;
-    uint32_t field_54;
-    uint32_t field_58;
-    uint32_t field_5C;
-    uint32_t field_60;
-    uint32_t field_64;
-    uint32_t field_68;
-    uint32_t field_6C;
-    Font *font1;
-    Font *font2;
-    Font *font3;
-    uint32_t textColorA;
-    uint32_t textColor2A;
-    uint32_t textColor3A;
-    uint32_t textColorB;
-    uint32_t textColor2B;
-    uint32_t textColor3B;
-    uint32_t textColorC;
-    uint32_t textColor2C;
-    uint32_t textColor3C;
-    uint32_t textColorD;
-    uint32_t textColor2D;
-    uint32_t textColor3D;
-    uint32_t field_AC;
-    uint32_t field_B0;
-    uint32_t field_B4;
-    uint32_t field_B8;
-    uint32_t field_BC;
-    uint32_t field_C0;
-    uint32_t field_C4;
-    uint32_t field_C8;
-    uint32_t field_CC;
-    uint32_t field_D0;
-    uint32_t field_D4;
-    uint32_t field_D8;
-    uint32_t field_DC;
-    uint32_t field_E0;
-    uint32_t field_E4;
-    uint32_t field_E8;
-    uint32_t stateFlag;
-    uint32_t field_F0;
+ public:
+  Dialog() { ; }
+  ~Dialog() { ; }
 
-public:
-    Dialog() { ; }
-    ~Dialog() { ; }
+ private:
+  LPVOID vtable_;
+  Heap heap_;
+  Heap *heap_ptr_;
+  uint32_t field_1C_;
+  uint32_t field_20_;
+  uint32_t field_24_;
+  uint32_t field_28_;
+  uint32_t field_2C_;
+  uint32_t field_30_;
+  uint32_t field_34_;
+  uint32_t field_38_;
+  uint32_t field_3C_;
+  uint32_t field_40_;
+  uint32_t field_44_;
+  uint32_t field_48_;
+  uint32_t field_4C_;
+  uint32_t field_50_;
+  uint32_t field_54_;
+  uint32_t field_58_;
+  uint32_t field_5C_;
+  uint32_t field_60_;
+  uint32_t field_64_;
+  uint32_t field_68_;
+  uint32_t field_6C_;
+  Font *font1_;
+  Font *font2_;
+  Font *font3_;
+  uint32_t text_color_a_;
+  uint32_t text_color_2a_;
+  uint32_t text_color_3a_;
+  uint32_t text_color_b_;
+  uint32_t text_color_2b_;
+  uint32_t text_color_3b_;
+  uint32_t text_color_c_;
+  uint32_t text_color_2c_;
+  uint32_t text_color_3c_;
+  uint32_t text_color_d_;
+  uint32_t text_color_2d_;
+  uint32_t text_color_3d_;
+  uint32_t field_AC_;
+  uint32_t field_B0_;
+  uint32_t field_B4_;
+  uint32_t field_B8_;
+  uint32_t field_BC_;
+  uint32_t field_C0_;
+  uint32_t field_C4_;
+  uint32_t field_C8_;
+  uint32_t field_CC_;
+  uint32_t field_D0_;
+  uint32_t field_D4_;
+  uint32_t field_D8_;
+  uint32_t field_DC_;
+  uint32_t field_E0_;
+  uint32_t field_E4_;
+  uint32_t field_E8_;
+  uint32_t state_flag_;
+  uint32_t field_F0_;
 };

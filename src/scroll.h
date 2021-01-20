@@ -25,50 +25,51 @@
   * Scroll class
   */
 class DLLEXPORT Scroll : GraphicWin {
-    uint32_t field_A14;
-    uint32_t field_A18;
-    uint32_t borderColor;
-    uint32_t field_A20;
-    uint32_t field_A24;
-    uint32_t field_A28;
-    int position;
-    uint32_t field_A30;
-    uint32_t field_A34;
-    uint32_t field_A38;
-    uint32_t field_A3C;
-    uint32_t paging;
-    uint32_t field_A44;
-    uint32_t field_A48;
-    uint32_t field_A4C;
-    uint32_t field_A50;
-    uint32_t barThickness1;
-    uint32_t barThickness2;
-    uint32_t color;
-    uint32_t barThickness3;
-    Buffer *buffer;
-    uint32_t bevelThickness;
-    uint32_t bevelUpper;
-    uint32_t bevelLower;
-    uint32_t field_A74;
-    Sprite *field_A78;
-    Sprite *spriteLeft1;
-    Sprite *spriteLeft2;
-    Sprite *spriteLeft3;
-    uint32_t field_A88;
-    uint32_t field_A8C;
-    uint32_t field_A90;
-    Sprite *spriteRight1;
-    Sprite *spriteRight2;
-    Sprite *spriteRight3;
-    uint32_t field_AA0;
-    uint32_t field_AA4;
-    uint32_t field_AA8;
-    FlatButton flatButtonLeft;
-    FlatButton flatButtonRight;
-    uint32_t field_2144;
-    uint32_t field_2148;
+ public:
+  Scroll() { ; }
+  ~Scroll() { ; }
 
-public:
-    Scroll() { ; }
-    ~Scroll() { ; }
+ private:
+  uint32_t field_A14_;
+  uint32_t field_A18_;
+  uint32_t border_color_;
+  uint32_t field_A20_;
+  uint32_t field_A24_;
+  uint32_t field_A28_;
+  int position_;
+  uint32_t field_A30_;
+  uint32_t field_A34_;
+  uint32_t field_A38_;
+  uint32_t field_A3C_;
+  uint32_t paging_;
+  uint32_t field_A44_;
+  uint32_t field_A48_;
+  uint32_t field_A4C_;
+  uint32_t field_A50_;
+  uint32_t bar_thickness1_;
+  uint32_t bar_thickness2_;
+  uint32_t color_;
+  uint32_t bar_thickness3_;
+  Buffer *buffer_;
+  uint32_t bevel_thickness_;
+  uint32_t bevel_upper_;
+  uint32_t bevel_lower_;
+  uint32_t field_A74_;
+  Sprite *field_A78_;
+  Sprite *sprite_left1_;
+  Sprite *sprite_left2_;
+  Sprite *sprite_left3_;
+  uint32_t field_A88_;
+  uint32_t field_A8C_;
+  uint32_t field_A90_;
+  Sprite *sprite_right1_;
+  Sprite *sprite_right2_;
+  Sprite *sprite_right3_;
+  uint32_t field_AA0_;
+  uint32_t field_AA4_;
+  uint32_t field_AA8_;
+  FlatButton flat_button_left_;
+  FlatButton flat_button_right_;
+  uint32_t field_2144_;
+  uint32_t field_2148_;
 };

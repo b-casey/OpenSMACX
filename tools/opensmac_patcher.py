@@ -267,10 +267,10 @@ with open(exe_path, "r+b") as f:
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*442))
     # BASEBUTTON
-    bin_app.seek(0x00207550) # ?set_bubble_text@BaseButton@@QAEHPBD@Z
+    bin_app.seek(0x00207550) # ?set_bubble_text@BaseButton@@QAEIPBD@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*242))
-    bin_app.seek(0x002074E0) # ?set_name@BaseButton@@QAEHPBD@Z
+    bin_app.seek(0x002074E0) # ?set_name@BaseButton@@QAEIPBD@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*243))
     # COUNCIL
@@ -365,13 +365,13 @@ with open(exe_path, "r+b") as f:
     bin_app.seek(0x00139EF0) # ?at_climax@@YAHI@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*444))
-    bin_app.seek(0x001B4210) # ?social_calc@@YAXPAUsocial_category@@PAUsocial_effect@@IHH@Z
+    bin_app.seek(0x001B4210) # ?social_calc@@YAXPAUSocialCategory@@PAUSocialEffect@@IHH@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*445))
     bin_app.seek(0x001B44D0) # ?social_upkeep@@YAXI@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*446))
-    bin_app.seek(0x001B4550) # ?social_upheaval@@YAIIPAUsocial_category@@@Z
+    bin_app.seek(0x001B4550) # ?social_upheaval@@YAIIPAUSocialCategory@@@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*447))    
     # FILEMAP

@@ -8,7 +8,7 @@
  * (at your option) any later version.
  *
  * OpenSMACX is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * but WITHOUT ANY WARRANTY_; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
@@ -23,79 +23,81 @@
   * Buffer class
   */
 class DLLEXPORT Buffer {
-    typedef int32_t Dib;
-    LPVOID vtable;
-    uint32_t field_4;
-    uint32_t field_8;
-    uint32_t field_C;
-    uint32_t field_10;
-    uint32_t field_14;
-    uint32_t field_18;
-    uint32_t field_1C;
-    RECT rect1;
-    RECT rect2;
-    uint32_t field_40[4];
-    uint32_t field_50;
-    LPVOID *ppvBits;
-    uint32_t field_58;
-    uint32_t field_5C;
-    HDC hdc2;
-    HDC hdc;
-    uint32_t field_68;
-    uint32_t field_6C;
-    HRGN field_70;
-    uint32_t field_74;
-    HBITMAP hBitmap;
-    const BITMAPINFO *pbmi;
-    uint32_t field_80;
-    uint32_t field_84;
-    uint16_t field_88;
-    uint16_t field_8A;
-    uint32_t field_8C;
-    uint32_t field_90;
-    uint32_t field_94;
-    uint32_t field_98;
-    uint32_t field_9C;
-    uint32_t field_A0;
-    Dib dib[256];
-    uint32_t field_4A4;
-    uint32_t field_4A8;
-    uint32_t field_4AC;
-    Spot spot;
-    uint8_t field_4BC[80];
-    uint32_t field_50C;
-    uint32_t field_510;
-    uint32_t field_514;
-    uint32_t field_518;
-    uint32_t field_51C;
-    uint32_t field_520;
-    uint32_t field_524;
-    uint32_t field_528;
-    Font *pFont1;
-    Font *pFont2;
-    Font *pFont3;
-    Font *pFont4;
-    uint32_t colorVal1;
-    uint32_t color2Val1;
-    uint32_t color3Val1;
-    uint32_t colorhyperVal1;
-    uint32_t colorVal2;
-    uint32_t color2Val2;
-    uint32_t color3Val2;
-    uint32_t colorhyperVal2;
-    uint32_t colorVal3;
-    uint32_t color2Val3;
-    uint32_t color3Val3;
-    uint32_t colorhyperVal3;
-    uint32_t colorVal4;
-    uint32_t color2Val4;
-    uint32_t color3Val4;
-    uint32_t colorhyperVal4;
-    uint32_t field_57C;
-    int8_t field_580;
-    uint32_t field_584;
+ public:
+  Buffer() { ; }
+  ~Buffer() { ; }
 
-public:
-    Buffer() { ; }
-    ~Buffer() { ; }
+ private:
+  typedef int32_t Dib;
+  
+  LPVOID vtable_;
+  uint32_t field_4_;
+  uint32_t field_8_;
+  uint32_t field_C_;
+  uint32_t field_10_;
+  uint32_t field_14_;
+  uint32_t field_18_;
+  uint32_t field_1C_;
+  RECT rect1_;
+  RECT rect2_;
+  uint32_t field_40_[4];
+  uint32_t field_50_;
+  LPVOID *ppv_bits_;
+  uint32_t field_58_;
+  uint32_t field_5C_;
+  HDC hdc2_;
+  HDC hdc_;
+  uint32_t field_68_;
+  uint32_t field_6C_;
+  HRGN field_70_;
+  uint32_t field_74_;
+  HBITMAP bitmap_handle_;
+  const BITMAPINFO *bitmap_info_;
+  uint32_t field_80_;
+  uint32_t field_84_;
+  uint16_t field_88_;
+  uint16_t field_8A_;
+  uint32_t field_8C_;
+  uint32_t field_90_;
+  uint32_t field_94_;
+  uint32_t field_98_;
+  uint32_t field_9C_;
+  uint32_t field_A0_;
+  Dib dib_[256];
+  uint32_t field_4A4_;
+  uint32_t field_4A8_;
+  uint32_t field_4AC_;
+  Spot spot_;
+  uint8_t field_4BC_[80];
+  uint32_t field_50C_;
+  uint32_t field_510_;
+  uint32_t field_514_;
+  uint32_t field_518_;
+  uint32_t field_51C_;
+  uint32_t field_520_;
+  uint32_t field_524_;
+  uint32_t field_528_;
+  Font *font1_;
+  Font *font2_;
+  Font *font3_;
+  Font *font4_;
+  uint32_t color_val_1_;
+  uint32_t color_2_val_1_;
+  uint32_t color_3_val_1_;
+  uint32_t color_hyper_val_1_;
+  uint32_t color_val_2_;
+  uint32_t color_2_val_2_;
+  uint32_t color_3_val_2_;
+  uint32_t color_hyper_val_2_;
+  uint32_t color_val_3_;
+  uint32_t color_2_val_3_;
+  uint32_t color_3_val_3_;
+  uint32_t color_hyper_val_3_;
+  uint32_t color_val_4_;
+  uint32_t color_2_val_4_;
+  uint32_t color_3_val_4_;
+  uint32_t color_hyper_val_4_;
+  uint32_t field_57C_;
+  int8_t field_580_;
+  uint32_t field_584_;
 };

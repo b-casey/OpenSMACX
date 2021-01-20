@@ -1201,18 +1201,14 @@ BOOL __cdecl read_rules(BOOL tgl_all_rules) {
     for (int i = 0, j = 0; i < MaxTerrainNum; i++) {
         // excludes: Fungus (removal), Aquifer, Raise Land, Lower Land, Level Terrain
         if (Terraforming[i].bit) {
-            MainInterfaceVar->flatButton[j++ + 17].set_bubble_text(
+            MainInterfaceVar->set_bubble_text(j++ + 17,
                 StringTable->get((int)Terraforming[i].name)); // 17-31
         }
     }
-    MainInterfaceVar->flatButton[32].set_bubble_text(
-        StringTable->get((int)Natural[LM_JUNGLE].name_short));
-    MainInterfaceVar->flatButton[33].set_bubble_text(
-        StringTable->get((int)Natural[LM_DUNES].name_short));
-    MainInterfaceVar->flatButton[34].set_bubble_text(
-        StringTable->get((int)Natural[LM_URANIUM].name_short));
-    MainInterfaceVar->flatButton[35].set_bubble_text(
-        StringTable->get((int)Natural[LM_GEOTHERMAL].name_short));
+    MainInterfaceVar->set_bubble_text(32, StringTable->get((int)Natural[LM_JUNGLE].name_short));
+    MainInterfaceVar->set_bubble_text(33, StringTable->get((int)Natural[LM_DUNES].name_short));
+    MainInterfaceVar->set_bubble_text(34, StringTable->get((int)Natural[LM_URANIUM].name_short));
+    MainInterfaceVar->set_bubble_text(35, StringTable->get((int)Natural[LM_GEOTHERMAL].name_short));
     return false;
 }
 

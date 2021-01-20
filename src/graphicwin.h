@@ -23,27 +23,27 @@
   * GraphicWin class
   */
 class DLLEXPORT GraphicWin : Win {
-    Buffer buffer;
-    uint32_t field_9CC;
-    uint32_t field_9D0;
-    uint32_t field_9D4;
-    uint32_t field_9D8;
-    uint32_t field_9DC;
-    uint32_t field_9E0;
-    uint32_t field_9E4;
-    uint32_t field_9E8;
-    uint32_t field_9EC;
-    uint32_t field_9F0;
-    uint32_t field_9F4;
-    uint32_t field_9F8;
-    uint32_t field_9FC;
-    uint32_t field_A00;
-    uint32_t field_A04;
-    uint32_t field_A08;
-    uint32_t field_A0C;
-    uint32_t field_A10;
-
-public:
-    GraphicWin() { ; }
-    ~GraphicWin() { ; }
+ public:
+  GraphicWin() { ; }
+  ~GraphicWin() { ; }
+ private:
+  Buffer buffer_;
+  uint32_t field_9CC_;
+  uint32_t field_9D0_;
+  uint32_t field_9D4_;
+  uint32_t field_9D8_;
+  uint32_t field_9DC_;
+  uint32_t field_9E0_;
+  uint32_t field_9E4_;
+  uint32_t field_9E8_;
+  uint32_t field_9EC_;
+  uint32_t field_9F0_;
+  uint32_t field_9F4_;
+  uint32_t field_9F8_;
+  uint32_t field_9FC_;
+  uint32_t field_A00_;
+  uint32_t field_A04_;
+  uint32_t field_A08_;
+  uint32_t field_A0C_;
+  uint32_t field_A10_;
 };

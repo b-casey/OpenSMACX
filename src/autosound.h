@@ -21,46 +21,47 @@
   * AutoSound class
   */
 class DLLEXPORT AutoSound {
-    PVOID vtable;
-    int val1;
-    int val2;
-    int val3;
-    int val4;
-    int val5;
-    int val6;
-    int val7;
-    int val8;
-    int val9;
-    int val10;
-    int val11;
-    int val12;
-    int val13;
-    int val14;
-    int val15;
-    int val16;
-    int val17;
-    int val18;
-    int val19;
-    int val20;
-    int val21;
-    int val22;
-    int val23;
-    int val24;
-    int val25;
-    int val26;
-    int val27;
-    int val28;
-    int val29;
-    int val30;
-    int val31;
-    int val32;
-    int val33;
-    int val34;
-    int val35;
-    int val36;
-    int val37;
+ public:
+  AutoSound() { ; }
+  ~AutoSound() { ; }
 
-public:
-    AutoSound() { ; }
-    ~AutoSound() { ; }
+ private:
+  PVOID vtable_;
+  int val_1_;
+  int val_2_;
+  int val_3_;
+  int val_4_;
+  int val_5_;
+  int val_6_;
+  int val_7_;
+  int val_8_;
+  int val_9_;
+  int val_10_;
+  int val_11_;
+  int val_12_;
+  int val_13_;
+  int val_14_;
+  int val_15_;
+  int val_16_;
+  int val_17_;
+  int val_18_;
+  int val_19_;
+  int val_20_;
+  int val_21_;
+  int val_22_;
+  int val_23_;
+  int val_24_;
+  int val_25_;
+  int val_26_;
+  int val_27_;
+  int val_28_;
+  int val_29_;
+  int val_30_;
+  int val_31_;
+  int val_32_;
+  int val_33_;
+  int val_34_;
+  int val_35_;
+  int val_36_;
+  int val_37_;
 };

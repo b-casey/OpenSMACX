@@ -22,14 +22,15 @@
   * ButtonGroup class
   */
 class DLLEXPORT ButtonGroup {
-    BaseButton *buttons[32];
-    uint32_t btnCount;
-    uint32_t field_84;
-    uint32_t field_88;
-    uint32_t field_8C;
-    uint32_t field_90;
+ public:
+  ButtonGroup() { ; }
+  ~ButtonGroup() { ; }
 
-public:
-    ButtonGroup() { ; }
-    ~ButtonGroup() { ; }
+ private:
+  BaseButton *buttons_[32];
+  uint32_t count_;
+  uint32_t field_84_;
+  uint32_t field_88_;
+  uint32_t field_8C_;
+  uint32_t field_90_;
 };

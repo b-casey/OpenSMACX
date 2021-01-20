@@ -25,34 +25,35 @@ class ButtonGroup; // forward declaration
   * BaseButton class
   */
 class DLLEXPORT BaseButton : GraphicWin {
-    uint32_t field_A14;
-    uint32_t field_A18;
-    Time time1;
-    uint32_t field_A44;
-    uint32_t field_A48;
-    Time time2;
-    uint32_t field_A74;
-    uint32_t field_A78;
-    LPSTR name;
-    LPSTR bubbleText;
-    uint32_t color;
-    uint32_t bevelUpper;
-    uint32_t bevelLower;
-    uint32_t bevelThickness;
-    uint32_t field_A94;
-    uint32_t field_A98;
-    uint32_t field_A9C;
-    uint32_t field_AA0;
-    uint32_t field_AA4;
-    ButtonGroup *btnGroup;
-    uint32_t field_AAC;
-    uint32_t field_AB0;
-    uint32_t field_AB4;
+ public:
+  BaseButton() { ; }
+  ~BaseButton() { ; }
 
-public:
-    BaseButton() { ; }
-    ~BaseButton() { ; }
+  uint32_t set_bubble_text(LPCSTR input);
+  uint32_t set_name(LPCSTR input);
 
-    int set_bubble_text(LPCSTR input);
-    int set_name(LPCSTR input);
+ private:
+  uint32_t field_A14_;
+  uint32_t field_A18_;
+  Time time1_;
+  uint32_t field_A44_;
+  uint32_t field_A48_;
+  Time time2_;
+  uint32_t field_A74_;
+  uint32_t field_A78_;
+  LPSTR name_;
+  LPSTR bubble_text_;
+  uint32_t color_;
+  uint32_t bevel_upper_;
+  uint32_t bevel_lower_;
+  uint32_t bevel_thickness_;
+  uint32_t field_A94_;
+  uint32_t field_A98_;
+  uint32_t field_A9C_;
+  uint32_t field_AA0_;
+  uint32_t field_AA4_;
+  ButtonGroup *group_;
+  uint32_t field_AAC_;
+  uint32_t field_AB0_;
+  uint32_t field_AB4_;
 };

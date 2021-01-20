@@ -23,24 +23,25 @@
   * Flic class
   */
 class DLLEXPORT Flic {
-    uint32_t field_0;
-    Buffer buffer;
-    uint32_t field_58C;
-    uint32_t field_590;
-    uint32_t field_594;
-    uint32_t field_598;
-    uint32_t field_59C;
-    uint32_t field_5A0;
-    uint32_t field_5A4;
-    Buffer *ptrBuffer2;
-    uint32_t field_5AC;
-    uint32_t field_5B0;
-    uint32_t field_5B4;
-    FILE *file;
-    Palette *palette;
-    uint32_t field_5C0[329];
+ public:
+  Flic() { ; }
+  ~Flic() { ; }
 
-public:
-    Flic() { ; }
-    ~Flic() { ; }
+ private:
+  uint32_t field_0_;
+  Buffer buffer_;
+  uint32_t field_58C_;
+  uint32_t field_590_;
+  uint32_t field_594_;
+  uint32_t field_598_;
+  uint32_t field_59C_;
+  uint32_t field_5A0_;
+  uint32_t field_5A4_;
+  Buffer *buffer2_;
+  uint32_t field_5AC_;
+  uint32_t field_5B0_;
+  uint32_t field_5B4_;
+  FILE *file_;
+  Palette *palette_;
+  uint32_t field_5C0_[329];
 };

@@ -22,22 +22,23 @@
   * Sprite class
   */
 class DLLEXPORT Sprite {
-    int field_0;
-    int field_4;
-    char field_8;
-    char pad1;
-    char pad2;
-    char pad3;
-    int field_C;
-    int field_10;
-    int field_14;
-    int field_18;
-    int field_1C;
-    int field_20;
-    int field_24;
-    int field_28;
+ public:
+  Sprite() { ; }
+  ~Sprite() { ; }
 
-public:
-    Sprite() { ; }
-    ~Sprite() { ; }
+ private:
+  int field_0_;
+  int field_4_;
+  char field_8_;
+  char pad1_;
+  char pad2_;
+  char pad3_;
+  int field_C_;
+  int field_10_;
+  int field_14_;
+  int field_18_;
+  int field_1C_;
+  int field_20_;
+  int field_24_;
+  int field_28_;
 };

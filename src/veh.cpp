@@ -2395,6 +2395,12 @@ Return Value: Does prototype have ability? true/false
 Status: Complete
 */
 BOOL __cdecl has_abil(uint32_t proto_id, uint32_t ability_id) {
+    if ((int)proto_id < 0) { 
+        // TODO: Remove eventually, temp workaround fix for bug in base_build
+        //       that incorrectly uses negative queue id
+        log_say("Skipping has_abil negative prototype param", (int)proto_id, ability_id, 0);
+        return false;
+    }
     if (VehPrototypes[proto_id].ability_flags & ability_id) {
         return true;
     }

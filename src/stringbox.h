@@ -22,25 +22,26 @@
   * StringBox class
   */
 class DLLEXPORT StringBox : GraphicWin {
-    uint32_t field_A14;
-    uint32_t field_A18;
-    uint32_t field_A1C;
-    Scroll scroll;
-    uint32_t field_2B6C;
-    uint32_t field_2B70;
-    uint32_t field_2B74;
-    uint32_t field_2B78;
-    uint32_t field_2B7C;
-    uint32_t field_2B80;
-    uint32_t field_2B84;
-    uint32_t field_2B88;
-    uint32_t field_2B8C;
-    uint32_t field_2B90;
-    uint32_t field_2B94;
-    uint32_t field_2B98;
-    uint32_t field_2B9C;
+ public:
+  StringBox() { ; }
+  ~StringBox() { ; }
 
-public:
-    StringBox() { ; }
-    ~StringBox() { ; }
+ private:
+  uint32_t field_A14_;
+  uint32_t field_A18_;
+  uint32_t field_A1C_;
+  Scroll scroll_;
+  uint32_t field_2B6C_;
+  uint32_t field_2B70_;
+  uint32_t field_2B74_;
+  uint32_t field_2B78_;
+  uint32_t field_2B7C_;
+  uint32_t field_2B80_;
+  uint32_t field_2B84_;
+  uint32_t field_2B88_;
+  uint32_t field_2B8C_;
+  uint32_t field_2B90_;
+  uint32_t field_2B94_;
+  uint32_t field_2B98_;
+  uint32_t field_2B9C_;
 };

@@ -23,16 +23,17 @@
   * Menu class
   */
 class DLLEXPORT Menu : GraphicWin {
-    uint32_t proc;
-    uint32_t field_A18;
-    uint32_t field_A1C;
-    uint32_t field_A20;
-    uint32_t field_A24;
-    uint32_t field_A28;
-    Spot spot;
-    uint32_t array[15][5];
+ public:
+  Menu() { ; }
+  ~Menu() { ; }
 
-public:
-    Menu() { ; }
-    ~Menu() { ; }
+ private:
+  uint32_t proc_;
+  uint32_t field_A18_;
+  uint32_t field_A1C_;
+  uint32_t field_A20_;
+  uint32_t field_A24_;
+  uint32_t field_A28_;
+  Spot spot_;
+  uint32_t array_[15][5];
 };
