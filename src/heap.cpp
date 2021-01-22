@@ -17,90 +17,93 @@
  */
 #include "stdafx.h"
 #include "heap.h"
-#include "general.h" // mem_get()
+#include "general.h"
 
 /*
-Purpose: Destroy current heap and zero out all class variables
+Purpose: Shutdown the class instance.
 Original Offset: 005D45B0
 Return Value: n/a
 Status: Complete
 */
 void Heap::shutdown() {
-    if (basePtr) {
-        free(basePtr);
+    if (base_) {
+        free(base_);
     }
-    errFlags = 0;
-    basePtr = currentPtr = 0;
-    baseSize = freeSize = 0;
+    err_flags_ = 0;
+    base_ = 0;
+    current_ = 0;
+    base_size_ = 0;
+    free_size_ = 0;
 }
 
 /*
-Purpose: Deflate heap of any free memory. Toggle variable unused in original code.
+Purpose: Deflate the heap of any free memory.
 Original Offset: 005D45E0
 Return Value: n/a
 Status: Complete
 */
 void Heap::squeeze(int UNUSED(toggle)) {
-    size_t usedSize = baseSize - freeSize;
-    LPVOID newAddr = realloc(basePtr, usedSize);
-    if (newAddr) {
-        basePtr = newAddr;
-        baseSize = usedSize;
-        freeSize = 0;
+    size_t used_size = base_size_ - free_size_;
+    LPVOID new_addr = realloc(base_, used_size);
+    if (new_addr) {
+        base_ = new_addr;
+        base_size_ = used_size;
+        free_size_ = 0;
     }
 }
 
 /*
-Purpose: Allocate memory based on requested size from parameter
+Purpose: Initialize the class instance and allocate the requested memory size.
 Original Offset: 005D4620
 Return Value: Was there an error? true/false
 Status: Complete
 */
-BOOL Heap::init(size_t reqSize) {
-    if (basePtr) {
+BOOL Heap::init(size_t req_size) {
+    if (base_) {
         shutdown();
     }
-    basePtr = mem_get(reqSize);
-    if (basePtr) {
-        currentPtr = basePtr;
-        baseSize = freeSize = reqSize;
+    base_ = mem_get(req_size);
+    if (base_) {
+        current_ = base_;
+        base_size_ = req_size;
+        free_size_ = req_size;
         return false;
     }
     return true; // error: failed to allocate memory
 }
 
 /*
-Purpose: Check if there is currently enough free memory for the requested size parameter.
-         If not, get additional memory in blocks of 1024 bytes until there is enough.
+Purpose: Get the requested memory size. If there currently isn't enough memory to meet the request, 
+         allocate additional memory in blocks of 1024 bytes until request is met.
 Original Offset: 005D4680
-Return Value: Memory pointer with address to requested size free.
+Return Value: Memory pointer with address to requested size
 Status: Complete
 */
-LPVOID Heap::get(size_t reqSize) {
-    while (freeSize < reqSize) {
-        if (errFlags & 1) {
-            return 0; // error
+LPVOID Heap::get(size_t req_size) {
+    while (free_size_ < req_size) {
+        if (err_flags_ & 1) {
+            return NULL; // error
         }
-        LPVOID newAddr = realloc(basePtr, baseSize + 1024);
-        if (!newAddr) {
-            char szError[150]; // max size of string + three int(s) + extra padding
-            sprintf_s(szError, 150,
+        LPVOID new_addr = realloc(base_, base_size_ + 1024);
+        if (!new_addr) {
+            char error[150]; // max size of string + three int(s) + extra padding
+            sprintf_s(error, 150,
                 "Aborting due to a heap shortage!\n"
                 "Base size: %d\n"
                 "Free size: %d\n"
                 "Requested size: %d",
-                baseSize, freeSize, reqSize);
-            MessageBoxA(NULL, szError, "Heap Notice!!", MB_OK);
+                base_size_, free_size_, req_size);
+            MessageBoxA(NULL, error, "Heap Notice!!", MB_OK);
             exit(3);
         }
-        basePtr = newAddr;
+        base_ = new_addr;
         // bug fix: in case realloc shifts memory
-        currentPtr = LPVOID(size_t(basePtr) + baseSize - freeSize);
-        baseSize += 1024;
-        freeSize += 1024;
+        current_ = LPVOID(size_t(base_) + base_size_ - free_size_);
+        base_size_ += 1024;
+        free_size_ += 1024;
     }
-    LPVOID freeMemAddr = currentPtr;
-    freeSize -= reqSize;
-    currentPtr = LPVOID(size_t(currentPtr) + reqSize);
-    return freeMemAddr;
+    LPVOID free_mem_addr = current_;
+    free_size_ -= req_size;
+    current_ = LPVOID(size_t(current_) + req_size);
+    return free_mem_addr;
 }

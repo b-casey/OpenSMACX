@@ -22,18 +22,18 @@
 /*
 Purpose: Set the button's bubble text.
 Original Offset: 00607550
-Return Value: Zero success, non-zero error
+Return Value: Zero on success, non-zero on error
 Status: Complete with redirect for free to prevent hang/freeze. Incompatibility between older
         version of free with newer SDK version of free CRT. Revisit once more of code is redirected
         to dll.
 */
-uint32_t BaseButton::set_bubble_text(LPCSTR input) {
+int BaseButton::set_bubble_text(LPCSTR input) {
     if (bubble_text_) {
         _free(bubble_text_);
         bubble_text_ = 0;
     }
     if (input) {
-        int len = strlen(input) + 1;
+        size_t len = strlen(input) + 1;
         bubble_text_ = (LPSTR)mem_get_old(len);
         if (!bubble_text_) {
             return 4;
@@ -46,12 +46,12 @@ uint32_t BaseButton::set_bubble_text(LPCSTR input) {
 /*
 Purpose: Set the button's name string.
 Original Offset: 006074E0
-Return Value: Zero success, non-zero error
+Return Value: Zero on success, non-zero on error
 Status: Complete with redirect for free to prevent hang/freeze. Incompatibility between older
         version of free with newer SDK version of free CRT. Revisit once more of code is redirected
         to dll.
 */
-uint32_t BaseButton::set_name(LPCSTR input) {
+int BaseButton::set_name(LPCSTR input) {
     // Bug fix: Fixed crash if input parameter was null. Original code had string copy outside last 
     // if statement causing potential write to null name variable.
     if (name_) {
@@ -59,7 +59,7 @@ uint32_t BaseButton::set_name(LPCSTR input) {
         name_ = 0;
     }
     if (input) {
-        int len = strlen(input) + 1;
+        size_t len = strlen(input) + 1;
         name_ = (LPSTR)mem_get_old(len);
         if (!name_) {
             return 4;

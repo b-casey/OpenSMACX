@@ -19,17 +19,17 @@
 #include "random.h"
 
 /*
-Purpose: Updates seed value. Original code after some convoluted XORs simplified to 'seed = param'.
+Purpose: Update the seed value. The original code had some convoluted XORs that served no purpose.
 Original Offset: 00625750
 Return Value: n/a
 Status: Complete
 */
-void Random::reseed(uint32_t reseedValue) { seed = reseedValue; }
+void Random::reseed(uint32_t new_seed) { seed_ = new_seed; }
 
 /*
-Purpose: Get a random value between min and (max - 1)
+Purpose: Get a random value between min and (max - 1).
 Original Offset: 00625770
-Return Value: Random uint32_t value within bounds
+Return Value: Random unsigned integer within bounds
 Status: Complete
 */
 uint32_t Random::get(uint32_t min, uint32_t max) {
@@ -38,19 +38,19 @@ uint32_t Random::get(uint32_t min, uint32_t max) {
         min = max;
         max = temp;
     }
-    seed = seed * 0x19660D + 0x3C6EF35F;
-    return (((max - min) * LOWORD(seed)) >> 16) + min;
+    seed_ = seed_ * 0x19660D + 0x3C6EF35F;
+    return (((max - min) * LOWORD(seed_)) >> 16) + min;
 }
 
 /*
-Purpose: Get a random double value
+Purpose: Get a random double value.
 Original Offset: 006257B0
 Return Value: Random double value
 Status: Complete
 */
 double Random::get() {
-    seed = seed * 0x19660D + 0x3C6EF35F;
-    uint32_t temp = (seed & 0x7FFFFF) | 0x3F800000; // FPU logic?
+    seed_ = seed_ * 0x19660D + 0x3C6EF35F;
+    uint32_t temp = (seed_ & 0x7FFFFF) | 0x3F800000; // FPU logic?
     return *reinterpret_cast<double *>(&temp) - 1.0;
 }
 
@@ -61,9 +61,9 @@ void __cdecl random_rand() { *Rand = *(new Random()); atexit(random_rand_exit); 
 
 void __cdecl random_rand_exit() { Rand->~Random(); } // 00625720
 
-void __cdecl random_reseed(uint32_t reseedValue) { Rand->reseed(reseedValue); } // 006257E0
+void __cdecl random_reseed(uint32_t new_seed) { Rand->reseed(new_seed); } // 006257E0
 
-uint32_t __cdecl random_get() { return Rand->getSeed(); } // 00625800
+uint32_t __cdecl random_get() { return Rand->get_seed(); } // 00625800
 
 uint32_t __cdecl random(uint32_t min, uint32_t max) { return Rand->get(min, max); } // 00625810
 

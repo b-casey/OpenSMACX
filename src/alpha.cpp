@@ -65,7 +65,7 @@ int __cdecl tech_name(LPSTR name) {
             return tech_id;
         }
     }
-    parse_says(0, Txt->getFilePath(), -1, -1);
+    parse_says(0, Txt->get_file_path(), -1, -1);
     parse_says(1, name, -1, -1);
     parse_says(2, *TextBufferGetPtr, -1, -1);
     X_pop("BADTECHKEY", NULL); // TODO: Fix crash bug if BADTECHKEY is triggered.
@@ -91,7 +91,7 @@ int __cdecl chas_name(LPSTR name) {
             return chas_id;
         }
     }
-    parse_says(0, Txt->getFilePath(), -1, -1);
+    parse_says(0, Txt->get_file_path(), -1, -1);
     parse_says(1, name, -1, -1);
     parse_says(2, *TextBufferGetPtr, -1, -1);
     X_pop("BADCHASKEY", NULL); // TODO: Fix crash bug if BADTECHKEY is triggered.
@@ -117,7 +117,7 @@ int __cdecl weap_name(LPSTR name) {
             return weap_id;
         }
     }
-    parse_says(0, Txt->getFilePath(), -1, -1);
+    parse_says(0, Txt->get_file_path(), -1, -1);
     parse_says(1, name, -1, -1);
     parse_says(2, *TextBufferGetPtr, -1, -1);
     X_pop("BADWEAPKEY", NULL); // TODO: Fix crash bug if BADTECHKEY is triggered.
@@ -143,7 +143,7 @@ int __cdecl arm_name(LPSTR name) {
             return arm_id;
         }
     }
-    parse_says(0, Txt->getFilePath(), -1, -1);
+    parse_says(0, Txt->get_file_path(), -1, -1);
     parse_says(1, name, -1, -1);
     parse_says(2, *TextBufferGetPtr, -1, -1);
     X_pop("BADARMKEY", NULL); // TODO: Fix crash bug if BADTECHKEY is triggered.
@@ -427,7 +427,7 @@ void __cdecl read_faction(Player *player, int toggle) {
     player->ai_growth = text_item_number();
     text_get();
     LPSTR parse_rule_check = text_item();
-    int len = strlen(parse_rule_check);
+    size_t len = strlen(parse_rule_check);
     while (len) {
         LPSTR parse_rule = new char[len + 1];
         strcpy_s(parse_rule, len + 1, parse_rule_check);
@@ -1121,7 +1121,7 @@ BOOL __cdecl read_rules(BOOL tgl_all_rules) {
             SocialCategories[i].preq_tech[j] = tech_name(text_item());
             ZeroMemory(&SocialCategories[i].model_effect[j], sizeof(SocialEffect));
             LPSTR mod_value = text_item();
-            int mod_len = strlen(mod_value);
+            size_t mod_len = strlen(mod_value);
             while (mod_len) {
                 int value = 0;
                 while (mod_value[0] == '+' || mod_value[0] == '-') {

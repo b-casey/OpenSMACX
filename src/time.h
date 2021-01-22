@@ -23,46 +23,55 @@
   * Time class
   */
 class DLLEXPORT Time {
-private:
-    int unkToggle; // some kind of toggle or type
-    UINT_PTR idEvent;
-    void(__cdecl *callback1)(int);
-    void(__cdecl *callback2)(int, int);
-    int cbParam2; // callback 2nd parameter
-    int cbParam1; // callback 1st parameter
-    uint32_t count; // either delay (timeSetEvent) or elapsed (SetTimer) value
-    int unk_1; // BOOL? related to Timer/Multimedia Proc? one time execution?
-    uint32_t resolution;
-    int unk_2;
+ public:
+  Time() // 006161D0
+      : unk_tgl_(0),
+        id_event_(0), 
+        callback1_(0), 
+        callback2_(0), 
+        cb_param2_(0), 
+        cb_param1_(0),
+        count_(0), 
+        unk_1_(0), 
+        resolution_(5), 
+        unk_2_(0) { }
+  ~Time() { close(); } // 00616200
+  
+  void init(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res);
+  void init(void(__cdecl *callback)(int, int), int param, int param2, uint32_t cnt, uint32_t res);
+  uint32_t start(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res);
+  uint32_t start(void(__cdecl *callback)(int, int), int param, int param2, uint32_t cnt, 
+                 uint32_t res);
+  uint32_t pulse(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res);
+  uint32_t pulse(void(__cdecl *callback)(int, int), int param, int param2, uint32_t cnt, 
+                 uint32_t res);
+  uint32_t start();
+  uint32_t pulse();
+  void stop();
+  void close();
+  void set_modal() { TimeModal = this; }  // 00616860
+  void release_modal() { TimeModal = 0; } // 00616870
 
-public:
-    Time() : unkToggle(0), idEvent(0), callback1(0), callback2(0), cbParam2(0), cbParam1(0),
-        count(0), unk_1(0), resolution(5), unk_2(0) { } // 006161D0
-    ~Time() { close(); } // 00616200
+  // eventually make atomic for thread safety
+  static Time *TimeModal;
+  static int TimeInitCount;
+  static void TimerProc(HWND hwnd, uint32_t msg, UINT_PTR id_timer, DWORD elapsed);
+  static void MultimediaProc(uint32_t timer_id, uint32_t msg, DWORD_PTR dw_user, DWORD_PTR dw1,
+                             DWORD_PTR dw2);
+  static int __cdecl init_class() { ++TimeInitCount; return 0; } // 00616880
+  static void __cdecl close_class() { --TimeInitCount; }         // 00616890
 
-    void init(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res);
-    void init(void(__cdecl *callback)(int, int), int param, int param2, uint32_t cnt, uint32_t res);
-    uint32_t start(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res);
-    uint32_t start(void(__cdecl *callback)(int, int), int param, int param2,
-        uint32_t cnt, uint32_t res);
-    uint32_t pulse(void(__cdecl *callback)(int), int param, uint32_t cnt, uint32_t res);
-    uint32_t pulse(void(__cdecl *callback)(int, int), int param, int param2,
-        uint32_t cnt, uint32_t res);
-    uint32_t start();
-    uint32_t pulse();
-    void stop();
-    void close();
-    void set_modal() { TimeModal = this; } // 00616860
-    void release_modal() { TimeModal = 0; } // 00616870
-
-    // eventually make atomic for thread safety
-    static Time *TimeModal;
-    static int TimeInitCount;
-    static void TimerProc(HWND hwnd, uint32_t msg, UINT_PTR idTimer, DWORD elapsed);
-    static void MultimediaProc(uint32_t timerID, uint32_t msg, DWORD_PTR dwUser, DWORD_PTR dw1,
-        DWORD_PTR dw2);
-    static int __cdecl init_class() { ++TimeInitCount; return 0; } // 00616880
-    static void __cdecl close_class() { --TimeInitCount; } // 00616890
+ private:
+  int unk_tgl_; // some kind of toggle or type
+  UINT_PTR id_event_;
+  void(__cdecl *callback1_)(int);
+  void(__cdecl *callback2_)(int, int);
+  int cb_param2_; // callback 2nd parameter
+  int cb_param1_; // callback 1st parameter
+  uint32_t count_; // either delay (timeSetEvent) or elapsed (SetTimer) value
+  int unk_1_; // BOOL? related to Timer/Multimedia Proc? one time execution?
+  uint32_t resolution_;
+  int unk_2_;
 };
 
 // global

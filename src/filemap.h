@@ -21,24 +21,24 @@
   * FileMap class: Handles file IO operations.
   */
 class DLLEXPORT Filemap {
-    LPVOID mapViewAddr; // (+0)
-    HANDLE hFile;       // (+4)
-    HANDLE hFileMap;    // (+8)
-    uint32_t fileSize;     // (+12)
+ public:
+  Filemap() // 00628380
+      : map_view_addr_(NULL), file_(INVALID_HANDLE_VALUE), file_map_(NULL), file_size_(0) { }
+  ~Filemap() { close(); }  // 006283E0
 
-public:
-    Filemap() : mapViewAddr(NULL), hFile(INVALID_HANDLE_VALUE), hFileMap(NULL),
-        fileSize(0) { }      // 00628380
-    ~Filemap() { close(); }  // 006283E0
+  Filemap *init(LPCSTR file_name, BOOL is_sequential);
+  Filemap *init(LPCSTR file_name);
+  LPVOID open_read(LPCSTR file_name, BOOL is_sequential);
+  LPVOID open(LPCSTR file_name, BOOL is_sequential);
+  LPVOID create(LPCSTR file_name, uint32_t size, BOOL is_sequential);
+  void close();
+  void close(LPVOID new_addr);
+  // additional functions to assist with encapsulation
+  uint32_t get_size() { return file_size_; }
 
-    Filemap *init(LPCSTR fileName, BOOL isSequential);
-    Filemap *init(LPCSTR fileName);
-    LPVOID open_read(LPCSTR fileName, BOOL isSequential);
-    LPVOID open(LPCSTR fileName, BOOL isSequential);
-    LPVOID create(LPCSTR fileName, uint32_t size, BOOL isSequential);
-    void close();
-    void close(LPVOID newAddr);
-
-    // additional functions to assist with encapsulation
-    uint32_t getSize() { return fileSize; }
+ private:
+  LPVOID map_view_addr_; // (+0)
+  HANDLE file_;          // (+4)
+  HANDLE file_map_;      // (+8)
+  uint32_t file_size_;   // (+12)
 };

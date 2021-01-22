@@ -22,44 +22,45 @@
   * Text class: Handles basic text operations.
   */
 class DLLEXPORT Text {
-    char fileName[80];  // (+0)    : stores text filename string
-    char filePath[256]; // (+0x50) : stores path of last opened file
-    LPSTR currentPos;   // (+0x150)
-    FILE *textFile;     // (+0x154)
-    LPSTR bufferGet;    // (+0x158)
-    LPSTR bufferItem;   // (+0x15C)
+ public:
+  Text() : current_pos_(0), text_file_(0), buffer_get_(0), buffer_item_(0) { // 005FD860
+      file_name_[0] = 0;
+      file_path_[0] = 0;
+  }
+  Text(size_t size) : current_pos_(0), text_file_(0), buffer_get_(0), buffer_item_(0) { // 005FD880
+      file_name_[0] = 0; 
+      file_path_[0] = 0;
+      buffer_get_ = (LPSTR)mem_get(size);
+      if (buffer_get_) {
+          buffer_item_ = (LPSTR)mem_get(size);
+      }
+  }
+  ~Text() { shutdown(); } // 00608C00
 
-public:
-    Text() : currentPos(0), textFile(0), bufferGet(0), bufferItem(0) { // 005FD860
-        fileName[0] = 0;
-        filePath[0] = 0;
-    }
-    Text(size_t size) : currentPos(0), textFile(0), bufferGet(0), bufferItem(0) { // 005FD880
-        fileName[0] = 0; filePath[0] = 0;
-        bufferGet = (LPSTR)mem_get(size);
-        if (bufferGet) {
-            bufferItem = (LPSTR)mem_get(size);
-        }
-    }
-    ~Text() { shutdown(); } // 00608C00
+  int init(size_t size);
+  void shutdown();
+  void close();
+  BOOL open(LPCSTR src_id, LPCSTR section_id);
+  LPSTR get();
+  LPSTR string();
+  LPSTR item();
+  LPSTR item_string();
+  int item_number();
+  int item_binary();
+  int item_hex();
+  // additional functions to assist with encapsulation
+  LPSTR update() { current_pos_ = buffer_get_; return buffer_get_; }
+  LPSTR get_file_path() { return file_path_; }
+  LPSTR get_buffer_item() { return buffer_item_; }
+  LPSTR get_buffer_get() { return buffer_get_; }
 
-    int init(size_t size);
-    void shutdown();
-    void close();
-    BOOL open(LPCSTR srcID, LPCSTR sectionID);
-    LPSTR get();
-    LPSTR string();
-    LPSTR item();
-    LPSTR item_string();
-    int item_number();
-    int item_binary();
-    int item_hex();
-
-    // additional functions to assist with encapsulation
-    LPSTR update() { currentPos = bufferGet; return bufferGet; }
-    LPSTR getFilePath() { return filePath; }
-    LPSTR getBufferItem() { return bufferItem; }
-    LPSTR getBufferGet() { return bufferGet; }
+ private:
+  char file_name_[80];  // (+0)    : stores text filename string
+  char file_path_[256]; // (+0x50) : stores path of last opened file
+  LPSTR current_pos_;   // (+0x150)
+  FILE *text_file_;     // (+0x154)
+  LPSTR buffer_get_;    // (+0x158)
+  LPSTR buffer_item_;   // (+0x15C)
 };
 
 // global
@@ -71,7 +72,7 @@ DLLEXPORT void __cdecl text_txt_exit();
 DLLEXPORT void __cdecl text_set_get_ptr();
 DLLEXPORT void __cdecl text_set_item_ptr();
 DLLEXPORT void __cdecl text_close();
-DLLEXPORT BOOL __cdecl text_open(LPCSTR srcID, LPCSTR sectionID);
+DLLEXPORT BOOL __cdecl text_open(LPCSTR src_id, LPCSTR section_id);
 DLLEXPORT LPSTR __cdecl text_get();
 DLLEXPORT LPSTR __cdecl text_string();
 DLLEXPORT LPSTR __cdecl text_item();

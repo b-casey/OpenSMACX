@@ -21,36 +21,44 @@
   * Font class
   */
 class DLLEXPORT Font {
-    int unk_1; // height offset? set outside of class functions
-    BOOL isFotSet; // used only by both init() functions
-    HFONT fontObj;
-    int lineHeight;
-    int height;
-    int internalLeading;
-    int ascent;
-    int descent;
-    int pad; // padding? no references
-    LPSTR fotFileName;
+ public:
+  Font()
+      : unk_1_(-1), 
+        is_fot_set_(0), 
+        font_obj_(0), 
+        line_height_(0), 
+        height_(0), 
+        ascent_(0), 
+        descent_(0),
+        fot_file_name_(0) { } // 00618EA0
+  Font(LPSTR font_name, int height, int style) { init(font_name, height, style); } // 00618EC0
+  ~Font() { close(); } // 00618EE0
 
-public:
-    Font() : unk_1(-1), isFotSet(0), fontObj(0), lineHeight(0), height(0), ascent(0), descent(0),
-        fotFileName(0) { } // 00618EA0
-    Font(LPSTR fontName, int lfHeight, int style) { init(fontName, lfHeight, style); } // 00618EC0
-    ~Font() { close(); } // 00618EE0
+  // int UNK1(int, int, int, int) { return 1; } // no direct references
+  int init(LPCSTR font_name, int height, uint32_t style);
+  int init(LPCSTR file, LPCSTR font_name, int height, uint32_t style);
+  void close();
+  int width(LPSTR input);
+  int width(LPSTR input, size_t max_len);
+  LPSTR find_line_break_l(LPSTR input, int *break_len, size_t len);
 
-    // int UNK1(int, int, int, int) { return 1; } // no direct references
-    int init(LPCSTR fontName, int lfHeight, uint32_t style);
-    int init(LPCSTR file, LPCSTR fontName, int lfHeight, uint32_t style);
-    void close();
-    int width(LPSTR input);
-    int width(LPSTR input, int maxLen);
-    LPSTR find_line_break_l(LPSTR input, int *breakLen, size_t len);
+  // eventually make atomic for thread safety
+  static HDC FontHDC;
+  static int FontInitCount;
+  static int __cdecl init_font_class(Font *font);
+  static void __cdecl close_font_class();
 
-    // eventually make atomic for thread safety
-    static HDC FontHDC;
-    static int FontInitCount;
-    static int __cdecl init_font_class(Font *font);
-    static void __cdecl close_font_class();
+ private:
+  int unk_1_; // height offset? set outside of class functions
+  BOOL is_fot_set_; // used only by both init() functions
+  HFONT font_obj_;
+  int line_height_;
+  int height_;
+  int internal_leading_;
+  int ascent_;
+  int descent_;
+  int pad_; // padding? no references
+  LPSTR fot_file_name_;
 };
 
 // global

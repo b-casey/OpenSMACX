@@ -17,147 +17,147 @@
  */
 #include "stdafx.h"
 #include "spot.h"
-#include "general.h" // mem_get()
+#include "general.h"
 
 /*
-Purpose: Shutdown instance of Spot.
+Purpose: Shutdown the class instance.
 Original Offset: 005FA830
 Return Value: n/a
 Status: Complete
 */
 void Spot::shutdown() {
-    if (spots) {
-        free(spots);
+    if (spots_) {
+        free(spots_);
     }
     clear();
 }
 
 /*
-Purpose: Initialize instance of Spot with count.
+Purpose: Initialize the class instance with count.
 Original Offset: 005FA8A0
 Return Value: n/a
 Status: Complete
 */
 void Spot::init(uint32_t count) {
     shutdown();
-    spots = (SpotInternal *)mem_get(count * sizeof(SpotInternal));
-    if (spots) {
-        maxCount = count;
-        addCount = 0;
+    spots_ = (SpotInternal *)mem_get(count * sizeof(SpotInternal));
+    if (spots_) {
+        max_count_ = count;
+        add_count_ = 0;
     }
 }
 
 /*
-Purpose: Search for specific Spot and replace the RECT value.
+Purpose: Search for a specific spot and replace the RECT value.
 Original Offset: 005FA900
 Return Value: n/a
 Status: Complete
 */
 void Spot::replace(int position, int type, int left, int top, int length, int width) {
-    for (uint32_t i = 0; i < addCount; i++) {
-        if (spots[i].position == position && spots[i].type == type) {
-            spots[i].rect.left = left;
-            spots[i].rect.right = left + length;
-            spots[i].rect.top = top;
-            spots[i].rect.bottom = top + width;
+    for (uint32_t i = 0; i < add_count_; i++) {
+        if (spots_[i].position == position && spots_[i].type == type) {
+            spots_[i].rect.left = left;
+            spots_[i].rect.right = left + length;
+            spots_[i].rect.top = top;
+            spots_[i].rect.bottom = top + width;
         }
     }
 }
 
 /*
-Purpose: Add a Spot from individual values.
+Purpose: Add a new spot from the specified values.
 Original Offset: 005FA960
-Return Value: -1 error, otherwise Spot position on success.
+Return Value: Spot position on success otherwise -1 on error
 Status: Complete
 */
 int Spot::add(int position, int type, int left, int top, int length, int width) {
-    if (addCount >= maxCount) {
+    if (add_count_ >= max_count_) {
         return -1;
     }
-    spots[addCount].rect.left = left;
-    spots[addCount].rect.right = left + length;
-    spots[addCount].rect.top = top;
-    spots[addCount].rect.bottom = top + width;
-    spots[addCount].position = position;
-    spots[addCount].type = type;
-    return addCount++;
+    spots_[add_count_].rect.left = left;
+    spots_[add_count_].rect.right = left + length;
+    spots_[add_count_].rect.top = top;
+    spots_[add_count_].rect.bottom = top + width;
+    spots_[add_count_].position = position;
+    spots_[add_count_].type = type;
+    return add_count_++;
 }
 
 /*
-Purpose: Add a Spot from RECT. This was optimized out but available in macOS version.
-Original Offset: n/a
-Return Value: -1 error, otherwise Spot position on success.
+Purpose: Add a new spot from a RECT.
+Original Offset: n/a (Optimized out but available in PPC version)
+Return Value: Spot position on success otherwise -1 on error
 Status: Complete
 */
 int Spot::add(int position, int type, RECT *rect) {
-    return add(position, type, rect->left, rect->top,
-        rect->right - rect->left, rect->bottom - rect->top);
+    return add(position, type, rect->left, rect->top, rect->right - rect->left, 
+        rect->bottom - rect->top);
 }
 
 /*
-Purpose: Remove all Spots at a specific position.
+Purpose: Remove all spots at a specific position.
 Original Offset: 005FA9C0
 Return Value: n/a
 Status: Complete
 */
 void Spot::kill_pos(int position) {
-    if (position < 0 || (uint32_t)position >= addCount) {
+    if (position < 0 || (uint32_t)position >= add_count_) {
         return;
     }
-    addCount--;
-    if ((uint32_t)position < addCount) {
-        size_t size = sizeof(SpotInternal) * (addCount - position);
-        memcpy_s(&spots[position], size, &spots[position + 1], size);
+    add_count_--;
+    if ((uint32_t)position < add_count_) {
+        size_t size = sizeof(SpotInternal) * (add_count_ - position);
+        memcpy_s(&spots_[position], size, &spots_[position + 1], size);
     }
 }
 
 /*
-Purpose: Remove a specific Spot.
+Purpose: Remove a specific spot.
 Original Offset: 005FAA10
 Return Value: n/a
 Status: Complete
 */
 void Spot::kill_specific(int position, int type) {
-    for (int i = addCount - 1; i >= 0; i--) {
-        if (spots[i].position == position && spots[i].type == type) {
+    for (int i = add_count_ - 1; i >= 0; i--) {
+        if (spots_[i].position == position && spots_[i].type == type) {
             kill_pos(i);
         }
     }
 }
 
 /*
-Purpose: Remove all Spots of specific type.
+Purpose: Remove all spots of a specific type.
 Original Offset: 005FAA90
 Return Value: n/a
 Status: Complete
 */
 void Spot::kill_type(int type) {
-    for (int i = addCount - 1; i >= 0; i--) {
-        if (spots[i].type == type) {
+    for (int i = add_count_ - 1; i >= 0; i--) {
+        if (spots_[i].type == type) {
             kill_pos(i);
         }
     }
 }
 
 /*
-Purpose: Check if coordinates fall inside a Spot. If so, get information about Spot.
+Purpose: Check if the coordinates fall inside a spot. If so, return information about the spot.
 Original Offset: 005FAB00
-Return Value: -1 error, otherwise Spot position on success.
+Return Value: Spot position on success otherwise -1 on error
 Status: Complete
 */
-int Spot::check(int xCoord, int yCoord, int *spotPos, int *spotType) {
-    int offset = addCount - 1;
+int Spot::check(int x, int y, int *spot_pos, int *spot_type) {
+    int offset = add_count_ - 1;
     if (offset < 0) {
         return -1;
     }
     for (int i = offset; i >= 0; i--) {
-        if (xCoord >= spots[i].rect.left && xCoord < spots[i].rect.right
-            && yCoord >= spots[i].rect.top && yCoord < spots[i].rect.bottom) {
-            if (spotPos) {
-                *spotPos = spots[i].position;
+        if (x >= spots_[i].rect.left && x < spots_[i].rect.right && y >= spots_[i].rect.top 
+            && y < spots_[i].rect.bottom) {
+            if (spot_pos) {
+                *spot_pos = spots_[i].position;
             }
-            if (spotType) {
-                *spotType = spots[i].type;
+            if (spot_type) {
+                *spot_type = spots_[i].type;
             }
             return i;
         }
@@ -166,27 +166,27 @@ int Spot::check(int xCoord, int yCoord, int *spotPos, int *spotType) {
 }
 
 /*
-Purpose: Check if coordinates fall inside a Spot. If so, get information about Spot including RECT.
+Purpose: Check if the coordinates fall within a spot. If so, return information about the spot.
 Original Offset: 005FAB70
-Return Value: -1 error, otherwise Spot position on success.
+Return Value: Spot position on success otherwise -1 on error
 Status: Complete
 */
-int Spot::check(int xCoord, int yCoord, int *spotPos, int *spotType, RECT *spotRect) {
-    int offset = addCount - 1;
+int Spot::check(int x, int y, int *spot_pos, int *spot_type, RECT *spot_rect) {
+    int offset = add_count_ - 1;
     if (offset < 0) {
         return -1;
     }
     for (int i = offset; i >= 0; i--) {
-        if (xCoord >= spots[i].rect.left && xCoord < spots[i].rect.right
-            && yCoord >= spots[i].rect.top && yCoord < spots[i].rect.bottom) {
-            if (spotPos) {
-                *spotPos = spots[i].position;
+        if (x >= spots_[i].rect.left && x < spots_[i].rect.right && y >= spots_[i].rect.top 
+            && y < spots_[i].rect.bottom) {
+            if (spot_pos) {
+                *spot_pos = spots_[i].position;
             }
-            if (spotType) {
-                *spotType = spots[i].type;
+            if (spot_type) {
+                *spot_type = spots_[i].type;
             }
-            if (spotRect) {
-                *spotRect = spots[i].rect;
+            if (spot_rect) {
+                *spot_rect = spots_[i].rect;
             }
             return i;
         }
@@ -195,20 +195,20 @@ int Spot::check(int xCoord, int yCoord, int *spotPos, int *spotType, RECT *spotR
 }
 
 /*
-Purpose: Get a specific Spot's RECT.
+Purpose: Get the RECT for a specific spot.
 Original Offset: 005FAC00
-Return Value: -1 error, otherwise Spot position on success.
+Return Value: Spot position on success otherwise -1 on error
 Status: Complete
 */
-int Spot::get_rect(int position, int type, RECT *spotRect) {
-    int offset = addCount - 1;
+int Spot::get_rect(int position, int type, RECT *spot_rect) {
+    int offset = add_count_ - 1;
     if (offset < 0) {
         return -1;
     }
     for (int i = offset; i >= 0; i--) {
-        if (spots[i].position == position && spots[i].type == type) {
-            if (spotRect) {
-                *spotRect = spots[i].rect;
+        if (spots_[i].position == position && spots_[i].type == type) {
+            if (spot_rect) {
+                *spot_rect = spots_[i].rect;
             }
             return i;
         }

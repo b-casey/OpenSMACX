@@ -17,170 +17,172 @@
  */
 #include "stdafx.h"
 #include "filemap.h"
-#include "general.h" // filefind_get
+#include "general.h"
 
 /*
-Purpose: Initialize Filemap by opening a file with WRITE access. BOOL toggles if file is accessed
-         sequentially or randomly.
+Purpose: Initialize the class by opening a file with write permission. The boolean parameter toggles 
+         if the file is accessed sequentially or randomly.
 Original Offset: 006283A0
-Return Value: Pointer to initialized Filemap
+Return Value: Pointer to the initialized class
 Status: Complete
 */
-Filemap *Filemap::init(LPCSTR fileName, BOOL isSequential) {
-    open(fileName, isSequential);
+Filemap *Filemap::init(LPCSTR file_name, BOOL is_sequential) {
+    open(file_name, is_sequential);
     return this;
 }
 
 /*
-Purpose: Initialize Filemap by opening a random access file with WRITE access.
+Purpose: Initialize the class by opening a random access file with write permission.
 Original Offset: 006283C0
-Return Value: Pointer to initialized Filemap
+Return Value: Pointer to initialized class
 Status: Complete
 */
-Filemap *Filemap::init(LPCSTR fileName) {
-    open(fileName, false);
+Filemap *Filemap::init(LPCSTR file_name) {
+    open(file_name, false);
     return this;
 }
 
 /*
-Purpose: Open a file with READ access. BOOL toggles if file is accessed sequentially or randomly.
+Purpose: Open a file with read permission. The boolean parameter toggles if the file is accessed 
+         sequentially or randomly.
 Original Offset: 00628430
-Return Value: Memory address of mapped file or 0 on error
+Return Value: Pointer to the mapped file or NULL on error
 Status: Complete
 */
-LPVOID Filemap::open_read(LPCSTR fileName, BOOL isSequential) {
+LPVOID Filemap::open_read(LPCSTR file_name, BOOL is_sequential) {
     close();
-    LPCSTR filePaths = filefind_get(fileName);
-    if (!filePaths) {
-        filePaths = fileName;
+    LPCSTR file_paths = filefind_get(file_name);
+    if (!file_paths) {
+        file_paths = file_name;
     }
-    hFile = CreateFileA(filePaths, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL
-        | (isSequential ? FILE_FLAG_SEQUENTIAL_SCAN : FILE_FLAG_RANDOM_ACCESS), NULL);
-    if (hFile == INVALID_HANDLE_VALUE) {
+    file_ = CreateFileA(file_paths, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL
+        | (is_sequential ? FILE_FLAG_SEQUENTIAL_SCAN : FILE_FLAG_RANDOM_ACCESS), NULL);
+    if (file_ == INVALID_HANDLE_VALUE) {
         GetLastError(); // failed to read file
-        return 0;
+        return NULL;
     }
-    hFileMap = CreateFileMapping(hFile, NULL, PAGE_READONLY, 0, 0, NULL);
-    if (hFileMap) {
-        mapViewAddr = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, 0);
-        if (mapViewAddr) {
-            fileSize = GetFileSize(hFile, NULL);
-            return mapViewAddr;
+    file_map_ = CreateFileMapping(file_, NULL, PAGE_READONLY, 0, 0, NULL);
+    if (file_map_) {
+        map_view_addr_ = MapViewOfFile(file_map_, FILE_MAP_READ, 0, 0, 0);
+        if (map_view_addr_) {
+            file_size_ = GetFileSize(file_, NULL);
+            return map_view_addr_;
         }
     }
     close(); // clear everything on error
-    return 0;
+    return NULL;
 }
 
 /*
-Purpose: Open a file with WRITE access. BOOL toggles if file is accessed sequentially or randomly.
+Purpose: Open a file with write permission. The boolean parameter toggles if the file is accessed
+         sequentially or randomly.
 Original Offset: 00628540
-Return Value: Memory address of mapped file or 0 on error
+Return Value: Pointer to the mapped file or NULL on error
 Status: Complete
 */
-LPVOID Filemap::open(LPCSTR fileName, BOOL isSequential) {
+LPVOID Filemap::open(LPCSTR file_name, BOOL is_sequential) {
     close();
-    LPCSTR filePaths = filefind_get(fileName);
-    if (!filePaths) {
-        filePaths = fileName;
+    LPCSTR file_paths = filefind_get(file_name);
+    if (!file_paths) {
+        file_paths = file_name;
     }
-    hFile = CreateFileA(filePaths, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING,
+    file_ = CreateFileA(file_paths, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL |
-        (isSequential ? FILE_FLAG_SEQUENTIAL_SCAN : FILE_FLAG_RANDOM_ACCESS), NULL);
-    if (hFile == INVALID_HANDLE_VALUE) {
+        (is_sequential ? FILE_FLAG_SEQUENTIAL_SCAN : FILE_FLAG_RANDOM_ACCESS), NULL);
+    if (file_ == INVALID_HANDLE_VALUE) {
         GetLastError(); // failed to read file
-        return 0;
+        return NULL;
     }
-    hFileMap = CreateFileMapping(hFile, NULL, PAGE_READWRITE, 0, 0, NULL);
-    if (hFileMap) {
-        mapViewAddr = MapViewOfFile(hFileMap, FILE_MAP_ALL_ACCESS, 0, 0, 0);
-        if (mapViewAddr) {
-            fileSize = GetFileSize(hFile, NULL);
-            return mapViewAddr;
+    file_map_ = CreateFileMapping(file_, NULL, PAGE_READWRITE, 0, 0, NULL);
+    if (file_map_) {
+        map_view_addr_ = MapViewOfFile(file_map_, FILE_MAP_ALL_ACCESS, 0, 0, 0);
+        if (map_view_addr_) {
+            file_size_ = GetFileSize(file_, NULL);
+            return map_view_addr_;
         }
     }
     close(); // clear everything on error
-    return 0;
+    return NULL;
 }
 
 /*
-Purpose: Create a new file or overwrite an existing one with specified size filled with zeros.
+Purpose: Create a new file or overwrite an existing one with the specified size filled with zeros.
 Original Offset: 00628650
-Return Value: Memory address of mapped file or 0 on error
+Return Value: Pointer to the mapped file or NULL on error
 Status: Complete
 */
-LPVOID Filemap::create(LPCSTR fileName, uint32_t size, BOOL isSequential) {
+LPVOID Filemap::create(LPCSTR file_name, uint32_t size, BOOL is_sequential) {
     close();
-    fileSize = size;
-    hFile = CreateFileA(fileName, GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
+    file_size_ = size;
+    file_ = CreateFileA(file_name, GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
         FILE_ATTRIBUTE_NORMAL |
-        (isSequential ? FILE_FLAG_SEQUENTIAL_SCAN : FILE_FLAG_RANDOM_ACCESS), NULL);
-    if (hFile == INVALID_HANDLE_VALUE) {
+        (is_sequential ? FILE_FLAG_SEQUENTIAL_SCAN : FILE_FLAG_RANDOM_ACCESS), NULL);
+    if (file_ == INVALID_HANDLE_VALUE) {
         GetLastError();
-        return 0;
+        return NULL;
     }
-    if (SetFilePointer(hFile, size, NULL, FILE_BEGIN) != INVALID_SET_FILE_POINTER) {
-        SetEndOfFile(hFile);
-        if (SetFilePointer(hFile, 0, NULL, FILE_BEGIN) != INVALID_SET_FILE_POINTER) {
-            hFileMap = CreateFileMapping(hFile, NULL, PAGE_READWRITE, 0, 0, NULL);
-            if (hFileMap) {
-                mapViewAddr = MapViewOfFile(hFileMap, FILE_MAP_ALL_ACCESS, 0, 0, 0);
-                if (mapViewAddr) {
-                    ZeroMemory(mapViewAddr, size);
-                    return mapViewAddr;
+    if (SetFilePointer(file_, size, NULL, FILE_BEGIN) != INVALID_SET_FILE_POINTER) {
+        SetEndOfFile(file_);
+        if (SetFilePointer(file_, 0, NULL, FILE_BEGIN) != INVALID_SET_FILE_POINTER) {
+            file_map_ = CreateFileMapping(file_, NULL, PAGE_READWRITE, 0, 0, NULL);
+            if (file_map_) {
+                map_view_addr_ = MapViewOfFile(file_map_, FILE_MAP_ALL_ACCESS, 0, 0, 0);
+                if (map_view_addr_) {
+                    ZeroMemory(map_view_addr_, size);
+                    return map_view_addr_;
                 }
             }
         }
     }
     close(); // clear everything on error
-    return 0;
+    return NULL;
 }
 
 /*
-Purpose: Close all handles and map to the file.
+Purpose: Close the map and all handles to the file.
 Original Offset: 006287C0
 Return Value: n/a
 Status: Complete
 */
 void Filemap::close() {
-    if (mapViewAddr) {
-        UnmapViewOfFile(mapViewAddr);
-        mapViewAddr = 0;
+    if (map_view_addr_) {
+        UnmapViewOfFile(map_view_addr_);
+        map_view_addr_ = 0;
     }
-    if (hFileMap) {
-        CloseHandle(hFileMap);
-        hFileMap = 0;
+    if (file_map_) {
+        CloseHandle(file_map_);
+        file_map_ = 0;
     }
-    if (hFile != INVALID_HANDLE_VALUE) {
-        CloseHandle(hFile);
-        hFile = 0;
+    if (file_ != INVALID_HANDLE_VALUE) {
+        CloseHandle(file_);
+        file_ = 0;
     }
-    fileSize = 0;
+    file_size_ = 0;
 }
 
 /*
-Purpose: Close file and set end based on difference between mapViewAddr and newAddr. This can be
-         used to truncate existing tmp files. Assumes file has WRITE access.
+Purpose: Close and set the end of the file. This can be used to truncate existing files. It also 
+         assumes the file has write permission.
 Original Offset: 00628810
 Return Value: n/a
 Status: Complete
 */
-void Filemap::close(LPVOID newAddr) {
-    if (newAddr >= mapViewAddr) {
-        LONG newSize = LONG(newAddr) - LONG(mapViewAddr);
-        if (mapViewAddr) {
-            UnmapViewOfFile(mapViewAddr);
-            mapViewAddr = 0;
+void Filemap::close(LPVOID new_addr) {
+    if (new_addr >= map_view_addr_) {
+        LONG new_size = LONG(new_addr) - LONG(map_view_addr_);
+        if (map_view_addr_) {
+            UnmapViewOfFile(map_view_addr_);
+            map_view_addr_ = 0;
         }
-        if (hFileMap) {
-            CloseHandle(hFileMap);
-            hFileMap = 0;
+        if (file_map_) {
+            CloseHandle(file_map_);
+            file_map_ = 0;
         }
-        if (SetFilePointer(hFile, newSize, NULL, FILE_BEGIN) != INVALID_SET_FILE_POINTER) {
-            SetEndOfFile(hFile);
-            if (hFile) {
-                CloseHandle(hFile);
-                hFile = 0;
+        if (SetFilePointer(file_, new_size, NULL, FILE_BEGIN) != INVALID_SET_FILE_POINTER) {
+            SetEndOfFile(file_);
+            if (file_) {
+                CloseHandle(file_);
+                file_ = 0;
             }
             return;
         }

@@ -21,25 +21,25 @@
   * Random class: Handles pseudo random number generator.
   */
 class DLLEXPORT Random {
-    uint32_t seed;
+ public:
+  Random() : seed_(0) { }  // 00625730
+  ~Random() { seed_ = 0; } // 00625740
 
-public:
-    Random() : seed(0) { } // 00625730
-    ~Random() { seed = 0; } // 00625740
+  void reseed(uint32_t new_seed);
+  uint32_t get(uint32_t min, uint32_t max);
+  double get();
+  // additional functions to assist with encapsulation
+  uint32_t get_seed() { return seed_; }
 
-    void reseed(uint32_t reseedValue);
-    uint32_t get(uint32_t min, uint32_t max);
-    double get();
-
-    // additional functions to assist with encapsulation
-    uint32_t getSeed() { return seed; }
+ private:
+  uint32_t seed_;
 };
 
 // global
 extern Random *Rand;
 DLLEXPORT void __cdecl random_rand();
 DLLEXPORT void __cdecl random_rand_exit();
-DLLEXPORT void __cdecl random_reseed(uint32_t reseedValue);
+DLLEXPORT void __cdecl random_reseed(uint32_t new_seed);
 DLLEXPORT uint32_t __cdecl random_get();
 DLLEXPORT uint32_t __cdecl random(uint32_t min, uint32_t max);
 DLLEXPORT double __cdecl random();

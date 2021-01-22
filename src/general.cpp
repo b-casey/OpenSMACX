@@ -102,7 +102,7 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl add_lf(LPSTR str) {
-    int len = strlen(str);
+    size_t len = strlen(str);
     str[len] = '\n';
     str[len + 1] = 0;
 }
@@ -902,7 +902,7 @@ uint32_t __cdecl checksum_password(LPCSTR password) {
     strcpy_s(buffer, 256, password);
     CharUpper(buffer); // incorrect results for Turkish/Azerbaijani 'i'
     uint8_t chksum = 0;
-    uint32_t len = strlen(buffer);
+    size_t len = strlen(buffer);
     if (len) {
         chksum = checksum((LPBYTE)&buffer, len, 0);
     }

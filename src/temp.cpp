@@ -43,7 +43,7 @@ func18 *_fputc = (func18 *)0x00646886;
 func5 *load_faction_art = (func5 *)0x00453710;
 func5 *draw_map = (func5 *)0x0046B190;
 func5 *wave_it = (func5 *)0x004455F0;
-// TODO: crash bug; X_pop > ... > BasePop::start > text_close > NULLs 009B7CF4 (FILE *Txt.textFile)
+// TODO: crash bug; X_pop > . > BasePop::start > text_close > NULLs 009B7CF4 (FILE *Txt.text_file_)
 // Next call to text_get() tries to access 009B7CF4 and the game crashes.
 func6 *X_pop = (func6 *)0x005BF310;
 func7 *popp = (func7 *)0x0048C0A0;

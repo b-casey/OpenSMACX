@@ -27,16 +27,6 @@ class DLLEXPORT Palette {
   ~Palette() { ; }
 
  private:
-  struct PaletteInternal {
-      uint32_t field_0;
-      Time *time;
-      uint8_t field_8;
-      uint8_t field_9;
-      uint8_t field_A;
-      uint8_t field_B;
-      void *field_C;
-  };
-
   uint32_t field_0_;
   uint32_t field_4_;
   uint32_t field_8_;
@@ -294,5 +284,13 @@ class DLLEXPORT Palette {
   uint32_t field_3F8_;
   uint32_t field_3FC_;
   uint32_t field_400_;
-  PaletteInternal internal_[5];
+  struct PaletteInternal {
+      uint32_t field_0;
+      Time *time;
+      uint8_t field_8;
+      uint8_t field_9;
+      uint8_t field_A;
+      uint8_t field_B;
+      void *field_C;
+  } internal_[5];
 };

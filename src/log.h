@@ -16,36 +16,36 @@
  * along with OpenSMACX. If not, see <http://www.gnu.org/licenses/>.
  */
 #pragma once
-#include "general.h" // mem_get()
+#include "general.h"
 
  /*
   * Log class: Handles debug logging.
   */
 class DLLEXPORT Log {
-    LPSTR logFile;
-    BOOL isDisabled;
+ public:
+  Log() : log_file_(0), is_disabled_(false) { }           // 00625FB0
+  Log(LPCSTR input) : log_file_(0), is_disabled_(false) { // 00625FC0
+      if (input) {
+          size_t len = strlen(input) + 1;
+          log_file_ = (LPSTR)mem_get(len);
+          if (log_file_) {
+              strcpy_s(log_file_, len, input);
+              reset();
+          }
+      }
+  }
+  ~Log() { if (log_file_) { free(log_file_); log_file_ = 0; } } // 00626020
 
-public:
-    Log() : logFile(0), isDisabled(false) { } // 00625FB0
-    Log(LPCSTR input) : logFile(0), isDisabled(false) { // 00625FC0
-        if (input) {
-            int len = strlen(input) + 1;
-            logFile = (LPSTR)mem_get(len);
-            if (logFile) {
-                strcpy_s(logFile, len, input);
-                reset();
-            }
-        }
-    }
-    ~Log() { if (logFile) { free(logFile); logFile = 0; } } // 00626020
+  int init(LPCSTR input);
+  void reset();
+  void say(LPCSTR str1, LPCSTR str2, int num1, int num2, int num3);
+  void say_hex(LPCSTR str1, LPCSTR str2, int num1, int num2, int num3);
+  // additional functions to assist with encapsulation
+  void set_state(BOOL state) { is_disabled_ = state ? false : true; }
 
-    int init(LPCSTR input);
-    void reset();
-    void say(LPCSTR str1, LPCSTR str2, int num1, int num2, int num3);
-    void say_hex(LPCSTR str1, LPCSTR str2, int num1, int num2, int num3);
-
-    // additional functions to assist with encapsulation
-    void set_state(BOOL state) { isDisabled = state ? false : true; }
+ private:
+  LPSTR log_file_;
+  BOOL is_disabled_;
 };
 
 // global

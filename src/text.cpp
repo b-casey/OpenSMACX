@@ -24,146 +24,140 @@
 #include "textindex.h"
 
 /*
-Purpose: Initialize variables and allocate memory for parse buffers
+Purpose: Initialize the class instance.
 Original Offset: 005FD8D0
-Return Value: Non-zero error (4); 0 no errors
+Return Value: Zero on success, non-zero on error
 Status: Complete
 */
 int Text::init(size_t size) {
     shutdown();
-    bufferGet = (LPSTR)mem_get(size);
-    if (!bufferGet) {
+    buffer_get_ = (LPSTR)mem_get(size);
+    if (!buffer_get_) {
         return 4;
     }
-    bufferItem = (LPSTR)mem_get(size);
-    if (!bufferItem) {
+    buffer_item_ = (LPSTR)mem_get(size);
+    if (!buffer_item_) {
         return 4;
     }
     return 0;
 }
 
 /*
-Purpose: Close file and free memory for Text parse buffers
+Purpose: Shutdown the class instance.
 Original Offset: 005FD970
 Return Value: n/a
 Status: Complete
 */
 void Text::shutdown() {
     close();
-    if (bufferGet) {
-        free(bufferGet);
-        bufferGet = 0;
+    if (buffer_get_) {
+        free(buffer_get_);
+        buffer_get_ = 0;
     }
-    if (bufferItem) {
-        free(bufferItem);
-        bufferItem = 0;
+    if (buffer_item_) {
+        free(buffer_item_);
+        buffer_item_ = 0;
     }
 }
 
 /*
-Purpose: Close only file handle
+Purpose: If open, close the text file.
 Original Offset: 005FD9D0
 Return Value: n/a
 Status: Complete
 */
 void Text::close() {
-    if (textFile) {
-        fclose(textFile);
-        textFile = 0;
+    if (text_file_) {
+        fclose(text_file_);
+        text_file_ = 0;
     }
 }
 
 /*
-Purpose: Open specified source txt file and copy section into buffer for parsing
+Purpose: Open the specified text file and copy the section into the buffer for parsing.
 Original Offset: 005FDA00
 Return Value: Was there an error? true/false
 Status: Complete
 */
-BOOL Text::open(LPCSTR srcFileID, LPCSTR sectionID) {
-    BOOL isFileOpen = false; // open / possibly tracker for reading through whole file?
-    if (srcFileID) {
-        strcpy_s(fileName, 80, srcFileID);
-        if (!strchr(fileName, '.')) {
-            strcat_s(fileName, 80, ".txt");
+BOOL Text::open(LPCSTR src_file_id, LPCSTR section_id) {
+    BOOL is_file_open = false; // open, possibly tracker for reading through whole file?
+    if (src_file_id) {
+        strcpy_s(file_name_, 80, src_file_id);
+        if (!strchr(file_name_, '.')) {
+            strcat_s(file_name_, 80, ".txt");
         }
         close();
-        textFile = env_open(fileName, "rt");
-        if (!textFile) {
+        text_file_ = env_open(file_name_, "rt");
+        if (!text_file_) {
             return true;
         }
-        strcpy_s(filePath, 256, FilefindPath->last_path);
-    }
-    else if (textFile) {
-        isFileOpen = true;
-    }
-    else {
-        textFile = env_open(fileName, "rt");
-        if (!textFile) {
+        strcpy_s(file_path_, 256, FilefindPath->last_path);
+    } else if (text_file_) {
+        is_file_open = true;
+    } else {
+        text_file_ = env_open(file_name_, "rt");
+        if (!text_file_) {
             return true;
         }
-        strcpy_s(filePath, 256, FilefindPath->last_path);
+        strcpy_s(file_path_, 256, FilefindPath->last_path);
     }
-    if (!sectionID) {
+    if (!section_id) {
         return false;
     }
-
-    int seekAddr = text_search_index(fileName, sectionID);
-    if (seekAddr >= 0) {
-        log_say("Seeking to", sectionID, seekAddr, 0, 0);
-        fseek(textFile, seekAddr, SEEK_SET);
-        isFileOpen = true;
+    int seek_addr = text_search_index(file_name_, section_id);
+    if (seek_addr >= 0) {
+        log_say("Seeking to", section_id, seek_addr, 0, 0);
+        fseek(text_file_, seek_addr, SEEK_SET);
+        is_file_open = true;
     }
-
-    std::string sectHeader("#");
-    sectHeader += sectionID;
+    std::string sect_header("#");
+    sect_header += section_id;
     do {
-        if (feof(textFile)) {
-            if (isFileOpen) {
-                isFileOpen = false;
-                rewind(textFile);
-            }
-            else {
+        if (feof(text_file_)) {
+            if (is_file_open) {
+                is_file_open = false;
+                rewind(text_file_);
+            } else {
                 close();
                 return true;
             }
         }
-        if (!fgets(bufferGet, 511, textFile)) {
+        if (!fgets(buffer_get_, 511, text_file_)) {
             close();
             return true;
         }
-        kill_lf(bufferGet);
-        purge_spaces(bufferGet);
-    } while (_stricmp(sectHeader.c_str(), bufferGet));
-    currentPos = bufferGet;
+        kill_lf(buffer_get_);
+        purge_spaces(buffer_get_);
+    } while (_stricmp(sect_header.c_str(), buffer_get_));
+    current_pos_ = buffer_get_;
     return false;
 }
 
 /*
-Purpose: Parse until newline, copying text into buffer from open file
+Purpose: Parse text from the opened file until a newline is reached. Copy this text into the buffer.
 Original Offset: 005FDC10
 Return Value: Pointer to string
 Status: Complete
 */
 LPSTR Text::get() {
-    if (feof(textFile)) {
-        bufferGet[0] = 0;
+    if (feof(text_file_)) {
+        buffer_get_[0] = 0;
         return NULL;
     }
-    if (fgets(bufferGet, 511, textFile)) {
-        kill_lf(bufferGet);
-        purge_spaces(bufferGet);
-        currentPos = bufferGet;
+    if (fgets(buffer_get_, 511, text_file_)) {
+        kill_lf(buffer_get_);
+        purge_spaces(buffer_get_);
+        current_pos_ = buffer_get_;
+    } else {
+        buffer_get_[0] = 0;
     }
-    else {
-        bufferGet[0] = 0;
-    }
-    return bufferGet;
+    return buffer_get_;
 }
 
 /*
-Purpose: Get string and add it to string table
+Purpose: Get the string and put it into the string table.
 Original Offset: 005FDC80
-Return Value: Pointer to string
+Return Value: Pointer to string table
 Status: Complete
 */
 LPSTR Text::string() {
@@ -171,28 +165,28 @@ LPSTR Text::string() {
 }
 
 /*
-Purpose: Parse string into buffer
+Purpose: Parse the current item into the string buffer.
 Original Offset: 005FDD10
-Return Value: Pointer to string
+Return Value: Pointer to string buffer
 Status: Complete
 */
 LPSTR Text::item() {
-    LPSTR lpParse = bufferItem;
-    while (*currentPos != 0 && *currentPos != ',') {
-        *lpParse++ = *currentPos++;
+    LPSTR parse = buffer_item_;
+    while (*current_pos_ != 0 && *current_pos_ != ',') {
+        *parse++ = *current_pos_++;
     }
-    *lpParse = 0;
-    if (*currentPos) {
-        *currentPos++;
+    *parse = 0;
+    if (*current_pos_) {
+        *current_pos_++;
     }
-    purge_spaces(bufferItem);
-    return bufferItem;
+    purge_spaces(buffer_item_);
+    return buffer_item_;
 }
 
 /*
-Purpose: Parse string into buffer and add it to string table
+Purpose: Parse the current string item into the buffer and add it to the string table.
 Original Offset: 005FDD80
-Return Value: Pointer to string from string table
+Return Value: Pointer to string table
 Status: Complete
 */
 LPSTR Text::item_string() {
@@ -200,9 +194,9 @@ LPSTR Text::item_string() {
 }
 
 /*
-Purpose: Parse number string into buffer and return integer value
+Purpose: Parse the current number item.
 Original Offset: 005FDDF0
-Return Value: Pointer to string from string table
+Return Value: Integer value of the number item
 Status: Complete
 */
 int Text::item_number() {
@@ -210,9 +204,9 @@ int Text::item_number() {
 }
 
 /*
-Purpose: Parse binary string into buffer and return integer value
+Purpose: Parse the current binary item.
 Original Offset: 005FDE60
-Return Value: Pointer to string from string table
+Return Value: Integer value of the binary item
 Status: Complete
 */
 int Text::item_binary() {
@@ -220,9 +214,9 @@ int Text::item_binary() {
 }
 
 /*
-Purpose: Parse hex string into buffer and return integer value
+Purpose: Parse the current hex item.
 Original Offset: 005FDED0
-Return Value: Pointer to string from string table
+Return Value: Integer value of the hex item
 Status: Complete
 */
 int Text::item_hex() {
@@ -238,14 +232,14 @@ void __cdecl text_txt() { *Txt = *(new Text(512)); atexit(text_txt_exit); } // 0
 
 void __cdecl text_txt_exit() { Txt->~Text(); } // 005FD460
 
-void __cdecl text_set_get_ptr() { *TextBufferGetPtr = Txt->getBufferGet(); } // 005FD4C0
+void __cdecl text_set_get_ptr() { *TextBufferGetPtr = Txt->get_buffer_get(); } // 005FD4C0
 
-void __cdecl text_set_item_ptr() { *TextBufferItemPtr = Txt->getBufferItem(); } // 005FD4D0
+void __cdecl text_set_item_ptr() { *TextBufferItemPtr = Txt->get_buffer_item(); } // 005FD4D0
 
 void __cdecl text_close() { Txt->close(); } // 005FD530
 
-BOOL __cdecl text_open(LPCSTR srcID, LPCSTR sectionID) { // 005FD550
-    return Txt->open(srcID, sectionID);
+BOOL __cdecl text_open(LPCSTR src_id, LPCSTR section_id) { // 005FD550
+    return Txt->open(src_id, section_id);
 }
 
 LPSTR __cdecl text_get() { return Txt->get(); } // 005FD570
@@ -263,5 +257,6 @@ int __cdecl text_item_binary() { return Txt->item_binary(); } // 005FD7A0
 int __cdecl text_item_hex() { return Txt->item_hex(); } // 005FD800
 
 int __cdecl text_get_number(int min, int max) { // 00585120
-    text_get(); return range(text_item_number(), min, max);
+    text_get(); 
+    return range(text_item_number(), min, max);
 }

@@ -19,61 +19,60 @@
 #include "strings.h"
 
 /*
-Purpose: Initialize a new string table with specified size from parameter
+Purpose: Initialize the class instance with a new string table of the specified size.
 Original Offset: 006168F0
 Return Value: Was there an error? true/false
 Status: Complete
 */
-BOOL Strings::init(size_t memSize) {
-    if (isPopulated) {
+BOOL Strings::init(size_t mem_size) {
+    if (is_populated_) {
         shutdown();
     }
-    if (Heap::init(memSize)) {
+    if (Heap::init(mem_size)) {
         return true; // allocation failed
     }
     put("-Nil-");
-    isPopulated = true;
+    is_populated_ = true;
     return false; // successful
 }
 
 /*
-Purpose: Shutdown and free up string table memory
+Purpose: Shutdown the class instance.
 Original Offset: 00616950
 Return Value: n/a
 Status: Complete
 */
 void Strings::shutdown() {
     Heap::shutdown();
-    isPopulated = false;
+    is_populated_ = false;
 }
 
 /*
-Purpose: Store input string to string table
+Purpose: Put the input string into the string table.
 Original Offset: 00616970
-Return Value: Address of stored string
+Return Value: Address of the stored string
 Status: Complete
 */
 LPSTR Strings::put(LPCSTR input) {
-    int len = strlen(input) + 1;
-    LPSTR tableAddr = LPSTR(Heap::get(len));
-    strcpy_s(tableAddr, len, input);
-    return tableAddr;
+    size_t len = strlen(input) + 1;
+    LPSTR table_addr = LPSTR(Heap::get(len));
+    strcpy_s(table_addr, len, input);
+    return table_addr;
 }
 
 /*
-Purpose: Check if string is in table by looking at bounds within heap
+Purpose: Check if the string address is within the table.
 Original Offset: 006169A0
-Return Value: Address of stored string
+Return Value: Address of the stored string
 Status: Complete
 */
 LPSTR Strings::get(int address) {
-    // checking if ptr is after base
-    if ((LPVOID)address > getBasePtr()) {
+    if ((LPVOID)address > get_base()) { // checking if ptr is after base
         // checking ptr is not after end of table
-        return ((LPSTR)address <= LPSTR(size_t(getBasePtr()) + getBaseSize())) ?
-            (LPSTR)address : NULL;
+        return ((LPSTR)address <= LPSTR(size_t(get_base()) + get_base_size())) 
+            ? (LPSTR)address : NULL;
     }
-    return LPSTR(getBasePtr()); // return base
+    return LPSTR(get_base()); // return base
 }
 
 // global

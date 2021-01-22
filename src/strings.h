@@ -22,17 +22,17 @@
   * Strings class: Create and interact with a basic string table.
   */
 class DLLEXPORT Strings : Heap {
-    BOOL isPopulated; // (+20) -> set to true when table is created
+ public:
+  Strings() : is_populated_(false) { } // 006168D0
+  ~Strings() { Heap::shutdown(); }     // 006169C0
 
-public:
-    // Constructor, other variables are from subclass (Heap)
-    Strings() : isPopulated(false) { } // 006168D0
-    ~Strings() { Heap::shutdown(); }  // 006169C0
+  BOOL init(size_t mem_size);
+  void shutdown();
+  LPSTR put(LPCSTR input);
+  LPSTR get(int address);
 
-    BOOL init(size_t memSize);
-    void shutdown();
-    LPSTR put(LPCSTR input);
-    LPSTR get(int address);
+ private:
+  BOOL is_populated_; // (+20) -> set to true when table is created
 };
 
 // global

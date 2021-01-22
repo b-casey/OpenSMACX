@@ -20,9 +20,9 @@
 #include "log.h"
 
 /*
-Purpose: Initialize log file
+Purpose: Initialize a log file.
 Original Offset: 00626040
-Return Value: Non-zero error; Zero successful
+Return Value: Zero on success, non-zero on error
 Status: Complete
 */
 int Log::init(LPCSTR input) {
@@ -30,12 +30,12 @@ int Log::init(LPCSTR input) {
         return 16;
     }
     this->~Log();
-    int len = strlen(input) + 1;
-    logFile = (LPSTR)mem_get(len);
-    if (!logFile) {
+    size_t len = strlen(input) + 1;
+    log_file_ = (LPSTR)mem_get(len);
+    if (!log_file_) {
         return 4;
     }
-    strcpy_s(logFile, len, input);
+    strcpy_s(log_file_, len, input);
     FILE *file = env_open(input, "wt");
     if (!file) {
         return 6;
@@ -45,50 +45,50 @@ int Log::init(LPCSTR input) {
 }
 
 /*
-Purpose: Reset log by opening the file for writing with truncation then closing it.
+Purpose: Reset the log file.
 Original Offset: 006260D0
 Return Value: n/a
 Status: Complete
 */
 void Log::reset() {
-    FILE *file = env_open(logFile, "wt");
+    FILE *file = env_open(log_file_, "wt");
     if (file) {
         fclose(file);
     }
 }
 
 /*
-Purpose: Write parameters to log file, numbers are outputted in base 10.
+Purpose: Write to the log file with the numbers displayed in base 10.
 Original Offset: 006260F0
 Return Value: n/a
 Status: Complete
 */
 void Log::say(LPCSTR str1, LPCSTR str2, int num1, int num2, int num3) {
-    if (!logFile || isDisabled || *IsLoggingDisabled) {
+    if (!log_file_ || is_disabled_ || *IsLoggingDisabled) {
         return;
     }
-    FILE *file = env_open(logFile, "at");
+    FILE *file = env_open(log_file_, "at");
     if (file) {
-        str2 ? fprintf_s(file, "%s %s %d %d %d\n", str1, str2, num1, num2, num3) :
-            fprintf_s(file, "%s %d %d %d\n", str1, num1, num2, num3);
+        str2 ? fprintf_s(file, "%s %s %d %d %d\n", str1, str2, num1, num2, num3) 
+            : fprintf_s(file, "%s %d %d %d\n", str1, num1, num2, num3);
         fclose(file);
     }
 }
 
 /*
-Purpose: Write parameters to log file, numbers are outputted in base 16.
+Purpose: Write to the log file with the numbers displayed in base 16.
 Original Offset: 00626190
 Return Value: n/a
 Status: Complete
 */
 void Log::say_hex(LPCSTR str1, LPCSTR str2, int num1, int num2, int num3) {
-    if (!logFile || isDisabled || *IsLoggingDisabled) {
+    if (!log_file_ || is_disabled_ || *IsLoggingDisabled) {
         return;
     }
-    FILE *file = env_open(logFile, "at");
+    FILE *file = env_open(log_file_, "at");
     if (file) {
-        str2 ? fprintf_s(file, "%s %s %04x %04x %04x\n", str1, str2, num1, num2, num3) :
-            fprintf_s(file, "%s %04x %04x %04x\n", str1, num1, num2, num3);
+        str2 ? fprintf_s(file, "%s %s %04x %04x %04x\n", str1, str2, num1, num2, num3) 
+            : fprintf_s(file, "%s %04x %04x %04x\n", str1, num1, num2, num3);
         fclose(file);
     }
 }
@@ -98,7 +98,8 @@ Log *Logging = (Log *)0x009BBFF8;
 BOOL *IsLoggingDisabled = (BOOL *)0x009BC004;
 
 void __cdecl log_logging() { // 00625F20
-    *Logging = *(new Log("logfile.txt")); atexit(log_logging_exit);
+    *Logging = *(new Log("logfile.txt")); 
+    atexit(log_logging_exit);
 }
 
 void __cdecl log_logging_exit() { Logging->~Log(); } // 00625F90

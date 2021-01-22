@@ -31,7 +31,7 @@ class DLLEXPORT MainInterface : GraphicWin {
   MainInterface() { ; }
   ~MainInterface() { ; }
 
-  uint32_t set_bubble_text(uint32_t button_id, LPCSTR text);
+  int set_bubble_text(uint32_t button_id, LPCSTR text);
 
  private:
   uint32_t field_A14_;

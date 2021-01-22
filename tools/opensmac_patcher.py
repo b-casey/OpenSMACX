@@ -267,10 +267,10 @@ with open(exe_path, "r+b") as f:
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*442))
     # BASEBUTTON
-    bin_app.seek(0x00207550) # ?set_bubble_text@BaseButton@@QAEIPBD@Z
+    bin_app.seek(0x00207550) # ?set_bubble_text@BaseButton@@QAEHPBD@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*242))
-    bin_app.seek(0x002074E0) # ?set_name@BaseButton@@QAEIPBD@Z
+    bin_app.seek(0x002074E0) # ?set_name@BaseButton@@QAEHPBD@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*243))
     # COUNCIL
@@ -424,7 +424,7 @@ with open(exe_path, "r+b") as f:
     bin_app.seek(0x00219280) # ?width@Font@@QAEHPAD@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*86))
-    bin_app.seek(0x002192F0) # ?width@Font@@QAEHPADH@Z
+    bin_app.seek(0x002192F0) # ?width@Font@@QAEHPADI@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*87))
     bin_app.seek(0x00219370) # ?find_line_break_l@Font@@QAEPADPADPAHI@Z

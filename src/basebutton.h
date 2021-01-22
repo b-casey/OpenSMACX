@@ -29,8 +29,8 @@ class DLLEXPORT BaseButton : GraphicWin {
   BaseButton() { ; }
   ~BaseButton() { ; }
 
-  uint32_t set_bubble_text(LPCSTR input);
-  uint32_t set_name(LPCSTR input);
+  int set_bubble_text(LPCSTR input);
+  int set_name(LPCSTR input);
 
  private:
   uint32_t field_A14_;

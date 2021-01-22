@@ -22,69 +22,69 @@
 #include "filemap.h"
 
 /*
-Purpose: Read specified file in from parameter and create an index of section headers ("#EXAMPLE").
-         Store the file offset of each section for improved search time.
+Purpose: Read the specified file and create an index of section headers ("#EXAMPLE"). Store the file 
+         offset of each section for improved search time.
 Original Offset: 005FDF80
 Return Value: n/a
 Status: Complete
 */
-void TextIndex::make_index(LPCSTR sourceTxt) {
-    Filemap txtFileMap;
+void TextIndex::make_index(LPCSTR source_txt) {
+    Filemap txt_file_map;
     shutdown();
-    strcpy_s(fileName, 256, sourceTxt);
-    if (!strchr(fileName, '.')) {
-        strcat_s(fileName, 256, ".txt"); // append extension if missing
+    strcpy_s(file_name_, 256, source_txt);
+    if (!strchr(file_name_, '.')) {
+        strcat_s(file_name_, 256, ".txt"); // append extension if missing
     }
-    LPVOID txtAddrBase = txtFileMap.open_read(fileName, false);
-    if (txtAddrBase) {
-        LPVOID seekAddr = txtAddrBase;
-        LPVOID eofAddr = LPVOID(uint32_t(txtAddrBase) + txtFileMap.getSize());
-        heap.init(0x8000); // maximum amount of memory per section index
-        while (seekAddr < eofAddr) {
-            LPVOID foundAddr = memchr(seekAddr, '\n', uint32_t(eofAddr) - uint32_t(seekAddr));
-            if (!foundAddr) {
+    LPVOID txt_addr_base = txt_file_map.open_read(file_name_, false);
+    if (txt_addr_base) {
+        LPVOID seek_addr = txt_addr_base;
+        LPVOID eof_addr = LPVOID(uint32_t(txt_addr_base) + txt_file_map.get_size());
+        heap_.init(0x8000); // maximum amount of memory per section index
+        while (seek_addr < eof_addr) {
+            LPVOID found_addr = memchr(seek_addr, '\n', uint32_t(eof_addr) - uint32_t(seek_addr));
+            if (!found_addr) {
                 break; // invalid file, no newlines
             }
-            char parseBuffer[512]; // maximum line length
-            memcpy_s(parseBuffer, 512, seekAddr, uint32_t(foundAddr) - uint32_t(seekAddr) + 1);
-            kill_nl(parseBuffer); // bug fix; Filemap reads in raw file including carriage return
-            purge_spaces(parseBuffer);
-            if (parseBuffer[0] == '#' && isupper(parseBuffer[1])) {
-                uint32_t len = strlen(&parseBuffer[1]) + 1;
-                LPVOID storeAddr = heap.get(len + 4); // section name + address
-                *(LPDWORD)storeAddr = uint32_t(seekAddr) - uint32_t(txtAddrBase); // file offset
-                strcpy_s(LPSTR(storeAddr) + 4, len, &parseBuffer[1]);
-                sectionCount++;
+            char parse_buffer[512]; // maximum line length
+            memcpy_s(parse_buffer, 512, seek_addr, uint32_t(found_addr) - uint32_t(seek_addr) + 1);
+            kill_nl(parse_buffer); // bug fix; Filemap reads in raw file including carriage return
+            purge_spaces(parse_buffer);
+            if (parse_buffer[0] == '#' && isupper(parse_buffer[1])) {
+                size_t len = strlen(&parse_buffer[1]) + 1;
+                LPVOID store_addr = heap_.get(len + 4); // section name + address
+                *(LPDWORD)store_addr = uint32_t(seek_addr) - uint32_t(txt_addr_base); // file offset
+                strcpy_s(LPSTR(store_addr) + 4, len, &parse_buffer[1]);
+                section_count_++;
             }
-            seekAddr = LPVOID(uint32_t(foundAddr) + 1);
+            seek_addr = LPVOID(uint32_t(found_addr) + 1);
         }
-        heap.squeeze(true);
+        heap_.squeeze(true);
     }
 }
 
 /*
-Purpose: Search the source text file for section header text.
+Purpose: Search the source text file for a section header.
 Original Offset: 005FE120
 Return Value: File offset if found, otherwise -1
 Status: Complete
 */
-int TextIndex::search_index(LPCSTR sourceTxt, LPCSTR sectionTxt) {
-    char fileNameCheck[MAX_PATH];
-    strcpy_s(fileNameCheck, MAX_PATH, sourceTxt);
-    if (!strchr(fileNameCheck, '.')) {
-        strcat_s(fileNameCheck, MAX_PATH, ".txt"); // append extension if missing
+int TextIndex::search_index(LPCSTR source_txt, LPCSTR section_txt) {
+    char file_name_check[MAX_PATH];
+    strcpy_s(file_name_check, MAX_PATH, source_txt);
+    if (!strchr(file_name_check, '.')) {
+        strcat_s(file_name_check, MAX_PATH, ".txt"); // append extension if missing
     }
-    if (!_stricmp(fileNameCheck, fileName)) {
-        if (sectionTxt[0] == '#') {
-            sectionTxt++;
+    if (!_stricmp(file_name_check, file_name_)) {
+        if (section_txt[0] == '#') {
+            section_txt++;
         }
-        LPSTR cmpAddr = LPSTR(heap.getBasePtr()) + 4;
-        for (int i = sectionCount; i; i--) {
-            if (!_stricmp(cmpAddr, sectionTxt)) {
-                return *LPDWORD(cmpAddr - 4);
+        LPSTR cmp_addr = LPSTR(heap_.get_base()) + 4;
+        for (int i = section_count_; i; i--) {
+            if (!_stricmp(cmp_addr, section_txt)) {
+                return *LPDWORD(cmp_addr - 4);
             }
-            while (*cmpAddr++);
-            cmpAddr += 4;
+            while (*cmp_addr++);
+            cmp_addr += 4;
         }
     }
     return -1;
@@ -93,19 +93,19 @@ int TextIndex::search_index(LPCSTR sourceTxt, LPCSTR sectionTxt) {
 // global
 TextIndex *TxtIndex = (TextIndex *)0x009B7D08;
 
-void __cdecl text_make_index(LPCSTR sourceTxt) { // 005FE1F0
+void __cdecl text_make_index(LPCSTR source_txt) { // 005FE1F0
     for (int i = 0; i < MaxTextIndexNum; i++) {
-        if (!TxtIndex[i].getCount()) {
-            TxtIndex[i].make_index(sourceTxt);
+        if (!TxtIndex[i].get_count()) {
+            TxtIndex[i].make_index(source_txt);
             break;
         }
     }
 }
 
-int __cdecl text_search_index(LPCSTR sourceTxt, LPCSTR sectionTxt) { // 005FE230
+int __cdecl text_search_index(LPCSTR source_txt, LPCSTR section_txt) { // 005FE230
     for (int i = 0; i < MaxTextIndexNum; i++) {
-        if (TxtIndex[i].getCount()) {
-            int addr = TxtIndex[i].search_index(sourceTxt, sectionTxt);
+        if (TxtIndex[i].get_count()) {
+            int addr = TxtIndex[i].search_index(source_txt, section_txt);
             if (addr >= 0) {
                 return addr;
             }
@@ -116,7 +116,7 @@ int __cdecl text_search_index(LPCSTR sourceTxt, LPCSTR sectionTxt) { // 005FE230
 
 void __cdecl text_clear_index() { // 005FE270
     for (int i = 0; i < MaxTextIndexNum; i++) {
-        if (TxtIndex[i].getCount()) {
+        if (TxtIndex[i].get_count()) {
             TxtIndex[i].shutdown();
         }
     }
