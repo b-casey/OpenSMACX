@@ -1164,7 +1164,7 @@ void __cdecl social_ai(uint32_t faction_id, int growth_val, int tech_val, int we
         }
         int ideology_eff = Players[faction_id].soc_anti_ideology_effect;
         if (ideology_eff >= 0) {
-            uint32_t unk_val8 = *(&soc_eff.economy + ideology_eff);
+            int unk_val8 = *(&soc_eff.economy + ideology_eff);
             if (unk_val8 > 0) {
                 unk_val6 += PlayersData[faction_id].current_num_bases;
             }

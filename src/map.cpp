@@ -852,7 +852,7 @@ Return Value: 0 (Flat), 1 (Rolling), 2 (Rocky)
 Status: Complete
 */
 uint32_t __cdecl minerals_at(uint32_t x, uint32_t y) {
-    if (!y || (int)(*MapLatitudeBounds - 1) == y) {
+    if (!y || (*MapLatitudeBounds - 1) == y) {
         return 2; // poles
     }
     uint32_t alt = alt_at(x, y);
@@ -2301,7 +2301,7 @@ void __cdecl world_fresh(int x, int y) {
     }
     int x_search = -1;
     BOOL has_set_landmark = false;
-    for (uint32_t y_it = *MapLatitudeBounds - 1; y_it >= 0 ; y_it--) {
+    for (int y_it = *MapLatitudeBounds - 1; y_it >= 0 ; y_it--) {
         for (uint32_t x_it = y_it & 1; x_it < *MapLongitudeBounds; x_it += 2) {
             if (region_at(x_it, y_it) == region) {
                 bit2_set(x_it, y_it, LM_FRESH, true);

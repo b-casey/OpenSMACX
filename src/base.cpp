@@ -1305,7 +1305,7 @@ int __cdecl value_of_base(int base_id, uint32_t faction_id_req, uint32_t faction
         }
     }
     for (uint32_t proj = 0; proj < MaxSecretProjectNum; proj++) {
-        if (base_project(proj) == (int)base_id) {
+        if (base_project(proj) == base_id) {
             value += (Facility[FacilitySPStart + proj].cost * 25);
         }
     }
