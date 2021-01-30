@@ -547,6 +547,7 @@ extern uint32_t *DiploFrictionFactionID;
 DLLEXPORT BOOL __cdecl is_alien_faction(uint32_t faction_id);
 DLLEXPORT BOOL __cdecl is_human(uint32_t faction_id);
 DLLEXPORT BOOL __cdecl is_alive(uint32_t faction_id);
+DLLEXPORT void __cdecl psych_check(uint32_t faction_id, int *drones, int *talents);
 DLLEXPORT uint32_t __cdecl has_treaty(uint32_t faction_id, uint32_t faction_id_with, 
                                       uint32_t treaties);
 DLLEXPORT LPSTR __cdecl get_adjective(uint32_t faction_id);

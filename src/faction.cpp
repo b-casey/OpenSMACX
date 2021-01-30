@@ -76,6 +76,18 @@ BOOL __cdecl is_alive(uint32_t faction_id) {
 }
 
 /*
+Purpose: Calculate the base amount of talents and drones for the specified faction.
+Original Offset: 004EA4A0
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl psych_check(uint32_t faction_id, int *drones, int *talents) {
+    *drones = 6 - (is_human(faction_id) ? PlayersData[faction_id].diff_level : DLVL_LIBRARIAN);
+    *talents = (((*drones + 2) * (PlayersData[faction_id].soc_effect_pending.efficiency < 0 ? 4
+        : PlayersData[faction_id].soc_effect_pending.efficiency + 4) * *MapAreaSqRoot) / 56) / 2;
+}
+
+/*
 Purpose: Check whether the primary faction has at least one of the specified treaties (bitfield) 
          with the secondary faction.
 Original Offset: 005002F0
@@ -405,7 +417,7 @@ Purpose: Check whether the primary faction has at least one of the specified age
          with the secondary faction.
 Original Offset: 005591E0
 Return Value: Agenda status between the two factions, generally treated as a boolean
-Status: Complete - testing
+Status: Complete
 */
 uint32_t __cdecl has_agenda(uint32_t faction_id, uint32_t faction_id_with, uint32_t agenda) {
     return PlayersData[faction_id].diplo_agenda[faction_id_with] & agenda;

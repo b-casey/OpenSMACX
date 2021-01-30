@@ -534,7 +534,6 @@ DLLEXPORT uint32_t __cdecl worm_mod(uint32_t base_id, uint32_t faction_id);
 DLLEXPORT void __cdecl base_nutrient();
 DLLEXPORT void __cdecl base_minerals();
 DLLEXPORT uint32_t __cdecl black_market(int energy);
-DLLEXPORT void __cdecl psych_check(uint32_t faction_id, uint32_t *drones, uint32_t *talents);
 DLLEXPORT void __cdecl base_psych();
 DLLEXPORT int __cdecl base_rank(uint32_t faction_id, int rank_position);
 DLLEXPORT uint32_t __cdecl pop_goal_fac(uint32_t base_id);

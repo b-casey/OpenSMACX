@@ -817,18 +817,6 @@ uint32_t __cdecl black_market(int energy) {
 }
 
 /*
-Purpose: Calculate two psych related check values for the specified faction.
-Original Offset: 004EA4A0
-Return Value: n/a
-Status: Complete - testing
-*/
-void __cdecl psych_check(uint32_t faction_id, uint32_t *drones, uint32_t *talents) {
-    *drones = 6 - (is_human(faction_id) ? PlayersData[faction_id].diff_level : DLVL_LIBRARIAN);
-    *talents = (((*drones + 2) * (PlayersData[faction_id].soc_effect_pending.efficiency < 0 ? 4
-        : PlayersData[faction_id].soc_effect_pending.efficiency + 4) * *MapAreaSqRoot) / 56) / 2;
-}
-
-/*
 Purpose: Calculate the current base's psych values.
 Original Offset: 004EA540
 Return Value: n/a
@@ -837,8 +825,8 @@ Status: WIP
 void __cdecl base_psych() {
     uint32_t faction_id = (*BaseCurrent)->faction_id_current;
     int pop_size = (*BaseCurrent)->population_size;
-    uint32_t drones_base;
-    uint32_t talents_base;
+    int drones_base;
+    int talents_base;
     int diff_lvl = is_human(faction_id) ? PlayersData[faction_id].diff_level : DLVL_LIBRARIAN;
     psych_check(faction_id, &drones_base, &talents_base);
     if (talents_base) {

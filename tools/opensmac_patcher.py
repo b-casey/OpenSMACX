@@ -51,7 +51,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
     bin_app = mmap.mmap(f.fileno(), 0)
-    # next: 453
+    # next: 455
     #
 
     # ALPHA
@@ -385,7 +385,13 @@ with open(exe_path, "r+b") as f:
     bin_app.write(struct.pack("<L", addr+4*446))
     bin_app.seek(0x001B4550) # ?social_upheaval@@YAIIPAUSocialCategory@@@Z
     patch_call_bytes(bin_app)
-    bin_app.write(struct.pack("<L", addr+4*447))    
+    bin_app.write(struct.pack("<L", addr+4*447))
+    bin_app.seek(0x000EA4A0) # ?psych_check@@YAXIPAH0@Z
+    patch_call_bytes(bin_app)
+    bin_app.write(struct.pack("<L", addr+4*453))
+    bin_app.seek(0x001591E0) # ?has_agenda@@YAIIII@Z
+    patch_call_bytes(bin_app)
+    bin_app.write(struct.pack("<L", addr+4*454))    
     # FILEMAP
     bin_app.seek(0x00228380) # ??0Filemap@@QAE@XZ
     patch_call_bytes(bin_app)
