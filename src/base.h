@@ -536,7 +536,7 @@ DLLEXPORT void __cdecl base_minerals();
 DLLEXPORT uint32_t __cdecl black_market(int energy);
 DLLEXPORT void __cdecl psych_check(uint32_t faction_id, uint32_t *drones, uint32_t *talents);
 DLLEXPORT void __cdecl base_psych();
-DLLEXPORT int __cdecl base_rank(uint32_t faction_id, uint32_t to_rank);
+DLLEXPORT int __cdecl base_rank(uint32_t faction_id, int rank_position);
 DLLEXPORT uint32_t __cdecl pop_goal_fac(uint32_t base_id);
 DLLEXPORT uint32_t __cdecl pop_goal(uint32_t base_id);
 DLLEXPORT BOOL __cdecl base_queue(uint32_t base_id);
@@ -548,7 +548,7 @@ DLLEXPORT BOOL __cdecl has_project(uint32_t project_id, uint32_t faction_id);
 DLLEXPORT BOOL __cdecl has_fac_built(uint32_t facility_id);
 DLLEXPORT BOOL __cdecl has_fac_built(uint32_t facility_id, uint32_t base_id);
 DLLEXPORT int __cdecl base_project(uint32_t project_id);
-DLLEXPORT uint32_t __cdecl attack_from(uint32_t base_id, uint32_t faction_id);
+DLLEXPORT int __cdecl attack_from(uint32_t base_id_to_atk, uint32_t faction_id);
 DLLEXPORT int __cdecl value_of_base(int base_id, uint32_t faction_id_req, uint32_t faction_id_res, 
                                     uint32_t overmatch_deg, BOOL tgl);
 DLLEXPORT uint32_t __cdecl garrison_check(uint32_t base_id);

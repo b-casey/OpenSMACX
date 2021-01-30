@@ -96,8 +96,8 @@ extern func8 *parse_string_OG;
 typedef void func12(int);
 extern func12 *enemy_capabilities_OG;
 ///
-typedef void funct3(uint32_t);
-extern funct3 *base_queue_OG;
+typedef int funct5(int, uint32_t, uint32_t, uint32_t, BOOL);
+extern funct5 *value_of_base_OG;
 typedef uint32_t funct4(uint32_t, int, BOOL);
 extern funct4 *best_defender_OG;
 //

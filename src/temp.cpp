@@ -70,7 +70,7 @@ func30 *turn_timer = (func30 *)0x0050EF10;
 func8 *parse_string_OG = (func8 *)0x00625880;
 func12 *enemy_capabilities_OG = (func12 *)0x00560DD0;
 //
-funct3 *base_queue_OG = (funct3 *)0x004F06E0;
+funct5 *value_of_base_OG = (funct5 *)0x0054CB50;
 funct4 *best_defender_OG = (funct4 *)0x005044D0;
 ///
 char1032 *stringTemp = (char1032 *)0x009B86A0;
@@ -91,7 +91,24 @@ MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
 int __cdecl tester() {
     log_set_state(true);
     log_say("Start test", 0, 0, 0);
+   
+    /*
+    for (int i = -2; i < *BaseCurrentCount; i++) {
+        for (int j = 0; j < MaxPlayerNum; j++) {
+            for (int l = 0; l < MaxPlayerNum; l++) {
+                for (int k = 0; k < 2; k++) {
+                    for (int h = 0; h < 2; h++) {
+                        if (value_of_base_OG(i, j, l, k, h) != value_of_base(i, j, l, k, h)) {
+                            log_say("value_of_base_error: ", i, j, l);
+                            log_say("value_of_base_error: ", k, h, 0);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
+    /*
     for (int i = 0; i < *VehCurrentCount; i++) { // test -1
         for (int j = 0; j < *VehCurrentCount; j++) {
             for (int k = 0; k < 2; k++) {
@@ -101,15 +118,7 @@ int __cdecl tester() {
             }
         }
     }
-
-    /*
-    base_queue_OG(1);
-    base_queue(1);
-
-    base_queue(2);
-    base_queue_OG(2);
     */
-    
     /*
     for (int i = 0; i < *BaseCurrentCount; i++) {
         log_say(Base[i].name_string, Base[i].xCoord, Base[i].yCoord, 0);

@@ -77,6 +77,7 @@ DLLEXPORT void __cdecl auto_undo();
 DLLEXPORT void __cdecl header_check(LPSTR header, FILE *file);
 DLLEXPORT void __cdecl header_write(LPCSTR header, FILE *file);
 DLLEXPORT void __cdecl sort(uint32_t count, int *id, int *value);
+DLLEXPORT void __cdecl sort_descending(uint32_t count, int *id, int *value);
 
 // WIP
 int __cdecl filefind_init(LPCSTR file_check, BOOL is_complete);

@@ -1117,12 +1117,33 @@ void __cdecl header_write(LPCSTR header, FILE *file) {
 }
 
 /*
-Purpose: For the count, sort both id and value arrays by the greatest to least value.
+Purpose: For the count, sort both id and value arrays by the least to greatest value (ascending).
 Original Offset: 005B5690
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl sort(uint32_t count, int *id, int *value) {
+    int bounds = count - 1;
+    BOOL has_swapped;
+    do {
+        has_swapped = false;
+        for (int i = 0; i < bounds; i++) {
+            if (value[i] > value[i + 1]) {
+                has_swapped = true;
+                swap(&value[i], &value[i + 1]);
+                swap(&id[i], &id[i + 1]);
+            }
+        }
+    } while (has_swapped);
+}
+
+/*
+Purpose: For the count, sort both id and value arrays by the greatest to least value (descending).
+Original Offset: n/a
+Return Value: n/a
+Status: Complete
+*/
+void __cdecl sort_descending(uint32_t count, int *id, int *value) {
     int bounds = count - 1;
     BOOL has_swapped;
     do {

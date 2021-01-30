@@ -51,7 +51,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
     bin_app = mmap.mmap(f.fileno(), 0)
-    # next: 448
+    # next: 453
     #
 
     # ALPHA
@@ -266,6 +266,18 @@ with open(exe_path, "r+b") as f:
     bin_app.seek(0x000F7FE0) # ?make_base_unique@@YAXI@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*442))
+    bin_app.seek(0x000EB490) # ?base_rank@@YAHIH@Z
+    patch_call_bytes(bin_app)
+    bin_app.write(struct.pack("<L", addr+4*449))
+    bin_app.seek(0x000F06E0) # ?base_queue@@YAHI@Z
+    patch_call_bytes(bin_app)
+    bin_app.write(struct.pack("<L", addr+4*450))
+    bin_app.seek(0x000F65F0) # ?base_maint@@YAXXZ
+    patch_call_bytes(bin_app)
+    bin_app.write(struct.pack("<L", addr+4*451))
+    bin_app.seek(0x0014AFA0) # ?attack_from@@YAHII@Z
+    patch_call_bytes(bin_app)
+    bin_app.write(struct.pack("<L", addr+4*452))    
     # BASEBUTTON
     bin_app.seek(0x00207550) # ?set_bubble_text@BaseButton@@QAEHPBD@Z
     patch_call_bytes(bin_app)
@@ -567,6 +579,9 @@ with open(exe_path, "r+b") as f:
     bin_app.seek(0x0017D240) # ?header_write@@YAXPBDPAU_iobuf@@@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*422))
+    bin_app.seek(0x001B5690) # ?sort@@YAXIPAH0@Z
+    patch_call_bytes(bin_app)
+    bin_app.write(struct.pack("<L", addr+4*448))    
     # HEAP
     bin_app.seek(0x001D4560) # ??0Heap@@QAE@XZ
     patch_call_bytes(bin_app)

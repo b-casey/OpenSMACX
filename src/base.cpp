@@ -51,7 +51,7 @@ Return Value: Does base already have or planning on building facility? true/fals
 Status: Complete
 */
 BOOL __cdecl has_fac(int facility_id, uint32_t base_id, int queue_count) {
-    if (facility_id >= FAC_SKY_HYDRO_LAB) {
+    if (facility_id >= FacilityRepStart) {
         return false;
     }
     BOOL is_built = has_fac_built(facility_id, base_id);
@@ -423,7 +423,7 @@ int __cdecl base_making(int production_id, uint32_t base_id) {
         int queue_id = Bases[base_id].queue_production_id[0]; // current production item
         if (queue_id < 0) { // non-Veh
             queue_id = -queue_id;
-            if (queue_id < FAC_SKY_HYDRO_LAB && has_fac_built(queue_id, base_id)) {
+            if (queue_id < FacilityRepStart && has_fac_built(queue_id, base_id)) {
                 return -1; // facility completed outside normal process, no retool penalty to change
             }
         }
@@ -925,25 +925,28 @@ void __cdecl base_psych() {
 }
 
 /*
-Purpose: Determine the base with the most energy output.
+Purpose: Determine the faction's base with the specified position sorted by the most energy output.
 Original Offset: 004EB490
-Return Value: Base id with the most energy output or -1 for invalid requests
-Status: Complete - testing
+Return Value: Base id for the specified rank position or -1 for invalid requests
+Status: Complete
 */
-int __cdecl base_rank(uint32_t faction_id, uint32_t rank_position) {
+int __cdecl base_rank(uint32_t faction_id, int rank_position) {
+    if (rank_position < 0) { // Added parameter bounds check
+        return -1;
+    }
     int base_id[MaxBaseNum];
     int base_energy[MaxBaseNum];
-    uint32_t bases_found = 0;
+    int bases_found = 0;
     for (int i = 0; i < *BaseCurrentCount; i++) {
         if (Bases[i].faction_id_current == faction_id) {
             base_id[bases_found] = i;
             base_energy[bases_found++] = (Bases[i].energy_intake_1 * 512) + i;
         }
     }
-    if (rank_position >= bases_found) {
+    if (!bases_found || rank_position >= bases_found) { // Added check to skip if no bases are found
         return -1;
     }
-    sort(bases_found, base_id, base_energy);
+    sort_descending(bases_found, base_id, base_energy);
     return base_id[rank_position];
 }
 
@@ -1002,7 +1005,7 @@ uint32_t __cdecl pop_goal(uint32_t base_id) {
 Purpose: Move the specified base's production queue forward if applicable.
 Original Offset: 004F06E0
 Return Value: Is there a valid item in queue to be built? true/false
-Status: Complete - testing
+Status: Complete
 */
 BOOL __cdecl base_queue(uint32_t base_id) {
     uint32_t faction_id = Bases[base_id].faction_id_current;
@@ -1016,9 +1019,9 @@ BOOL __cdecl base_queue(uint32_t base_id) {
         }
         Bases[base_id].queue_size--;
         queue_prod_id = Bases[base_id].queue_production_id[0];
-        if ((queue_prod_id >= 0 && veh_avail(queue_prod_id, faction_id, base_id))
-            || facility_avail(-queue_prod_id, faction_id, base_id, 0)) {
-            if (queue_prod_id <= -FAC_HUMAN_GENOME_PROJ) {
+        if((queue_prod_id >= 0) ? veh_avail(queue_prod_id, faction_id, base_id) 
+            : facility_avail(-queue_prod_id, faction_id, base_id, 0)) {
+            if (queue_prod_id <= -FacilitySPStart) {
                 wave_it(36); // CPU project initiated
             }
             draw_radius(Bases[base_id].x, Bases[base_id].y, 2, 2);
@@ -1081,19 +1084,21 @@ uint32_t __cdecl fac_maint(uint32_t facility_id, uint32_t faction_id) {
 Purpose: Calculate overall maintenance cost for the currently selected base.
 Original Offset: 004F65F0
 Return Value: Base maintenance cost
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl base_maint() {
     uint32_t faction_id = (*BaseCurrent)->faction_id_current;
     for (int fac = 1; fac < FacilitySPStart; fac++) {
-        if (fac < FacilityRepStart && has_fac_built(fac)) {
+        if (has_fac_built(fac)) {
             uint32_t maint = fac_maint(fac, faction_id);
             if (has_project(SP_SELF_AWARE_COLONY, faction_id)) {
-                maint += (PlayersData[faction_id].flags & PFLAG_UNK_20) & 1;
+                if (PlayersData[faction_id].flags & PFLAG_SELF_AWARE_COLONY_LOST_MAINT) {
+                    maint++; // attempt to even out maintenance costs from lossy integer division
+                }
                 if (maint & 1) {
-                    PlayersData[faction_id].flags |= PFLAG_UNK_20;
+                    PlayersData[faction_id].flags |= PFLAG_SELF_AWARE_COLONY_LOST_MAINT;
                 } else {
-                    PlayersData[faction_id].flags &= ~PFLAG_UNK_20;
+                    PlayersData[faction_id].flags &= ~PFLAG_SELF_AWARE_COLONY_LOST_MAINT;
                 }
                 maint /= 2;
             }
@@ -1102,12 +1107,12 @@ void __cdecl base_maint() {
             if (PlayersData[faction_id].energy_reserves < 0) {
                 if (PlayersData[faction_id].diff_level <= DLVL_SPECIALIST
                     || (*BaseCurrent)->queue_production_id[0] == -fac) {
-                    maint = 0;
+                    PlayersData[faction_id].energy_reserves = 0;
                 } else {
                     set_fac(fac, *BaseIDCurrentSelected, false);
-                    PlayersData[faction_id].energy_reserves
-                        += cost_factor(faction_id, RSC_MINERALS, -1) * Facility[fac].cost;
-                    parse_say(1, (int)*(Facility[fac].name), -1, -1);
+                    PlayersData[faction_id].energy_reserves 
+                        = cost_factor(faction_id, RSC_MINERALS, -1) * Facility[fac].cost;
+                    parse_say(1, (int)*(&Facility[fac].name), -1, -1);
                     popb("POWERSHORT", 0x10000, 14, "genwarning_sm.pcx", NULL);
                 }
             }
@@ -1158,7 +1163,7 @@ Return Value: Does current base have facility? true/false
 Status: Complete
 */
 BOOL __cdecl has_fac_built(uint32_t facility_id) {
-    return (facility_id >= FAC_SKY_HYDRO_LAB) ? false 
+    return (facility_id >= FacilityRepStart) ? false
         : has_fac_built(facility_id, *BaseIDCurrentSelected);
 }
 
@@ -1186,23 +1191,23 @@ int __cdecl base_project(uint32_t project_id) {
 }
 
 /*
-Purpose: From the specified base and faction, determine a base to attack.
+Purpose: Determine the faction's best base to attack the specified base from.
 Original Offset: 0054AFA0
-Return Value: baseID or 0 (TODO: edge case, could this incorrectly direct attacks at base id 0?)
-Status: Complete - testing
+Return Value: Base id to attack from or 0 
+Status: Complete
 */
-uint32_t __cdecl attack_from(uint32_t base_id, uint32_t faction_id) {
-    uint32_t region_src = region_at(Bases[base_id].x, Bases[base_id].y);
-    uint32_t base_id_atk_from = 0;
-    uint32_t search = 9999;
+int __cdecl attack_from(uint32_t base_id_to_atk, uint32_t faction_id) {
+    uint32_t region_src = region_at(Bases[base_id_to_atk].x, Bases[base_id_to_atk].y);
+    int base_id_atk_from = 0; // TODO: eventually change this to -1 and add handling to the return
+    int search = 9999;        // value to prevent the edge case of base id 0 being incorrect target
     for (int i = 0; i < *BaseCurrentCount; i++) {
         if (Bases[i].faction_id_current == faction_id) {
             int x = Bases[i].x;
             int y = Bases[i].y;
-            uint32_t compare = (x == PlayersData[faction_id].x_target
+            int compare = (x == PlayersData[faction_id].x_target
                 && y == PlayersData[faction_id].y_target) 
-                ? 0 : vector_dist(x, y, Bases[base_id].x, Bases[base_id].y);
-            if (region_src != region_at(x, y)) {
+                ? 0 : vector_dist(x, y, Bases[base_id_to_atk].x, Bases[base_id_to_atk].y);
+            if (region_at(x, y) != region_src) {
                 compare += 1000;
             }
             if (compare <= search) {
@@ -1241,17 +1246,19 @@ int __cdecl value_of_base(int base_id, uint32_t faction_id_req, uint32_t faction
             if (base_id_found >= 0) {
                 uint32_t faction_id_base = Bases[base_id_found].faction_id_current;
                 uint32_t region_found = region_at(x_radius, y_radius);
-                if (faction_id_base == faction_id_req) {
+                if (faction_id_base != faction_id_req) {
+                    if (region_base == region_found) {
+                        if (faction_id_base == faction_id_res) {
+                            dist_factor++;
+                        } else {
+                            break;
+                        }
+                    }
+                } else {
                     if (region_base == region_found) {
                         dist_factor--;
                     }
                     break;
-                }
-                if (region_base == region_found) {
-                    if (faction_id_base != faction_id_res) {
-                        break;
-                    }
-                    dist_factor++;
                 }
             }
         }
@@ -1265,7 +1272,7 @@ int __cdecl value_of_base(int base_id, uint32_t faction_id_req, uint32_t faction
     if (base_pop_factor < 3) {
         base_pop_factor = 3;
     }
-    // bug fix: treat value as unsigned, original uses signed which could cause incorrect valuation
+    // Bug fix: treat value as unsigned, original uses signed which could cause incorrect valuation
     uint32_t value = ((most_reserves + 1000) / (dist_factor + 4)) * base_pop_factor;
     if (value < 100) {
         value = 100;
