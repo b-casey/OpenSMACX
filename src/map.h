@@ -193,7 +193,7 @@ constexpr int RegionBounds = 63;
 constexpr int MaxContinentNum = 128;
 constexpr int MaxRegionLandNum = 64;
 
-const uint32_t RadiusRange[] = { 1, 9, 25, 49, 81, 121, 169, 225, 289 };
+const int RadiusRange[] = { 1, 9, 25, 49, 81, 121, 169, 225, 289 };
 const int RadiusBaseX[] = {  1, 2, 1, 0, -1, -2, -1,  0, 0 };
 const int RadiusBaseY[] = { -1, 0, 1, 2,  1,  0, -1, -2, 0 };
 const int RadiusOffsetX[] = {

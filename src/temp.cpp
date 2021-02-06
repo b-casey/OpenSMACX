@@ -91,6 +91,52 @@ MainInterface *MainInterfaceVar = (MainInterface *)0x007AE820;
 int __cdecl tester() {
     log_set_state(true);
     log_say("Start test", 0, 0, 0);
+
+    add_site(4, AI_GOAL_COLONIZE, 4, 31, 51);
+    add_site(4, AI_GOAL_COLONIZE, 4, 33, 51);
+    add_site(4, AI_GOAL_COLONIZE, 4, 35, 51);
+    add_site(4, AI_GOAL_COLONIZE, 4, 37, 51);
+    add_site(4, AI_GOAL_COLONIZE, 4, 39, 51);
+    add_site(4, AI_GOAL_COLONIZE, 4, 41, 51);
+    add_site(4, AI_GOAL_COLONIZE, 4, 43, 51);
+    add_site(4, AI_GOAL_COLONIZE, 4, 45, 51);
+    add_site(4, AI_GOAL_COLONIZE, 4, 47, 51);
+
+    add_site(4, AI_GOAL_COLONIZE, 4, 39, 43);
+    add_site(4, AI_GOAL_COLONIZE, 4, 39, 45);
+    add_site(4, AI_GOAL_COLONIZE, 4, 39, 47);
+    add_site(4, AI_GOAL_COLONIZE, 4, 39, 49);
+    add_site(4, AI_GOAL_COLONIZE, 4, 39, 53);
+    add_site(4, AI_GOAL_COLONIZE, 4, 39, 55);
+    add_site(4, AI_GOAL_COLONIZE, 4, 39, 57);
+    add_site(4, AI_GOAL_COLONIZE, 4, 39, 59);
+    
+    int xx = 39, yy = 51;
+
+    int x_radius, y_radius;
+    for (int i = 0; i < RadiusRange[3]; i++) {
+        x_radius = xrange(xx + RadiusOffsetX[i]);
+        y_radius = yy + RadiusOffsetY[i];
+        if (on_map(x_radius, y_radius)) {
+            if (i < 21) {
+                bit_set(x_radius, y_radius, BIT_AIRBASE, true);
+            }
+            else {
+                bit_set(x_radius, y_radius, BIT_SENSOR_ARRAY, true);
+            }
+        }
+    }
+
+    for (uint32_t y = 0; y < *MapLatitudeBounds; y++) {
+        for (uint32_t x = y & 1; x < *MapLongitudeBounds; x += 2) {
+            int dist = vector_dist(x_radius, y_radius, x, y);
+            if (dist <= 3) {
+                bit_set(x, y, BIT_FUNGUS, true);
+                //add_site(1, AI_GOAL_COLONIZE, 10, x, y);
+                log_say("Added site: ", x, y, 0);
+            }
+        }
+    }
    
     /*
     for (int i = -2; i < *BaseCurrentCount; i++) {
@@ -130,8 +176,8 @@ int __cdecl tester() {
 
     /*
     char szTemp[80];
-    for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
-        for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
+    for (uint32_t y = 0; y < *MapLatitudeBounds; y++) {
+        for (uint32_t x = y & 1; x < *MapLongitudeBounds; x += 2) {
             map *tile = map_loc(x, y);
             if (tile->unk_1) {
                 log_say("map_unk1:", x, y, tile->unk_1);
@@ -144,8 +190,8 @@ int __cdecl tester() {
     }
     */
     /*
-    for (uint32_t y = 0; y < *MapVerticalBounds; y++) {
-        for (uint32_t x = y & 1; x < *MapHorizontalBounds; x += 2) {
+    for (uint32_t y = 0; y < *MapLatitudeBounds; y++) {
+        for (uint32_t x = y & 1; x < *MapLongitudeBounds; x += 2) {
             map *tile = map_loc(x, y);
             if (tile->unk_1) {
                 log_say("map_unk1:", x, y, tile->unk_1);

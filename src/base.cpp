@@ -322,20 +322,22 @@ void __cdecl base_mark(uint32_t base_id) {
     int x_radius = 0;
     int y_radius = 0;
     uint32_t faction_id = Bases[base_id].faction_id_current;
-    for (uint32_t i = 0; i < RadiusRange[3]; i++) {
+    for (int i = 0; i < RadiusRange[3]; i++) {
         x_radius = xrange(x + RadiusOffsetX[i]);
         y_radius = y + RadiusOffsetY[i];
         if (on_map(x_radius, y_radius)) {
-            // optimize into one conditional check?
-            (i >= 21) ? site_set(x_radius, y_radius, 0)
-                : bit_set(x_radius, y_radius, BIT_BASE_RADIUS, true);
             if (i < 21) {
-                using_set(x_radius, y_radius, faction_id);
+                bit_set(x_radius, y_radius, BIT_BASE_RADIUS, true);
+                using_set(x_radius, y_radius, faction_id); // rolled this into one conditional check
+            } else {
+                site_set(x_radius, y_radius, 0);
             }
         }
     }
-    for (uint32_t f = 0; f < MaxPlayerNum; f++) {
-        del_site(f, AI_GOAL_COLONIZE, x_radius, y_radius, 3); // odd it's using last radius point?
+    for (int f = 0; f < MaxPlayerNum; f++) {
+        // TODO: verify if using last radius coordinates is best logic, seems odd
+        // It would seem using the Base coordinates would be better suited versus radius
+        del_site(f, AI_GOAL_COLONIZE, x_radius, y_radius, 3);
     }
 }
 
@@ -1226,7 +1228,7 @@ int __cdecl value_of_base(int base_id, uint32_t faction_id_req, uint32_t faction
         return -1;
     }
     uint32_t region_base = region_at(x, y);
-    for (uint32_t i = 1; i < RadiusRange[6]; i++) {
+    for (int i = 1; i < RadiusRange[6]; i++) {
         int x_radius = xrange(x + RadiusOffsetX[i]);
         int y_radius = y + RadiusOffsetY[i];
         if (on_map(x_radius, y_radius)) {

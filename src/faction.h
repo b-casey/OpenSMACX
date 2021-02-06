@@ -260,8 +260,8 @@ struct RulesBonusName {
 /*
 Goals overlay is visible with debug mode activated. Color is based on Goal type.
 Shortcut: Shift-%
-Format without omniscient view: <One letter type, see ai_goal_types><priority>
-Format with omniscient view: <1st letter of faction><One letter type, see ai_goal_types><priority>
+Format without omniscient view: <One letter type, see AiGoalTypes><priority>
+Format with omniscient view: <1st letter of faction><One letter type, see AiGoalTypes><priority>
 */
 struct Goal {
     int16_t type;

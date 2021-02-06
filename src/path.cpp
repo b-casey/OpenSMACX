@@ -180,7 +180,7 @@ void Path::make_abstract() {
     for (uint32_t y = 0; y < *MapAbstractLatBounds; y++) {
         for (uint32_t x = y & 1; x < *MapAbstractLongBounds; x += 2) {
             uint8_t region = 0;
-            for (uint32_t i = 0; i < RadiusRange[1]; i++) {
+            for (int i = 0; i < RadiusRange[1]; i++) {
                 int x_radius = xrange(x * 5 + RadiusOffsetX[i]);
                 int y_radius = y * 5 + RadiusOffsetY[i];
                 if (on_map(x_radius, y_radius) && !is_ocean(x_radius, y_radius)) {
@@ -426,7 +426,7 @@ BOOL Path::sensors(uint32_t faction_id, int *x_sensor, int *y_sensor) {
                         || !is_ocean(x, y)) && (!(bit & BIT_FUNGUS) || (!is_ocean(x, y) 
                         && has_tech(Rules->tech_improve_fungus_sqr, faction_id)))) {
                     uint32_t flags = 0;
-                    for (uint32_t i = 0; i < RadiusRange[2]; i++) {
+                    for (int i = 0; i < RadiusRange[2]; i++) {
                         int x_radius = xrange(x + RadiusOffsetX[i]);
                         int y_radius = y + RadiusOffsetY[i];
                         if (on_map(x_radius, y_radius) && !is_sensor(x_radius, y_radius)
@@ -449,7 +449,7 @@ BOOL Path::sensors(uint32_t faction_id, int *x_sensor, int *y_sensor) {
                                     tile_faction_id == (int)faction_id)) {
                                 flags |= 4;
                                 BOOL check = true;
-                                for (uint32_t j = 0; j < RadiusRange[2]; j++) {
+                                for (int j = 0; j < RadiusRange[2]; j++) {
                                     int x_radius2 = xrange(x_radius + RadiusOffsetX[j]);
                                     int y_radius2 = y_radius + RadiusOffsetY[j];
                                     if (on_map(x_radius2, y_radius2)

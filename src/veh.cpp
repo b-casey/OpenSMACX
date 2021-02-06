@@ -250,7 +250,7 @@ uint32_t __cdecl morale_alien(int veh_id, int faction_id_vs_native) {
         int16_t x = Vehs[veh_id].x;
         int16_t y = Vehs[veh_id].y;
         // similar to is_coast() > except with fungus check + Ocean Shelf included
-        for (uint32_t i = RadiusRange[0]; i < RadiusRange[1]; i++) {
+        for (int i = RadiusRange[0]; i < RadiusRange[1]; i++) {
             int x_radius = xrange(x + RadiusOffsetX[i]);
             int y_radius = y + RadiusOffsetY[i];
             if (on_map(x_radius, y_radius) && bit_at(x_radius, y_radius) & BIT_FUNGUS
