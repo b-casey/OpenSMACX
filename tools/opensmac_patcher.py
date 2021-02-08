@@ -51,7 +51,7 @@ print("Address of first import found: 0x%08X" % addr)
 print("Patching: ", exe_path)
 with open(exe_path, "r+b") as f:
     bin_app = mmap.mmap(f.fileno(), 0)
-    # next: 455
+    # next: 462
     #
 
     # ALPHA
@@ -864,6 +864,27 @@ with open(exe_path, "r+b") as f:
     bin_app.seek(0x001A6630) # ?compass_move@@YAHHHHH@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*400))
+    bin_app.seek(0x001918F0) # ?alt_set_both@@YAXIII@Z
+    patch_call_bytes(bin_app)
+    bin_app.write(struct.pack("<L", addr+4*455))
+    bin_app.seek(0x00192550) # ?find_landmark@@YAHHHI@Z
+    patch_call_bytes(bin_app)
+    bin_app.write(struct.pack("<L", addr+4*456))
+    bin_app.seek(0x00192600) # ?new_landmark@@YAHHHPBD@Z
+    patch_call_bytes(bin_app)
+    bin_app.write(struct.pack("<L", addr+4*457))
+    bin_app.seek(0x00192650) # ?valid_landmark@@YAHIIH@Z
+    patch_call_bytes(bin_app)
+    bin_app.write(struct.pack("<L", addr+4*458))
+    bin_app.seek(0x001926F0) # ?kill_landmark@@YAXHH@Z
+    patch_call_bytes(bin_app)
+    bin_app.write(struct.pack("<L", addr+4*459))
+    bin_app.seek(0x001C58C0) # ?world_alt_put_detail@@YAXII@Z
+    patch_call_bytes(bin_app)
+    bin_app.write(struct.pack("<L", addr+4*460))
+    bin_app.seek(0x001C5BD0) # ?near_landmark@@YAHHH@Z
+    patch_call_bytes(bin_app)
+    bin_app.write(struct.pack("<L", addr+4*461))    
     # PATH
     bin_app.seek(0x0019A220) # ?init@Path@@QAEXXZ
     patch_call_bytes(bin_app)

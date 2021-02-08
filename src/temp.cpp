@@ -92,6 +92,7 @@ int __cdecl tester() {
     log_set_state(true);
     log_say("Start test", 0, 0, 0);
 
+    /*
     add_site(4, AI_GOAL_COLONIZE, 4, 31, 51);
     add_site(4, AI_GOAL_COLONIZE, 4, 33, 51);
     add_site(4, AI_GOAL_COLONIZE, 4, 35, 51);

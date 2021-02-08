@@ -35,7 +35,7 @@ int *MapSeaLevelCouncil = (int *)0x00949880;
 uint32_t *MapArea = (uint32_t *)0x00949884;
 uint32_t *MapAreaSqRoot = (uint32_t *)0x00949888;
 BOOL *MapIsFlat = (BOOL *)0x0094988C;
-uint32_t *MapLandmarkCount = (uint32_t *)0x00949890;
+int *MapLandmarkCount = (int *)0x00949890;
 Landmark *MapLandmark = (Landmark *)0x00949894; // [64]
 uint32_t *MapAbstractLongBounds = (uint32_t *)0x0094A294;
 uint32_t *MapAbstractLatBounds = (uint32_t *)0x0094A298;
@@ -548,16 +548,17 @@ uint32_t __cdecl alt_natural(uint32_t x, uint32_t y) {
 }
 
 /*
-Purpose: Set both the altitude and natural altitude for the specified tile.
+Purpose: Set both the altitude and natural altitude for the specified tile. The altitude_natural
+         parameter can be between 0 to 9.
 Original Offset: 005918F0
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
-void __cdecl alt_set_both(uint32_t x, uint32_t y, uint32_t altitude) {
-    alt_set(x, y, altitude);
-    if (alt_natural(x, y) != altitude) {
-        alt_put_detail(x, y, (uint8_t)(AltNatural[altitude] + *MapSeaLevel
-            + rnd(AltNatural[altitude + 1] - AltNatural[altitude], NULL)));
+void __cdecl alt_set_both(uint32_t x, uint32_t y, uint32_t altitude_natural) {
+    alt_set(x, y, altitude_natural);
+    if (alt_natural(x, y) != altitude_natural) {
+        alt_put_detail(x, y, (uint8_t)(AltNatural[altitude_natural] + *MapSeaLevel
+            + rnd(AltNatural[altitude_natural + 1] - AltNatural[altitude_natural], NULL)));
     }
 }
 
@@ -974,32 +975,32 @@ void __cdecl site_radius(int x, int y, int UNUSED(unk_val)) {
 Purpose: Search for the first landmark found within the radius range of the specified tile.
 Original Offset: 00592550
 Return Value: Landmark offset or -1 if none found
-Status: Complete - testing
+Status: Complete
 */
 int __cdecl find_landmark(int x, int y, uint32_t radius_range_offset) {
-    uint32_t radius = RadiusRange[radius_range_offset];
-    for (uint32_t i = 0; i < radius; i++) {
+    int radius = RadiusRange[radius_range_offset];
+    for (int i = 0; i < radius; i++) {
         int x_radius = xrange(x + RadiusOffsetX[i]);
         int y_radius = y + RadiusOffsetY[i];
         if (on_map(x_radius, y_radius)) {
-            for (uint32_t lm = 0; lm < *MapLandmarkCount; lm++) {
+            for (int lm = 0; lm < *MapLandmarkCount; lm++) {
                 if (x_radius == MapLandmark[lm].x && y_radius == MapLandmark[lm].y) {
                     return lm;
                 }
             }
         }
     }
-    return -1; // none found
+    return -1;
 }
 
 /*
 Purpose: Set up a new landmark with the provided name at the specified tile.
 Original Offset: 00592600
 Return Value: Landmark offset or -1 if max landmark count is reached
-Status: Complete - testing
+Status: Complete
 */
-int __cdecl new_landmark(int x, int y, LPSTR name) {
-    uint32_t landmark_offset = *MapLandmarkCount;
+int __cdecl new_landmark(int x, int y, LPCSTR name) {
+    int landmark_offset = *MapLandmarkCount;
     if (landmark_offset >= MaxLandmarkNum) {
         return -1;
     }
@@ -1015,7 +1016,7 @@ int __cdecl new_landmark(int x, int y, LPSTR name) {
 Purpose: Check whether the specified faction has permission to name a landmark on the provided tile.
 Original Offset: 00592650
 Return Value: Does the faction have control of the tile to set a landmark? true/false
-Status: Complete - testing
+Status: Complete
 */
 BOOL __cdecl valid_landmark(uint32_t x, uint32_t y, int faction_id) {
     int terr_faction_id = *IsMultiplayerNet ? map_loc(x, y)->territory 
@@ -1027,21 +1028,21 @@ BOOL __cdecl valid_landmark(uint32_t x, uint32_t y, int faction_id) {
         return false;
     }
     int base_id = base_find(x, y);
-    return base_id >= 0 ? Bases[base_id].faction_id_current == faction_id : true;
+    return base_id < 0 ? true : Bases[base_id].faction_id_current == faction_id;
 }
 
 /*
 Purpose: Remove the landmark at the specified tile.
 Original Offset: 005926F0
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl kill_landmark(int x, int y) {
     int landmark_to_kill = find_landmark(x, y, 1);
     if (landmark_to_kill >= 0) {
-        if ((uint32_t)landmark_to_kill < (*MapLandmarkCount - 1)) {
+        if (landmark_to_kill < (*MapLandmarkCount - 1)) {
             memcpy_s(&MapLandmark[landmark_to_kill], sizeof(Landmark) * MaxLandmarkNum,
-                &MapLandmark[landmark_to_kill + 1], // single memory copy replaces original loop
+                &MapLandmark[landmark_to_kill + 1], // single memcpy_s replaces original loop
                 sizeof(Landmark) * (*MapLandmarkCount - landmark_to_kill - 1));
         }
         *MapLandmarkCount -= 1;
@@ -1936,10 +1937,10 @@ void __cdecl world_analysis() {
 }
 
 /*
-Purpose: TBD; better function name?
+Purpose: Set the default altitude details for the specified tile.
 Original Offset: 005C58C0
 Return Value: n/a
-Status: Complete - testing
+Status: Complete
 */
 void __cdecl world_alt_put_detail(uint32_t x, uint32_t y) {
     alt_put_detail(x, y, (uint8_t)AltNatural[3]);
@@ -1989,7 +1990,7 @@ void __cdecl world_linearize_contours() {
 Purpose: Determine if the specified tile is near a landmark.
 Original Offset: 005C5BD0
 Return Value: Is the tile near a landmark? true/false
-Status: Complete - testing
+Status: Complete
 */
 BOOL __cdecl near_landmark(int x, int y) {
     for (int i = 0; i < RadiusRange[8]; i++) {

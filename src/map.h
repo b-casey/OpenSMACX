@@ -238,7 +238,7 @@ extern int *MapSeaLevelCouncil; // Solar Shade (-3); Melt Polar Caps (+3)
 extern uint32_t *MapArea;
 extern uint32_t *MapAreaSqRoot;
 extern BOOL *MapIsFlat;
-extern uint32_t *MapLandmarkCount;
+extern int *MapLandmarkCount;
 extern Landmark *MapLandmark;
 extern uint32_t *MapAbstractLongBounds; // abstract x
 extern uint32_t *MapAbstractLatBounds; // abstract y
@@ -292,7 +292,7 @@ DLLEXPORT uint32_t __cdecl climate_at(uint32_t x, uint32_t y);
 DLLEXPORT void __cdecl climate_set(uint32_t x, uint32_t y, uint8_t climate);
 DLLEXPORT int __cdecl elev_at(uint32_t x, uint32_t y);
 DLLEXPORT uint32_t __cdecl alt_natural(uint32_t x, uint32_t y);
-DLLEXPORT void __cdecl alt_set_both(uint32_t x, uint32_t y, uint32_t altitude);
+DLLEXPORT void __cdecl alt_set_both(uint32_t x, uint32_t y, uint32_t altitude_natural);
 DLLEXPORT uint32_t __cdecl alt_at(uint32_t x, uint32_t y);
 DLLEXPORT uint32_t __cdecl altitude_at(uint32_t x, uint32_t y);
 DLLEXPORT uint32_t __cdecl alt_detail_at(uint32_t x, uint32_t y);
@@ -323,7 +323,7 @@ DLLEXPORT uint32_t __cdecl bonus_at(uint32_t x, uint32_t y, int unk_val);
 DLLEXPORT uint32_t __cdecl goody_at(uint32_t x, uint32_t y);
 DLLEXPORT void __cdecl site_radius(int x, int y, int unk_val);
 DLLEXPORT int __cdecl find_landmark(int x, int y, uint32_t radius_range_offset);
-DLLEXPORT int __cdecl new_landmark(int x, int y, LPSTR name);
+DLLEXPORT int __cdecl new_landmark(int x, int y, LPCSTR name);
 DLLEXPORT BOOL __cdecl valid_landmark(uint32_t x, uint32_t y, int faction_id);
 DLLEXPORT void __cdecl kill_landmark(int x, int y);
 DLLEXPORT BOOL __cdecl is_coast(int x, int y, BOOL is_base_radius);
