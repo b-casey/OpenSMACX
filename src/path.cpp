@@ -281,8 +281,8 @@ void Path::continent(uint32_t x, uint32_t y, uint32_t region) {
     if (fresh_water_count) {
         // land locked?
         BOOL is_fresh_water = fresh_water_count >= ((Continents[region].tile_count * 3) / 4);
-        for (uint32_t y_it = 0; y_it < *MapLatitudeBounds; y_it++) {
-            for (uint32_t x_it = y_it & 1; x_it < *MapLongitudeBounds; x_it += 2) {
+        for (int y_it = 0; y_it < *MapLatitudeBounds; y_it++) {
+            for (int x_it = y_it & 1; x_it < *MapLongitudeBounds; x_it += 2) {
                 if (region_at(x_it, y_it) == region) {
                     bit2_set(x_it, y_it, BIT2_FRESH, is_fresh_water);
                 }
@@ -302,15 +302,15 @@ void Path::continents() {
     for (uint32_t i = 0; i < *MapArea; i++) {
         (*MapTiles)[i].region = 0;
     }
-    uint32_t y_south_pole = *MapLatitudeBounds - 1;
-    uint32_t ocean_region = 64;
-    uint32_t land_region = 0;
-    for (uint32_t y = 1; y < y_south_pole; y++) {
-        for (uint32_t x = y & 1; x < *MapLongitudeBounds; x += 2) {
+    int y_south_pole = *MapLatitudeBounds - 1;
+    int ocean_region = 64;
+    int land_region = 0;
+    for (int y = 1; y < y_south_pole; y++) {
+        for (int x = y & 1; x < *MapLongitudeBounds; x += 2) {
             if (!region_at(x, y)) {
-                uint32_t region_current;
-                uint32_t region_min;
-                uint32_t region_max;
+                int region_current;
+                int region_min;
+                int region_max;
                 if (is_ocean(x, y)) {
                     ocean_region++;
                     region_min = 64;
@@ -326,7 +326,7 @@ void Path::continents() {
                 if (region_current == region_max) {
                     uint32_t tiles = Continents[region_current].tile_count;
                     int search_region = -1;
-                    for (uint32_t i = region_min; i < region_max; i++) {
+                    for (int i = region_min; i < region_max; i++) {
                         if (Continents[i].tile_count < tiles) {
                             tiles = Continents[i].tile_count;
                             search_region = i;
@@ -342,20 +342,20 @@ void Path::continents() {
             }
         }
     }
-    for (uint32_t x = 0; x < *MapLongitudeBounds; x += 2) { // north pole
+    for (int x = 0; x < *MapLongitudeBounds; x += 2) { // north pole
         uint8_t pole_region = is_ocean(x, 0) ? 127 : 63;
         region_set(x, 0, pole_region);
         Continents[pole_region].tile_count++;
     }
-    for (uint32_t x = y_south_pole & 1; x < *MapLongitudeBounds; x += 2) { // south pole
+    for (int x = y_south_pole & 1; x < *MapLongitudeBounds; x += 2) { // south pole
         uint8_t pole_region = is_ocean(x, y_south_pole) ? 127 : 63;
         region_set(x, y_south_pole, pole_region);
         Continents[pole_region].tile_count++;
     }
-    uint32_t most_tiles = 0;
-    uint32_t total_tiles = 0;
-    for (uint32_t i = 1; i < 63; i++) {
-        uint32_t tiles = Continents[i].tile_count;
+    int most_tiles = 0;
+    int total_tiles = 0;
+    for (int i = 1; i < 63; i++) {
+        int tiles = Continents[i].tile_count;
         total_tiles += tiles;
         if (tiles > most_tiles) {
             most_tiles = tiles;
@@ -363,14 +363,14 @@ void Path::continents() {
     }
     *GameState = (most_tiles >= ((total_tiles * 4) / 5))
         ? *GameState | STATE_UNK_100 : *GameState & ~STATE_UNK_100;
-    for (uint32_t i = 0; i < MaxRegionLandNum; i++) {
+    for (int i = 0; i < MaxRegionLandNum; i++) {
         ZeroMemory(Continents[i].sea_coasts, 8);
     }
-    for (uint32_t y = 0; y < *MapLatitudeBounds; y++) {
-        for (uint32_t x = y & 1; x < *MapLongitudeBounds; x += 2) {
+    for (int y = 0; y < *MapLatitudeBounds; y++) {
+        for (int x = y & 1; x < *MapLongitudeBounds; x += 2) {
             uint32_t region = region_at(x, y);
             if (region < MaxRegionLandNum) {
-                for (uint32_t i = 0; i < 8; i++) {
+                for (int i = 0; i < 8; i++) {
                     int x_radius = xrange(x + RadiusBaseX[i]);
                     int y_radius = y + RadiusBaseY[i];
                     if (on_map(x_radius, y_radius)) {

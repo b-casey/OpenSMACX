@@ -27,8 +27,8 @@
 #include "strings.h"
 #include "veh.h"
 
-uint32_t *MapLongitudeBounds = (uint32_t *)0x00949870;
-uint32_t *MapLatitudeBounds = (uint32_t *)0x00949874;
+int *MapLongitudeBounds = (int *)0x00949870;
+int *MapLatitudeBounds = (int *)0x00949874;
 uint32_t *MapRandSeed = (uint32_t *)0x00949878;
 int *MapSeaLevel = (int *)0x0094987C;
 int *MapSeaLevelCouncil = (int *)0x00949880;
@@ -50,7 +50,7 @@ uint32_t *MapNativeLifeForms = (uint32_t *)0x0094A2B8;
 LPSTR *MapFilePath = (LPSTR *)0x0094A2BC;
 Map **MapTiles = (Map **)0x0094A30C;
 uint8_t **MapAbstract = (uint8_t **)0x0094A310;
-uint32_t *MapBaseSubmergedCount = (uint32_t *)0x009B2290; // [8]; reset each time global alt changes
+int *MapBaseSubmergedCount = (int *)0x009B2290; // [8]; reset each time global alt changes
 int *MapBaseIdClosestSubmergedVeh = (int *)0x009B22BC; // [8]; reset each time global alt changes
 uint32_t *BrushVal1 = (uint32_t *)0x009B22B0;
 uint32_t *BrushVal2 = (uint32_t *)0x009B22B8;
@@ -568,7 +568,7 @@ Original Offset: 00500150
 Return Value: Altitude
 Status: Complete
 */
-uint32_t __cdecl alt_at(uint32_t x, uint32_t y) {
+int __cdecl alt_at(uint32_t x, uint32_t y) {
     return map_loc(x, y)->climate >> 5;
 }
 
@@ -578,7 +578,7 @@ Original Offset: n/a
 Return Value: Altitude
 Status: Complete
 */
-uint32_t __cdecl altitude_at(uint32_t x, uint32_t y) {
+int __cdecl altitude_at(uint32_t x, uint32_t y) {
     return map_loc(x, y)->climate & 0xE0;
 }
 
@@ -588,7 +588,7 @@ Original Offset: 00500180
 Return Value: Altitude detail
 Status: Complete
 */
-uint32_t __cdecl alt_detail_at(uint32_t x, uint32_t y) {
+int __cdecl alt_detail_at(uint32_t x, uint32_t y) {
     return map_loc(x, y)->contour;
 }
 
@@ -852,16 +852,16 @@ Original Offset: 00591F00
 Return Value: 0 (Flat), 1 (Rolling), 2 (Rocky)
 Status: Complete
 */
-uint32_t __cdecl minerals_at(uint32_t x, uint32_t y) {
-    if (!y || (*MapLatitudeBounds - 1) == y) {
+int __cdecl minerals_at(int x, int y) {
+    if (!y || y == (*MapLatitudeBounds - 1)) {
         return 2; // poles
     }
-    uint32_t alt = alt_at(x, y);
-    uint32_t avg = (x + y) >> 1;
+    int alt = alt_at(x, y);
+    int avg = (x + y) >> 1;
     x -= avg;
     int val1 = (x / 2) + *MapRandSeed + (x - (x % 2)) + (avg - (avg % 2));
     int val2 = (val1 - 2 * (x & 1) - (avg & 1)) & 3;
-    int type = abs((int)alt - ALT_SHORE_LINE);
+    int type = abs(alt - ALT_SHORE_LINE);
     if (alt < ALT_SHORE_LINE) {
         type--;
     }
@@ -1102,8 +1102,8 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl rebuild_vehicle_bits() {
-    for (uint32_t y = 0; y < *MapLatitudeBounds; y++) {
-        for (uint32_t x = y & 1; x < *MapLongitudeBounds; x += 2) {
+    for (int y = 0; y < *MapLatitudeBounds; y++) {
+        for (int x = y & 1; x < *MapLongitudeBounds; x += 2) {
             bit_set(x, y, BIT_VEH_IN_TILE, false);
             for (int veh_id = 0; veh_id < *VehCurrentCount; veh_id++) {
                 if (Vehs[veh_id].x == (int)x && Vehs[veh_id].y == (int)y) {
@@ -1125,8 +1125,8 @@ Return Value: n/a
 Status: Complete
 */
 void __cdecl rebuild_base_bits() {
-    for (uint32_t y = 0; y < *MapLatitudeBounds; y++) {
-        for (uint32_t x = y & 1; x < *MapLongitudeBounds; x += 2) {
+    for (int y = 0; y < *MapLatitudeBounds; y++) {
+        for (int x = y & 1; x < *MapLongitudeBounds; x += 2) {
             bit_set(x, y, BIT_BASE_IN_TILE, false);
             for (int base_id = 0; base_id < *BaseCurrentCount; base_id++) {
                 if (Bases[base_id].x == (int)x && Bases[base_id].y == (int)y) {
@@ -1445,8 +1445,8 @@ Return Value: Does faction control Nexus? true/false
 Status: Complete
 */
 BOOL __cdecl has_temple(int faction_id) {
-    for (uint32_t y = 0; y < *MapLatitudeBounds; y++) {
-        for (uint32_t x = y & 1; x < *MapLongitudeBounds; x += 2) {
+    for (int y = 0; y < *MapLatitudeBounds; y++) {
+        for (int x = y & 1; x < *MapLongitudeBounds; x += 2) {
             if ((bit2_at(x, y) & (BIT2_UNK_80000000 | BIT2_NEXUS)) == BIT2_NEXUS
                 && !code_at(x, y) 
                 && faction_id == whose_territory(faction_id, x, y, NULL, false)
@@ -1464,14 +1464,14 @@ Original Offset: 005C2020
 Return Value: n/a
 Status: Complete - testing
 */
-void __cdecl world_alt_set(int x, int y, uint32_t altitude, BOOL is_set_both) {
-    ZeroMemory(MapBaseSubmergedCount, sizeof(uint32_t) * MaxPlayerNum);
+void __cdecl world_alt_set(int x, int y, int altitude, BOOL is_set_both) {
+    ZeroMemory(MapBaseSubmergedCount, sizeof(int) * MaxPlayerNum);
     memset(MapBaseIdClosestSubmergedVeh, -1, sizeof(int) * MaxPlayerNum);
     if (on_map(x, y)) {
         is_set_both ? alt_set_both(x, y, altitude) : alt_set(x, y, altitude);
     }
     BOOL has_set_alt;
-    for (uint32_t i = 1, alt = altitude - 1; i < altitude; i++, alt--) {
+    for (int i = 1, alt = altitude - 1; i < altitude; i++, alt--) {
         has_set_alt = false;
         for (int j = RadiusRange[i]; j < RadiusRange[i + 1]; j++) {
             int x_radius = xrange(x + RadiusOffsetX[j]);
@@ -1492,8 +1492,8 @@ void __cdecl world_alt_set(int x, int y, uint32_t altitude, BOOL is_set_both) {
             break;
         }
     }
-    uint32_t max_alt = 8 - altitude;
-    for (uint32_t i = 1, alt = i + altitude; i < max_alt; i++, alt++) {
+    int max_alt = 8 - altitude;
+    for (int i = 1, alt = i + altitude; i < max_alt; i++, alt++) {
         has_set_alt = false;
         for (int j = RadiusRange[i]; j < RadiusRange[i + 1]; j++) {
             int x_radius = xrange(x + RadiusOffsetX[j]);
@@ -1552,7 +1552,7 @@ Original Offset: 005C2440
 Return Value: n/a
 Status: Complete - testing
 */
-void __cdecl brush(int x, int y, uint32_t altitude) {
+void __cdecl brush(int x, int y, int altitude) {
     BOOL use_draw_radius = false;
     for (int i = 0; i < 4; i++) {
         if (i != 2) {
@@ -1703,7 +1703,7 @@ Original Offset: 005C2B40
 Return Value: n/a
 Status: Complete - testing
 */
-void __cdecl build_hills(uint32_t altitude) {
+void __cdecl build_hills(int altitude) {
     int x;
     int y;
     int i = 0;
@@ -1827,25 +1827,25 @@ Status: Complete - testing
 */
 void __cdecl world_temperature() {
     random_reseed(*MapRandSeed + 17);
-    uint32_t temp_heat = *MapLatitudeBounds / WorldBuilder->solar_energy;
-    uint32_t thermal_banding = *MapLatitudeBounds / WorldBuilder->thermal_band;
-    uint32_t thermal_deviance = *MapLatitudeBounds / WorldBuilder->thermal_deviance;
-    uint32_t global_warming = *MapLatitudeBounds / WorldBuilder->global_warming;
-    for (uint32_t y = 0; y < *MapLatitudeBounds; y++) {
-        for (uint32_t x = y & 1; x < *MapLongitudeBounds; x += 2) {
+    int temp_heat = *MapLatitudeBounds / WorldBuilder->solar_energy;
+    int thermal_banding = *MapLatitudeBounds / WorldBuilder->thermal_band;
+    int thermal_deviance = *MapLatitudeBounds / WorldBuilder->thermal_deviance;
+    int global_warming = *MapLatitudeBounds / WorldBuilder->global_warming;
+    for (int y = 0; y < *MapLatitudeBounds; y++) {
+        for (int x = y & 1; x < *MapLongitudeBounds; x += 2) {
             if ((bit2_at(x, y) & (BIT2_UNK_80000000 | BIT2_CRATER)) != BIT2_CRATER
                 || code_at(x, y) >= 21) {
-                uint32_t rand_seed = random(0, thermal_deviance * 2);
-                uint32_t rand_orbit = random(0, *MapPlanetaryOrbit + 1);
+                int rand_seed = random(0, thermal_deviance * 2);
+                int rand_orbit = random(0, *MapPlanetaryOrbit + 1);
                 int val1 = (*MapLatitudeBounds / 2) - rand_seed - y + thermal_deviance;
                 if (val1 < 0) { // abs?
                     val1 = rand_seed - (*MapLatitudeBounds / 2) - thermal_deviance + y;
                 }
                 int val2 = (thermal_banding / 2 + (val1 - temp_heat * (*MapPlanetaryOrbit - 1)
                     - *MapSeaLevelCouncil * global_warming) * 2) / thermal_banding;
-                uint32_t temperature = (val2 > 2) ? ((val2 <= 9) + 1) : 3;
-                uint32_t alt = alt_at(x, y);
-                for (uint32_t i = 0; i < 8; i++) {
+                int temperature = (val2 > 2) ? ((val2 <= 9) + 1) : 3;
+                int alt = alt_at(x, y);
+                for (int i = 0; i < 8; i++) {
                     int x_radius = xrange(x + RadiusOffsetX[i]);
                     int y_radius = y + RadiusOffsetY[i];
                     if (on_map(x_radius, y_radius) && bit_at(x_radius, y_radius) & BIT_THERMAL_BORE
@@ -1881,8 +1881,8 @@ void __cdecl world_analysis() {
     for (uint32_t i = 0; i < MaxContinentNum; i++) {
         Continents[i].open_terrain = 0;
     }
-    for (uint32_t y = 0; y < *MapLatitudeBounds; y++) {
-        for (uint32_t x = y & 1; x < *MapLongitudeBounds; x += 2) {
+    for (int y = 0; y < *MapLatitudeBounds; y++) {
+        for (int x = y & 1; x < *MapLongitudeBounds; x += 2) {
             uint32_t region = region_at(x, y);
             BOOL is_ocean_tile = is_ocean(x, y);
             if (!is_ocean_tile && climate_at(x, y) != RAINFALL_ARID 
@@ -1973,8 +1973,8 @@ Return Value: n/a
 Status: Complete - testing
 */
 void __cdecl world_linearize_contours() {
-    for (uint32_t y = 0; y < *MapLatitudeBounds; y++) {
-        for (uint32_t x = y & 1; x < *MapLongitudeBounds; x += 2) {
+    for (int y = 0; y < *MapLatitudeBounds; y++) {
+        for (int x = y & 1; x < *MapLongitudeBounds; x += 2) {
             uint32_t alt_nat = alt_natural(x, y);
             alt_put_detail(x, y, (uint8_t)((((ElevDetail[alt_nat
                 + (alt_nat >= ALT_3_LEVELS_ABOVE_SEA) ? 4 : 1] - ElevDetail[alt_nat])
@@ -2303,7 +2303,7 @@ void __cdecl world_fresh(int x, int y) {
     int x_search = -1;
     BOOL has_set_landmark = false;
     for (int y_it = *MapLatitudeBounds - 1; y_it >= 0 ; y_it--) {
-        for (uint32_t x_it = y_it & 1; x_it < *MapLongitudeBounds; x_it += 2) {
+        for (int x_it = y_it & 1; x_it < *MapLongitudeBounds; x_it += 2) {
             if (region_at(x_it, y_it) == region) {
                 bit2_set(x_it, y_it, LM_FRESH, true);
                 if (x_search < 0) {

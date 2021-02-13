@@ -230,8 +230,8 @@ const int RadiusOffsetY[] = {
     -7,  -8,  -9, -10, -11, -12, -13, -14, -15, };
 const uint32_t ElevDetail[] = { 0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200 };
 
-extern uint32_t *MapLongitudeBounds; // x
-extern uint32_t *MapLatitudeBounds; // y
+extern int *MapLongitudeBounds; // x
+extern int *MapLatitudeBounds; // y
 extern uint32_t *MapRandSeed;
 extern int *MapSeaLevel;
 extern int *MapSeaLevelCouncil; // Solar Shade (-3); Melt Polar Caps (+3)
@@ -253,7 +253,7 @@ extern uint32_t *MapNativeLifeForms;
 extern LPSTR *MapFilePath;
 extern Map **MapTiles;
 extern uint8_t **MapAbstract;
-extern uint32_t *MapBaseSubmergedCount;
+extern int *MapBaseSubmergedCount;
 extern int *MapBaseIdClosestSubmergedVeh;
 extern uint32_t *BrushVal1; // TODO: more descriptive variable name
 extern uint32_t *BrushVal2; // TODO: more descriptive variable name
@@ -293,9 +293,9 @@ DLLEXPORT void __cdecl climate_set(uint32_t x, uint32_t y, uint8_t climate);
 DLLEXPORT int __cdecl elev_at(uint32_t x, uint32_t y);
 DLLEXPORT uint32_t __cdecl alt_natural(uint32_t x, uint32_t y);
 DLLEXPORT void __cdecl alt_set_both(uint32_t x, uint32_t y, uint32_t altitude_natural);
-DLLEXPORT uint32_t __cdecl alt_at(uint32_t x, uint32_t y);
-DLLEXPORT uint32_t __cdecl altitude_at(uint32_t x, uint32_t y);
-DLLEXPORT uint32_t __cdecl alt_detail_at(uint32_t x, uint32_t y);
+DLLEXPORT int __cdecl alt_at(uint32_t x, uint32_t y);
+DLLEXPORT int __cdecl altitude_at(uint32_t x, uint32_t y);
+DLLEXPORT int __cdecl alt_detail_at(uint32_t x, uint32_t y);
 DLLEXPORT void __cdecl alt_put_detail(uint32_t x, uint32_t y, uint8_t detail);
 DLLEXPORT uint32_t __cdecl owner_at(uint32_t x, uint32_t y);
 DLLEXPORT void __cdecl owner_set(uint32_t x, uint32_t y, int faction_id);
@@ -318,7 +318,7 @@ DLLEXPORT void __cdecl bit2_set(uint32_t x, uint32_t y, uint32_t bit2, BOOL set)
 DLLEXPORT uint32_t __cdecl code_at(uint32_t x, uint32_t y);
 DLLEXPORT void __cdecl code_set(uint32_t x, uint32_t y, uint32_t code);
 DLLEXPORT void __cdecl synch_bit(uint32_t x, uint32_t y, uint32_t faction_id);
-DLLEXPORT uint32_t __cdecl minerals_at(uint32_t x, uint32_t y);
+DLLEXPORT int __cdecl minerals_at(int x, int y);
 DLLEXPORT uint32_t __cdecl bonus_at(uint32_t x, uint32_t y, int unk_val);
 DLLEXPORT uint32_t __cdecl goody_at(uint32_t x, uint32_t y);
 DLLEXPORT void __cdecl site_radius(int x, int y, int unk_val);
@@ -349,13 +349,13 @@ DLLEXPORT  int __cdecl radius_move(int x_src, int y_src, int x_dst, int y_dst, i
 DLLEXPORT int __cdecl compass_move(int x_src, int y_src, int x_dst, int y_dst);
 DLLEXPORT int __cdecl is_sensor(uint32_t x, uint32_t y);
 DLLEXPORT BOOL __cdecl has_temple(int faction_id);
-DLLEXPORT void __cdecl world_alt_set(int x, int y, uint32_t altitude, BOOL is_set_both);
+DLLEXPORT void __cdecl world_alt_set(int x, int y, int altitude, BOOL is_set_both);
 DLLEXPORT void __cdecl world_raise_alt(int x, int y);
 DLLEXPORT void __cdecl world_lower_alt(int x, int y);
-DLLEXPORT void __cdecl brush(int x, int y, uint32_t altitude);
+DLLEXPORT void __cdecl brush(int x, int y, int altitude);
 DLLEXPORT void __cdecl paint_land(int x, int y, uint32_t altitude, uint32_t radius);
 DLLEXPORT void __cdecl build_continent(uint32_t size);
-DLLEXPORT void __cdecl build_hills(uint32_t altitude);
+DLLEXPORT void __cdecl build_hills(int altitude);
 DLLEXPORT void __cdecl world_riverbeds();
 DLLEXPORT BOOL __cdecl world_validate();
 DLLEXPORT void __cdecl world_temperature();

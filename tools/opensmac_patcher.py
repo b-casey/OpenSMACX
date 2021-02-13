@@ -666,10 +666,10 @@ with open(exe_path, "r+b") as f:
     bin_app.seek(0x00191A80) # ?climate_set@@YAXIIE@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*147))
-    bin_app.seek(0x00100150) # ?alt_at@@YAIII@Z
+    bin_app.seek(0x00100150) # ?alt_at@@YAHII@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*148))
-    bin_app.seek(0x00100180) # ?alt_detail_at@@YAIII@Z
+    bin_app.seek(0x00100180) # ?alt_detail_at@@YAHII@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*149))
     bin_app.seek(0x00191260) # ?alt_put_detail@@YAXIIE@Z
@@ -765,7 +765,7 @@ with open(exe_path, "r+b") as f:
     bin_app.seek(0x001BF130) # ?has_temple@@YAHH@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*311))
-    bin_app.seek(0x00191F00) # ?minerals_at@@YAIII@Z
+    bin_app.seek(0x00191F00) # ?minerals_at@@YAHHH@Z
     patch_call_bytes(bin_app)
     bin_app.write(struct.pack("<L", addr+4*312))
     bin_app.seek(0x00192030) # ?bonus_at@@YAIIIH@Z
