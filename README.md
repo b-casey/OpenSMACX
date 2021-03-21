@@ -66,7 +66,7 @@ Bug Fixes:
   is called with the 2nd parameter set to -1 in certain instances. The original code would then 
   attempt to use this value to check the pact status within the player_data structure of the 1st 
   faction parameter. In these instances, it would actually be trying to do the diplomacy check 
-  against tutorialMoreBases value. There was a check to skip the pact check if the 2nd parameter 
+  against last_turn_new_base value. There was a check to skip the pact check if the 2nd parameter 
   was 0.  The fix now accepts -1 or 0 to skip the pact check.
 
 v0.2.1
@@ -143,12 +143,12 @@ Bug fixes:
 * Fixed setting alpha/x.txt humans always contact in net games now only to accept 0 or 1.
 * Fixed setting alpha/x.txt humans always contact in hotseat/email games now only to accept 0 or 1.
 * Fixed setting alpha/x.txt obliterating a base counts as an atrocity now only to accept 0 or 1.
-* Fixed socIdeologyEffect overriding faction text files with -1, disabling AI faction "Emphasis".
+* Fixed soc_ideology_effect overriding faction text files with -1, disabling AI faction "Emphasis".
 * Fixed reactor power value being ignored when parsing. Game still won't use this value until
   more code is decompiled since hardcoded values are being used throughout.
 
 Changes:
-* Improved how Random::reseed sets new seed value.
+* <strike>Improved how Random::reseed sets new seed value.</strike>
 * Improved performance of proto_cost() without changes to original logic.
 * <strike>Removed debug code related to non-existent faction JENN282. Nothing of value. SMACX binary only.</strike>
 * Various optimizations without changes to original logic.
