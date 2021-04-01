@@ -319,7 +319,7 @@ DLLEXPORT uint32_t __cdecl code_at(uint32_t x, uint32_t y);
 DLLEXPORT void __cdecl code_set(uint32_t x, uint32_t y, uint32_t code);
 DLLEXPORT void __cdecl synch_bit(uint32_t x, uint32_t y, uint32_t faction_id);
 DLLEXPORT int __cdecl minerals_at(int x, int y);
-DLLEXPORT uint32_t __cdecl bonus_at(uint32_t x, uint32_t y, int unk_val);
+DLLEXPORT uint32_t __cdecl bonus_at(uint32_t x, uint32_t y);
 DLLEXPORT uint32_t __cdecl goody_at(uint32_t x, uint32_t y);
 DLLEXPORT void __cdecl site_radius(int x, int y, int unk_val);
 DLLEXPORT int __cdecl find_landmark(int x, int y, uint32_t radius_range_offset);

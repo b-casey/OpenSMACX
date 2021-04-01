@@ -69,7 +69,7 @@ Return Value: Are the coordinates on the map? true/false
 Status: Complete
 */
 BOOL __cdecl on_map(int x, int y) {
-    return y >= 0 && y < (int)*MapLatitudeBounds && x >= 0 && x < (int)*MapLongitudeBounds;
+    return y >= 0 && y < *MapLatitudeBounds && x >= 0 && x < *MapLongitudeBounds;
 }
 
 /*
@@ -81,7 +81,7 @@ Status: Complete
 int __cdecl xrange(int x) {
     if (!*MapIsFlat) {
         if (x >= 0) {
-            if (x >= (int)*MapLongitudeBounds) {
+            if (x >= *MapLongitudeBounds) {
                 x -= *MapLongitudeBounds;
             }
         } else {
@@ -891,13 +891,14 @@ int __cdecl minerals_at(int x, int y) {
 }
 
 /*
-Purpose: Determine if the tile has a resource bonus. While the last parameter is unused, it's set to
-         1 by two calls inside world_site(). Otherwise, all other calls have it set to 0.
+Purpose: Determine if the tile has a resource bonus. Calling functions may push a third
+         unused boolean parameter on the stack, however this is irrelevant for
+         caller-cleanup functions and can be omitted from the source.
 Original Offset: 00592030
 Return Value: 0 (no bonus), 1 (nutrient), 2 (mineral), 3 (energy)
 Status: Complete
 */
-uint32_t __cdecl bonus_at(uint32_t x, uint32_t y, int UNUSED(unk_val)) {
+uint32_t __cdecl bonus_at(uint32_t x, uint32_t y) {
     uint32_t bit = bit_at(x, y);
     uint32_t alt = alt_at(x, y);
     BOOL has_rsc_bonus = bit & BIT_RSC_BONUS;
@@ -941,10 +942,10 @@ uint32_t __cdecl goody_at(uint32_t x, uint32_t y) {
     if (bit & BIT_SUPPLY_POD) {
         return 1; // supply pod
     }
-    if (!MapRandSeed) {
+    if (!*MapRandSeed) {
         return 0; // nothing
     }
-    uint32_t avg = (x + y) >> 1;
+    int avg = (x + y) >> 1;
     int x_diff = x - avg;
     uint32_t cmp = (avg & 3) + 4 * (x_diff & 3);
     if (!is_ocean(x, y)
@@ -1106,7 +1107,7 @@ void __cdecl rebuild_vehicle_bits() {
         for (int x = y & 1; x < *MapLongitudeBounds; x += 2) {
             bit_set(x, y, BIT_VEH_IN_TILE, false);
             for (int veh_id = 0; veh_id < *VehCurrentCount; veh_id++) {
-                if (Vehs[veh_id].x == (int)x && Vehs[veh_id].y == (int)y) {
+                if (Vehs[veh_id].x == x && Vehs[veh_id].y == y) {
                     bit_set(x, y, BIT_VEH_IN_TILE, true);
                     if (!(bit_at(x, y) & BIT_BASE_IN_TILE)) {
                         owner_set(x, y, Vehs[veh_id].faction_id);
@@ -1129,7 +1130,7 @@ void __cdecl rebuild_base_bits() {
         for (int x = y & 1; x < *MapLongitudeBounds; x += 2) {
             bit_set(x, y, BIT_BASE_IN_TILE, false);
             for (int base_id = 0; base_id < *BaseCurrentCount; base_id++) {
-                if (Bases[base_id].x == (int)x && Bases[base_id].y == (int)y) {
+                if (Bases[base_id].x == x && Bases[base_id].y == y) {
                     bit_set(x, y, BIT_BASE_IN_TILE, true);
                     owner_set(x, y, Bases[base_id].faction_id_current);
                     break;
@@ -1479,7 +1480,7 @@ void __cdecl world_alt_set(int x, int y, int altitude, BOOL is_set_both) {
             if (on_map(x_radius, y_radius) && alt_at(x_radius, y_radius) < alt) {
                 if (is_set_both) {
                     alt_set_both(x_radius, y_radius, alt);
-                    if (anything_at(x_radius, y_radius) < 0 && !bonus_at(x_radius, y_radius, 0)) {
+                    if (anything_at(x_radius, y_radius) < 0 && !bonus_at(x_radius, y_radius)) {
                         owner_set(x_radius, y_radius, -1);
                     }
                 } else {
@@ -1501,7 +1502,7 @@ void __cdecl world_alt_set(int x, int y, int altitude, BOOL is_set_both) {
             if (on_map(x_radius, y_radius) && alt_at(x_radius, y_radius) < alt) {
                 if (is_set_both) {
                     alt_set_both(x_radius, y_radius, alt);
-                    if (anything_at(x_radius, y_radius) < 0 && !bonus_at(x_radius, y_radius, 0)) {
+                    if (anything_at(x_radius, y_radius) < 0 && !bonus_at(x_radius, y_radius)) {
                         owner_set(x_radius, y_radius, -1);
                     }
                 } else {
@@ -1906,7 +1907,7 @@ void __cdecl world_analysis() {
                                 count_val1++;
                             }
                             uint32_t region_radius;
-                            if (y_radius > 4 && y_radius < ((int)*MapLatitudeBounds - 4)
+                            if (y_radius > 4 && y_radius < *MapLatitudeBounds - 4
                                 && (region_radius = region_at(x_radius, y_radius),
                                     region_radius < MaxRegionLandNum && region != region_radius
                                     && Continents[region].tile_count > 40

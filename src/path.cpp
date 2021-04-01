@@ -421,7 +421,7 @@ BOOL Path::sensors(uint32_t faction_id, int *x_sensor, int *y_sensor) {
                     || has_treaty(faction_id, zoc_faction_id, DTREATY_PACT))
                     && bit & (BIT_MINE | BIT_SOLAR_TIDAL)
                     && bit & (BIT_MONOLITH | BIT_CONDENSER | BIT_THERMAL_BORE)
-                    && !bonus_at(x, y, 0) && ((tile->val3 & 0xC0u) > TERRAIN_BIT_ROLLING
+                    && !bonus_at(x, y) && ((tile->val3 & 0xC0u) > TERRAIN_BIT_ROLLING
                         || climate_at(x, y) == RAINFALL_ARID || !(bit & BIT_FUNGUS) 
                         || !is_ocean(x, y)) && (!(bit & BIT_FUNGUS) || (!is_ocean(x, y) 
                         && has_tech(Rules->tech_improve_fungus_sqr, faction_id)))) {
